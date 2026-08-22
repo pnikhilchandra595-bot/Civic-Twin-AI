@@ -68,6 +68,20 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
     };
   };
 
+  const [customCameraInput, setCustomCameraInput] = useState<string>('http://nikhils-iphone.local:8081/video');
+  const [useCustomUrl, setUseCustomUrl] = useState<boolean>(false);
+  const [videoError, setVideoError] = useState<boolean>(false);
+
+  const currentStreamUrl = useCustomUrl ? customCameraInput : (activeFeed?.video_url || 'http://nikhils-iphone.local:8081/video');
+  const isMjpegStream = currentStreamUrl.includes(':8081') || currentStreamUrl.includes('/video') || currentStreamUrl.includes('.mjpg');
+
+  const handleApplyCustomStream = () => {
+    if (customCameraInput.trim()) {
+      setUseCustomUrl(true);
+      setVideoError(false);
+    }
+  };
+
   const handlePan = (dx: number, dy: number) => {
     setPanOffset(prev => ({
       x: Math.max(-100, Math.min(100, prev.x + dx)),
@@ -153,16 +167,50 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
               <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-black aspect-video flex items-center justify-center shadow-2xl group">
                 
                 {/* Real Direct Video Element */}
-                <video
-                  ref={videoRef}
-                  src={activeFeed.video_url}
-                  autoPlay
-                  loop
-                  muted={isMuted}
-                  playsInline
-                  style={getVideoFilterStyle()}
-                  className="w-full h-full object-cover"
-                />
+                {/* Real Video or MJPEG IP Camera Stream Element */}
+                {isMjpegStream ? (
+                  <img
+                    src={currentStreamUrl}
+                    alt="Live IP Camera Stream"
+                    style={getVideoFilterStyle()}
+                    className="w-full h-full object-cover"
+                    onError={() => setVideoError(true)}
+                  />
+                ) : (
+                  <video
+                    ref={videoRef}
+                    src={currentStreamUrl}
+                    autoPlay
+                    loop
+                    muted={isMuted}
+                    playsInline
+                    style={getVideoFilterStyle()}
+                    className="w-full h-full object-cover"
+                    onError={() => setVideoError(true)}
+                  />
+                )}
+
+                {/* Video Connection Failure Alert */}
+                {videoError && (
+                  <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-6 text-center space-y-3 z-15">
+                    <AlertTriangle className="w-10 h-10 text-amber-400 animate-bounce" />
+                    <div className="text-sm font-mono text-white font-bold">
+                      Waiting for Live Camera Stream at:
+                    </div>
+                    <div className="text-xs font-mono text-cyan-300 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700 max-w-md break-all">
+                      {currentStreamUrl}
+                    </div>
+                    <p className="text-[11px] text-slate-400 max-w-sm">
+                      Ensure your phone camera app is actively broadcasting on port 8081 and both devices are on the same Wi-Fi network.
+                    </p>
+                    <button
+                      onClick={() => { setVideoError(false); setUseCustomUrl(false); }}
+                      className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs font-bold transition-all"
+                    >
+                      ← Switch to Default Simulated River Drone
+                    </button>
+                  </div>
+                )}
 
                 {/* Scanline CRT Texture Overlay */}
                 <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] z-10 opacity-60" />
@@ -504,6 +552,43 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                   </div>
                 </div>
               )}
+
+              {/* Live Custom IP Camera Stream Ingestion Card */}
+              <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 space-y-2.5 font-mono text-xs">
+                <div className="flex items-center justify-between text-[11px] font-bold text-cyan-300">
+                  <span className="flex items-center space-x-1.5">
+                    <span>📱</span>
+                    <span>Live IP Camera Stream:</span>
+                  </span>
+                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-700">
+                    HTTP / MJPEG
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <input
+                    type="text"
+                    value={customCameraInput}
+                    onChange={(e) => setCustomCameraInput(e.target.value)}
+                    placeholder="http://nikhils-iphone.local:8081/video"
+                    className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-[11px] font-mono text-white focus:outline-none"
+                  />
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={handleApplyCustomStream}
+                      className="flex-1 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] transition-all cursor-pointer shadow-md"
+                    >
+                      Connect Live Camera
+                    </button>
+                    <button
+                      onClick={() => { setCustomCameraInput('http://nikhils-iphone.local:8081/video'); setUseCustomUrl(true); setVideoError(false); }}
+                      className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px]"
+                    >
+                      iPhone Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Quick Dispatch Button */}

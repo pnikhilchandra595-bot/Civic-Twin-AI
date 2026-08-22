@@ -37,6 +37,27 @@ class DroneCCTVService:
 
     def _init_pan_india_camera_feeds(self):
         self.camera_feeds = [
+            # 0. Live Mobile Unit: Nikhil's iPhone (Live IP Camera Stream)
+            DroneCameraFeed(
+                camera_id="CAM-IPHONE-01",
+                feed_name="📱 Nikhil's iPhone Live Mobile Recon Feed",
+                camera_type="UAV_SURVEY_DRONE",
+                city_id="all",
+                location_name="Live Mobile Tactical Unit (Nikhil's iPhone)",
+                state_name="Active Command Field Unit",
+                lat=19.076,
+                lng=72.877,
+                video_url="http://nikhils-iphone.local:8081/video",
+                status="LIVE_STREAMING",
+                flood_depth_detected_m=0.35,
+                stalled_vehicles_count=1,
+                stranded_pedestrians_count=2,
+                flow_velocity_ms=1.2,
+                ai_yolo_detections=[
+                    ComputerVisionDetection(label="Active Tactical Field Camera", confidence=0.99, bbox=[25, 20, 50, 60], hazard_severity="NORMAL"),
+                    ComputerVisionDetection(label="Live Human Detection", confidence=0.95, bbox=[35, 30, 30, 45], hazard_severity="WARNING")
+                ]
+            ),
             # 1. Mumbai Hindmata Subway (CCTV) - Real Flooded Street Footage
             DroneCameraFeed(
                 camera_id="CAM-MUM-01",
@@ -173,7 +194,7 @@ class DroneCCTVService:
     def get_feeds_by_city(self, city_id: Optional[str] = None) -> List[DroneCameraFeed]:
         if not city_id:
             return self.camera_feeds
-        matches = [f for f in self.camera_feeds if f.city_id == city_id]
+        matches = [f for f in self.camera_feeds if f.city_id == city_id or f.city_id == "all"]
         return matches if matches else self.camera_feeds
 
 drone_cctv_service = DroneCCTVService()
