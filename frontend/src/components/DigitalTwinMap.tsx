@@ -332,6 +332,76 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       hazard: "High-Altitude Glacial Stream Cloudburst", 
       ndrf: "NDRF High-Altitude Disaster Response Base",
       color: "#f59e0b" 
+    },
+    { 
+      name: "Arunachal Pradesh (Itanagar / Siang)", 
+      cityId: "arunachal_siang", 
+      coords: [27.1000, 93.6200] as [number, number], 
+      threat: "CRITICAL", 
+      rainfall: "76 mm/h", 
+      hazard: "Himalayan Flash Cloudburst & Siang Inundation", 
+      ndrf: "NDRF 1st Bn Mountain Unit",
+      color: "#ef4444" 
+    },
+    { 
+      name: "Mizoram (Aizawl / Tlawng River)", 
+      cityId: "mizoram_tlawng", 
+      coords: [23.7307, 92.7173] as [number, number], 
+      threat: "ELEVATED", 
+      rainfall: "46 mm/h", 
+      hazard: "Steep Hill Slope Mudslides & Highway Blockage", 
+      ndrf: "NDRF 1st Bn Aizawl Base",
+      color: "#f59e0b" 
+    },
+    { 
+      name: "Nagaland (Kohima / Dimapur / Doyang)", 
+      cityId: "nagaland_doyang", 
+      coords: [25.6751, 94.1086] as [number, number], 
+      threat: "ELEVATED", 
+      rainfall: "44 mm/h", 
+      hazard: "Doyang Hydro Dam Sluice Surge & Plain Flood", 
+      ndrf: "NDRF 12th Bn Dimapur Base",
+      color: "#f59e0b" 
+    },
+    { 
+      name: "Chandigarh UT (Sukhna Lake)", 
+      cityId: "chandigarh_sukhna", 
+      coords: [30.7333, 76.7794] as [number, number], 
+      threat: "MONITOR", 
+      rainfall: "24 mm/h", 
+      hazard: "Sukhna Lake Floodgate Sluice Opening", 
+      ndrf: "NDRF 7th Bn NCR Quick Response",
+      color: "#10b981" 
+    },
+    { 
+      name: "Dadra & Nagar Haveli & Daman & Diu", 
+      cityId: "daman_damanganga", 
+      coords: [20.4283, 72.8597] as [number, number], 
+      threat: "ELEVATED", 
+      rainfall: "39 mm/h", 
+      hazard: "Damanganga Madhuvan Dam Surge & High Tide", 
+      ndrf: "NDRF 6th Bn Coastal Strike Team",
+      color: "#f59e0b" 
+    },
+    { 
+      name: "Lakshadweep UT (Kavaratti Atoll)", 
+      cityId: "lakshadweep_kavaratti", 
+      coords: [10.5667, 72.6417] as [number, number], 
+      threat: "CRITICAL", 
+      rainfall: "64 mm/h", 
+      hazard: "Arabian Sea Cyclonic Storm Surge & Overwash", 
+      ndrf: "NDRF Coast Guard Joint Marine Team",
+      color: "#ef4444" 
+    },
+    { 
+      name: "Puducherry UT (Coromandel Coast)", 
+      cityId: "puducherry_coastal", 
+      coords: [11.9416, 79.8083] as [number, number], 
+      threat: "ELEVATED", 
+      rainfall: "36 mm/h", 
+      hazard: "Bay of Bengal Cyclone Surge & Sankaraparani", 
+      ndrf: "NDRF 4th Bn Coastal Team",
+      color: "#f59e0b" 
     }
   ];
 

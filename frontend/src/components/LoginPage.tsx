@@ -60,7 +60,32 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     'Assam': { cityId: 'assam_brahmaputra', label: 'Guwahati Brahmaputra (AS)', district: 'Kamrup Metropolitan District' },
     'Sikkim': { cityId: 'sikkim_teesta', label: 'Gangtok Teesta Basin (SK)', district: 'East Sikkim District' },
     'Uttar Pradesh': { cityId: 'uttar_pradesh_ganga', label: 'Varanasi Ganga (UP)', district: 'Varanasi District' },
-    'Madhya Pradesh': { cityId: 'madhya_pradesh_narmada', label: 'Jabalpur Narmada (MP)', district: 'Jabalpur District' }
+    'Madhya Pradesh': { cityId: 'madhya_pradesh_narmada', label: 'Jabalpur Narmada (MP)', district: 'Jabalpur District' },
+    'Bihar': { cityId: 'bihar_kosi', label: 'Patna Kosi Catchment (BR)', district: 'Patna District' },
+    'Uttarakhand': { cityId: 'uttarakhand_cloudburst', label: 'Rishikesh Himalayan Surge (UK)', district: 'Dehradun District' },
+    'Himachal Pradesh': { cityId: 'himachal_beas', label: 'Kullu Beas Surge (HP)', district: 'Kullu District' },
+    'Punjab': { cityId: 'punjab_sutlej', label: 'Ludhiana Sutlej Basin (PB)', district: 'Ludhiana District' },
+    'Andhra Pradesh': { cityId: 'andhra_krishna', label: 'Vijayawada Krishna Delta (AP)', district: 'Krishna District' },
+    'Telangana': { cityId: 'telangana_musi', label: 'Hyderabad Musi Basin (TS)', district: 'Hyderabad District' },
+    'Rajasthan': { cityId: 'rajasthan_luni', label: 'Jodhpur Luni Basin (RJ)', district: 'Jodhpur District' },
+    'Jammu & Kashmir': { cityId: 'jammu_jhelum', label: 'Srinagar Jhelum Valley (JK)', district: 'Srinagar District' },
+    'Goa': { cityId: 'goa_mandovi', label: 'Panaji Mandovi Estuary (GA)', district: 'North Goa District' },
+    'Tripura': { cityId: 'tripura_howrah', label: 'Agartala Howrah River (TR)', district: 'West Tripura District' },
+    'Meghalaya': { cityId: 'meghalaya_cherrapunji', label: 'Shillong Cherrapunji (ML)', district: 'East Khasi Hills District' },
+    'Manipur': { cityId: 'manipur_imphal', label: 'Imphal Loktak Basin (MN)', district: 'Imphal West District' },
+    'Jharkhand': { cityId: 'jharkhand_subarnarekha', label: 'Ranchi Subarnarekha (JH)', district: 'Ranchi District' },
+    'Chhattisgarh': { cityId: 'chhattisgarh_mahanadi', label: 'Raipur Hasdeo Bango (CG)', district: 'Raipur District' },
+    'Haryana': { cityId: 'haryana_gurugram', label: 'Gurugram Najafgarh (HR)', district: 'Gurugram District' },
+    'Odisha': { cityId: 'odisha_mahanadi', label: 'Bhubaneswar Mahanadi (OD)', district: 'Khordha District' },
+    'Andaman & Nicobar': { cityId: 'andaman_portblair', label: 'Port Blair Island Coast (AN)', district: 'South Andaman District' },
+    'Ladakh': { cityId: 'ladakh_indus', label: 'Leh Indus Valley (LA)', district: 'Leh District' },
+    'Arunachal Pradesh': { cityId: 'arunachal_siang', label: 'Itanagar Siang Basin (AR)', district: 'Papum Pare District' },
+    'Mizoram': { cityId: 'mizoram_tlawng', label: 'Aizawl Tlawng Valley (MZ)', district: 'Aizawl District' },
+    'Nagaland': { cityId: 'nagaland_doyang', label: 'Kohima Dimapur Doyang (NL)', district: 'Kohima District' },
+    'Chandigarh': { cityId: 'chandigarh_sukhna', label: 'Chandigarh Sukhna Lake (CH)', district: 'Chandigarh District' },
+    'Dadra and Nagar Haveli and Daman and Diu': { cityId: 'daman_damanganga', label: 'Daman Damanganga (DD)', district: 'Daman District' },
+    'Lakshadweep': { cityId: 'lakshadweep_kavaratti', label: 'Kavaratti Coral Atoll (LD)', district: 'Lakshadweep District' },
+    'Puducherry': { cityId: 'puducherry_coastal', label: 'Puducherry Coromandel Coast (PY)', district: 'Puducherry District' }
   };
 
   const handleQuickDemo = (role: UserType, stateName: string = 'Maharashtra') => {

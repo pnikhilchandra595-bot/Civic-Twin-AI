@@ -299,6 +299,76 @@ def get_available_indian_cities():
             "lat": 34.150,
             "lng": 77.570,
             "ndrf_unit": "NDRF High-Altitude Disaster Response Base"
+        },
+        {
+            "id": "arunachal_siang",
+            "name": "Arunachal Pradesh: Itanagar & Siang River Basin",
+            "region": "North-East India",
+            "state": "Arunachal Pradesh",
+            "hazard_profile": "Himalayan Flash Cloudburst, Landslide Dam Outbursts & Siang Inundation",
+            "lat": 27.100,
+            "lng": 93.620,
+            "ndrf_unit": "NDRF 1st Battalion Mountain Unit"
+        },
+        {
+            "id": "mizoram_tlawng",
+            "name": "Mizoram: Aizawl & Tlawng River Valley Surge",
+            "region": "North-East India",
+            "state": "Mizoram",
+            "hazard_profile": "Steep Hill Slope Mudslides & Tlawng River Highway Blockage",
+            "lat": 23.730,
+            "lng": 92.710,
+            "ndrf_unit": "NDRF 1st Battalion Aizawl Base"
+        },
+        {
+            "id": "nagaland_doyang",
+            "name": "Nagaland: Kohima, Dimapur & Doyang River Surge",
+            "region": "North-East India",
+            "state": "Nagaland",
+            "hazard_profile": "Doyang Hydro Dam Spillway Surge & Dimapur Plain Flash Flooding",
+            "lat": 25.670,
+            "lng": 94.110,
+            "ndrf_unit": "NDRF 12th Battalion Dimapur Base"
+        },
+        {
+            "id": "chandigarh_sukhna",
+            "name": "Chandigarh UT: Sukhna Lake & Ghaggar Catchment",
+            "region": "North India",
+            "state": "Chandigarh",
+            "hazard_profile": "Sukhna Lake Floodgate Sluice Opening & Ghaggar River Swell",
+            "lat": 30.730,
+            "lng": 76.780,
+            "ndrf_unit": "NDRF 7th Battalion NCR Quick Response"
+        },
+        {
+            "id": "daman_damanganga",
+            "name": "Dadra & Nagar Haveli and Daman & Diu: Damanganga Surge",
+            "region": "West India",
+            "state": "Dadra and Nagar Haveli and Daman and Diu",
+            "hazard_profile": "Madhuvan Dam Sluice Discharge & Arabian Sea High Tide Confluence",
+            "lat": 20.420,
+            "lng": 72.850,
+            "ndrf_unit": "NDRF 6th Battalion Coastal Strike Team"
+        },
+        {
+            "id": "lakshadweep_kavaratti",
+            "name": "Lakshadweep UT: Kavaratti & Agatti Island Coral Surge",
+            "region": "Islands",
+            "state": "Lakshadweep",
+            "hazard_profile": "Arabian Sea Severe Cyclonic Storm Surge & Low-Lying Coral Atoll Overwash",
+            "lat": 10.560,
+            "lng": 72.640,
+            "ndrf_unit": "NDRF Coast Guard Joint Marine Rescue"
+        },
+        {
+            "id": "puducherry_coastal",
+            "name": "Puducherry UT: Coromandel Coastal Cyclone & Sankaraparani",
+            "region": "South India",
+            "state": "Puducherry",
+            "hazard_profile": "Bay of Bengal Cyclone Storm Surge & Sankaraparani River Breach",
+            "lat": 11.940,
+            "lng": 79.830,
+            "ndrf_unit": "NDRF 4th Battalion Coastal Team"
         }
     ]
 

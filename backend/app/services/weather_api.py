@@ -48,7 +48,17 @@ class RealWeatherIngestionService:
             "raipur": "43063",
             "gurugram": "10001",
             "portblair": "43371",
-            "leh": "42010"
+            "leh": "42010",
+            "itanagar": "42401",
+            "aizawl": "42634",
+            "kohima": "42527",
+            "dimapur": "42526",
+            "chandigarh": "42079",
+            "daman": "42838",
+            "silvassa": "42839",
+            "kavaratti": "43311",
+            "puducherry": "43285",
+            "karaikal": "43346"
         }
 
     async def fetch_imd_city_forecast(self, city_name: str = "Mumbai") -> Dict[str, Any]:

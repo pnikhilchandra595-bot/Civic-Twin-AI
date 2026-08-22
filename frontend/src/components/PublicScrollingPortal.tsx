@@ -86,7 +86,14 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
     { id: 'chhattisgarh_mahanadi', name: 'Raipur (CG)', state: 'Chhattisgarh', region: 'Hasdeo Bango' },
     { id: 'haryana_gurugram', name: 'Gurugram (HR)', state: 'Haryana', region: 'Najafgarh Drain' },
     { id: 'andaman_portblair', name: 'Port Blair (AN)', state: 'Andaman & Nicobar', region: 'Island Coast' },
-    { id: 'ladakh_indus', name: 'Leh (LA)', state: 'Ladakh', region: 'Indus Glacial' }
+    { id: 'ladakh_indus', name: 'Leh (LA)', state: 'Ladakh', region: 'Indus Glacial' },
+    { id: 'arunachal_siang', name: 'Itanagar (AR)', state: 'Arunachal Pradesh', region: 'Siang Basin' },
+    { id: 'mizoram_tlawng', name: 'Aizawl (MZ)', state: 'Mizoram', region: 'Tlawng Valley' },
+    { id: 'nagaland_doyang', name: 'Kohima (NL)', state: 'Nagaland', region: 'Doyang Hydro' },
+    { id: 'chandigarh_sukhna', name: 'Chandigarh (CH)', state: 'Chandigarh', region: 'Sukhna Lake' },
+    { id: 'daman_damanganga', name: 'Daman (DD)', state: 'Dadra & Nagar Haveli and Daman & Diu', region: 'Damanganga' },
+    { id: 'lakshadweep_kavaratti', name: 'Kavaratti (LD)', state: 'Lakshadweep', region: 'Coral Atolls' },
+    { id: 'puducherry_coastal', name: 'Puducherry (PY)', state: 'Puducherry', region: 'Coromandel Coast' }
   ];
 
   const handleCityChange = (cityId: string) => {

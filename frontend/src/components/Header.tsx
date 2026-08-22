@@ -105,6 +105,22 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'madhya_pradesh_narmada', state: 'Madhya Pradesh', label: 'Madhya Pradesh: Jabalpur Narmada (MP)' },
     { id: 'jammu_jhelum', state: 'Jammu & Kashmir', label: 'Jammu & Kashmir: Srinagar Jhelum (JK)' },
     { id: 'goa_mandovi', state: 'Goa', label: 'Goa: Panaji Mandovi Estuary (GA)' },
+    { id: 'sikkim_teesta', state: 'Sikkim', label: 'Sikkim: Gangtok Teesta GLOF (SK)' },
+    { id: 'tripura_howrah', state: 'Tripura', label: 'Tripura: Agartala Howrah River (TR)' },
+    { id: 'meghalaya_cherrapunji', state: 'Meghalaya', label: 'Meghalaya: Shillong Cherrapunji (ML)' },
+    { id: 'manipur_imphal', state: 'Manipur', label: 'Manipur: Imphal Loktak Lake (MN)' },
+    { id: 'jharkhand_subarnarekha', state: 'Jharkhand', label: 'Jharkhand: Ranchi Subarnarekha (JH)' },
+    { id: 'chhattisgarh_mahanadi', state: 'Chhattisgarh', label: 'Chhattisgarh: Raipur Mahanadi (CG)' },
+    { id: 'haryana_gurugram', state: 'Haryana', label: 'Haryana: Gurugram Najafgarh (HR)' },
+    { id: 'andaman_portblair', state: 'Andaman & Nicobar', label: 'Andaman & Nicobar: Port Blair (AN)' },
+    { id: 'ladakh_indus', state: 'Ladakh', label: 'Ladakh: Leh Indus Valley (LA)' },
+    { id: 'arunachal_siang', state: 'Arunachal Pradesh', label: 'Arunachal Pradesh: Itanagar Siang (AR)' },
+    { id: 'mizoram_tlawng', state: 'Mizoram', label: 'Mizoram: Aizawl Tlawng River (MZ)' },
+    { id: 'nagaland_doyang', state: 'Nagaland', label: 'Nagaland: Kohima Dimapur Doyang (NL)' },
+    { id: 'chandigarh_sukhna', state: 'Chandigarh', label: 'Chandigarh UT: Sukhna Lake (CH)' },
+    { id: 'daman_damanganga', state: 'Dadra & Nagar Haveli and Daman & Diu', label: 'Daman & Diu: Damanganga (DD)' },
+    { id: 'lakshadweep_kavaratti', state: 'Lakshadweep', label: 'Lakshadweep UT: Kavaratti Atolls (LD)' },
+    { id: 'puducherry_coastal', state: 'Puducherry', label: 'Puducherry UT: Coromandel Coast (PY)' },
   ];
 
   const selectableCities = isDistrictOfficer && authUser.assignedCityId
