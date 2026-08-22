@@ -1,0 +1,388 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Video, Eye, EyeOff, AlertTriangle, ShieldCheck, 
+  Maximize2, X, RefreshCw, Layers, Crosshair, Navigation, 
+  Thermometer, Moon, Sun, Camera, Sparkles, Activity, Play, Pause, Volume2, VolumeX, Radio, Check,
+  Grid, Compass, Send, ShieldAlert, Zap, CheckCircle2
+} from 'lucide-react';
+import { apiService, DroneCameraFeed } from '../services/api';
+
+interface DroneCCTVModalProps {
+  cityId: string;
+  cityName: string;
+  onClose: () => void;
+}
+
+export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
+  cityId,
+  cityName,
+  onClose
+}) => {
+  const [feeds, setFeeds] = useState<DroneCameraFeed[]>([]);
+  const [activeFeedId, setActiveFeedId] = useState<string | null>(null);
+  const [showAIOverlay, setShowAIOverlay] = useState<boolean>(true);
+  const [viewMode, setViewMode] = useState<'SINGLE_FOCUS' | 'MATRIX_4X4'>('SINGLE_FOCUS');
+  
+  // Vision Filter Spectrum
+  const [visionMode, setVisionMode] = useState<'RGB' | 'THERMAL_FLIR' | 'NIGHT_VISION'>('RGB');
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isMuted, setIsMuted] = useState<boolean>(true);
+  const [snapshotTaken, setSnapshotTaken] = useState<boolean>(false);
+  const [dispatchSuccess, setDispatchSuccess] = useState<string | null>(null);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const fetchFeeds = async () => {
+      const data = await apiService.getDroneCCTVFeeds(cityId);
+      setFeeds(data);
+      if (data.length > 0) {
+        const cityMatch = data.find(f => f.city_id === cityId);
+        setActiveFeedId(cityMatch ? cityMatch.camera_id : data[0].camera_id);
+      }
+    };
+    fetchFeeds();
+  }, [cityId]);
+
+  const activeFeed = feeds.find(f => f.camera_id === activeFeedId) || feeds[0];
+
+  // Video filter style based on spectrum mode
+  const getVideoFilterStyle = () => {
+    if (visionMode === 'THERMAL_FLIR') {
+      return {
+        filter: 'contrast(180%) brightness(110%) hue-rotate(180deg) saturate(250%)',
+        mixBlendMode: 'screen' as const
+      };
+    }
+    if (visionMode === 'NIGHT_VISION') {
+      return {
+        filter: 'contrast(160%) brightness(130%) sepia(100%) hue-rotate(85deg) saturate(300%)'
+      };
+    }
+    return {};
+  };
+
+  const handleTakeSnapshot = () => {
+    setSnapshotTaken(true);
+    setTimeout(() => setSnapshotTaken(false), 2500);
+  };
+
+  const handleQuickDispatch = (locationName: string) => {
+    setDispatchSuccess(`NDRF Rescue Raft Alpha Dispatched to ${locationName}`);
+    setTimeout(() => setDispatchSuccess(null), 3500);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none font-sans">
+      <div className="hud-panel w-full max-w-6xl rounded-3xl border border-cyan-500/40 flex flex-col h-[92vh] bg-[#070b16] text-slate-100 shadow-[0_0_90px_rgba(0,210,255,0.25)] overflow-hidden">
+        
+        {/* Top Header Bar */}
+        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-slate-950 via-blue-950/40 to-slate-950">
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 rounded-2xl bg-cyan-950/90 border border-cyan-500/50 text-cyan-400 shadow-md">
+              <Video className="w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <h2 className="text-base font-black text-white uppercase tracking-wider flex items-center space-x-2">
+                <span>AI Computer Vision CCTV & Recon Drone Feeds</span>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-red-950 border border-red-500 text-red-300 font-mono font-bold animate-pulse">
+                  ● LIVE 60 FPS STREAM
+                </span>
+              </h2>
+              <p className="text-xs text-slate-400 font-mono">
+                Real-Time Urban Flood Inundation & Victim Detection Network ({cityName})
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {/* View Mode Toggle */}
+            <div className="flex items-center p-1 bg-slate-900 border border-slate-800 rounded-xl text-xs font-mono">
+              <button
+                onClick={() => setViewMode('SINGLE_FOCUS')}
+                className={`px-3 py-1.5 rounded-lg transition-all ${
+                  viewMode === 'SINGLE_FOCUS' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Focus
+              </button>
+              <button
+                onClick={() => setViewMode('MATRIX_4X4')}
+                className={`px-3 py-1.5 rounded-lg transition-all ${
+                  viewMode === 'MATRIX_4X4' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                Matrix (4x4)
+              </button>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-all cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+          
+          {/* Left / Center: Main Video Feed Player */}
+          <div className="flex-1 flex flex-col p-4 space-y-3 overflow-y-auto">
+            
+            {viewMode === 'SINGLE_FOCUS' && activeFeed && (
+              <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-black aspect-video flex items-center justify-center shadow-2xl group">
+                
+                {/* Real Direct Video Element */}
+                <video
+                  ref={videoRef}
+                  src={activeFeed.video_url}
+                  autoPlay
+                  loop
+                  muted={isMuted}
+                  playsInline
+                  style={getVideoFilterStyle()}
+                  className="w-full h-full object-cover"
+                />
+
+                {/* Tactical HUD OSD Watermark Overlay */}
+                <div className="absolute top-3 left-3 flex items-center space-x-2 pointer-events-none z-20">
+                  <span className="px-2.5 py-1 rounded-lg bg-black/80 border border-cyan-500/50 text-cyan-300 font-mono text-xs font-bold flex items-center space-x-1.5">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                    <span>REC: {activeFeed.camera_id}</span>
+                  </span>
+                  <span className="px-2.5 py-1 rounded-lg bg-black/80 border border-slate-700 text-slate-300 font-mono text-[11px]">
+                    📍 {activeFeed.location_name}
+                  </span>
+                  <span className="px-2.5 py-1 rounded-lg bg-black/80 border border-slate-700 text-yellow-300 font-mono text-[11px]">
+                    🌊 Depth: {activeFeed.flood_depth_detected_m}m
+                  </span>
+                </div>
+
+                {/* Vision Spectrum Badge */}
+                <div className="absolute top-3 right-3 pointer-events-none z-20">
+                  <span className="px-2.5 py-1 rounded-lg bg-black/80 border border-slate-700 text-slate-300 font-mono text-[11px] font-bold">
+                    SPECTRUM: {visionMode}
+                  </span>
+                </div>
+
+                {/* AI YOLO Computer Vision Bounding Boxes Overlay */}
+                {showAIOverlay && activeFeed.ai_yolo_detections && (
+                  <div className="absolute inset-0 pointer-events-none z-10">
+                    {activeFeed.ai_yolo_detections.map((det, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          left: `${det.bbox[0]}%`,
+                          top: `${det.bbox[1]}%`,
+                          width: `${det.bbox[2]}%`,
+                          height: `${det.bbox[3]}%`
+                        }}
+                        className={`absolute border-2 rounded-lg transition-all ${
+                          det.hazard_severity === 'CRITICAL'
+                            ? 'border-red-500 bg-red-500/10 shadow-[0_0_15px_rgba(239,68,68,0.5)]'
+                            : 'border-yellow-400 bg-yellow-400/10 shadow-[0_0_15px_rgba(234,179,8,0.5)]'
+                        }`}
+                      >
+                        <div className="absolute -top-6 left-0 px-2 py-0.5 rounded bg-black/90 border border-current font-mono text-[10px] font-black uppercase text-white whitespace-nowrap">
+                          {det.label} ({(det.confidence * 100).toFixed(0)}%)
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Bottom Video Floating Controls */}
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between p-2 rounded-xl bg-black/80 backdrop-blur-md border border-slate-800 z-20">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setIsPlaying(!isPlaying)}
+                      className="p-1.5 rounded-lg bg-slate-900 text-slate-300 hover:text-white"
+                    >
+                      {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                    </button>
+                    <button
+                      onClick={() => setIsMuted(!isMuted)}
+                      className="p-1.5 rounded-lg bg-slate-900 text-slate-300 hover:text-white"
+                    >
+                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  {/* Spectrum Vision Filter Selector */}
+                  <div className="flex items-center space-x-1.5 text-xs font-mono">
+                    <button
+                      onClick={() => setVisionMode('RGB')}
+                      className={`px-2.5 py-1 rounded-lg transition-all ${
+                        visionMode === 'RGB' ? 'bg-blue-600 text-white font-bold' : 'bg-slate-900 text-slate-400'
+                      }`}
+                    >
+                      Optical (RGB)
+                    </button>
+                    <button
+                      onClick={() => setVisionMode('THERMAL_FLIR')}
+                      className={`px-2.5 py-1 rounded-lg transition-all ${
+                        visionMode === 'THERMAL_FLIR' ? 'bg-purple-600 text-white font-bold' : 'bg-slate-900 text-slate-400'
+                      }`}
+                    >
+                      FLIR Thermal
+                    </button>
+                    <button
+                      onClick={() => setVisionMode('NIGHT_VISION')}
+                      className={`px-2.5 py-1 rounded-lg transition-all ${
+                        visionMode === 'NIGHT_VISION' ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-900 text-slate-400'
+                      }`}
+                    >
+                      Night Vision
+                    </button>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setShowAIOverlay(!showAIOverlay)}
+                      className={`px-2.5 py-1 rounded-lg border text-xs font-mono font-bold flex items-center space-x-1 ${
+                        showAIOverlay ? 'bg-cyan-950 border-cyan-500 text-cyan-300' : 'bg-slate-900 border-slate-800 text-slate-400'
+                      }`}
+                    >
+                      {showAIOverlay ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                      <span>AI YOLO</span>
+                    </button>
+
+                    <button
+                      onClick={handleTakeSnapshot}
+                      className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-mono flex items-center space-x-1"
+                    >
+                      {snapshotTaken ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Camera className="w-3.5 h-3.5" />}
+                      <span>{snapshotTaken ? 'Saved!' : 'Snapshot'}</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {/* Matrix (4x4 Grid) View */}
+            {viewMode === 'MATRIX_4X4' && (
+              <div className="grid grid-cols-2 gap-3 flex-1">
+                {feeds.slice(0, 4).map((feed) => (
+                  <div
+                    key={feed.camera_id}
+                    onClick={() => { setActiveFeedId(feed.camera_id); setViewMode('SINGLE_FOCUS'); }}
+                    className="relative rounded-2xl overflow-hidden border border-slate-800 bg-black aspect-video cursor-pointer group hover:border-cyan-500 transition-all"
+                  >
+                    <video
+                      src={feed.video_url}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100"
+                    />
+                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-cyan-300 font-bold">
+                      {feed.camera_id}: {feed.feed_name.slice(0, 25)}...
+                    </div>
+                    <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-red-950 border border-red-600 text-[10px] font-mono text-red-300 font-bold">
+                      🌊 {feed.flood_depth_detected_m}m Depth
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Quick Action Notification Banner */}
+            {dispatchSuccess && (
+              <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-mono flex items-center space-x-2 animate-bounce">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>{dispatchSuccess}</span>
+              </div>
+            )}
+
+          </div>
+
+          {/* Right Column: Camera Switcher & Telemetry Panel */}
+          <div className="w-full lg:w-96 p-4 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col justify-between space-y-4 bg-slate-950/60 overflow-y-auto">
+            
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1.5">
+                  <Grid className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Available Camera Feeds ({feeds.length})</span>
+                </span>
+                <span className="text-[10px] font-mono text-emerald-400">All Feeds Online</span>
+              </div>
+
+              {/* Feed Selection List */}
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {feeds.map((f) => (
+                  <button
+                    key={f.camera_id}
+                    onClick={() => setActiveFeedId(f.camera_id)}
+                    className={`w-full p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                      f.camera_id === activeFeedId
+                        ? 'bg-cyan-950/80 border-cyan-500 shadow-[0_0_15px_rgba(0,210,255,0.2)]'
+                        : 'bg-slate-900/60 border-slate-800/80 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-xs font-bold text-white">
+                      <span className="truncate">{f.feed_name}</span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-950 font-mono text-cyan-300 border border-slate-800">
+                        {f.camera_type.includes('DRONE') ? '🛸 UAV DRONE' : '📹 CCTV'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono mt-1">
+                      <span>📍 {f.location_name}</span>
+                      <span className="text-yellow-400">🌊 {f.flood_depth_detected_m}m</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Active Camera Live Analytics Card */}
+              {activeFeed && (
+                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2.5 font-mono text-xs">
+                  <div className="text-[11px] font-bold text-cyan-300 uppercase tracking-wider">
+                    📊 Live Computer Vision Analytics:
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-[11px]">
+                    <div className="p-2 rounded-xl bg-slate-950 border border-slate-800">
+                      <span className="text-slate-400 block text-[10px]">Flood Water Depth:</span>
+                      <span className="text-rose-400 font-bold text-sm">{activeFeed.flood_depth_detected_m} m</span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-950 border border-slate-800">
+                      <span className="text-slate-400 block text-[10px]">Flow Velocity:</span>
+                      <span className="text-yellow-400 font-bold text-sm">{activeFeed.flow_velocity_ms} m/s</span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-950 border border-slate-800">
+                      <span className="text-slate-400 block text-[10px]">Stalled Vehicles:</span>
+                      <span className="text-white font-bold text-sm">{activeFeed.stalled_vehicles_count} Units</span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-950 border border-slate-800">
+                      <span className="text-slate-400 block text-[10px]">Stranded Persons:</span>
+                      <span className="text-emerald-400 font-bold text-sm">{activeFeed.stranded_pedestrians_count} People</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Dispatch Button */}
+            {activeFeed && (
+              <button
+                onClick={() => handleQuickDispatch(activeFeed.location_name)}
+                className="w-full py-3.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white shadow-lg shadow-red-600/30 flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              >
+                <Send className="w-4 h-4" />
+                <span>Dispatch NDRF Boat to {activeFeed.camera_id}</span>
+              </button>
+            )}
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  );
+};

@@ -1,0 +1,147 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<title>CivicTwin AI - Live Urban Digital Twin Real-Time Dataset Report</title>
+<style>
+    body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 11pt; color: #1e293b; line-height: 1.6; padding: 20px; }
+    h1 { font-size: 20pt; color: #0f172a; border-bottom: 2px solid #0284c7; padding-bottom: 6px; margin-top: 24px; }
+    h2 { font-size: 14pt; color: #0369a1; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 20px; }
+    h3 { font-size: 12pt; color: #334155; margin-top: 14px; }
+    table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 10pt; }
+    th { background-color: #f1f5f9; color: #0f172a; font-weight: bold; border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+    td { border: 1px solid #e2e8f0; padding: 7px 10px; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+    code { font-family: 'Consolas', 'Courier New', monospace; background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: #0f766e; }
+    pre { background-color: #0f172a; color: #f8fafc; padding: 12px; border-radius: 6px; font-family: 'Consolas', monospace; font-size: 9.5pt; }
+    blockquote { border-left: 4px solid #0284c7; padding-left: 12px; color: #475569; font-style: italic; margin: 12px 0; }
+</style>
+</head>
+<body>
+<h1>🏙️ CIVICTWIN AI – LIVE URBAN DIGITAL TWIN REAL-TIME DATASET REPORT</h1>
+<p><strong>National Disaster Management Authority (NDMA) & State Disaster Operations Center</strong></p>
+<p><strong>Generated At:</strong> 2026-08-22 09:40:00 IST  </p>
+<p><strong>Active Scenario:</strong> Mumbai Urban Flooding & Mithi River Basin (MH) (<code>mumbai_monsoon</code>)  </p>
+<p><strong>Geospatial Bounding Box:</strong> Lat 18.990° N – 19.110° N | Lng 72.800° E – 72.900° E  </p>
+<p><strong>Simulation Timeline:</strong> T+0.0 Hours (Baseline Live Monitor)  </p>
+<p><strong>Overall Threat Level:</strong> MONITOR / ELEVATED  </p>
+<p>---</p>
+<h2>1. 🌦️ ATMOSPHERIC, WEATHER & SATELLITE RADAR TELEMETRY</h2>
+<table>
+<tr><th>Parameter</th><th>Current Live Reading</th><th>Threshold / Normal Range</th><th>Status</th><th>Data Source</th></tr>
+<tr><td>**Precipitation Rate**</td><td>**34.5 mm/hr**</td><td>Normal: <15 mm/hr, Warning: >35 mm/hr, Heavy: >65 mm/hr</td><td>`WARNING`</td><td>IMD Colaba / Open-Meteo Satellite Mesh</td></tr>
+<tr><td>**Coastal / River Surge**</td><td>**0.65 meters**</td><td>Normal: 0.0m, High Tide Warning: >0.8m, Surge: >1.5m</td><td>`MONITOR`</td><td>Central Water Commission (CWC) Mahim Gauge</td></tr>
+<tr><td>**Atmospheric Wind Speed**</td><td>**28.0 km/h (Gale gusts 42 km/h)**</td><td>Gale Warning: >60 km/h, Cyclone: >90 km/h</td><td>`NORMAL`</td><td>IMD Doppler Weather Radar</td></tr>
+<tr><td>**Wind Direction**</td><td>**220° (South-West Monsoon Vector)**</td><td>-</td><td>Active Monsoon</td><td>Anemometer Sensor Array</td></tr>
+<tr><td>**Mithi River Floodgates**</td><td>**SECURE (High Tide Retention Active)**</td><td>Retaining Wall Crest: 5.5m</td><td>`OPERATIONAL`</td><td>BMC Stormwater Dept SCADA</td></tr>
+<tr><td>**Primary Power Grid**</td><td>**220kV Bus Operational (Tata Power Dharavi)**</td><td>Total Load: 310 MW / 350 MW</td><td>`OPERATIONAL`</td><td>State Load Dispatch Center (SLDC)</td></tr>
+<tr><td>**Satellite Radar Backscatter**</td><td>**-14.8 dB**</td><td>Inundation Threshold: -17.5 dB</td><td>`CLEAR`</td><td>Copernicus Sentinel-1C SAR Radar</td></tr>
+</table>
+<p>---</p>
+<h2>2. 📡 REAL-TIME IoT SENSOR GRID TELEMETRY (LIVE CHANNELS)</h2>
+<table>
+<tr><th>Sensor ID</th><th>Sensor Name</th><th>Sensor Category</th><th>Current Value</th><th>Warning Level</th><th>Critical Alarm</th><th>Status</th><th>Trend</th></tr>
+<tr><td>`sensor-mithi-1`</td><td>**IMD/CWC Mithi River Level Gauge #04 (Kurla Bridge)**</td><td>Water Level Gauge</td><td>**18.5 cm**</td><td>45.0 cm</td><td>80.0 cm</td><td>`OPERATIONAL`</td><td>RISING</td></tr>
+<tr><td>`sensor-hindmata-1`</td><td>**BMC Hindmata Subway Inundation Sensor**</td><td>Water Level Gauge</td><td>**24.0 cm**</td><td>50.0 cm</td><td>90.0 cm</td><td>`OPERATIONAL`</td><td>RISING</td></tr>
+<tr><td>`sensor-mumbai-drain-1`</td><td>**Mahim Outfall Stormwater Discharge Flowmeter**</td><td>Storm Drain Flow</td><td>**38.5 %**</td><td>70.0 %</td><td>90.0 %</td><td>`OPERATIONAL`</td><td>RISING</td></tr>
+<tr><td>`sensor-soil-1`</td><td>**Antop Hill / Sion Slope Saturation Meter**</td><td>Soil Moisture</td><td>**51.2 %**</td><td>78.0 %</td><td>95.0 %</td><td>`OPERATIONAL`</td><td>RISING</td></tr>
+<tr><td>`sensor-imd-radar`</td><td>**IMD Colaba/Santacruz Doppler Weather Station**</td><td>Wind & Weather</td><td>**34.0 km/h**</td><td>65.0 km/h</td><td>95.0 km/h</td><td>`OPERATIONAL`</td><td>STABLE</td></tr>
+</table>
+<p>---</p>
+<h2>3. 🏥 CRITICAL INFRASTRUCTURE, HOSPITALS & EMERGENCY SHELTERS</h2>
+<table>
+<tr><th>Node ID</th><th>Facility Name</th><th>Facility Type</th><th>Elevation</th><th>Flood Depth</th><th>Vulnerability</th><th>Operational Status</th><th>Backup Generator</th><th>Capacity / Pop</th></tr>
+<tr><td>`node-hosp-1`</td><td>**KEM Hospital & Seth GS Medical (Parel)**</td><td>Apex Level-1 Trauma</td><td>11.5m</td><td>**0.00m**</td><td>35%</td><td>`OPERATIONAL`</td><td>Grid Online (48h Fuel Reserve)</td><td>1,450 / 1,800 Beds</td></tr>
+<tr><td>`node-hosp-2`</td><td>**Lokmanya Tilak Municipal General Hospital (Sion)**</td><td>Municipal Level-2 Trauma</td><td>3.1m</td><td>**0.05m**</td><td>88%</td><td>`OPERATIONAL`</td><td>Grid Online (18h Fuel Reserve)</td><td>1,200 / 1,400 Beds</td></tr>
+<tr><td>`node-shelter-1`</td><td>**BKC MMRDA Grounds Disaster Relief Center**</td><td>Primary Shelter</td><td>14.0m</td><td>**0.00m**</td><td>18%</td><td>`OPERATIONAL`</td><td>Grid Online (72h Fuel Reserve)</td><td>850 / 6,000 Capacity</td></tr>
+<tr><td>`node-shelter-2`</td><td>**Bandra YMCA High-Ground Complex**</td><td>Secondary Shelter</td><td>16.5m</td><td>**0.00m**</td><td>15%</td><td>`OPERATIONAL`</td><td>Grid Online (60h Fuel Reserve)</td><td>600 / 3,500 Capacity</td></tr>
+<tr><td>`node-shelter-3`</td><td>**Kurla Municipal School & Relief Shelter**</td><td>Lowland Shelter</td><td>2.8m</td><td>**0.08m**</td><td>92%</td><td>`OPERATIONAL`</td><td>Grid Online (12h Fuel Reserve)</td><td>300 / 1,200 Capacity</td></tr>
+<tr><td>`node-sub-alpha`</td><td>**Tata Power Dharavi 220kV Receiving Station**</td><td>Power Substation</td><td>3.5m</td><td>**0.06m**</td><td>85%</td><td>`OPERATIONAL`</td><td>310 MW / 350 MW Load</td><td>Feeds Hosp-2, Kurla, Pumps</td></tr>
+<tr><td>`node-sub-beta`</td><td>**MSETCL Bandra Heights Substation**</td><td>Power Substation</td><td>18.0m</td><td>**0.00m**</td><td>20%</td><td>`OPERATIONAL`</td><td>320 MW / 400 MW Load</td><td>Feeds KEM, BKC, YMCA</td></tr>
+<tr><td>`node-water-1`</td><td>**Love Grove Worli Stormwater Pumping Station**</td><td>Stormwater Plant</td><td>2.9m</td><td>**0.05m**</td><td>75%</td><td>`OPERATIONAL`</td><td>8x 12-inch Diesel Pumps Ready</td><td>45 cumecs discharge</td></tr>
+<tr><td>`node-bridge-1`</td><td>**Bandra-Worli Sea Link Arterial Bridge**</td><td>Arterial Bridge</td><td>8.5m</td><td>**0.00m**</td><td>55%</td><td>`OPERATIONAL`</td><td>High-Wind Monitoring Active</td><td>6 Lanes / 45,000 vpd</td></tr>
+<tr><td>`node-bridge-2`</td><td>**Mithi River Bridge & CST Road Flyover**</td><td>River Bridge</td><td>3.8m</td><td>**0.06m**</td><td>82%</td><td>`OPERATIONAL`</td><td>Structural Strain Normal</td><td>4 Lanes / 28,000 vpd</td></tr>
+<tr><td>`node-levee-1`</td><td>**Mithi River Mahim Creek Floodgates & Basin**</td><td>Dam / Floodgate</td><td>4.2m</td><td>**0.05m**</td><td>88%</td><td>`OPERATIONAL`</td><td>High-Tide Sluice Lock Active</td><td>Retention Crest: 5.5m</td></tr>
+<tr><td>`node-fire-1`</td><td>**NDRF 5th Battalion Swift Water Base (Andheri)**</td><td>NDRF Base</td><td>12.0m</td><td>**0.00m**</td><td>20%</td><td>`OPERATIONAL`</td><td>12 Inflatable Rafts, 6 Tatras</td><td>Staging for Kurla-Mithi</td></tr>
+<tr><td>`node-fire-2`</td><td>**Mumbai Fire Brigade Command & 108 EMS Hub**</td><td>Fire & EMS Base</td><td>9.0m</td><td>**0.00m**</td><td>30%</td><td>`OPERATIONAL`</td><td>18 Dewatering Pumps, 15 ALS</td><td>Citywide Staging</td></tr>
+<tr><td>`node-res-1`</td><td>**Kurla West & Kranti Nagar Riverfront**</td><td>Residential Ward</td><td>2.4m</td><td>**0.12m**</td><td>96%</td><td>`WARNING`</td><td>Slum Dense Floodplain</td><td>12,500 Citizens</td></tr>
+<tr><td>`node-res-2`</td><td>**Hindmata & Dadar TT Lowland Ward**</td><td>Residential Ward</td><td>2.2m</td><td>**0.14m**</td><td>94%</td><td>`WARNING`</td><td>Subway Water Logging Prone</td><td>8,900 Citizens</td></tr>
+<tr><td>`node-res-3`</td><td>**Pali Hill & Bandra West Heights**</td><td>Residential Ward</td><td>18.5m</td><td>**0.00m**</td><td>12%</td><td>`OPERATIONAL`</td><td>High-Ground Safe Zone</td><td>5,400 Citizens</td></tr>
+<tr><td>`node-res-4`</td><td>**Bandra Kurla Complex (BKC Financial Core)**</td><td>Commercial Hub</td><td>8.0m</td><td>**0.00m**</td><td>50%</td><td>`OPERATIONAL`</td><td>Underground Drainage Active</td><td>14,000 Occupants</td></tr>
+<tr><td>`node-school-1`</td><td>**St. Michael High School Mahim**</td><td>School & Evac</td><td>3.6m</td><td>**0.04m**</td><td>85%</td><td>`OPERATIONAL`</td><td>8 School Buses on Standby</td><td>1,250 Students</td></tr>
+</table>
+<p>---</p>
+<h2>4. 🛣️ ROAD NETWORK & ARTERIAL TRAFFIC CORRIDORS</h2>
+<table>
+<tr><th>Road ID</th><th>Corridor Name</th><th>From $\rightarrow$ To</th><th>Length</th><th>Elevation</th><th>Flood Depth</th><th>Current Speed</th><th>Segment Status</th><th>Evacuation Corridor?</th></tr>
+<tr><td>`road-1`</td><td>**LBS Marg & Mithi Causeway**</td><td>Kurla $\rightarrow$ Dharavi</td><td>2.4 km</td><td>2.6m</td><td>**0.12m**</td><td>35 km/h</td><td>`CONGESTED`</td><td>Secondary Road</td></tr>
+<tr><td>`road-2`</td><td>**Dr. Ambedkar Road (Sion-Dadar Link)**</td><td>Hindmata $\rightarrow$ Sion</td><td>2.8 km</td><td>2.4m</td><td>**0.14m**</td><td>32 km/h</td><td>`CONGESTED`</td><td>Secondary Road</td></tr>
+<tr><td>`road-3`</td><td>**Dharavi-BKC Connector Flyover**</td><td>Dharavi $\rightarrow$ BKC</td><td>2.1 km</td><td>7.5m</td><td>**0.00m**</td><td>60 km/h</td><td>`CLEAR`</td><td>✅ GREEN EVAC CORRIDOR</td></tr>
+<tr><td>`road-4`</td><td>**Western Express Highway (WEH South)**</td><td>BKC $\rightarrow$ KEM Hospital</td><td>5.8 km</td><td>9.0m</td><td>**0.00m**</td><td>65 km/h</td><td>`CLEAR`</td><td>✅ GREEN EVAC CORRIDOR</td></tr>
+<tr><td>`road-5`</td><td>**BKC Avenue & MMRDA Relief Corridor**</td><td>BKC $\rightarrow$ BKC Shelter</td><td>0.6 km</td><td>12.0m</td><td>**0.00m**</td><td>50 km/h</td><td>`CLEAR`</td><td>✅ GREEN EVAC CORRIDOR</td></tr>
+<tr><td>`road-6`</td><td>**Sion-Bandra Sea Link Access**</td><td>Sion $\rightarrow$ Sea Link</td><td>3.6 km</td><td>4.5m</td><td>**0.02m**</td><td>55 km/h</td><td>`CLEAR`</td><td>Secondary Road</td></tr>
+<tr><td>`road-7`</td><td>**Kurla-Mahim Link Road**</td><td>Kurla $\rightarrow$ Mahim School</td><td>3.2 km</td><td>2.9m</td><td>**0.08m**</td><td>38 km/h</td><td>`CLEAR`</td><td>Secondary Road</td></tr>
+<tr><td>`road-8`</td><td>**Mahim Causeway Arterial**</td><td>Mahim $\rightarrow$ Hindmata</td><td>2.2 km</td><td>2.5m</td><td>**0.09m**</td><td>40 km/h</td><td>`CLEAR`</td><td>Secondary Road</td></tr>
+<tr><td>`road-9`</td><td>**Bandra Hill Road & S.V. Road Link**</td><td>KEM $\rightarrow$ Bandra West</td><td>6.4 km</td><td>15.0m</td><td>**0.00m**</td><td>50 km/h</td><td>`CLEAR`</td><td>✅ GREEN EVAC CORRIDOR</td></tr>
+<tr><td>`road-10`</td><td>**Pali Naka to YMCA Relief Way**</td><td>Bandra $\rightarrow$ YMCA Shelter</td><td>0.8 km</td><td>16.5m</td><td>**0.00m**</td><td>40 km/h</td><td>`CLEAR`</td><td>✅ GREEN EVAC CORRIDOR</td></tr>
+<tr><td>`road-11`</td><td>**CST Road NDRF Rapid Dispatch Way**</td><td>NDRF Base $\rightarrow$ BKC</td><td>3.1 km</td><td>10.0m</td><td>**0.00m**</td><td>55 km/h</td><td>`CLEAR`</td><td>Primary Tactical Route</td></tr>
+<tr><td>`road-12`</td><td>**Bandra Reclamation Highway**</td><td>Sea Link $\rightarrow$ YMCA</td><td>3.8 km</td><td>12.0m</td><td>**0.00m**</td><td>65 km/h</td><td>`CLEAR`</td><td>✅ GREEN EVAC CORRIDOR</td></tr>
+</table>
+<p>---</p>
+<h2>5. 🧭 AI DYNAMIC EVACUATION CORRIDORS & SAFE ROUTES</h2>
+<table>
+<tr><th>Population Sector Origin</th><th>Target High-Ground Shelter</th><th>Distance</th><th>Travel Time</th><th>Safety Score</th><th>Corridor Status</th><th>Assigned Evacuees</th></tr>
+<tr><td>**Kurla West & Kranti Nagar**</td><td>**BKC MMRDA Grounds Shelter**</td><td>5.1 km</td><td>**11.4 min**</td><td>92%</td><td>`OPTIMAL`</td><td>12,500 citizens</td></tr>
+<tr><td>**Hindmata & Dadar TT Ward**</td><td>**BKC MMRDA Grounds Shelter**</td><td>6.2 km</td><td>**14.2 min**</td><td>88%</td><td>`OPTIMAL`</td><td>8,900 citizens</td></tr>
+<tr><td>**Pali Hill & Bandra West**</td><td>**Bandra YMCA Relief Complex**</td><td>0.8 km</td><td>**1.6 min**</td><td>100%</td><td>`OPTIMAL`</td><td>5,400 citizens</td></tr>
+<tr><td>**St. Michael High School**</td><td>**BKC MMRDA Grounds Shelter**</td><td>4.8 km</td><td>**10.5 min**</td><td>90%</td><td>`OPTIMAL`</td><td>1,250 students</td></tr>
+</table>
+<p>---</p>
+<h2>6. 🚨 FEMA / NDMA INCIDENT ACTION PLAN (ICS-201/202)</h2>
+<p>- <strong>Incident Name:</strong> Operation Resilient Mumbai - Monsoon Flooding Response</p>
+<p>- <strong>Operational Period:</strong> T+00:00 to T+04.0h (Monsoon High Tide Window)</p>
+<p>- <strong>Incident Commander:</strong> NDMA Senior Operations Chief & Municipal Commissioner</p>
+<h3>Executive Situation Report (SITREP):</h3>
+<blockquote>Digital Twin telemetry indicates elevated monsoon activity. IMD radar indicates 34.5 mm/hr precipitation over Mithi catchment. Water levels at Kurla Bridge gauge are at 18.5 cm (rising). All primary green evacuation corridors along Western Express Highway and BKC are fully operational. NDRF 5th Battalion boat teams and BMC heavy dewatering pump units are pre-positioned at staging areas.</blockquote>
+<h3>Strategic Operational Objectives:</h3>
+<p>1. Establish life safety priority corridors along Western Express Highway and BKC Relief Way for 28,000+ residents in low-elevation wards.</p>
+<p>2. Maintain auxiliary power and water diversion for KEM Hospital and Sion Municipal Hospital trauma units.</p>
+<p>3. Deploy tactical dewatering pump units (BMC Pump P-09) to protect Tata Power Dharavi Substation and Hindmata subway underpass.</p>
+<p>4. Coordinate Mumbai Traffic Police control at low-lying subway intersections.</p>
+<h3>Multi-Agency Operational Tasking:</h3>
+<p>- <strong>NDRF 5th Battalion</strong>: Pre-position swift-water inflatable rafts near Kranti Nagar & Kurla West riverbank.</p>
+<p>- <strong>108 Emergency Medical Services (EMS)</strong>: Keep 15 Advanced Life Support (ALS) ambulances on standby at KEM Hospital Parel.</p>
+<p>- <strong>BMC Stormwater & Public Works</strong>: Operate 8x diesel pumps at Love Grove Worli pumping station. Clear storm drain grates along LBS Marg.</p>
+<p>- <strong>Mumbai Traffic Police</strong>: Enforce green corridor priority for ambulances and evacuation buses on Western Express Highway.</p>
+<p>- <strong>Red Cross & Civil Defense</strong>: Stock 25,000 emergency ration kits and potable water at BKC MMRDA and Bandra YMCA shelters.</p>
+<p>---</p>
+<h2>7. 🚒 ACTIVE EMERGENCY RESPONSE UNITS & DISPATCH STATUS</h2>
+<table>
+<tr><th>Unit Callsign</th><th>Unit Type</th><th>Agency</th><th>Status</th><th>Current Location</th><th>Assigned Mission</th></tr>
+<tr><td>**NDRF Boat Team Bravo-5**</td><td>Swift Water Rescue</td><td>NDRF 5th Battalion</td><td>`STANDBY`</td><td>Lat: 19.0750, Lng: 72.8350 (Andheri Base)</td><td>Staged for Kurla-Mithi River deployment</td></tr>
+<tr><td>**BMC Heavy Pump P-09**</td><td>Dewatering Pump Truck</td><td>BMC Stormwater Dept</td><td>`STANDBY`</td><td>Lat: 19.0200, Lng: 72.8350 (Byculla Hub)</td><td>Ready for Tata Power Dharavi & Hindmata flood defense</td></tr>
+<tr><td>**108 ALS Ambulance 14**</td><td>Advanced Life Support</td><td>108 Emergency Medical</td><td>`STANDBY`</td><td>Lat: 19.0020, Lng: 72.8420 (KEM Hospital)</td><td>Staged for trauma transfer & triage</td></tr>
+<tr><td>**Traffic Intercept 4**</td><td>Traffic Control Escort</td><td>Mumbai Traffic Police</td><td>`STANDBY`</td><td>Lat: 19.0620, Lng: 72.8650 (BKC Junction)</td><td>Enforcing green corridor priority</td></tr>
+</table>
+<p>---</p>
+<h2>8. 📲 MULTI-LINGUAL EMERGENCY ALERTS & REAL SMS (CAP PROTOCOL)</h2>
+<h3>हिंदी (Hindi):</h3>
+<pre>🚨 राष्ट्रीय आपदा प्रबंधन प्राधिकरण (NDMA) / SDMA आपातकालीन चेतावनी
+मुंबई में भारी मानसूनी वर्षा और मीठी नदी के जलस्तर में वृद्धि के कारण बाढ़ का अलर्ट जारी किया गया है।
+कृपया निचले इलाकों और सबवे से तुरंत दूर रहें। प्रशासन द्वारा निर्धारित सुरक्षित निकासी मार्गों से निकटतम राहत शिविरों (BKC / YMCA) में जाएं।
+हेल्पलाइन: 1070 / 112 | CivicTwin AI Incident Command
+</pre>
+<h3>मराठी (Marathi):</h3>
+<pre>🚨 महाराष्ट्र राज्य आपत्ती व्यवस्थापन (SDMA) / BMC आणीबाणी इशारा
+मुंबईत मुसळधार पाऊस व मिठी नदीची पाणी पातळी वाढल्याने पूर स्थिती निर्माण झाली आहे.
+हिंदमाता, कुर्ला व सखल भागातील नागरिकांनी त्वरित सुरक्षित स्थळी (BKC MMRDA) स्थलांतर करावे.
+आपत्कालीन मदत कक्ष: 1070 / 1916 | CivicTwin AI
+</pre>
+<h3>English (NDMA Standard CAP Broadcast):</h3>
+<pre>🚨 CIVIC EMERGENCY ALERT: MUMBAI DISASTER MANAGEMENT
+Severe weather and monsoon flood warning in effect. Rainfall rate is 34.5 mm/hr.
+Proceed via designated green evacuation corridors (WEH / BKC) to active relief shelters. Avoid low-lying subways.
+Emergency Helpline: 1070 / 112
+</pre>
+<p>---</p>
+<p>*Report generated and validated by <strong>CivicTwin AI Digital Twin Engine</strong> (FastAPI + NetworkX + Hydrology Physics + WebSocket Stream).*</p>
+</body></html>
