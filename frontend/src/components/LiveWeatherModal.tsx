@@ -234,6 +234,66 @@ export const LiveWeatherModal: React.FC<LiveWeatherModalProps> = ({
 
           </div>
 
+          {/* IMD 7-Day Extended Forecast Horizon & Astronomical Surge Matrix */}
+          {weatherData?.imd_data && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider flex items-center space-x-1.5">
+                  <CloudRain className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>IMD 7-Day Disaster Forecast Horizon (Station ID: {weatherData.imd_data.station_id})</span>
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-700">
+                  IMD National Weather Service Synced
+                </span>
+              </div>
+
+              {/* 7-Day Forecast Horizon Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                {weatherData.imd_data.weather.forecast.map((day: any, idx: number) => (
+                  <div 
+                    key={idx}
+                    className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col justify-between space-y-1.5 hover:border-cyan-500/50 transition-all"
+                  >
+                    <div className="text-[10px] font-mono text-cyan-400 font-bold">
+                      {day.date.slice(0, 6)}
+                    </div>
+                    <div className="text-sm">
+                      {idx < 2 ? '⛈️' : idx < 5 ? '🌧️' : '🌦️'}
+                    </div>
+                    <div className="text-[11px] font-mono font-bold text-white">
+                      {day.max_temp}° <span className="text-slate-400 font-normal">{day.min_temp}°</span>
+                    </div>
+                    <div className="text-[9px] font-mono text-emerald-400">
+                      💧 {day.chance_of_rain_pct}% rain
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Astronomical High-Tide & Moonrise / Moonset Card */}
+              {weatherData.imd_data.weather.astronomical && (
+                <div className="p-3.5 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                  <div>
+                    <span className="text-slate-400 text-[10px] block">🌅 Sunrise:</span>
+                    <span className="text-amber-300 font-bold">{weatherData.imd_data.weather.astronomical.sunrise} IST</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 text-[10px] block">🌇 Sunset:</span>
+                    <span className="text-orange-400 font-bold">{weatherData.imd_data.weather.astronomical.sunset} IST</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 text-[10px] block">🌙 Moonrise:</span>
+                    <span className="text-cyan-300 font-bold">{weatherData.imd_data.weather.astronomical.moonrise} IST</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 text-[10px] block">🌊 Tidal Risk Status:</span>
+                    <span className="text-rose-400 font-bold text-[10px] truncate block">{weatherData.imd_data.weather.astronomical.tidal_surge_risk}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Action Deploy Bar */}
           <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-950 via-blue-950/50 to-slate-950 border border-cyan-500/40 space-y-4 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
