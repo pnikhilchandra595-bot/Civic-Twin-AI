@@ -32,6 +32,7 @@ interface HeaderProps {
   onOpenMesh: () => void;
   onOpenAICopilot: () => void;
   onOpenMultiHazard: () => void;
+  onOpenDistrictAtlas?: () => void;
   onSyncLiveWeather: () => void;
   isSyncingWeather: boolean;
   onSwitchCity: (cityId: string) => void;
@@ -61,6 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMesh,
   onOpenAICopilot,
   onOpenMultiHazard,
+  onOpenDistrictAtlas,
   onSyncLiveWeather,
   isSyncingWeather,
   onSwitchCity,
@@ -183,6 +185,18 @@ export const Header: React.FC<HeaderProps> = ({
                 <Lock className="w-3 h-3" />
                 <span>{authUser?.assignedState} Only</span>
               </span>
+            )}
+
+            {/* 780+ Districts Atlas Button */}
+            {onOpenDistrictAtlas && (
+              <button
+                onClick={onOpenDistrictAtlas}
+                className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-600/30 via-cyan-600/30 to-emerald-600/30 hover:from-orange-600/50 hover:to-emerald-600/50 border border-cyan-500/50 text-cyan-200 text-xs font-mono font-bold flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
+                title="Browse & search all 780+ Indian Districts across 36 States & UTs"
+              >
+                <Globe className="w-3.5 h-3.5 text-orange-400" />
+                <span className="hidden sm:inline">🇮🇳 780+ Districts Atlas</span>
+              </button>
             )}
           </div>
 

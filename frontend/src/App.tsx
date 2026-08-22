@@ -35,6 +35,7 @@ import { PublicScrollingPortal } from './components/PublicScrollingPortal';
 import { WhatsAppSimulatorModal } from './components/WhatsAppSimulatorModal';
 import { PublicGPSLocationSOSModal } from './components/PublicGPSLocationSOSModal';
 import { MobileHeadAppModal } from './components/MobileHeadAppModal';
+import { DistrictSelectionModal } from './components/DistrictSelectionModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon 
@@ -80,6 +81,7 @@ export const App: React.FC = () => {
   const [isAICopilotOpen, setIsAICopilotOpen] = useState<boolean>(false);
   const [isLiveWeatherOpen, setIsLiveWeatherOpen] = useState<boolean>(false);
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState<boolean>(false);
+  const [isDistrictAtlasOpen, setIsDistrictAtlasOpen] = useState<boolean>(false);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
@@ -374,6 +376,7 @@ export const App: React.FC = () => {
         onOpenMesh={() => setIsMeshOpen(true)}
         onOpenAICopilot={() => setIsAICopilotOpen(true)}
         onOpenMultiHazard={() => setIsMultiHazardOpen(true)}
+        onOpenDistrictAtlas={() => setIsDistrictAtlasOpen(true)}
         onSyncLiveWeather={() => setIsLiveWeatherOpen(true)}
         isSyncingWeather={isSyncingWeather}
         onSwitchCity={handleSwitchCity}
@@ -828,6 +831,15 @@ export const App: React.FC = () => {
         <WhatsAppSimulatorModal
           cityName={state?.city_name || 'Mumbai'}
           onClose={() => setIsWhatsAppOpen(false)}
+        />
+      )}
+
+      {/* Pan-India 780+ Districts Atlas & Micro-Catchment Ingestion Modal */}
+      {isDistrictAtlasOpen && (
+        <DistrictSelectionModal
+          currentCityName={state?.city_name}
+          onSelectDistrict={(districtName, lat, lng) => handleResolveLocation(districtName, lat, lng)}
+          onClose={() => setIsDistrictAtlasOpen(false)}
         />
       )}
     </div>
