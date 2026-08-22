@@ -161,12 +161,31 @@ class DigitalTwinStateManager:
         return self.state
 
     def _handle_dispatch_command(self, cmd_data: dict):
-        unit_id = cmd_data.get("unit_id")
+        unit_id = (cmd_data.get("unit_id") or "").lower()
         target_node_id = cmd_data.get("target_node_id")
         mission = cmd_data.get("mission", "Deploying to critical zone")
 
         target_node = next((n for n in self.state.nodes if n.id == target_node_id), None)
-        unit = next((u for u in self.state.dispatch_units if u.id == unit_id), None)
+        
+        # 1. Exact match
+        unit = next((u for u in self.state.dispatch_units if getattr(u, 'unit_id', getattr(u, 'id', '')).lower() == unit_id), None)
+        
+        # 2. Type/alias match
+        if not unit:
+            if "amb" in unit_id or "ems" in unit_id:
+                unit = next((u for u in self.state.dispatch_units if "ems" in u.unit_id or "amb" in u.unit_id or "ambulance" in u.unit_type.lower()), None)
+            elif "raft" in unit_id or "ndrf" in unit_id or "boat" in unit_id:
+                unit = next((u for u in self.state.dispatch_units if "ndrf" in u.unit_id or "raft" in u.unit_id or "rescue" in u.unit_type.lower()), None)
+            elif "fire" in unit_id:
+                unit = next((u for u in self.state.dispatch_units if "fire" in u.unit_id or "fire" in u.unit_type.lower()), None)
+            elif "pump" in unit_id:
+                unit = next((u for u in self.state.dispatch_units if "pump" in u.unit_id or "pump" in u.unit_type.lower()), None)
+            elif "police" in unit_id:
+                unit = next((u for u in self.state.dispatch_units if "police" in u.unit_id or "traffic" in u.unit_type.lower()), None)
+
+        # 3. Fallback
+        if not unit and self.state.dispatch_units:
+            unit = self.state.dispatch_units[0]
 
         if unit and target_node:
             unit.target_node_id = target_node.id
@@ -180,7 +199,7 @@ class DigitalTwinStateManager:
                 [(unit.lng + target_node.lng) / 2.0, (unit.lat + target_node.lat) / 2.0],
                 [target_node.lng, target_node.lat]
             ]
-            unit.eta_min = 12.0
+            unit.eta_min = 8.5
 
             alert_hub.add_radio_message(
                 channel=f"TAC-{unit.agency}",

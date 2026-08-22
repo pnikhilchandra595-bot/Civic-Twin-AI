@@ -36,6 +36,13 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
     }
   };
 
+  const [selectedUnitType, setSelectedUnitType] = useState<string>(() => {
+    if (!node) return 'unit-pump-1';
+    if (node.node_type === 'hospital') return 'unit-amb-1';
+    if (node.node_type === 'substation') return 'unit-fire-1';
+    if (node.node_type === 'dam_levee' || node.status === 'submerged' || node.status === 'critical') return 'unit-raft-1';
+    return 'unit-pump-1';
+  });
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploySuccess, setDeploySuccess] = useState(false);
 
@@ -43,13 +50,13 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
     if (!node) return;
     setIsDeploying(true);
     try {
-      await apiService.dispatchUnit('unit-pump-1', node.id, `Tactical Protection for ${node.name}`);
+      await apiService.dispatchUnit(selectedUnitType, node.id, `Emergency Tactical Response for ${node.name}`);
       setDeploySuccess(true);
       setTimeout(() => {
         setDeploySuccess(false);
         setIsDeploying(false);
         onClose();
-      }, 1200);
+      }, 1400);
     } catch (e) {
       console.error('Deploy error:', e);
       setIsDeploying(false);
@@ -180,19 +187,47 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
 
       {/* Action Footer */}
       {isNode && (
-        <div className="pt-4 border-t border-slate-800 space-y-2">
+        <div className="pt-4 border-t border-slate-800 space-y-3">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-mono text-slate-400 font-bold uppercase flex items-center justify-between">
+              <span>Select Tactical Strike Asset:</span>
+              <span className="text-cyan-400 font-mono text-[10px]">Instant 108 / NDRF Link</span>
+            </label>
+            <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
+              {[
+                { id: 'unit-amb-1', label: '🚑 108 Ambulance' },
+                { id: 'unit-raft-1', label: '🚤 NDRF Gemini Raft' },
+                { id: 'unit-fire-1', label: '🚒 Heavy Fire Tender' },
+                { id: 'unit-pump-1', label: '🚛 Dewatering Pump' },
+              ].map(u => (
+                <button
+                  key={u.id}
+                  onClick={() => setSelectedUnitType(u.id)}
+                  type="button"
+                  className={`p-2 rounded-xl text-left text-[11px] font-bold border transition-all cursor-pointer ${
+                    selectedUnitType === u.id
+                      ? 'bg-cyan-950 border-cyan-400 text-cyan-200 shadow-[0_0_15px_rgba(0,210,255,0.2)]'
+                      : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-white'
+                  }`}
+                >
+                  {u.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <button
             onClick={handleDeployAction}
             disabled={isDeploying || deploySuccess}
-            className={`w-full py-2.5 rounded-xl text-white text-xs font-mono font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+            className={`w-full py-3 rounded-xl text-white text-xs font-mono font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
               deploySuccess
-                ? 'bg-emerald-600 shadow-[0_0_20px_rgba(16,185,129,0.4)]'
+                ? 'bg-emerald-600 shadow-[0_0_25px_rgba(16,185,129,0.5)]'
                 : isDeploying
                 ? 'bg-cyan-700 animate-pulse'
-                : 'bg-cyan-600 hover:bg-cyan-500 shadow-[0_0_15px_rgba(0,210,255,0.25)]'
+                : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-[0_0_20px_rgba(0,210,255,0.3)]'
             }`}
           >
-            <Send className="w-3.5 h-3.5" />
+            <Send className="w-4 h-4" />
             <span>
               {deploySuccess
                 ? '✅ DISPATCHED & PUSHED TO HEAD MOBILE APP!'
