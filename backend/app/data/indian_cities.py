@@ -209,6 +209,96 @@ def get_available_indian_cities():
             "lat": 15.500,
             "lng": 73.830,
             "ndrf_unit": "NDRF 5th Battalion Marine Team"
+        },
+        {
+            "id": "sikkim_teesta",
+            "name": "Sikkim: Teesta River Basin & Glacial Lake GLOF Surge",
+            "region": "North-East India",
+            "state": "Sikkim",
+            "hazard_profile": "South Lhonak Glacial Lake Outburst (GLOF) & Teesta Gorge Flash Surge",
+            "lat": 27.330,
+            "lng": 88.610,
+            "ndrf_unit": "NDRF 2nd Battalion Mountain Wing"
+        },
+        {
+            "id": "tripura_howrah",
+            "name": "Tripura: Agartala & Howrah River Inundation",
+            "region": "North-East India",
+            "state": "Tripura",
+            "hazard_profile": "Howrah River Flash Flood & International Border Lowland Inflow",
+            "lat": 23.830,
+            "lng": 91.280,
+            "ndrf_unit": "NDRF 1st Battalion Staging"
+        },
+        {
+            "id": "meghalaya_cherrapunji",
+            "name": "Meghalaya: Cherrapunji & Shillong Torrential Cloudburst",
+            "region": "North-East India",
+            "state": "Meghalaya",
+            "hazard_profile": "Record High Precipitation Velocity & Khasi Hills Flash Inundation",
+            "lat": 25.270,
+            "lng": 91.730,
+            "ndrf_unit": "NDRF 1st Battalion Hill Rescue"
+        },
+        {
+            "id": "manipur_imphal",
+            "name": "Manipur: Imphal River & Loktak Lake Spillway",
+            "region": "North-East India",
+            "state": "Manipur",
+            "hazard_profile": "Nambul & Imphal River Embankment Breach & Loktak Basin Surge",
+            "lat": 24.810,
+            "lng": 93.930,
+            "ndrf_unit": "NDRF 1st Battalion Rapid Team"
+        },
+        {
+            "id": "jharkhand_subarnarekha",
+            "name": "Jharkhand: Ranchi & Subarnarekha River Dam Discharge",
+            "region": "East India",
+            "state": "Jharkhand",
+            "hazard_profile": "Getalsud Dam Maximum Sluice Release & Industrial Corridor Risk",
+            "lat": 23.340,
+            "lng": 85.300,
+            "ndrf_unit": "NDRF 9th Battalion (Ranchi)"
+        },
+        {
+            "id": "chhattisgarh_mahanadi",
+            "name": "Chhattisgarh: Raipur & Hasdeo Bango Dam Surge",
+            "region": "Central India",
+            "state": "Chhattisgarh",
+            "hazard_profile": "Hasdeo Bango Release & Mahanadi Upstream Catchment Swell",
+            "lat": 21.250,
+            "lng": 81.630,
+            "ndrf_unit": "NDRF 3rd Battalion Central Wing"
+        },
+        {
+            "id": "haryana_gurugram",
+            "name": "Haryana: Gurugram & Najafgarh Drain Choke Point",
+            "region": "North India",
+            "state": "Haryana",
+            "hazard_profile": "Hero Honda Chowk & Subhash Chowk Underpass Major Submergence",
+            "lat": 28.450,
+            "lng": 77.020,
+            "ndrf_unit": "NDRF 8th Battalion NCR Strike Team"
+        },
+        {
+            "id": "andaman_portblair",
+            "name": "Andaman & Nicobar: Port Blair Coastal Cyclone & Tsunami Risk",
+            "region": "Islands",
+            "state": "Andaman & Nicobar",
+            "hazard_profile": "Deep Bay of Bengal Cyclonic Depression & Island Coastal Inundation",
+            "lat": 11.620,
+            "lng": 92.720,
+            "ndrf_unit": "NDRF Island Marine Rescue Wing"
+        },
+        {
+            "id": "ladakh_indus",
+            "name": "Ladakh: Leh Indus River & Glacial Flash Flooding",
+            "region": "North India",
+            "state": "Ladakh",
+            "hazard_profile": "High-Altitude Glacial Stream Cloudburst & Valley Debris Torrent",
+            "lat": 34.150,
+            "lng": 77.570,
+            "ndrf_unit": "NDRF High-Altitude Disaster Response Base"
         }
     ]
 

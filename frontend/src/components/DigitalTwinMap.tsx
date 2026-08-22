@@ -242,6 +242,96 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       hazard: "Mandovi Estuary Tidal Surge", 
       ndrf: "NDRF 5th Bn Marine Team",
       color: "#10b981" 
+    },
+    { 
+      name: "Sikkim (Gangtok / Teesta Basin)", 
+      cityId: "sikkim_teesta", 
+      coords: [27.3389, 88.6065] as [number, number], 
+      threat: "CRITICAL", 
+      rainfall: "82 mm/h", 
+      hazard: "South Lhonak Glacial Lake GLOF Surge", 
+      ndrf: "NDRF 2nd Bn Mountain Wing",
+      color: "#ef4444" 
+    },
+    { 
+      name: "Tripura (Agartala / Howrah River)", 
+      cityId: "tripura_howrah", 
+      coords: [23.8315, 91.2868] as [number, number], 
+      threat: "ELEVATED", 
+      rainfall: "41 mm/h", 
+      hazard: "Howrah River Flash Flood Inundation", 
+      ndrf: "NDRF 1st Bn Staging",
+      color: "#f59e0b" 
+    },
+    { 
+      name: "Meghalaya (Cherrapunji / Shillong)", 
+      cityId: "meghalaya_cherrapunji", 
+      coords: [25.2702, 91.7323] as [number, number], 
+      threat: "CRITICAL", 
+      rainfall: "96 mm/h", 
+      hazard: "Record Precipitation Khasi Cloudburst", 
+      ndrf: "NDRF 1st Bn Hill Rescue",
+      color: "#ef4444" 
+    },
+    { 
+      name: "Manipur (Imphal / Loktak Lake)", 
+      cityId: "manipur_imphal", 
+      coords: [24.8170, 93.9368] as [number, number], 
+      threat: "ELEVATED", 
+      rainfall: "39 mm/h", 
+      hazard: "Imphal River Embankment Overflow", 
+      ndrf: "NDRF 1st Bn Rapid Team",
+      color: "#f59e0b" 
+    },
+    { 
+      name: "Jharkhand (Ranchi / Subarnarekha)", 
+      cityId: "jharkhand_subarnarekha", 
+      coords: [23.3441, 85.3096] as [number, number], 
+      threat: "MONITOR", 
+      rainfall: "26 mm/h", 
+      hazard: "Getalsud Dam Maximum Sluice Release", 
+      ndrf: "NDRF 9th Bn (Ranchi)",
+      color: "#10b981" 
+    },
+    { 
+      name: "Chhattisgarh (Raipur / Mahanadi)", 
+      cityId: "chhattisgarh_mahanadi", 
+      coords: [21.2514, 81.6296] as [number, number], 
+      threat: "MONITOR", 
+      rainfall: "21 mm/h", 
+      hazard: "Hasdeo Bango Dam Surge & Upstream Inundation", 
+      ndrf: "NDRF 3rd Bn Central Wing",
+      color: "#10b981" 
+    },
+    { 
+      name: "Haryana (Gurugram / Najafgarh)", 
+      cityId: "haryana_gurugram", 
+      coords: [28.4595, 77.0266] as [number, number], 
+      threat: "CRITICAL", 
+      rainfall: "58 mm/h", 
+      hazard: "Hero Honda Chowk Underpass Submergence", 
+      ndrf: "NDRF 8th Bn NCR Strike Team",
+      color: "#ef4444" 
+    },
+    { 
+      name: "Andaman & Nicobar (Port Blair)", 
+      cityId: "andaman_portblair", 
+      coords: [11.6234, 92.7265] as [number, number], 
+      threat: "ELEVATED", 
+      rainfall: "48 mm/h", 
+      hazard: "Deep Bay of Bengal Cyclone & Coastal Inundation", 
+      ndrf: "NDRF Island Marine Rescue Wing",
+      color: "#f59e0b" 
+    },
+    { 
+      name: "Ladakh (Leh / Indus Valley)", 
+      cityId: "ladakh_indus", 
+      coords: [34.1526, 77.5771] as [number, number], 
+      threat: "ELEVATED", 
+      rainfall: "18 mm/h", 
+      hazard: "High-Altitude Glacial Stream Cloudburst", 
+      ndrf: "NDRF High-Altitude Disaster Response Base",
+      color: "#f59e0b" 
     }
   ];
 

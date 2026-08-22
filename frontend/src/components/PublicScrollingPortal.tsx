@@ -65,7 +65,26 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
     { id: 'gujarat_tapi', name: 'Surat (GJ)', state: 'Gujarat', region: 'Tapi Basin' },
     { id: 'assam_brahmaputra', name: 'Guwahati (AS)', state: 'Assam', region: 'Brahmaputra' },
     { id: 'odisha_mahanadi', name: 'Bhubaneswar (OD)', state: 'Odisha', region: 'Mahanadi Basin' },
-    { id: 'uttar_pradesh_ganga', name: 'Varanasi (UP)', state: 'Uttar Pradesh', region: 'Ganga Floodplain' }
+    { id: 'uttar_pradesh_ganga', name: 'Varanasi (UP)', state: 'Uttar Pradesh', region: 'Ganga Basin' },
+    { id: 'bihar_kosi', name: 'Patna (BR)', state: 'Bihar', region: 'Kosi Catchment' },
+    { id: 'uttarakhand_cloudburst', name: 'Rishikesh (UK)', state: 'Uttarakhand', region: 'Himalayan Surge' },
+    { id: 'himachal_beas', name: 'Kullu (HP)', state: 'Himachal', region: 'Beas Torrent' },
+    { id: 'punjab_sutlej', name: 'Ludhiana (PB)', state: 'Punjab', region: 'Sutlej Basin' },
+    { id: 'andhra_krishna', name: 'Vijayawada (AP)', state: 'Andhra Pradesh', region: 'Krishna Delta' },
+    { id: 'telangana_musi', name: 'Hyderabad (TS)', state: 'Telangana', region: 'Musi Basin' },
+    { id: 'rajasthan_luni', name: 'Jodhpur (RJ)', state: 'Rajasthan', region: 'Luni Flash' },
+    { id: 'madhya_pradesh_narmada', name: 'Jabalpur (MP)', state: 'Madhya Pradesh', region: 'Narmada Gorge' },
+    { id: 'jammu_jhelum', name: 'Srinagar (JK)', state: 'Jammu & Kashmir', region: 'Jhelum Valley' },
+    { id: 'goa_mandovi', name: 'Panaji (GA)', state: 'Goa', region: 'Mandovi Estuary' },
+    { id: 'sikkim_teesta', name: 'Gangtok (SK)', state: 'Sikkim', region: 'Teesta GLOF' },
+    { id: 'tripura_howrah', name: 'Agartala (TR)', state: 'Tripura', region: 'Howrah River' },
+    { id: 'meghalaya_cherrapunji', name: 'Shillong (ML)', state: 'Meghalaya', region: 'Khasi Cloudburst' },
+    { id: 'manipur_imphal', name: 'Imphal (MN)', state: 'Manipur', region: 'Loktak Lake' },
+    { id: 'jharkhand_subarnarekha', name: 'Ranchi (JH)', state: 'Jharkhand', region: 'Subarnarekha Dam' },
+    { id: 'chhattisgarh_mahanadi', name: 'Raipur (CG)', state: 'Chhattisgarh', region: 'Hasdeo Bango' },
+    { id: 'haryana_gurugram', name: 'Gurugram (HR)', state: 'Haryana', region: 'Najafgarh Drain' },
+    { id: 'andaman_portblair', name: 'Port Blair (AN)', state: 'Andaman & Nicobar', region: 'Island Coast' },
+    { id: 'ladakh_indus', name: 'Leh (LA)', state: 'Ladakh', region: 'Indus Glacial' }
   ];
 
   const handleCityChange = (cityId: string) => {
