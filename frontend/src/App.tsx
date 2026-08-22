@@ -201,6 +201,18 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleResolveLocation = async (query: string = '', lat?: number, lng?: number) => {
+    try {
+      setToastAlert(`🔍 Resolving micro-catchment terrain & infrastructure...`);
+      const newState = await apiService.resolvePanIndiaLocation(query, lat, lng);
+      setState(newState);
+      setToastAlert(`✅ Digital Twin Synthesized for ${newState.city_name}`);
+      setTimeout(() => setToastAlert(null), 4000);
+    } catch (e) {
+      console.error('Resolve location error:', e);
+    }
+  };
+
   const handleSetSpeed = async (speed: number) => {
     try {
       setPlaybackSpeed(speed);
@@ -236,6 +248,7 @@ export const App: React.FC = () => {
           onLoginRequest={() => setIsLoginModalOpen(true)}
           onLogout={handleLogout}
           onControlCommand={(cmd) => apiService.sendControl(cmd)}
+          onResolveLocation={handleResolveLocation}
         />
 
         {/* Real-Time Device GPS Location SOS Distress Modal */}
@@ -416,6 +429,7 @@ export const App: React.FC = () => {
             onSelectSensor={(s: SensorReading) => { setSelectedSensor(s); setSelectedNode(null); }}
             onSelectRoute={(r) => console.log('Selected route:', r)}
             onSwitchCity={handleSwitchCity}
+            onResolveLocation={handleResolveLocation}
           />
         </section>
 

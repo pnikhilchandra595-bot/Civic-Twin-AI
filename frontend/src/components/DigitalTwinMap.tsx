@@ -15,6 +15,7 @@ interface DigitalTwinMapProps {
   onSelectSensor: (sensor: SensorReading) => void;
   onSelectRoute: (route: EvacuationRoute) => void;
   onSwitchCity?: (cityId: string) => void;
+  onResolveLocation?: (query?: string, lat?: number, lng?: number) => void;
 }
 
 export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
@@ -22,17 +23,21 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   onSelectNode,
   onSelectSensor,
   onSelectRoute,
-  onSwitchCity
+  onSwitchCity,
+  onResolveLocation
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const layersGroupRef = useRef<L.LayerGroup | null>(null);
 
-  // Map settings
+  // Map settings & search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const [baseMap, setBaseMap] = useState<'dark' | 'satellite' | 'street'>('dark');
   const [viewScope, setViewScope] = useState<'city' | 'india'>('city');
   const [isLayersOpen, setIsLayersOpen] = useState(false);
+  const [clickCoordFeedback, setClickCoordFeedback] = useState<string | null>(null);
   
   // Layer visibility toggles
   const [showFloodHeatmap, setShowFloodHeatmap] = useState(true);
@@ -437,6 +442,15 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       const layersGroup = L.layerGroup().addTo(map);
       layersGroupRef.current = layersGroup;
 
+      map.on('click', (e: L.LeafletMouseEvent) => {
+        const { lat, lng } = e.latlng;
+        setClickCoordFeedback(`📍 Resolving Micro-Catchment for [${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E]...`);
+        setTimeout(() => setClickCoordFeedback(null), 4000);
+        if (onResolveLocation) {
+          onResolveLocation('', lat, lng);
+        }
+      });
+
       mapInstanceRef.current = map;
     }
 
@@ -800,6 +814,48 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             </button>
           ))}
         </div>
+
+        {/* Omnibox Search Any Place in India (780+ Districts & Infinite GPS Points) */}
+        <form 
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!searchQuery.trim()) return;
+            setClickCoordFeedback(`🔍 Resolving "${searchQuery}" across Pan-India Digital Twin...`);
+            setTimeout(() => setClickCoordFeedback(null), 4000);
+            const parts = searchQuery.split(',').map(s => parseFloat(s.trim()));
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+              if (onResolveLocation) onResolveLocation('', parts[0], parts[1]);
+            } else {
+              if (onResolveLocation) onResolveLocation(searchQuery);
+            }
+          }}
+          className="hud-panel p-1 rounded-xl border border-cyan-500/40 bg-slate-950/95 flex items-center space-x-1.5 shadow-2xl max-w-xs"
+        >
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search any town, district or lat, lng..."
+            className="bg-transparent border-none text-[11px] font-mono text-white placeholder-slate-500 focus:outline-none flex-1 px-2 py-0.5"
+          />
+          <button
+            type="submit"
+            className="px-2 py-0.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-mono font-bold cursor-pointer"
+          >
+            Locate
+          </button>
+        </form>
+
+        {/* Live Coordinate Resolution Status Feedback */}
+        {clickCoordFeedback ? (
+          <div className="px-2.5 py-1 rounded-lg bg-cyan-950/95 border border-cyan-400 text-cyan-300 text-[10px] font-mono font-bold shadow-2xl animate-pulse">
+            {clickCoordFeedback}
+          </div>
+        ) : (
+          <div className="text-[9px] font-mono text-slate-400 bg-slate-950/80 px-2 py-0.5 rounded border border-slate-800 pointer-events-none">
+            💡 Click anywhere on map to inspect micro-catchment
+          </div>
+        )}
       </div>
 
       {/* Top-Right Collapsible GIS Layer Controls */}

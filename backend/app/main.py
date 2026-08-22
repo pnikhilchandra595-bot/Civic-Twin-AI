@@ -19,6 +19,7 @@ from app.services.hazard_models import multi_hazard_engine
 from app.services.integrations_hub import integrations_hub, IntegrationConfig, CustomCameraInput
 from app.services.openmeteo_flood import openmeteo_flood_service
 from app.ai.gemini_service import gemini_ai_service
+from app.services.pan_india_geocoder import pan_india_engine, PAN_INDIA_DISTRICTS
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -86,6 +87,30 @@ def get_digital_twin_state():
 @app.get("/api/cities")
 def list_available_cities():
     return get_available_indian_cities()
+
+class LocationResolveRequest(BaseModel):
+    query: Optional[str] = ""
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+
+@app.get("/api/districts/search")
+def search_pan_india_districts(q: str = ""):
+    """Returns matching districts, cities, and river corridors across all of India."""
+    if not q:
+        return PAN_INDIA_DISTRICTS
+    q_lower = q.lower().strip()
+    return [d for d in PAN_INDIA_DISTRICTS if q_lower in d["name"].lower() or q_lower in d["state"].lower() or q_lower in d["basin"].lower()]
+
+@app.post("/api/location/resolve")
+async def resolve_pan_india_location(payload: LocationResolveRequest):
+    """Dynamically synthesizes digital twin for ANY coordinate or place in India on the fly."""
+    new_state = pan_india_engine.resolve_location(query=payload.query, lat=payload.lat, lng=payload.lng)
+    state_manager.state = new_state
+    await ws_manager.broadcast({
+        "event": "state_update",
+        "data": new_state.model_dump()
+    })
+    return new_state
 
 @app.post("/api/city/switch")
 async def switch_city(city_id: str):

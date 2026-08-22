@@ -30,6 +30,7 @@ interface PublicScrollingPortalProps {
   onLoginRequest: () => void;
   onLogout: () => void;
   onControlCommand: (cmd: any) => void;
+  onResolveLocation?: (query: string, lat?: number, lng?: number) => void;
 }
 
 export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
@@ -47,7 +48,8 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   onOpenGateways,
   onLoginRequest,
   onLogout,
-  onControlCommand
+  onControlCommand,
+  onResolveLocation
 }) => {
   const [selectedCityId, setSelectedCityId] = useState<string>(state?.city_id || 'mumbai_monsoon');
   const [heroPrompt, setHeroPrompt] = useState<string>('What is the current flood status and safest evacuation route?');
@@ -237,6 +239,48 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
             <MapPin className="w-4 h-4 animate-bounce" />
             <span>🚨 SEND LIVE GPS SOS BEACON</span>
           </button>
+        </div>
+
+        {/* PAN-INDIA LIVE GEOCODER SEARCH BAR (EVERY CM OF INDIA) */}
+        <div className="max-w-5xl mx-auto p-4 rounded-3xl bg-[#090e1c] border border-cyan-500/40 shadow-[0_0_40px_rgba(0,210,255,0.15)] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center space-x-2.5 w-full sm:w-auto">
+            <div className="p-2 rounded-xl bg-cyan-950 border border-cyan-500/50 text-cyan-400">
+              <MapPin className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center space-x-1.5">
+                <span>Pan-India 780+ Districts & Micro-Catchment Search</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-900/80 border border-cyan-400 text-cyan-200 font-bold">● EVERY CM COVERED</span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-sans">
+                Search any village, town, urban ward, or GPS coordinate across all 36 States & UTs.
+              </p>
+            </div>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const inputEl = (e.currentTarget.elements.namedItem('search_query') as HTMLInputElement);
+              if (inputEl && inputEl.value.trim()) {
+                if (onResolveLocation) onResolveLocation(inputEl.value.trim());
+              }
+            }}
+            className="w-full sm:w-auto flex-1 max-w-md flex items-center space-x-2"
+          >
+            <input
+              name="search_query"
+              type="text"
+              placeholder="e.g. Thane, Darbhanga, Kedarnath, 25.43, 81.84..."
+              className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 shadow-inner"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-lg transition-all cursor-pointer shrink-0"
+            >
+              Locate ➔
+            </button>
+          </form>
         </div>
 
         {/* LIVE IMD WEATHER & FLOOD HAZARD BAR */}

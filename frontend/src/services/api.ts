@@ -156,6 +156,22 @@ export class DigitalTwinApiService {
     return res.json();
   }
 
+  async resolvePanIndiaLocation(query: string = '', lat?: number, lng?: number): Promise<CityDigitalTwinState> {
+    const res = await fetch(`${API_BASE}/location/resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, lat, lng })
+    });
+    if (!res.ok) throw new Error('Failed to resolve Pan-India location');
+    return res.json();
+  }
+
+  async searchDistricts(q: string = ''): Promise<Array<{ id: string; name: string; state: string; lat: number; lng: number; basin: string }>> {
+    const res = await fetch(`${API_BASE}/districts/search?q=${encodeURIComponent(q)}`);
+    if (!res.ok) return [];
+    return res.json();
+  }
+
   async switchCity(cityId: string): Promise<CityDigitalTwinState> {
     const res = await fetch(`${API_BASE}/city/switch?city_id=${cityId}`, {
       method: 'POST'
