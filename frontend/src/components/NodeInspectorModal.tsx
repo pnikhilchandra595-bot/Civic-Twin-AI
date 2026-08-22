@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { InfrastructureNode, SensorReading, NodeStatus, NodeType } from '../types/digital_twin';
 import { 
   X, Shield, Zap, Droplets, Activity, 
@@ -36,10 +36,23 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
     }
   };
 
+  const [isDeploying, setIsDeploying] = useState(false);
+  const [deploySuccess, setDeploySuccess] = useState(false);
+
   const handleDeployAction = async () => {
-    if (node) {
+    if (!node) return;
+    setIsDeploying(true);
+    try {
       await apiService.dispatchUnit('unit-pump-1', node.id, `Tactical Protection for ${node.name}`);
-      onClose();
+      setDeploySuccess(true);
+      setTimeout(() => {
+        setDeploySuccess(false);
+        setIsDeploying(false);
+        onClose();
+      }, 1200);
+    } catch (e) {
+      console.error('Deploy error:', e);
+      setIsDeploying(false);
     }
   };
 
@@ -170,10 +183,23 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
         <div className="pt-4 border-t border-slate-800 space-y-2">
           <button
             onClick={handleDeployAction}
-            className="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold flex items-center justify-center space-x-2 shadow-[0_0_15px_rgba(0,210,255,0.25)] transition-all"
+            disabled={isDeploying || deploySuccess}
+            className={`w-full py-2.5 rounded-xl text-white text-xs font-mono font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+              deploySuccess
+                ? 'bg-emerald-600 shadow-[0_0_20px_rgba(16,185,129,0.4)]'
+                : isDeploying
+                ? 'bg-cyan-700 animate-pulse'
+                : 'bg-cyan-600 hover:bg-cyan-500 shadow-[0_0_15px_rgba(0,210,255,0.25)]'
+            }`}
           >
             <Send className="w-3.5 h-3.5" />
-            <span>Deploy Emergency Asset to Location</span>
+            <span>
+              {deploySuccess
+                ? '✅ DISPATCHED & PUSHED TO HEAD MOBILE APP!'
+                : isDeploying
+                ? 'TRANSMITTING DISPATCH TO HEAD MOBILE APP...'
+                : 'Deploy Emergency Asset to Location'}
+            </span>
           </button>
         </div>
       )}

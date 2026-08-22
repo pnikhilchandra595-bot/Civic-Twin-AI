@@ -34,6 +34,7 @@ import { LiveWeatherModal } from './components/LiveWeatherModal';
 import { PublicScrollingPortal } from './components/PublicScrollingPortal';
 import { WhatsAppSimulatorModal } from './components/WhatsAppSimulatorModal';
 import { PublicGPSLocationSOSModal } from './components/PublicGPSLocationSOSModal';
+import { MobileHeadAppModal } from './components/MobileHeadAppModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon 
@@ -749,10 +750,10 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* Mobile Citizen Companion QR */}
+      {/* Mobile Incident Commander & Citizen Companion App */}
       {isMobileCompanionOpen && (
-        <MobileCompanionModal
-          cityName={state?.city_name || 'Mumbai'}
+        <MobileHeadAppModal
+          state={state}
           onClose={() => setIsMobileCompanionOpen(false)}
         />
       )}
