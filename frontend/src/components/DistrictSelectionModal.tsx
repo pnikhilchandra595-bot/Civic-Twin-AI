@@ -4,16 +4,7 @@ import {
   ShieldAlert, Waves, Compass, X, Check, ArrowRight, Layers 
 } from 'lucide-react';
 import { apiService } from '../services/api';
-
-interface DistrictItem {
-  id: string;
-  name: string;
-  state: string;
-  lat: number;
-  lng: number;
-  basin: string;
-  threat?: string;
-}
+import { ALL_INDIAN_DISTRICTS, DistrictItem } from '../data/allIndianDistricts';
 
 interface DistrictSelectionModalProps {
   currentCityName?: string;
@@ -26,21 +17,21 @@ export const DistrictSelectionModal: React.FC<DistrictSelectionModalProps> = ({
   onSelectDistrict,
   onClose
 }) => {
-  const [districts, setDistricts] = useState<DistrictItem[]>([]);
+  const [districts, setDistricts] = useState<DistrictItem[]>(ALL_INDIAN_DISTRICTS);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedState, setSelectedState] = useState<string>('ALL');
   const [threatFilter, setThreatFilter] = useState<'ALL' | 'CRITICAL' | 'ELEVATED' | 'MONITOR'>('ALL');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchDistricts = async () => {
       try {
         const data = await apiService.searchDistricts('');
-        setDistricts(data);
+        if (data && data.length > 0) {
+          setDistricts(data as DistrictItem[]);
+        }
       } catch (e) {
-        console.error('Failed to load districts:', e);
-      } finally {
-        setIsLoading(false);
+        console.warn('Using bundled Pan-India district dataset:', e);
       }
     };
     fetchDistricts();
