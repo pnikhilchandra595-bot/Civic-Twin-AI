@@ -24,6 +24,7 @@ interface PublicScrollingPortalProps {
   onOpenDroneCCTV: () => void;
   onOpenWeather: () => void;
   onOpenCitizenSOS: () => void;
+  onOpenGPSLocationSOS?: () => void;
   onOpenWhatsApp?: () => void;
   onOpenGateways: () => void;
   onLoginRequest: () => void;
@@ -41,6 +42,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   onOpenDroneCCTV,
   onOpenWeather,
   onOpenCitizenSOS,
+  onOpenGPSLocationSOS,
   onOpenWhatsApp,
   onOpenGateways,
   onLoginRequest,
@@ -198,6 +200,63 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
           <p className="text-sm sm:text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
             Real-time multi-hazard digital twin modeling urban hydrology, flood surge, infrastructure cascades, offline citizen GPS rescues, and Google Gemini AI incident command across 20 Indian disaster corridors.
           </p>
+        </div>
+
+        {/* PUBLIC EMERGENCY 1-CLICK GPS SOS BANNER */}
+        <div className="max-w-5xl mx-auto p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-red-950 via-rose-950/80 to-red-950 border-2 border-rose-500/80 shadow-[0_0_50px_rgba(244,63,94,0.35)] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center space-x-3.5">
+            <div className="p-3 rounded-2xl bg-rose-600 text-white animate-pulse shadow-lg shadow-rose-600/50">
+              <ShieldAlert className="w-7 h-7" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-black text-white uppercase tracking-wider">
+                  Citizen Emergency GPS SOS Trigger
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-900 border border-red-500 text-red-200 font-bold">
+                  ● 1-CLICK RESCUE
+                </span>
+              </div>
+              <p className="text-xs text-rose-200/90 font-sans mt-0.5">
+                Stranded or facing rising flood water? Click to instantly transmit your live device GPS coordinates to NDRF & 108 EMS.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onOpenGPSLocationSOS || onOpenCitizenSOS}
+            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-mono text-xs font-black uppercase tracking-wider shadow-xl shadow-red-600/50 flex items-center justify-center space-x-2 shrink-0 transition-all cursor-pointer transform hover:scale-105"
+          >
+            <MapPin className="w-4 h-4 animate-bounce" />
+            <span>🚨 SEND LIVE GPS SOS BEACON</span>
+          </button>
+        </div>
+
+        {/* LIVE IMD WEATHER & FLOOD HAZARD BAR */}
+        <div className="max-w-5xl mx-auto p-4 rounded-3xl bg-slate-950/90 border border-cyan-500/30 flex flex-wrap items-center justify-between gap-4 text-xs font-mono shadow-xl">
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 rounded-xl bg-cyan-950 border border-cyan-500/50 text-cyan-300">
+              <CloudRain className="w-5 h-5 text-cyan-400" />
+            </div>
+            <div>
+              <div className="text-white font-bold text-sm">
+                Live IMD Rainfall: <span className="text-cyan-300">{rain.toFixed(1)} mm/h</span>
+              </div>
+              <div className="text-[11px] text-slate-400">
+                Region: <strong className="text-slate-200">{cityName}</strong> • Threat Level: <span className="text-amber-400 font-bold">{threat}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={onOpenWeather}
+              className="px-4 py-2 rounded-xl bg-cyan-950 hover:bg-cyan-900 border border-cyan-500 text-cyan-300 text-xs font-bold transition-all cursor-pointer flex items-center space-x-1.5"
+            >
+              <span>🌤️ View 7-Day IMD Forecast & Tide Matrix</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
         {/* 20-State Quick Selector Pills */}

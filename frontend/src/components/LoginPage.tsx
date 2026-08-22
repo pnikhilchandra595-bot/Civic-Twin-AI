@@ -6,7 +6,7 @@ import {
   Smartphone, Phone, MapPin, Check, Zap, Eye
 } from 'lucide-react';
 
-export type UserType = 'national_authority' | 'state_officer' | 'citizen';
+export type UserType = 'national_authority' | 'state_officer' | 'district_officer' | 'citizen';
 
 export interface AuthUser {
   name: string;
@@ -16,6 +16,7 @@ export interface AuthUser {
   phone?: string;
   userType: UserType;
   assignedState?: string;
+  assignedDistrict?: string;
   assignedCityId?: string;
   allowedStates: string[];
   clearanceLevel: number;
@@ -30,33 +31,36 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
 
   // National Officer Form State
   const [nationalBadgeId, setNationalBadgeId] = useState('NDMA-HQ-01');
-  const [nationalPasskey, setNationalPasskey] = useState('••••••••••••');
   const [nationalAgency, setNationalAgency] = useState('National Disaster Management Authority (NDMA HQ)');
 
   // State Sub-Officer Form State
   const [stateBadgeId, setStateBadgeId] = useState('MH-SDMA-442');
-  const [statePasskey, setStatePasskey] = useState('••••••••••••');
   const [assignedState, setAssignedState] = useState('Maharashtra');
+
+  // District Officer Form State
+  const [districtBadgeId, setDistrictBadgeId] = useState('MUM-DDMA-09');
+  const [assignedDistrict, setAssignedDistrict] = useState('Mumbai Suburban / Mithi River Ward');
+  const [districtCityId, setDistrictCityId] = useState('mumbai_monsoon');
 
   // Citizen Form State
   const [citizenMobile, setCitizenMobile] = useState('+91 98765 43210');
-  const [citizenPassword, setCitizenPassword] = useState('citizen123');
   const [citizenCity, setCitizenCity] = useState('mumbai_monsoon');
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authSuccess, setAuthSuccess] = useState(false);
 
-  const stateCityMap: Record<string, { cityId: string; label: string }> = {
-    'Maharashtra': { cityId: 'mumbai_monsoon', label: 'Mumbai Mithi Basin (MH)' },
-    'Delhi NCR': { cityId: 'delhi_yamuna', label: 'Delhi Yamuna Floodplain (NCR)' },
-    'Karnataka': { cityId: 'bengaluru_lakes', label: 'Bengaluru Lake Corridor (KA)' },
-    'Tamil Nadu': { cityId: 'chennai_cyclone', label: 'Chennai Cyclone Surge (TN)' },
-    'West Bengal': { cityId: 'kolkata_hooghly', label: 'Kolkata Hooghly Surge (WB)' },
-    'Gujarat': { cityId: 'gujarat_tapi', label: 'Surat Tapi Surge (GJ)' },
-    'Kerala': { cityId: 'kerala_periyar', label: 'Kochi Periyar Dam (KL)' },
-    'Assam': { cityId: 'assam_brahmaputra', label: 'Guwahati Brahmaputra (AS)' },
-    'Odisha': { cityId: 'odisha_mahanadi', label: 'Bhubaneswar Mahanadi (OD)' },
-    'Uttar Pradesh': { cityId: 'uttar_pradesh_ganga', label: 'Varanasi Ganga (UP)' }
+  const stateCityMap: Record<string, { cityId: string; label: string; district: string }> = {
+    'Maharashtra': { cityId: 'mumbai_monsoon', label: 'Mumbai Mithi Basin (MH)', district: 'Mumbai Suburban District' },
+    'Delhi NCR': { cityId: 'delhi_yamuna', label: 'Delhi Yamuna Floodplain (NCR)', district: 'North-East Delhi District' },
+    'Karnataka': { cityId: 'bengaluru_lakes', label: 'Bengaluru Lake Corridor (KA)', district: 'Bengaluru Urban District' },
+    'Tamil Nadu': { cityId: 'chennai_cyclone', label: 'Chennai Cyclone Surge (TN)', district: 'Chennai Coastal District' },
+    'West Bengal': { cityId: 'kolkata_hooghly', label: 'Kolkata Hooghly Surge (WB)', district: 'Kolkata Metropolitan District' },
+    'Gujarat': { cityId: 'gujarat_tapi', label: 'Surat Tapi Surge (GJ)', district: 'Surat District' },
+    'Kerala': { cityId: 'kerala_periyar', label: 'Kochi Periyar Dam (KL)', district: 'Ernakulam District' },
+    'Assam': { cityId: 'assam_brahmaputra', label: 'Guwahati Brahmaputra (AS)', district: 'Kamrup Metropolitan District' },
+    'Sikkim': { cityId: 'sikkim_teesta', label: 'Gangtok Teesta Basin (SK)', district: 'East Sikkim District' },
+    'Uttar Pradesh': { cityId: 'uttar_pradesh_ganga', label: 'Varanasi Ganga (UP)', district: 'Varanasi District' },
+    'Madhya Pradesh': { cityId: 'madhya_pradesh_narmada', label: 'Jabalpur Narmada (MP)', district: 'Jabalpur District' }
   };
 
   const handleQuickDemo = (role: UserType, stateName: string = 'Maharashtra') => {
@@ -67,6 +71,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     } else if (role === 'state_officer') {
       setAssignedState(stateName);
       setStateBadgeId(`${stateName.slice(0, 2).toUpperCase()}-SDMA-108`);
+    } else if (role === 'district_officer') {
+      const mapItem = stateCityMap[stateName] || stateCityMap['Maharashtra'];
+      setAssignedDistrict(mapItem.district);
+      setDistrictCityId(mapItem.cityId);
+      setDistrictBadgeId(`${mapItem.district.slice(0, 3).toUpperCase()}-DDMA-01`);
     } else {
       setCitizenMobile('+91 98765 43210');
       setCitizenCity('mumbai_monsoon');
@@ -90,15 +99,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           allowedStates: ['ALL'],
           clearanceLevel: 5
         });
-      }, 500);
-    }, 600);
+      }, 400);
+    }, 500);
   };
 
   const handleStateOfficerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsAuthenticating(true);
 
-    const mapping = stateCityMap[assignedState] || { cityId: 'mumbai_monsoon', label: `${assignedState} Zone` };
+    const mapping = stateCityMap[assignedState] || { cityId: 'mumbai_monsoon', label: `${assignedState} Zone`, district: 'State Headquarters' };
 
     setTimeout(() => {
       setIsAuthenticating(false);
@@ -115,8 +124,31 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           allowedStates: [assignedState],
           clearanceLevel: 3
         });
-      }, 500);
-    }, 600);
+      }, 400);
+    }, 500);
+  };
+
+  const handleDistrictOfficerSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsAuthenticating(true);
+
+    setTimeout(() => {
+      setIsAuthenticating(false);
+      setAuthSuccess(true);
+      setTimeout(() => {
+        onLogin({
+          name: `District Magistrate (${assignedDistrict})`,
+          role: `District Disaster Magistrate / Collector`,
+          agency: `${assignedDistrict} DDMA Command Cell`,
+          badgeId: districtBadgeId,
+          userType: 'district_officer',
+          assignedDistrict: assignedDistrict,
+          assignedCityId: districtCityId,
+          allowedStates: [assignedState],
+          clearanceLevel: 2
+        });
+      }, 400);
+    }, 500);
   };
 
   const handleCitizenSubmit = (e: React.FormEvent) => {
@@ -129,7 +161,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
       setTimeout(() => {
         onLogin({
           name: `Citizen (${citizenMobile.slice(-4)})`,
-          role: 'Resident Civilian',
+          role: 'Resident Civilian (Public Access)',
           agency: 'Civic Citizen Emergency Network',
           phone: citizenMobile,
           userType: 'citizen',
@@ -137,8 +169,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           allowedStates: ['ALL'],
           clearanceLevel: 1
         });
-      }, 500);
-    }, 600);
+      }, 400);
+    }, 500);
   };
 
   return (
@@ -224,14 +256,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 <div className="flex items-center justify-between text-xs font-bold text-white">
                   <span className="flex items-center space-x-2 text-blue-400">
                     <Building2 className="w-4 h-4" />
-                    <span>1. National Authority & Staff</span>
+                    <span>1. National Command Head</span>
                   </span>
                   <span className="text-[9px] px-2 py-0.5 bg-blue-900/60 text-blue-300 rounded-full border border-blue-600 font-mono font-bold">
-                    Level 5 • Pan-India
+                    Level 5 • All 28 States
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1 font-sans">
-                  Full control: All 20 states, dam releases, national CAP alerts, power grid isolation, and Gemini Commander.
+                  Full control: All 28 states & UTs, 100-year storm injection, levee breach controls, Voice Radio Copilot, and 1-click NDMA ICS-201 PDF generator.
                 </p>
               </div>
 
@@ -247,14 +279,37 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 <div className="flex items-center justify-between text-xs font-bold text-white">
                   <span className="flex items-center space-x-2 text-purple-400">
                     <ShieldCheck className="w-4 h-4" />
-                    <span>2. State Sub-Officer (SDMA)</span>
+                    <span>2. State Officer (SDMA)</span>
                   </span>
                   <span className="text-[9px] px-2 py-0.5 bg-purple-900/60 text-purple-300 rounded-full border border-purple-600 font-mono font-bold">
-                    Level 3 • Single State Only
+                    Level 3 • State-Wise Control
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1 font-sans">
-                  Restricted to assigned state: District CCTV/drone feeds, local citizen SOS queue, and state-level Gemini AI.
+                  State-level control: State SDRF battalions, state power grid substations, and state-wide green evacuation corridors.
+                </p>
+              </div>
+
+              {/* District Officer Card */}
+              <div 
+                onClick={() => setAuthTab('district_officer')}
+                className={`p-3 rounded-2xl border text-left cursor-pointer transition-all ${
+                  authTab === 'district_officer'
+                    ? 'bg-amber-950/80 border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.3)]'
+                    : 'bg-slate-900/40 border-slate-800/80 hover:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between text-xs font-bold text-white">
+                  <span className="flex items-center space-x-2 text-amber-400">
+                    <Activity className="w-4 h-4" />
+                    <span>3. District Magistrate (DDMA)</span>
+                  </span>
+                  <span className="text-[9px] px-2 py-0.5 bg-amber-900/60 text-amber-300 rounded-full border border-amber-600 font-mono font-bold">
+                    Level 2 • District-Level Control
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1 font-sans">
+                  District & Municipal Ward control: Local dewatering pumps, subway underpasses, and district stadium relief shelters.
                 </p>
               </div>
 
@@ -270,14 +325,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 <div className="flex items-center justify-between text-xs font-bold text-white">
                   <span className="flex items-center space-x-2 text-emerald-400">
                     <Smartphone className="w-4 h-4" />
-                    <span>3. Normal Citizen / Public</span>
+                    <span>4. Public Citizen (Open Access)</span>
                   </span>
                   <span className="text-[9px] px-2 py-0.5 bg-emerald-900/60 text-emerald-300 rounded-full border border-emerald-600 font-mono font-bold">
-                    Level 1 • Mobile Access
+                    Level 1 • Open Access
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1 font-sans">
-                  Text-first safety hub: Offline GPS & SMS 112 location sharing, Gemini Citizen Guide, 1-tap helplines & shelter bulletins.
+                  Public safety hub: Live IMD weather forecasts, 1-tap helplines, WhatsApp bot, and 1-click real-time GPS Location SOS beacon.
                 </p>
               </div>
             </div>
@@ -293,39 +348,46 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
         <div className="flex-1 flex flex-col justify-center">
           
           {/* Top Auth Mode Tabs */}
-          <div className="flex items-center p-1.5 bg-slate-950/90 border border-slate-800 rounded-2xl mb-5 text-xs font-mono font-bold">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1.5 bg-slate-950/90 border border-slate-800 rounded-2xl mb-5 text-xs font-mono font-bold">
             <button
               onClick={() => setAuthTab('national_authority')}
-              className={`flex-1 py-2.5 rounded-xl transition-all text-center flex items-center justify-center space-x-1.5 ${
+              className={`py-2 rounded-xl transition-all text-center flex items-center justify-center space-x-1 ${
                 authTab === 'national_authority'
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Building2 className="w-3.5 h-3.5" />
-              <span>National Staff</span>
+              <span>National</span>
             </button>
             <button
               onClick={() => setAuthTab('state_officer')}
-              className={`flex-1 py-2.5 rounded-xl transition-all text-center flex items-center justify-center space-x-1.5 ${
+              className={`py-2 rounded-xl transition-all text-center flex items-center justify-center space-x-1 ${
                 authTab === 'state_officer'
                   ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>State Officer</span>
+              <span>State SDMA</span>
+            </button>
+            <button
+              onClick={() => setAuthTab('district_officer')}
+              className={`py-2 rounded-xl transition-all text-center flex items-center justify-center space-x-1 ${
+                authTab === 'district_officer'
+                  ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <span>District DDMA</span>
             </button>
             <button
               onClick={() => setAuthTab('citizen')}
-              className={`flex-1 py-2.5 rounded-xl transition-all text-center flex items-center justify-center space-x-1.5 ${
+              className={`py-2 rounded-xl transition-all text-center flex items-center justify-center space-x-1 ${
                 authTab === 'citizen'
                   ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Smartphone className="w-3.5 h-3.5" />
-              <span>Citizen Portal</span>
+              <span>Public</span>
             </button>
           </div>
 
@@ -335,10 +397,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
               <div>
                 <h3 className="text-base font-bold text-white flex items-center space-x-2">
                   <Building2 className="w-4 h-4 text-blue-400" />
-                  <span>National Authority & Central Command Login</span>
+                  <span>National Command Head & NDMA HQ Login</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Full clearance across all 20 Indian disaster corridors and central executive tools.
+                  Full clearance across all 28 Indian disaster corridors and central executive tools.
                 </p>
               </div>
 
@@ -348,68 +410,30 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                   type="text"
                   value={nationalBadgeId}
                   onChange={(e) => setNationalBadgeId(e.target.value)}
-                  placeholder="NDMA-HQ-01"
-                  required
-                  className="w-full bg-slate-950/90 border border-slate-700/80 focus:border-blue-500 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-slate-300 font-semibold">Central Command Agency:</label>
-                <select
-                  value={nationalAgency}
-                  onChange={(e) => setNationalAgency(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-slate-700/80 focus:border-blue-500 rounded-xl p-3 text-xs font-mono text-white focus:outline-none cursor-pointer"
-                >
-                  <option value="National Disaster Management Authority (NDMA HQ)">NDMA HQ (National Command)</option>
-                  <option value="National Disaster Response Force (NDRF HQ)">NDRF Headquarters (Force Operations)</option>
-                  <option value="Prime Minister's Office (PMO Crisis Cell)">PMO National Crisis Management Cell</option>
-                  <option value="Central Water Commission (CWC Flood Desk)">CWC Central River Basin Authority</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-slate-300 font-semibold">Security Passkey:</label>
-                <input
-                  type="password"
-                  value={nationalPasskey}
-                  onChange={(e) => setNationalPasskey(e.target.value)}
-                  placeholder="Enter security token..."
-                  required
-                  className="w-full bg-slate-950/90 border border-slate-700/80 focus:border-blue-500 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <button
                 type="submit"
-                disabled={isAuthenticating || authSuccess}
-                className="w-full py-3.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-600/30 flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                disabled={isAuthenticating}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer"
               >
-                {isAuthenticating ? (
-                  <span>Verifying National Level 5 Clearance...</span>
-                ) : authSuccess ? (
-                  <span>Clearance Granted! Launching Central Twin...</span>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Launch Pan-India Digital Twin</span>
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                  </>
-                )}
+                {isAuthenticating ? <span>AUTHENTICATING LEVEL 5 CLEARANCE...</span> : <span>👑 ACCESS NATIONAL COMMAND CONSOLE</span>}
               </button>
             </form>
           )}
 
-          {/* TAB 2: State Sub-Officer Login */}
+          {/* TAB 2: State Officer Login */}
           {authTab === 'state_officer' && (
             <form onSubmit={handleStateOfficerSubmit} className="space-y-4">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center space-x-2">
                   <ShieldCheck className="w-4 h-4 text-purple-400" />
-                  <span>State Sub-Officer Authorization (SDMA)</span>
+                  <span>State Disaster Management Authority (SDMA)</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Access will be strictly restricted to your assigned state only.
+                  Restricted to assigned state civil defense infrastructure and SDRF battalions.
                 </p>
               </div>
 
@@ -417,144 +441,87 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 <label className="text-xs font-mono text-slate-300 font-semibold">Assigned State Jurisdiction:</label>
                 <select
                   value={assignedState}
-                  onChange={(e) => setAssignedState(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-purple-500/60 focus:border-purple-400 rounded-xl p-3 text-xs font-mono text-purple-200 focus:outline-none cursor-pointer font-bold"
+                  onChange={(e) => {
+                    setAssignedState(e.target.value);
+                    setStateBadgeId(`${e.target.value.slice(0, 2).toUpperCase()}-SDMA-108`);
+                  }}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-purple-500"
                 >
-                  <option value="Maharashtra">Maharashtra (Mumbai / Pune / Thane)</option>
-                  <option value="Delhi NCR">Delhi NCR (Yamuna Basin)</option>
-                  <option value="Karnataka">Karnataka (Bengaluru Lakes)</option>
-                  <option value="Tamil Nadu">Tamil Nadu (Chennai Coast)</option>
-                  <option value="West Bengal">West Bengal (Kolkata Hooghly)</option>
-                  <option value="Gujarat">Gujarat (Surat Tapi)</option>
-                  <option value="Kerala">Kerala (Kochi Periyar)</option>
-                  <option value="Assam">Assam (Guwahati Brahmaputra)</option>
-                  <option value="Odisha">Odisha (Bhubaneswar Mahanadi)</option>
-                  <option value="Uttar Pradesh">Uttar Pradesh (Varanasi Ganga)</option>
+                  {Object.keys(stateCityMap).map((st) => (
+                    <option key={st} value={st}>{st} SDMA</option>
+                  ))}
                 </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-slate-300 font-semibold">State Officer Badge ID:</label>
-                <input
-                  type="text"
-                  value={stateBadgeId}
-                  onChange={(e) => setStateBadgeId(e.target.value)}
-                  placeholder="e.g. MH-SDMA-442"
-                  required
-                  className="w-full bg-slate-950/90 border border-slate-700/80 focus:border-purple-500 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-slate-300 font-semibold">State Authority Passkey:</label>
-                <input
-                  type="password"
-                  value={statePasskey}
-                  onChange={(e) => setStatePasskey(e.target.value)}
-                  placeholder="Enter state token..."
-                  required
-                  className="w-full bg-slate-950/90 border border-slate-700/80 focus:border-purple-500 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-purple-500"
-                />
               </div>
 
               <button
                 type="submit"
-                disabled={isAuthenticating || authSuccess}
-                className="w-full py-3.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-600/30 flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                disabled={isAuthenticating}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer"
               >
-                {isAuthenticating ? (
-                  <span>Verifying State Level 3 Credentials...</span>
-                ) : authSuccess ? (
-                  <span>Access Locked to {assignedState}! Launching...</span>
-                ) : (
-                  <>
-                    <Lock className="w-4 h-4" />
-                    <span>Enter {assignedState} SDMA Command</span>
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                  </>
-                )}
+                {isAuthenticating ? <span>AUTHENTICATING STATE OFFICER...</span> : <span>🏛️ ACCESS {assignedState.toUpperCase()} SDMA CONSOLE</span>}
               </button>
             </form>
           )}
 
-          {/* TAB 3: Citizen / Public Portal Login */}
+          {/* TAB 3: District Officer Login */}
+          {authTab === 'district_officer' && (
+            <form onSubmit={handleDistrictOfficerSubmit} className="space-y-4">
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center space-x-2">
+                  <Activity className="w-4 h-4 text-amber-400" />
+                  <span>District Magistrate & Collector (DDMA)</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Hyper-local district control: Municipal pumps, subway underpasses, and ward shelters.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-mono text-slate-300 font-semibold">Assigned District / Municipal Ward:</label>
+                <select
+                  value={assignedDistrict}
+                  onChange={(e) => {
+                    setAssignedDistrict(e.target.value);
+                    const found = Object.values(stateCityMap).find(m => m.district === e.target.value);
+                    if (found) setDistrictCityId(found.cityId);
+                  }}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-amber-500"
+                >
+                  {Object.values(stateCityMap).map((m) => (
+                    <option key={m.district} value={m.district}>{m.district} ({m.label.split('(')[1]?.replace(')', '') || 'DDMA'})</option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isAuthenticating}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              >
+                {isAuthenticating ? <span>AUTHENTICATING DISTRICT MAGISTRATE...</span> : <span>🏢 ACCESS DISTRICT DDMA CONSOLE</span>}
+              </button>
+            </form>
+          )}
+
+          {/* TAB 4: Citizen Portal */}
           {authTab === 'citizen' && (
             <form onSubmit={handleCitizenSubmit} className="space-y-4">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center space-x-2">
                   <Smartphone className="w-4 h-4 text-emerald-400" />
-                  <span>Public Citizen Access Portal</span>
+                  <span>Public Citizen Open Access Portal</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Login with Mobile Number for Offline GPS Emergency SMS, Shelters & Gemini AI Guide.
+                  Direct access to live IMD weather forecasts, emergency helplines, and 1-click GPS SOS.
                 </p>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-slate-300 font-semibold flex items-center space-x-1.5">
-                  <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Mobile Phone Number:</span>
-                </label>
-                <input
-                  type="tel"
-                  value={citizenMobile}
-                  onChange={(e) => setCitizenMobile(e.target.value)}
-                  placeholder="+91 98765 43210"
-                  required
-                  className="w-full bg-slate-950/90 border border-slate-700/80 focus:border-emerald-500 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-slate-300 font-semibold flex items-center space-x-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Your Current City / Region:</span>
-                </label>
-                <select
-                  value={citizenCity}
-                  onChange={(e) => setCitizenCity(e.target.value)}
-                  className="w-full bg-slate-950/90 border border-slate-700/80 focus:border-emerald-500 rounded-xl p-3 text-xs font-mono text-white focus:outline-none cursor-pointer"
-                >
-                  <option value="mumbai_monsoon">Mumbai, Maharashtra (Mithi Basin)</option>
-                  <option value="delhi_yamuna">Delhi NCR (Yamuna Floodplain)</option>
-                  <option value="bengaluru_lakes">Bengaluru, Karnataka (Lake Corridor)</option>
-                  <option value="chennai_cyclone">Chennai, Tamil Nadu (Coastal Surge)</option>
-                  <option value="kolkata_hooghly">Kolkata, West Bengal (Hooghly Surge)</option>
-                  <option value="gujarat_tapi">Surat, Gujarat (Tapi Basin)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono text-slate-300 font-semibold flex items-center space-x-1.5">
-                  <Key className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Password / 1-Tap OTP:</span>
-                </label>
-                <input
-                  type="password"
-                  value={citizenPassword}
-                  onChange={(e) => setCitizenPassword(e.target.value)}
-                  placeholder="Enter citizen password..."
-                  required
-                  className="w-full bg-slate-950/90 border border-slate-700/80 focus:border-emerald-500 rounded-xl p-3 text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                />
               </div>
 
               <button
                 type="submit"
-                disabled={isAuthenticating || authSuccess}
-                className="w-full py-3.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                disabled={isAuthenticating}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center space-x-2 transition-all cursor-pointer"
               >
-                {isAuthenticating ? (
-                  <span>Authenticating Mobile Access...</span>
-                ) : authSuccess ? (
-                  <span>Welcome! Opening Citizen Safety Hub...</span>
-                ) : (
-                  <>
-                    <Smartphone className="w-4 h-4" />
-                    <span>Enter Citizen Safety Hub</span>
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                  </>
-                )}
+                <span>👥 ENTER PUBLIC CITIZEN PORTAL (NO LOGIN REQUIRED)</span>
               </button>
             </form>
           )}

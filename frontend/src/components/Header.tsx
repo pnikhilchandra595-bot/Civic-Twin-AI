@@ -69,6 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
   const toolsMenuRef = useRef<HTMLDivElement>(null);
 
   const isCitizen = authUser?.userType === 'citizen';
+  const isDistrictOfficer = authUser?.userType === 'district_officer';
   const isStateOfficer = authUser?.userType === 'state_officer';
   const isNational = authUser?.userType === 'national_authority' || !authUser?.userType;
 
@@ -106,7 +107,9 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'goa_mandovi', state: 'Goa', label: 'Goa: Panaji Mandovi Estuary (GA)' },
   ];
 
-  const selectableCities = isStateOfficer && authUser.assignedState
+  const selectableCities = isDistrictOfficer && authUser.assignedCityId
+    ? allCities.filter(c => c.id === authUser.assignedCityId)
+    : isStateOfficer && authUser.assignedState
     ? allCities.filter(c => c.state.toLowerCase() === authUser.assignedState?.toLowerCase())
     : allCities;
 
@@ -134,14 +137,16 @@ export const Header: React.FC<HeaderProps> = ({
               value={state?.city_id || 'mumbai_monsoon'}
               onChange={(e) => onSwitchCity(e.target.value)}
               className={`text-xs font-mono px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer max-w-[210px] lg:max-w-xs truncate font-bold transition-all ${
-                isStateOfficer
+                isDistrictOfficer
+                  ? 'bg-amber-950/90 border-amber-500 text-amber-200'
+                  : isStateOfficer
                   ? 'bg-purple-950/90 border-purple-500 text-purple-200'
                   : isCitizen
                   ? 'bg-emerald-950/90 border-emerald-500 text-emerald-200'
                   : 'bg-slate-900 border-cyan-500/50 text-cyan-200 hover:border-cyan-400'
               }`}
             >
-              <optgroup label={isStateOfficer ? `🔒 Assigned State Jurisdiction (${authUser?.assignedState})` : isCitizen ? `📍 Citizen Safe Zones` : `🇮🇳 Pan-India Corridors (All 20 States)`}>
+              <optgroup label={isDistrictOfficer ? `🏢 Assigned District (${authUser?.assignedDistrict || 'DDMA'})` : isStateOfficer ? `🔒 Assigned State (${authUser?.assignedState})` : isCitizen ? `📍 Citizen Safe Zones` : `🇮🇳 Pan-India Corridors (All 20 States)`}>
                 {selectableCities.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.label}
@@ -150,7 +155,14 @@ export const Header: React.FC<HeaderProps> = ({
               </optgroup>
             </select>
 
-            {isStateOfficer && (
+            {isDistrictOfficer && (
+              <span title={`Locked to ${authUser?.assignedDistrict}`} className="px-2 py-1 rounded-lg bg-amber-950/90 border border-amber-500 text-amber-300 text-[10px] font-mono font-bold flex items-center space-x-1">
+                <Lock className="w-3 h-3" />
+                <span>District Only</span>
+              </span>
+            )}
+
+            {isStateOfficer && !isDistrictOfficer && (
               <span title={`Locked to ${authUser?.assignedState} SDMA`} className="px-2 py-1 rounded-lg bg-purple-950/90 border border-purple-500 text-purple-300 text-[10px] font-mono font-bold flex items-center space-x-1">
                 <Lock className="w-3 h-3" />
                 <span>{authUser?.assignedState} Only</span>
@@ -166,10 +178,16 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>Level 5 • National Command</span>
               </span>
             )}
-            {isStateOfficer && (
+            {isStateOfficer && !isDistrictOfficer && (
               <span className="text-[11px] px-2.5 py-1 rounded-full bg-purple-950/90 border border-purple-500 text-purple-300 font-mono font-bold flex items-center space-x-1.5">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Level 3 • State SDMA</span>
+              </span>
+            )}
+            {isDistrictOfficer && (
+              <span className="text-[11px] px-2.5 py-1 rounded-full bg-amber-950/90 border border-amber-500 text-amber-300 font-mono font-bold flex items-center space-x-1.5">
+                <Activity className="w-3.5 h-3.5" />
+                <span>Level 2 • District DDMA</span>
               </span>
             )}
             {isCitizen && (

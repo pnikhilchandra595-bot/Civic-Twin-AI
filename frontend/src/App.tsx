@@ -33,6 +33,7 @@ import { CitizenPortalView } from './components/CitizenPortalView';
 import { LiveWeatherModal } from './components/LiveWeatherModal';
 import { PublicScrollingPortal } from './components/PublicScrollingPortal';
 import { WhatsAppSimulatorModal } from './components/WhatsAppSimulatorModal';
+import { PublicGPSLocationSOSModal } from './components/PublicGPSLocationSOSModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon 
@@ -47,6 +48,10 @@ export const App: React.FC = () => {
 
   const [state, setState] = useState<CityDigitalTwinState | null>(null);
   
+  // View mode: defaults to public multi-page showcase
+  const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('SCROLLING_PORTAL');
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+
   // Selected deep analysis sub-tab in Section 4
   const [analysisTab, setAnalysisTab] = useState<'cascade' | 'telemetry' | 'iap' | 'sar'>('cascade');
   
@@ -59,6 +64,7 @@ export const App: React.FC = () => {
   const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(false);
   const [isDataExportOpen, setIsDataExportOpen] = useState<boolean>(false);
   const [isCitizenSOSOpen, setIsCitizenSOSOpen] = useState<boolean>(false);
+  const [isGPSLocationSOSOpen, setIsGPSLocationSOSOpen] = useState<boolean>(false);
   const [isDroneCCTVOpen, setIsDroneCCTVOpen] = useState<boolean>(false);
   const [isVoiceRadioOpen, setIsVoiceRadioOpen] = useState<boolean>(false);
   const [isMultiHazardOpen, setIsMultiHazardOpen] = useState<boolean>(false);
@@ -204,12 +210,9 @@ export const App: React.FC = () => {
     }
   };
 
-  const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('SCROLLING_PORTAL');
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
-
   // If user requests login modal specifically
   if (isLoginModalOpen && !authUser) {
-    return <LoginPage onLogin={(user) => { handleLogin(user); setIsLoginModalOpen(false); setViewMode('COCKPIT'); }} />;
+    return <LoginPage onLogin={(user) => { handleLogin(user); setIsLoginModalOpen(false); if (user.userType !== 'citizen') setViewMode('COCKPIT'); }} />;
   }
 
   // If user is in SCROLLING_PORTAL mode
@@ -226,12 +229,45 @@ export const App: React.FC = () => {
           onOpenDroneCCTV={() => setIsDroneCCTVOpen(true)}
           onOpenWeather={() => setIsLiveWeatherOpen(true)}
           onOpenCitizenSOS={() => setIsCitizenSOSOpen(true)}
+          onOpenGPSLocationSOS={() => setIsGPSLocationSOSOpen(true)}
           onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
           onOpenGateways={() => setIsIntegrationsOpen(true)}
           onLoginRequest={() => setIsLoginModalOpen(true)}
           onLogout={handleLogout}
           onControlCommand={(cmd) => apiService.sendControl(cmd)}
         />
+
+        {/* Real-Time Device GPS Location SOS Distress Modal */}
+        {isGPSLocationSOSOpen && (
+          <PublicGPSLocationSOSModal
+            cityName={state?.city_name || 'Mumbai'}
+            cityId={state?.city_id || 'mumbai_monsoon'}
+            onClose={() => setIsGPSLocationSOSOpen(false)}
+          />
+        )}
+
+        {/* Role-Based Login Modal (4-Tier Access Control) */}
+        {isLoginModalOpen && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="relative w-full max-w-5xl">
+              <button
+                onClick={() => setIsLoginModalOpen(false)}
+                className="absolute top-4 right-4 z-50 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 hover:text-white font-mono text-xs cursor-pointer"
+              >
+                ✕ Close
+              </button>
+              <LoginPage
+                onLogin={(user) => {
+                  handleLogin(user);
+                  setIsLoginModalOpen(false);
+                  if (user.userType !== 'citizen') {
+                    setViewMode('COCKPIT');
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* All Modals reachable from Scrolling Portal */}
         {isCitizenSOSOpen && (
