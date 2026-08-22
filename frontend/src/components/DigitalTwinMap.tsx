@@ -631,14 +631,30 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       });
     }
 
-    // 7. Render Moving Units & Tactical NDRF Assets (Compact rounded badge)
+    // 7. Render Moving Units & Tactical NDRF Assets (Distinct Tactical Badges)
     if (showUnits) {
       state.dispatch_units.forEach(unit => {
-        const unitEmoji = unit.unit_type === 'swift_water_rescue' ? '🚤' : unit.unit_type === 'public_works_pump' ? '🚛' : '🚑';
+        let unitEmoji = '🚑';
+        let badgeBg = 'bg-rose-950/95 border-rose-500 text-rose-200';
+
+        if (unit.unit_type === 'swift_water_rescue') {
+          unitEmoji = '🚤';
+          badgeBg = 'bg-cyan-950/95 border-cyan-400 text-cyan-200';
+        } else if (unit.unit_type === 'fire_rescue') {
+          unitEmoji = '🚒';
+          badgeBg = 'bg-orange-950/95 border-orange-500 text-orange-200';
+        } else if (unit.unit_type === 'police_traffic') {
+          unitEmoji = '🚔';
+          badgeBg = 'bg-blue-950/95 border-blue-500 text-blue-200';
+        } else if (unit.unit_type === 'public_works_pump') {
+          unitEmoji = '🚛';
+          badgeBg = 'bg-amber-950/95 border-amber-500 text-amber-200';
+        }
+
         const unitHtml = `
-          <div class="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-950/95 border border-emerald-400 text-emerald-200 text-[9px] font-mono font-bold shadow-lg cursor-pointer transform hover:scale-115 transition-all">
+          <div class="flex items-center space-x-1 px-2.5 py-0.8 rounded-full ${badgeBg} border text-[10px] font-mono font-bold shadow-2xl cursor-pointer transform hover:scale-120 transition-all">
             <span>${unitEmoji}</span>
-            <span class="truncate max-w-[70px]">${unit.callsign.split(' ')[0]}</span>
+            <span class="truncate max-w-[85px]">${unit.callsign.split('(')[0].trim()}</span>
           </div>
         `;
 
@@ -646,16 +662,17 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           icon: L.divIcon({
             className: 'custom-div-icon',
             html: unitHtml,
-            iconSize: [80, 24],
-            iconAnchor: [40, 12]
+            iconSize: [110, 26],
+            iconAnchor: [55, 13]
           })
         }).addTo(layerGroup);
 
         uMarker.bindTooltip(`
-          <div class="text-xs font-mono">
-            <strong>${unit.callsign}</strong> (${unit.agency})<br/>
-            Mission: ${unit.assigned_mission}<br/>
-            Status: <span class="text-emerald-400 font-bold">${unit.status.toUpperCase()}</span>
+          <div class="text-xs font-mono p-1">
+            <strong>${unitEmoji} ${unit.callsign}</strong><br/>
+            Agency: <span class="text-cyan-300">${unit.agency}</span><br/>
+            Status: <span class="text-emerald-400 uppercase">${unit.status}</span><br/>
+            Mission: <span class="text-slate-300">${unit.assigned_mission}</span>
           </div>
         `);
       });

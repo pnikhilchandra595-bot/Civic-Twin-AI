@@ -400,6 +400,347 @@ def _build_bengaluru_scenario() -> Dict[str, Any]:
 
     return {"nodes": nodes, "roads": roads, "sensors": sensors, "center": [12.950, 77.670]}
 
+def _build_generic_state_scenario(selected: Dict[str, Any]) -> Dict[str, Any]:
+    center_lat = selected["lat"]
+    center_lng = selected["lng"]
+    state_name = selected["state"]
+    city_name = selected["name"].split(":")[1].split("&")[0].strip()
+    ndrf_unit = selected["ndrf_unit"]
+
+    nodes = [
+        # 1. Hospitals & Trauma Centers
+        InfrastructureNode(
+            id="node-hosp-1",
+            name=f"{city_name} Apex Trauma Center & Medical College",
+            node_type=NodeType.HOSPITAL,
+            lat=center_lat + 0.022,
+            lng=center_lng - 0.024,
+            elevation_m=16.5,
+            status=NodeStatus.OPERATIONAL,
+            vulnerability_index=0.45,
+            capacity_total=2500,
+            capacity_used=1750,
+            backup_power_hours=48.0
+        ),
+        InfrastructureNode(
+            id="node-hosp-2",
+            name=f"{city_name} Civil Hospital & ICU Surge Facility",
+            node_type=NodeType.HOSPITAL,
+            lat=center_lat - 0.018,
+            lng=center_lng + 0.021,
+            elevation_m=9.2,
+            status=NodeStatus.WARNING,
+            vulnerability_index=0.82,
+            capacity_total=1600,
+            capacity_used=1480,
+            backup_power_hours=24.0
+        ),
+        # 2. Fire & Rescue Stations
+        InfrastructureNode(
+            id="node-fire-1",
+            name=f"{state_name} State Fire HQ & Swift Rescue Station",
+            node_type=NodeType.FIRE_STATION,
+            lat=center_lat + 0.036,
+            lng=center_lng - 0.018,
+            elevation_m=22.0,
+            status=NodeStatus.OPERATIONAL
+        ),
+        InfrastructureNode(
+            id="node-fire-2",
+            name=f"Municipal Fire Brigade Water Tender Station 02",
+            node_type=NodeType.FIRE_STATION,
+            lat=center_lat - 0.032,
+            lng=center_lng - 0.026,
+            elevation_m=18.0,
+            status=NodeStatus.OPERATIONAL
+        ),
+        # 3. NDRF & SDRF Disaster Response Bases
+        InfrastructureNode(
+            id="node-ndrf-1",
+            name=f"{ndrf_unit} Deep Water Staging Base",
+            node_type=NodeType.FIRE_STATION,
+            lat=center_lat + 0.016,
+            lng=center_lng + 0.034,
+            elevation_m=25.0,
+            status=NodeStatus.OPERATIONAL
+        ),
+        # 4. Emergency Mega Relief Shelters
+        InfrastructureNode(
+            id="node-shelter-1",
+            name=f"{city_name} Stadium Mega Relief Camp",
+            node_type=NodeType.SHELTER,
+            lat=center_lat + 0.042,
+            lng=center_lng + 0.019,
+            elevation_m=24.0,
+            status=NodeStatus.OPERATIONAL,
+            capacity_total=8500,
+            capacity_used=1200
+        ),
+        InfrastructureNode(
+            id="node-shelter-2",
+            name=f"{city_name} High-Ground School Relief Complex",
+            node_type=NodeType.SHELTER,
+            lat=center_lat - 0.038,
+            lng=center_lng + 0.032,
+            elevation_m=21.5,
+            status=NodeStatus.OPERATIONAL,
+            capacity_total=4500,
+            capacity_used=750
+        ),
+        # 5. Power Grid Substations
+        InfrastructureNode(
+            id="node-sub-alpha",
+            name=f"{state_name} 220kV Primary Grid Substation",
+            node_type=NodeType.SUBSTATION,
+            lat=center_lat - 0.011,
+            lng=center_lng + 0.009,
+            elevation_m=6.8,
+            status=NodeStatus.OPERATIONAL,
+            vulnerability_index=0.88,
+            capacity_total=450,
+            capacity_used=390
+        ),
+        InfrastructureNode(
+            id="node-sub-beta",
+            name=f"Urban 66/11kV Distribution Substation Beta",
+            node_type=NodeType.SUBSTATION,
+            lat=center_lat + 0.021,
+            lng=center_lng - 0.032,
+            elevation_m=8.2,
+            status=NodeStatus.OPERATIONAL,
+            vulnerability_index=0.74,
+            capacity_total=300,
+            capacity_used=240
+        ),
+        # 6. Water Treatment & Stormwater Dewatering Plant
+        InfrastructureNode(
+            id="node-water-1",
+            name=f"{city_name} Stormwater Dewatering & Water Plant",
+            node_type=NodeType.WATER_TREATMENT,
+            lat=center_lat - 0.024,
+            lng=center_lng - 0.012,
+            elevation_m=4.5,
+            status=NodeStatus.OPERATIONAL,
+            details={"pumps": 8, "capacity_cumecs": 50}
+        ),
+        # 7. Dam, Levee & River Embankment
+        InfrastructureNode(
+            id="node-levee-1",
+            name=f"{city_name} River Embankment & Sluice Floodgates",
+            node_type=NodeType.DAM_LEVEE,
+            lat=center_lat + 0.006,
+            lng=center_lng - 0.007,
+            elevation_m=5.2,
+            status=NodeStatus.OPERATIONAL,
+            vulnerability_index=0.92
+        ),
+        # 8. Bridges & Flyovers
+        InfrastructureNode(
+            id="node-bridge-1",
+            name=f"{city_name} Main River Bridge & Highway Corridor",
+            node_type=NodeType.BRIDGE,
+            lat=center_lat,
+            lng=center_lng,
+            elevation_m=14.0,
+            status=NodeStatus.OPERATIONAL
+        ),
+        InfrastructureNode(
+            id="node-bridge-2",
+            name=f"Bypass Express Flyover Corridor",
+            node_type=NodeType.BRIDGE,
+            lat=center_lat + 0.024,
+            lng=center_lng + 0.014,
+            elevation_m=16.5,
+            status=NodeStatus.OPERATIONAL
+        ),
+        # 9. Lowland Residential & Commercial Choke Points
+        InfrastructureNode(
+            id="node-res-1",
+            name=f"{city_name} Lowland Riverfront Settlement",
+            node_type=NodeType.RESIDENTIAL_DISTRICT,
+            lat=center_lat - 0.019,
+            lng=center_lng + 0.017,
+            elevation_m=3.2,
+            status=NodeStatus.CRITICAL,
+            population_density=16200
+        ),
+        InfrastructureNode(
+            id="node-res-2",
+            name=f"Central Subway Underpass & Commercial Junction",
+            node_type=NodeType.COMMERCIAL_DISTRICT,
+            lat=center_lat + 0.013,
+            lng=center_lng - 0.021,
+            elevation_m=3.8,
+            status=NodeStatus.CRITICAL,
+            population_density=12800
+        ),
+        # 10. Radar & Smart City CCTV Hub
+        InfrastructureNode(
+            id="node-radar-1",
+            name=f"IMD Doppler Weather Radar & Ground Station ({state_name})",
+            node_type=NodeType.RESIDENTIAL_DISTRICT,
+            lat=center_lat - 0.042,
+            lng=center_lng - 0.038,
+            elevation_m=28.0,
+            status=NodeStatus.OPERATIONAL,
+            details={"agency": "IMD Radar Network"}
+        ),
+        InfrastructureNode(
+            id="node-cctv-1",
+            name=f"{city_name} Municipal CCTV Surveillance Grid Hub",
+            node_type=NodeType.COMMERCIAL_DISTRICT,
+            lat=center_lat + 0.009,
+            lng=center_lng + 0.011,
+            elevation_m=12.0,
+            status=NodeStatus.OPERATIONAL,
+            details={"cameras": 64, "ai_vision": "YOLO Active"}
+        )
+    ]
+
+    roads = [
+        RoadEdge(
+            id="road-1",
+            from_node="node-res-1",
+            to_node="node-sub-alpha",
+            name=f"{city_name} Arterial Road Corridor",
+            coordinates=[[center_lng + 0.017, center_lat - 0.019], [center_lng + 0.013, center_lat - 0.015], [center_lng + 0.009, center_lat - 0.011]],
+            length_km=2.4,
+            elevation_m=4.8,
+            max_speed_kmh=40.0,
+            status=RoadStatus.CLEAR
+        ),
+        RoadEdge(
+            id="road-2",
+            from_node="node-sub-alpha",
+            to_node="node-bridge-1",
+            name="Bridge Connector Arterial",
+            coordinates=[[center_lng + 0.009, center_lat - 0.011], [center_lng + 0.004, center_lat - 0.005], [center_lng, center_lat]],
+            length_km=1.8,
+            elevation_m=8.5,
+            max_speed_kmh=45.0,
+            status=RoadStatus.CLEAR
+        ),
+        RoadEdge(
+            id="road-3",
+            from_node="node-bridge-1",
+            to_node="node-shelter-1",
+            name=f"{city_name} High-Ground Evacuation Expressway (Green Corridor)",
+            coordinates=[[center_lng, center_lat], [center_lng + 0.010, center_lat + 0.020], [center_lng + 0.019, center_lat + 0.042]],
+            length_km=5.6,
+            elevation_m=18.0,
+            max_speed_kmh=65.0,
+            is_evacuation_corridor=True,
+            status=RoadStatus.CLEAR
+        ),
+        RoadEdge(
+            id="road-4",
+            from_node="node-res-2",
+            to_node="node-hosp-1",
+            name="Emergency Hospital Rapid Transit Route",
+            coordinates=[[center_lng - 0.021, center_lat + 0.013], [center_lng - 0.022, center_lat + 0.018], [center_lng - 0.024, center_lat + 0.022]],
+            length_km=2.1,
+            elevation_m=12.0,
+            max_speed_kmh=50.0,
+            is_evacuation_corridor=True,
+            status=RoadStatus.CLEAR
+        ),
+        RoadEdge(
+            id="road-5",
+            from_node="node-fire-1",
+            to_node="node-res-2",
+            name="Fire & Rescue Strike Route",
+            coordinates=[[center_lng - 0.018, center_lat + 0.036], [center_lng - 0.020, center_lat + 0.024], [center_lng - 0.021, center_lat + 0.013]],
+            length_km=3.2,
+            elevation_m=15.0,
+            max_speed_kmh=55.0,
+            status=RoadStatus.CLEAR
+        ),
+        RoadEdge(
+            id="road-6",
+            from_node="node-ndrf-1",
+            to_node="node-res-1",
+            name="NDRF Deep Water Deployment Track",
+            coordinates=[[center_lng + 0.034, center_lat + 0.016], [center_lng + 0.025, center_lat - 0.002], [center_lng + 0.017, center_lat - 0.019]],
+            length_km=4.8,
+            elevation_m=11.0,
+            max_speed_kmh=50.0,
+            status=RoadStatus.CLEAR
+        ),
+        RoadEdge(
+            id="road-7",
+            from_node="node-bridge-2",
+            to_node="node-shelter-2",
+            name="South-East Relief Transit Corridor",
+            coordinates=[[center_lng + 0.014, center_lat + 0.024], [center_lng + 0.024, center_lat - 0.007], [center_lng + 0.032, center_lat - 0.038]],
+            length_km=6.4,
+            elevation_m=16.0,
+            max_speed_kmh=60.0,
+            is_evacuation_corridor=True,
+            status=RoadStatus.CLEAR
+        )
+    ]
+
+    sensors = [
+        SensorReading(
+            sensor_id="sensor-river-gauge-1",
+            sensor_type=SensorType.WATER_LEVEL_GAUGE,
+            name=f"CWC {city_name} River Flood Gauge",
+            lat=center_lat,
+            lng=center_lng,
+            current_value=24.5,
+            unit="m",
+            threshold_warning=22.0,
+            threshold_critical=25.5,
+            status=NodeStatus.WARNING,
+            trend="rising",
+            history=[19.5, 21.0, 22.8, 23.9, 24.5]
+        ),
+        SensorReading(
+            sensor_id="sensor-underpass-1",
+            sensor_type=SensorType.WATER_LEVEL_GAUGE,
+            name=f"{city_name} Central Underpass Water Sensor",
+            lat=center_lat + 0.013,
+            lng=center_lng - 0.021,
+            current_value=0.52,
+            unit="m",
+            threshold_warning=0.3,
+            threshold_critical=0.65,
+            status=NodeStatus.CRITICAL,
+            trend="rising",
+            history=[0.1, 0.22, 0.35, 0.44, 0.52]
+        ),
+        SensorReading(
+            sensor_id="sensor-storm-drain-1",
+            sensor_type=SensorType.STORM_DRAIN_FLOW,
+            name=f"{city_name} Primary Sluice Flow Discharge",
+            lat=center_lat - 0.024,
+            lng=center_lng - 0.012,
+            current_value=82.0,
+            unit="%",
+            threshold_warning=70.0,
+            threshold_critical=90.0,
+            status=NodeStatus.WARNING,
+            trend="rising",
+            history=[52.0, 61.0, 70.0, 76.0, 82.0]
+        ),
+        SensorReading(
+            sensor_id="sensor-imd-radar-1",
+            sensor_type=SensorType.WIND_WEATHER,
+            name=f"IMD Doppler Weather Radar ({state_name})",
+            lat=center_lat - 0.042,
+            lng=center_lng - 0.038,
+            current_value=42.0,
+            unit="mm/h",
+            threshold_warning=30.0,
+            threshold_critical=65.0,
+            status=NodeStatus.WARNING,
+            trend="rising",
+            history=[20.0, 26.0, 33.0, 38.0, 42.0]
+        )
+    ]
+
+    return {"nodes": nodes, "roads": roads, "sensors": sensors, "center": [center_lat, center_lng]}
+
 def generate_base_scenario(city_id: str = "mumbai_monsoon") -> CityDigitalTwinState:
     cities = {c["id"]: c for c in get_available_indian_cities()}
     selected = cities.get(city_id, cities["mumbai_monsoon"])
@@ -411,66 +752,94 @@ def generate_base_scenario(city_id: str = "mumbai_monsoon") -> CityDigitalTwinSt
     elif city_id == "bengaluru_lakes":
         spec = _build_bengaluru_scenario()
     else:
-        # Fallback to authentic city coordinates
-        center_lat = selected["lat"]
-        center_lng = selected["lng"]
-        spec = {
-            "center": [center_lat, center_lng],
-            "nodes": [
-                InfrastructureNode(id="node-hosp-1", name=f"Apex Medical & Trauma Hospital ({selected['state']})", node_type=NodeType.HOSPITAL, lat=center_lat + 0.02, lng=center_lng - 0.02, elevation_m=18.0, status=NodeStatus.OPERATIONAL, capacity_total=2000, capacity_used=1400),
-                InfrastructureNode(id="node-radar-1", name=f"IMD Doppler Weather Radar & Ground Station ({selected['state']})", node_type=NodeType.RESIDENTIAL_DISTRICT, lat=center_lat - 0.03, lng=center_lng - 0.03, elevation_m=25.0, status=NodeStatus.OPERATIONAL),
-                InfrastructureNode(id="node-shelter-1", name=f"State Emergency Relief Camp ({selected['state']})", node_type=NodeType.SHELTER, lat=center_lat + 0.03, lng=center_lng + 0.02, elevation_m=22.0, status=NodeStatus.OPERATIONAL, capacity_total=6000, capacity_used=900),
-                InfrastructureNode(id="node-sub-alpha", name=f"State 220kV Primary Grid Substation ({selected['state']})", node_type=NodeType.SUBSTATION, lat=center_lat - 0.01, lng=center_lng + 0.01, elevation_m=6.0, status=NodeStatus.OPERATIONAL, capacity_total=400, capacity_used=340),
-                InfrastructureNode(id="node-bridge-1", name=f"Primary River/Coastal Bridge Span ({selected['state']})", node_type=NodeType.BRIDGE, lat=center_lat, lng=center_lng, elevation_m=12.0, status=NodeStatus.OPERATIONAL),
-                InfrastructureNode(id="node-levee-1", name=f"River Embankment & Sluice Gates ({selected['state']})", node_type=NodeType.DAM_LEVEE, lat=center_lat + 0.01, lng=center_lng - 0.01, elevation_m=5.0, status=NodeStatus.OPERATIONAL),
-                InfrastructureNode(id="node-fire-1", name=f"{selected['ndrf_unit']} Swift Water Base", node_type=NodeType.FIRE_STATION, lat=center_lat + 0.04, lng=center_lng - 0.03, elevation_m=24.0, status=NodeStatus.OPERATIONAL),
-                InfrastructureNode(id="node-res-1", name=f"Lowland Riverfront Settlement ({selected['state']})", node_type=NodeType.RESIDENTIAL_DISTRICT, lat=center_lat - 0.02, lng=center_lng + 0.02, elevation_m=3.5, status=NodeStatus.CRITICAL, population_density=14000)
-            ],
-            "roads": [
-                RoadEdge(id="road-1", from_node="node-res-1", to_node="node-bridge-1", name="State Arterial Link", coordinates=[[center_lng + 0.02, center_lat - 0.02], [center_lng, center_lat]], length_km=3.1, elevation_m=4.5, max_speed_kmh=45.0, status=RoadStatus.CLEAR),
-                RoadEdge(id="road-2", from_node="node-bridge-1", to_node="node-shelter-1", name="Highway Evacuation Corridor", coordinates=[[center_lng, center_lat], [center_lng + 0.02, center_lat + 0.03]], length_km=4.2, elevation_m=18.0, max_speed_kmh=65.0, is_evacuation_corridor=True, status=RoadStatus.CLEAR)
-            ],
-            "sensors": [
-                SensorReading(sensor_id="sensor-state-gauge-1", sensor_type=SensorType.WATER_LEVEL_GAUGE, name=f"CWC River Level Gauge ({selected['state']})", lat=center_lat, lng=center_lng, current_value=24.5, unit="m", threshold_warning=22.0, threshold_critical=26.0, status=NodeStatus.WARNING, trend="rising", history=[20.0, 21.5, 23.0, 24.5]),
-                SensorReading(sensor_id="sensor-state-radar-1", sensor_type=SensorType.WIND_WEATHER, name=f"IMD Doppler Weather Radar ({selected['state']})", lat=center_lat - 0.03, lng=center_lng - 0.03, current_value=38.0, unit="mm/h", threshold_warning=30.0, threshold_critical=60.0, status=NodeStatus.OPERATIONAL, trend="rising", history=[18.0, 24.0, 31.0, 38.0])
-            ]
-        }
+        spec = _build_generic_state_scenario(selected)
 
     nodes: List[InfrastructureNode] = spec["nodes"]
     roads: List[RoadEdge] = spec["roads"]
     sensors: List[SensorReading] = spec["sensors"]
     center_coords: List[float] = spec["center"]
 
+    # Generate 8 Active Emergency Dispatch Units (Ambulances, Fire Tenders, NDRF Boats, Pumps)
     dispatch_units: List[DispatchUnit] = [
         DispatchUnit(
+            unit_id="unit-ems-1",
+            callsign="108 ALS Ambulance Alpha (Trauma Life Support)",
+            unit_type="ems_ambulance",
+            agency="108 Emergency Medical Services",
+            lat=center_coords[0] + 0.020,
+            lng=center_coords[1] - 0.018,
+            status="en_route",
+            assigned_mission="Transporting critical casualties to Apex Trauma Hospital"
+        ),
+        DispatchUnit(
+            unit_id="unit-ems-2",
+            callsign="108 Mobile Triage Van Beta",
+            unit_type="ems_ambulance",
+            agency="108 Emergency Medical Services",
+            lat=center_coords[0] - 0.015,
+            lng=center_coords[1] + 0.018,
+            status="standby",
+            assigned_mission="Staged at Civil Hospital for mass casualty triage"
+        ),
+        DispatchUnit(
+            unit_id="unit-fire-1",
+            callsign="Fire Water Tender 01 (Inflatable Rafts & High Pumps)",
+            unit_type="fire_rescue",
+            agency=f"{selected['state']} Fire & Emergency Services",
+            lat=center_coords[0] + 0.030,
+            lng=center_coords[1] - 0.015,
+            status="en_route",
+            assigned_mission="Deploying swift water inflatable rafts to subway choke point"
+        ),
+        DispatchUnit(
+            unit_id="unit-fire-2",
+            callsign="Fire Hazmat & Technical Rescue 02",
+            unit_type="fire_rescue",
+            agency=f"{selected['state']} Fire & Emergency Services",
+            lat=center_coords[0] - 0.025,
+            lng=center_coords[1] - 0.020,
+            status="standby",
+            assigned_mission="Structural integrity inspection at submerged substation"
+        ),
+        DispatchUnit(
             unit_id="unit-ndrf-1",
-            callsign=f"{selected['ndrf_unit'].split(' ')[0]} Raft Alpha",
+            callsign=f"{selected['ndrf_unit'].split(' ')[0]} Gemini Deep Raft Alpha",
             unit_type="swift_water_rescue",
             agency=selected["ndrf_unit"],
-            lat=center_coords[0] + 0.02,
-            lng=center_coords[1] - 0.02,
+            lat=center_coords[0] + 0.012,
+            lng=center_coords[1] + 0.028,
+            status="en_route",
+            assigned_mission="Deep water flood evacuation in low-lying residential settlements"
+        ),
+        DispatchUnit(
+            unit_id="unit-ndrf-2",
+            callsign=f"{selected['ndrf_unit'].split(' ')[0]} Inflatable Heavy Boat Bravo",
+            unit_type="swift_water_rescue",
+            agency=selected["ndrf_unit"],
+            lat=center_coords[0] - 0.012,
+            lng=center_coords[1] + 0.025,
             status="standby",
-            assigned_mission=f"Staged at {selected['ndrf_unit']} base for rapid flood evacuation"
+            assigned_mission="Staged for river embankment breach response"
+        ),
+        DispatchUnit(
+            unit_id="unit-police-1",
+            callsign=f"{selected['state']} Police Traffic Control Interceptor",
+            unit_type="police_traffic",
+            agency=f"{selected['state']} State Police",
+            lat=center_coords[0] + 0.005,
+            lng=center_coords[1] + 0.005,
+            status="en_route",
+            assigned_mission="Enforcing green evacuation corridor diversion"
         ),
         DispatchUnit(
             unit_id="unit-pump-1",
-            callsign="State Heavy Dewatering Pump P-12",
+            callsign="State High-Volume Dewatering Pump Truck P-04",
             unit_type="public_works_pump",
-            agency=f"{selected['state']} Disaster Authority (SDMA)",
-            lat=center_coords[0] - 0.015,
-            lng=center_coords[1] + 0.015,
-            status="standby",
-            assigned_mission="Ready for Substation & Lowland flood defense"
-        ),
-        DispatchUnit(
-            unit_id="unit-ems-1",
-            callsign="108 Advance Life Support Ambulance 08",
-            unit_type="ems_ambulance",
-            agency="108 Emergency Medical Services",
-            lat=center_coords[0] - 0.01,
-            lng=center_coords[1] - 0.01,
-            status="standby",
-            assigned_mission="Staged at Apex Trauma Hospital"
+            agency=f"{selected['state']} Disaster Management Authority (SDMA)",
+            lat=center_coords[0] - 0.020,
+            lng=center_coords[1] - 0.010,
+            status="en_route",
+            assigned_mission="Dewatering 220kV Primary Substation & Underpass"
         )
     ]
 
