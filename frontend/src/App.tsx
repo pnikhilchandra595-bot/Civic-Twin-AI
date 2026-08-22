@@ -32,6 +32,7 @@ import { GeminiAIModal } from './components/GeminiAIModal';
 import { CitizenPortalView } from './components/CitizenPortalView';
 import { LiveWeatherModal } from './components/LiveWeatherModal';
 import { PublicScrollingPortal } from './components/PublicScrollingPortal';
+import { WhatsAppSimulatorModal } from './components/WhatsAppSimulatorModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon 
@@ -71,6 +72,7 @@ export const App: React.FC = () => {
   const [isMeshOpen, setIsMeshOpen] = useState<boolean>(false);
   const [isAICopilotOpen, setIsAICopilotOpen] = useState<boolean>(false);
   const [isLiveWeatherOpen, setIsLiveWeatherOpen] = useState<boolean>(false);
+  const [isWhatsAppOpen, setIsWhatsAppOpen] = useState<boolean>(false);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
@@ -224,6 +226,7 @@ export const App: React.FC = () => {
           onOpenDroneCCTV={() => setIsDroneCCTVOpen(true)}
           onOpenWeather={() => setIsLiveWeatherOpen(true)}
           onOpenCitizenSOS={() => setIsCitizenSOSOpen(true)}
+          onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
           onOpenGateways={() => setIsIntegrationsOpen(true)}
           onLoginRequest={() => setIsLoginModalOpen(true)}
           onLogout={handleLogout}
@@ -269,6 +272,12 @@ export const App: React.FC = () => {
         {isIntegrationsOpen && (
           <IntegrationsModal
             onClose={() => setIsIntegrationsOpen(false)}
+          />
+        )}
+        {isWhatsAppOpen && (
+          <WhatsAppSimulatorModal
+            cityName={state?.city_name || 'Mumbai'}
+            onClose={() => setIsWhatsAppOpen(false)}
           />
         )}
       </div>
@@ -760,6 +769,14 @@ export const App: React.FC = () => {
           state={state}
           onClose={() => setIsLiveWeatherOpen(false)}
           onDeployed={handleSyncLiveWeather}
+        />
+      )}
+
+      {/* WhatsApp Civil Defense Bot Simulator */}
+      {isWhatsAppOpen && (
+        <WhatsAppSimulatorModal
+          cityName={state?.city_name || 'Mumbai'}
+          onClose={() => setIsWhatsAppOpen(false)}
         />
       )}
     </div>

@@ -11,7 +11,7 @@ import {
   CloudRain, Wind, Droplets, Gauge, Key, Lock, Building2, 
   CheckCircle2, AlertTriangle, Eye, Compass, Waves, FileText, 
   Radio, Play, Pause, ChevronRight, Zap, RefreshCw, ExternalLink,
-  ChevronDown, Layers, Terminal
+  ChevronDown, Layers, Terminal, MessageSquare
 } from 'lucide-react';
 
 interface PublicScrollingPortalProps {
@@ -24,6 +24,7 @@ interface PublicScrollingPortalProps {
   onOpenDroneCCTV: () => void;
   onOpenWeather: () => void;
   onOpenCitizenSOS: () => void;
+  onOpenWhatsApp?: () => void;
   onOpenGateways: () => void;
   onLoginRequest: () => void;
   onLogout: () => void;
@@ -40,6 +41,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   onOpenDroneCCTV,
   onOpenWeather,
   onOpenCitizenSOS,
+  onOpenWhatsApp,
   onOpenGateways,
   onLoginRequest,
   onLogout,
@@ -506,13 +508,25 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
             </h2>
           </div>
 
-          <button
-            onClick={onOpenCitizenSOS}
-            className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-mono text-xs font-bold transition-all shadow-lg flex items-center space-x-2 cursor-pointer"
-          >
-            <Smartphone className="w-4 h-4" />
-            <span>Open Citizen Safety Hub</span>
-          </button>
+          <div className="flex items-center space-x-2.5">
+            {onOpenWhatsApp && (
+              <button
+                onClick={onOpenWhatsApp}
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition-all shadow-lg flex items-center space-x-1.5 cursor-pointer"
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span>💬 Test WhatsApp Bot</span>
+              </button>
+            )}
+
+            <button
+              onClick={onOpenCitizenSOS}
+              className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-mono text-xs font-bold transition-all shadow-lg flex items-center space-x-2 cursor-pointer"
+            >
+              <Smartphone className="w-4 h-4" />
+              <span>Open Citizen Safety Hub</span>
+            </button>
+          </div>
         </div>
 
         {/* 24/7 Helplines Grid */}
