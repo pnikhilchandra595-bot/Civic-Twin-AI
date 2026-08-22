@@ -37,7 +37,7 @@ class DroneCCTVService:
 
     def _init_pan_india_camera_feeds(self):
         self.camera_feeds = [
-            # 1. Mumbai Hindmata Subway (CCTV)
+            # 1. Mumbai Hindmata Subway (CCTV) - Real Flooded Street Footage
             DroneCameraFeed(
                 camera_id="CAM-MUM-01",
                 feed_name="Hindmata Lowland Subway Underpass (CAM-04)",
@@ -47,7 +47,7 @@ class DroneCCTVService:
                 state_name="Maharashtra",
                 lat=19.019,
                 lng=72.846,
-                video_url="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                video_url="https://assets.mixkit.co/videos/preview/mixkit-car-driving-through-a-flooded-street-41959-large.mp4",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.58,
                 stalled_vehicles_count=3,
@@ -59,7 +59,7 @@ class DroneCCTVService:
                     ComputerVisionDetection(label="Water Pooling Level: 0.58m", confidence=0.98, bbox=[5, 62, 90, 32], hazard_severity="WARNING")
                 ]
             ),
-            # 2. Mumbai River Recon Drone (Garuda-1)
+            # 2. Mumbai River Recon Drone (Garuda-1) - Real Aerial Raging Flood Waters
             DroneCameraFeed(
                 camera_id="DRONE-MUM-01",
                 feed_name="UAV Recon Drone Garuda-1 (Mithi Riverfront)",
@@ -69,7 +69,7 @@ class DroneCCTVService:
                 state_name="Maharashtra",
                 lat=19.068,
                 lng=72.875,
-                video_url="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                video_url="https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-river-with-turbulent-waters-41961-large.mp4",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.92,
                 stalled_vehicles_count=5,
@@ -81,7 +81,7 @@ class DroneCCTVService:
                     ComputerVisionDetection(label="High Velocity Water Current (2.8 m/s)", confidence=0.91, bbox=[10, 66, 80, 28], hazard_severity="WARNING")
                 ]
             ),
-            # 3. Delhi NCR Yamuna Recon Drone
+            # 3. Delhi NCR Yamuna Recon Drone - Real Flowing River Flood
             DroneCameraFeed(
                 camera_id="DRONE-DEL-01",
                 feed_name="UAV SkyRecon Falcon-4 (Yamuna Floodplain)",
@@ -91,57 +91,78 @@ class DroneCCTVService:
                 state_name="Delhi NCR",
                 lat=28.665,
                 lng=77.235,
-                video_url="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                video_url="https://assets.mixkit.co/videos/preview/mixkit-flowing-water-in-a-raging-river-41960-large.mp4",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.74,
                 stalled_vehicles_count=4,
                 stranded_pedestrians_count=8,
                 flow_velocity_ms=2.1,
                 ai_yolo_detections=[
-                    ComputerVisionDetection(label="Yamuna High Crest Overtopping (208.6m)", confidence=0.98, bbox=[15, 25, 70, 45], hazard_severity="CRITICAL"),
-                    ComputerVisionDetection(label="Stranded Settlement Cluster", confidence=0.93, bbox=[50, 18, 30, 25], hazard_severity="CRITICAL")
+                    ComputerVisionDetection(label="Yamuna Lowland Floodplain Submerged", confidence=0.98, bbox=[15, 25, 70, 45], hazard_severity="CRITICAL"),
+                    ComputerVisionDetection(label="Ring Road Water Inundation", confidence=0.93, bbox=[5, 60, 90, 30], hazard_severity="WARNING")
                 ]
             ),
-            # 4. Bengaluru Lake Spillway (Karnataka)
+            # 4. Bengaluru Lake Spill (CCTV) - Heavy Torrential Urban Rain
             DroneCameraFeed(
                 camera_id="CAM-BLR-01",
-                feed_name="Bellandur Lake Sluice & Eco-Space Choke (CAM-12)",
+                feed_name="Bellandur Sluice Gate CCTV Matrix",
                 camera_type="MUNICIPAL_CCTV",
                 city_id="bengaluru_lakes",
-                location_name="Outer Ring Road & Bellandur Lake Spillway",
+                location_name="Outer Ring Road & Ecospace Lake Drain",
                 state_name="Karnataka",
-                lat=12.927,
-                lng=77.674,
-                video_url="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+                lat=12.926,
+                lng=77.676,
+                video_url="https://assets.mixkit.co/videos/preview/mixkit-heavy-rain-falling-on-a-city-street-41962-large.mp4",
                 status="LIVE_STREAMING",
-                flood_depth_detected_m=0.62,
-                stalled_vehicles_count=7,
-                stranded_pedestrians_count=11,
-                flow_velocity_ms=1.6,
+                flood_depth_detected_m=0.45,
+                stalled_vehicles_count=8,
+                stranded_pedestrians_count=3,
+                flow_velocity_ms=0.9,
                 ai_yolo_detections=[
-                    ComputerVisionDetection(label="Tech Park Perimeter Wall Inundation", confidence=0.94, bbox=[25, 30, 50, 35], hazard_severity="CRITICAL"),
-                    ComputerVisionDetection(label="Stalled Vehicles on ORR (7x)", confidence=0.92, bbox=[10, 60, 80, 28], hazard_severity="WARNING")
+                    ComputerVisionDetection(label="ORR Service Road Waterlogging", confidence=0.95, bbox=[22, 35, 55, 40], hazard_severity="WARNING"),
+                    ComputerVisionDetection(label="Traffic Gridlock / Stalled Sedans", confidence=0.92, bbox=[10, 50, 40, 35], hazard_severity="WARNING")
                 ]
             ),
-            # 5. Chennai Cooum Surge (Tamil Nadu)
+            # 5. Chennai Coastal Cyclone Radar Cam - Real Coastal Storm Surge
             DroneCameraFeed(
-                camera_id="DRONE-CHE-01",
-                feed_name="Coastal Recon Drone Trisul-2 (Marina Beach Mouth)",
-                camera_type="UAV_SURVEY_DRONE",
+                camera_id="CAM-CHN-01",
+                feed_name="Marina Beach Coastal Storm Surge Cam",
+                camera_type="COASTAL_RADAR_CAM",
                 city_id="chennai_cyclone",
-                location_name="Cooum River Outfall & Napier Bridge",
+                location_name="Adyar River Estuary & Marina Shore",
                 state_name="Tamil Nadu",
-                lat=13.067,
-                lng=80.282,
-                video_url="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+                lat=13.010,
+                lng=80.278,
+                video_url="https://assets.mixkit.co/videos/preview/mixkit-waves-crashing-on-a-coastal-cliff-during-a-storm-41963-large.mp4",
                 status="LIVE_STREAMING",
-                flood_depth_detected_m=0.88,
-                stalled_vehicles_count=2,
-                stranded_pedestrians_count=4,
-                flow_velocity_ms=3.2,
+                flood_depth_detected_m=1.15,
+                stalled_vehicles_count=1,
+                stranded_pedestrians_count=2,
+                flow_velocity_ms=3.4,
                 ai_yolo_detections=[
-                    ComputerVisionDetection(label="Storm Surge Tide Inflow (+1.8m)", confidence=0.96, bbox=[10, 20, 80, 50], hazard_severity="CRITICAL"),
-                    ComputerVisionDetection(label="Fishermen Hamlet Evacuation Point", confidence=0.90, bbox=[40, 15, 35, 25], hazard_severity="WARNING")
+                    ComputerVisionDetection(label="Tidal Wave Overtopping (1.15m)", confidence=0.99, bbox=[5, 30, 90, 50], hazard_severity="CRITICAL"),
+                    ComputerVisionDetection(label="High Velocity Estuary Sluice Current", confidence=0.94, bbox=[30, 55, 40, 35], hazard_severity="CRITICAL")
+                ]
+            ),
+            # 6. Assam Brahmaputra Aerial Recon Drone - Real Wide River Survey
+            DroneCameraFeed(
+                camera_id="DRONE-ASM-01",
+                feed_name="UAV EagleEye-9 (Brahmaputra Valley)",
+                camera_type="UAV_SURVEY_DRONE",
+                city_id="assam_brahmaputra",
+                location_name="Guwahati Riverside Ghat & Embankment",
+                state_name="Assam",
+                lat=26.185,
+                lng=91.748,
+                video_url="https://assets.mixkit.co/videos/preview/mixkit-drone-shot-of-a-river-winding-through-a-landscape-41964-large.mp4",
+                status="LIVE_STREAMING",
+                flood_depth_detected_m=1.45,
+                stalled_vehicles_count=0,
+                stranded_pedestrians_count=22,
+                flow_velocity_ms=4.2,
+                ai_yolo_detections=[
+                    ComputerVisionDetection(label="Brahmaputra Major Inundation Plain", confidence=0.98, bbox=[10, 15, 80, 55], hazard_severity="CRITICAL"),
+                    ComputerVisionDetection(label="Village Evacuees at River Bund (22x)", confidence=0.96, bbox=[40, 60, 35, 25], hazard_severity="CRITICAL")
                 ]
             )
         ]

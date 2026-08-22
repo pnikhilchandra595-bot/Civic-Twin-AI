@@ -30,6 +30,12 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
   const [snapshotTaken, setSnapshotTaken] = useState<boolean>(false);
   const [dispatchSuccess, setDispatchSuccess] = useState<string | null>(null);
 
+  // Tactical PTZ (Pan-Tilt-Zoom) & Flight HUD
+  const [zoomLevel, setZoomLevel] = useState<number>(1.0);
+  const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [showFlightHUD, setShowFlightHUD] = useState<boolean>(true);
+  const [radioChatter, setRadioChatter] = useState<boolean>(false);
+
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -46,20 +52,32 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
 
   const activeFeed = feeds.find(f => f.camera_id === activeFeedId) || feeds[0];
 
-  // Video filter style based on spectrum mode
+  // Video filter style based on spectrum mode + PTZ transform
   const getVideoFilterStyle = () => {
+    let filter = '';
     if (visionMode === 'THERMAL_FLIR') {
-      return {
-        filter: 'contrast(180%) brightness(110%) hue-rotate(180deg) saturate(250%)',
-        mixBlendMode: 'screen' as const
-      };
+      filter = 'contrast(200%) brightness(110%) hue-rotate(180deg) saturate(280%)';
+    } else if (visionMode === 'NIGHT_VISION') {
+      filter = 'contrast(170%) brightness(130%) sepia(100%) hue-rotate(85deg) saturate(320%)';
     }
-    if (visionMode === 'NIGHT_VISION') {
-      return {
-        filter: 'contrast(160%) brightness(130%) sepia(100%) hue-rotate(85deg) saturate(300%)'
-      };
-    }
-    return {};
+
+    return {
+      filter: filter || undefined,
+      transform: `scale(${zoomLevel}) translate(${panOffset.x}px, ${panOffset.y}px)`,
+      transition: 'transform 0.2s ease-out'
+    };
+  };
+
+  const handlePan = (dx: number, dy: number) => {
+    setPanOffset(prev => ({
+      x: Math.max(-100, Math.min(100, prev.x + dx)),
+      y: Math.max(-100, Math.min(100, prev.y + dy))
+    }));
+  };
+
+  const handleResetPTZ = () => {
+    setZoomLevel(1.0);
+    setPanOffset({ x: 0, y: 0 });
   };
 
   const handleTakeSnapshot = () => {
@@ -146,6 +164,66 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                   className="w-full h-full object-cover"
                 />
 
+                {/* Scanline CRT Texture Overlay */}
+                <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] z-10 opacity-60" />
+
+                {/* Military Drone Flight HUD Overlay */}
+                {showFlightHUD && (
+                  <div className="absolute inset-0 pointer-events-none z-15 flex flex-col justify-between p-4 font-mono text-[11px] text-cyan-400 select-none">
+                    
+                    {/* Top Compass Heading Tape */}
+                    <div className="flex justify-center">
+                      <div className="px-4 py-1 rounded bg-black/60 border border-cyan-500/40 text-center text-[10px] tracking-widest text-cyan-300">
+                        ◀ ··· 070 ··· 080 ··· <span className="text-white font-bold font-mono">094° E</span> ··· 100 ··· 110 ··· ▶
+                      </div>
+                    </div>
+
+                    {/* Center Artificial Horizon & Target Reticle */}
+                    <div className="flex-1 flex items-center justify-center relative">
+                      {/* Tactical Pitch Lines */}
+                      <div className="absolute w-40 flex flex-col items-center space-y-4 opacity-50">
+                        <div className="w-24 border-t-2 border-cyan-400/80 flex justify-between text-[8px]">
+                          <span>+10</span><span>+10</span>
+                        </div>
+                        <div className="w-32 border-t-2 border-dashed border-cyan-300 flex justify-between text-[8px]">
+                          <span>--00--</span><span>--00--</span>
+                        </div>
+                        <div className="w-24 border-b-2 border-cyan-400/80 flex justify-between text-[8px]">
+                          <span>-10</span><span>-10</span>
+                        </div>
+                      </div>
+
+                      {/* Optical Crosshairs */}
+                      <div className="w-16 h-16 border border-cyan-400/60 rounded-full flex items-center justify-center relative">
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
+                        <div className="absolute top-0 bottom-0 w-0.5 bg-cyan-400/50" />
+                        <div className="absolute left-0 right-0 h-0.5 bg-cyan-400/50" />
+                      </div>
+
+                      {/* Laser Rangefinder */}
+                      <div className="absolute bottom-6 px-2 py-0.5 rounded bg-black/80 border border-cyan-500/40 text-[9px] text-cyan-300">
+                        🎯 LRF: 412.5m • AZ: +02.4° • EL: -14.8°
+                      </div>
+                    </div>
+
+                    {/* Left & Right Telemetry Ladders */}
+                    <div className="flex justify-between items-end">
+                      <div className="p-2 rounded bg-black/75 border border-slate-700/80 space-y-0.5 text-[10px]">
+                        <div>ALT: <span className="text-white font-bold">+48.2m AGL</span></div>
+                        <div>SPD: <span className="text-white font-bold">{activeFeed.flow_velocity_ms * 4} km/h</span></div>
+                        <div>LAT: <span className="text-slate-300">{activeFeed.lat.toFixed(4)}° N</span></div>
+                      </div>
+
+                      <div className="p-2 rounded bg-black/75 border border-slate-700/80 space-y-0.5 text-[10px] text-right">
+                        <div>BATT: <span className="text-emerald-400 font-bold">88% (28m)</span></div>
+                        <div>SIGNAL: <span className="text-cyan-300 font-bold">-62 dBm</span></div>
+                        <div>ENC: <span className="text-slate-300">AES-256 GCM</span></div>
+                      </div>
+                    </div>
+
+                  </div>
+                )}
+
                 {/* Tactical HUD OSD Watermark Overlay */}
                 <div className="absolute top-3 left-3 flex items-center space-x-2 pointer-events-none z-20">
                   <span className="px-2.5 py-1 rounded-lg bg-black/80 border border-cyan-500/50 text-cyan-300 font-mono text-xs font-bold flex items-center space-x-1.5">
@@ -193,6 +271,57 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                   </div>
                 )}
 
+                {/* Floating Interactive PTZ D-Pad Controller */}
+                <div className="absolute right-3 bottom-14 z-25 bg-black/80 border border-cyan-500/40 backdrop-blur-md rounded-2xl p-2 flex flex-col items-center space-y-1 text-slate-300">
+                  <div className="text-[9px] font-mono text-cyan-400 font-bold mb-0.5">PTZ PAN/ZOOM</div>
+                  <button
+                    onClick={() => handlePan(0, -15)}
+                    className="p-1 rounded bg-slate-900 hover:bg-cyan-600 text-white text-[10px] transition-all"
+                  >
+                    ▲
+                  </button>
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={() => handlePan(-15, 0)}
+                      className="p-1 rounded bg-slate-900 hover:bg-cyan-600 text-white text-[10px] transition-all"
+                    >
+                      ◀
+                    </button>
+                    <button
+                      onClick={handleResetPTZ}
+                      className="p-1 rounded bg-cyan-950 text-cyan-300 text-[9px] font-mono hover:bg-cyan-900 transition-all"
+                    >
+                      {zoomLevel.toFixed(1)}x
+                    </button>
+                    <button
+                      onClick={() => handlePan(15, 0)}
+                      className="p-1 rounded bg-slate-900 hover:bg-cyan-600 text-white text-[10px] transition-all"
+                    >
+                      ▶
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => handlePan(0, 15)}
+                    className="p-1 rounded bg-slate-900 hover:bg-cyan-600 text-white text-[10px] transition-all"
+                  >
+                    ▼
+                  </button>
+                  <div className="flex items-center space-x-1 pt-1 border-t border-slate-800">
+                    <button
+                      onClick={() => setZoomLevel(z => Math.max(1.0, z - 0.2))}
+                      className="px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-[10px] font-bold"
+                    >
+                      -
+                    </button>
+                    <button
+                      onClick={() => setZoomLevel(z => Math.min(3.0, z + 0.2))}
+                      className="px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-[10px] font-bold text-cyan-400"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
                 {/* Bottom Video Floating Controls */}
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between p-2 rounded-xl bg-black/80 backdrop-blur-md border border-slate-800 z-20">
                   <div className="flex items-center space-x-2">
@@ -239,6 +368,16 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                   </div>
 
                   <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setShowFlightHUD(!showFlightHUD)}
+                      className={`px-2.5 py-1 rounded-lg border text-xs font-mono font-bold flex items-center space-x-1 ${
+                        showFlightHUD ? 'bg-cyan-950 border-cyan-500 text-cyan-300' : 'bg-slate-900 border-slate-800 text-slate-400'
+                      }`}
+                    >
+                      <Navigation className="w-3.5 h-3.5" />
+                      <span>HUD OSD</span>
+                    </button>
+
                     <button
                       onClick={() => setShowAIOverlay(!showAIOverlay)}
                       className={`px-2.5 py-1 rounded-lg border text-xs font-mono font-bold flex items-center space-x-1 ${
