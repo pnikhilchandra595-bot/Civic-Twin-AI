@@ -13,24 +13,25 @@ class NASAFIRMSIngestionService:
 
     def __init__(self):
         self.map_key = os.getenv("NASA_FIRMS_API_KEY", "f92492eda2c0ae61f0d34bf1399a4548")
-        self.base_url = "https://firms.modaps.eosdis.nasa.gov/api/country/csv"
+        # India Bounding Box: West=68°E, South=8°N, East=97°E, North=37°N
+        self.area_bbox = "68,8,97,37"
 
     async def fetch_live_india_hotspots(self, day_range: int = 1) -> List[Dict[str, Any]]:
         """
-        Fetches live VIIRS 375m thermal anomaly hotspots for India (IND) over the last N days.
+        Fetches live VIIRS 375m thermal anomaly hotspots for India over the last N days.
         """
         if not self.map_key:
             return self._fallback_hotspots()
 
-        url = f"{self.base_url}/{self.map_key}/VIIRS_SNPP_NRT/IND/{day_range}"
+        url = f"https://firms.modaps.eosdis.nasa.gov/api/area/csv/{self.map_key}/VIIRS_SNPP_NRT/{self.area_bbox}/{day_range}"
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=12.0) as client:
                 resp = await client.get(url)
                 if resp.status_code == 200 and "latitude" in resp.text:
                     hotspots = []
                     reader = csv.DictReader(io.StringIO(resp.text))
                     for idx, row in enumerate(reader):
-                        if idx >= 50:  # Cap to top 50 active hotspots for high performance
+                        if idx >= 50:  # Cap to top 50 active hotspots for maximum performance
                             break
                         hotspots.append({
                             "lat": float(row.get("latitude", 0)),
