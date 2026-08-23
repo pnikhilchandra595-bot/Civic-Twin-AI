@@ -550,7 +550,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     }
   }, [baseMap]);
 
-  // Center map on city switch or view scope change
+  // Center map on city switch, location resolve, or view scope change
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
@@ -569,7 +569,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     } else if (state && state.center_coords) {
       mapInstanceRef.current.flyTo(state.center_coords, 13, { duration: 1.2 });
     }
-  }, [state?.city_id, viewScope]);
+  }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1], state?.city_name, viewScope]);
 
   // Re-render Digital Twin overlays whenever state or layer toggles change
   useEffect(() => {
