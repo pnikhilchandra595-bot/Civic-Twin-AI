@@ -25,6 +25,7 @@ export const DistrictSelectionModal: React.FC<DistrictSelectionModalProps> = ({
   const isStateOfficer = authUser?.userType === 'state_officer';
   const isDistrictOfficer = authUser?.userType === 'district_officer';
   const assignedState = authUser?.assignedState || '';
+  const assignedDistrict = authUser?.assignedDistrict || '';
 
   const [districts, setDistricts] = useState<DistrictItem[]>(ALL_INDIAN_DISTRICTS);
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,17 +52,24 @@ export const DistrictSelectionModal: React.FC<DistrictSelectionModalProps> = ({
 
   const allStates = useMemo(() => {
     if (isStateOfficer && assignedState) return [assignedState];
+    if (isDistrictOfficer && assignedState) return [assignedState];
     const stateSet = new Set<string>();
     districts.forEach(d => {
       if (d.state) stateSet.add(d.state);
     });
     return Array.from(stateSet).sort();
-  }, [districts, isStateOfficer, assignedState]);
+  }, [districts, isStateOfficer, isDistrictOfficer, assignedState]);
 
   const filteredDistricts = useMemo(() => {
     return districts.filter(d => {
-      // Role enforcement: State officers strictly see only their state districts
-      if (isStateOfficer && assignedState && d.state.toLowerCase() !== assignedState.toLowerCase()) {
+      // Role enforcement: District officer sees only assigned district
+      if (isDistrictOfficer && assignedDistrict) {
+        const dName = d.name.toLowerCase();
+        const aName = assignedDistrict.toLowerCase().split(' ')[0];
+        if (!dName.includes(aName)) return false;
+      }
+      // Role enforcement: State officer strictly sees only their state districts
+      else if (isStateOfficer && assignedState && d.state.toLowerCase() !== assignedState.toLowerCase()) {
         return false;
       }
 
@@ -70,7 +78,7 @@ export const DistrictSelectionModal: React.FC<DistrictSelectionModalProps> = ({
         d.state.toLowerCase().includes(searchQuery.toLowerCase()) ||
         d.basin.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesState = isStateOfficer 
+      const matchesState = (isStateOfficer || isDistrictOfficer)
         ? d.state.toLowerCase() === assignedState.toLowerCase()
         : selectedState === 'ALL' || d.state === selectedState;
 
@@ -78,7 +86,7 @@ export const DistrictSelectionModal: React.FC<DistrictSelectionModalProps> = ({
 
       return matchesSearch && matchesState && matchesThreat;
     });
-  }, [districts, searchQuery, selectedState, threatFilter, isStateOfficer, assignedState]);
+  }, [districts, searchQuery, selectedState, threatFilter, isStateOfficer, isDistrictOfficer, assignedState, assignedDistrict]);
 
   return (
     <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none font-sans overflow-y-auto">
@@ -93,9 +101,17 @@ export const DistrictSelectionModal: React.FC<DistrictSelectionModalProps> = ({
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="text-lg font-black text-white uppercase tracking-wider">
-                  {isStateOfficer ? `${assignedState} SDMA District Atlas` : 'Pan-India 780+ Districts Atlas & Digital Twin Ingestion'}
+                  {isDistrictOfficer
+                    ? `${assignedDistrict} DDMA Municipal Triage`
+                    : isStateOfficer
+                    ? `${assignedState} SDMA District Atlas`
+                    : 'Pan-India 780+ Districts Atlas & Digital Twin Ingestion'}
                 </h2>
-                {isStateOfficer ? (
+                {isDistrictOfficer ? (
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-950/80 border border-amber-400 text-[10px] font-mono text-amber-200 font-bold flex items-center space-x-1">
+                    <span>🔒 {assignedDistrict} DDMA ONLY</span>
+                  </span>
+                ) : isStateOfficer ? (
                   <span className="px-2.5 py-0.5 rounded-full bg-purple-950/80 border border-purple-400 text-[10px] font-mono text-purple-200 font-bold flex items-center space-x-1">
                     <span>🔒 {assignedState} SDMA ONLY ({filteredDistricts.length} Districts)</span>
                   </span>
@@ -106,7 +122,9 @@ export const DistrictSelectionModal: React.FC<DistrictSelectionModalProps> = ({
                 )}
               </div>
               <p className="text-xs text-slate-400 font-sans mt-0.5">
-                {isStateOfficer
+                {isDistrictOfficer
+                  ? `Authorized District DDMA view: Monitoring localized drainage basins, ward triage & pumps for ${assignedDistrict}.`
+                  : isStateOfficer
                   ? `Authorized State SDMA view: Ingesting local catchment basins, river gates & infrastructure for ${assignedState}. Other states are restricted.`
                   : 'Every district, river basin, dam sluice gate, and micro-catchment across all 28 States & 8 Union Territories of India.'}
               </p>

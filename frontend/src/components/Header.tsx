@@ -187,15 +187,21 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             )}
 
-            {/* 780+ Districts Atlas Button (Only for Authorized Officers, Hidden from Citizens) */}
+            {/* Role-Specific Districts Atlas Button (Only for Authorized Officers, Hidden from Citizens) */}
             {!isCitizen && onOpenDistrictAtlas && (
               <button
                 onClick={onOpenDistrictAtlas}
                 className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-600/30 via-cyan-600/30 to-emerald-600/30 hover:from-orange-600/50 hover:to-emerald-600/50 border border-cyan-500/50 text-cyan-200 text-xs font-mono font-bold flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
-                title="Browse & search all 780+ Indian Districts across 36 States & UTs"
+                title={isDistrictOfficer ? `Browse ${authUser?.assignedDistrict} DDMA municipal triage nodes` : isStateOfficer ? `Browse ${authUser?.assignedState} SDMA districts` : "Browse & search all 780+ Indian Districts across 36 States & UTs"}
               >
                 <Globe className="w-3.5 h-3.5 text-orange-400" />
-                <span className="hidden sm:inline">🇮🇳 780+ Districts Atlas</span>
+                <span className="hidden sm:inline">
+                  {isDistrictOfficer
+                    ? `📍 ${authUser?.assignedDistrict || 'District'} DDMA Triage`
+                    : isStateOfficer
+                    ? `🏢 ${authUser?.assignedState || 'State'} SDMA Districts`
+                    : '🇮🇳 780+ Districts Atlas'}
+                </span>
               </button>
             )}
           </div>
