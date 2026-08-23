@@ -8,9 +8,11 @@ import {
   AlertTriangle, Radio, Activity, Zap, Check, Maximize2, 
   Map as MapIcon, Globe, Waves, PhoneCall, ArrowRight, ShieldAlert, ChevronDown 
 } from 'lucide-react';
+import { AuthUser } from './LoginPage';
 
 interface DigitalTwinMapProps {
   state: CityDigitalTwinState | null;
+  authUser?: AuthUser | null;
   onSelectNode: (node: InfrastructureNode) => void;
   onSelectSensor: (sensor: SensorReading) => void;
   onSelectRoute: (route: EvacuationRoute) => void;
@@ -20,6 +22,7 @@ interface DigitalTwinMapProps {
 
 export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   state,
+  authUser,
   onSelectNode,
   onSelectSensor,
   onSelectRoute,
@@ -30,6 +33,10 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const layersGroupRef = useRef<L.LayerGroup | null>(null);
+
+  const isNational = !authUser || authUser.userType === 'national_authority';
+  const isStateOfficer = authUser?.userType === 'state_officer';
+  const isDistrictOfficer = authUser?.userType === 'district_officer';
 
   // Map settings & search
   const [searchQuery, setSearchQuery] = useState('');
@@ -772,31 +779,45 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       {/* Top-Left Geographic Toolbar */}
       <div className="absolute top-3 left-3 z-10 flex flex-col space-y-1.5">
         {/* Pan-India vs City Twin Scope Switcher */}
-        <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-cyan-500/30 shadow-xl bg-slate-950/90">
-          <button
-            onClick={() => setViewScope('city')}
-            className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
-              viewScope === 'city'
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Compass className="w-3.5 h-3.5" />
-            <span>City Twin</span>
-          </button>
+        {isDistrictOfficer ? (
+          <div className="hud-panel p-1.5 px-3 rounded-xl flex items-center space-x-2 text-xs font-mono border border-amber-500/50 shadow-xl bg-amber-950/90 text-amber-200 font-bold">
+            <Compass className="w-3.5 h-3.5 text-amber-400" />
+            <span className="truncate max-w-[180px]">🏢 District Twin: {authUser?.assignedDistrict || state?.city_name}</span>
+            <span className="text-[9px] bg-amber-900/80 px-1.5 py-0.5 rounded text-amber-300 font-normal">🔒 DDMA</span>
+          </div>
+        ) : isStateOfficer ? (
+          <div className="hud-panel p-1.5 px-3 rounded-xl flex items-center space-x-2 text-xs font-mono border border-purple-500/50 shadow-xl bg-purple-950/90 text-purple-200 font-bold">
+            <Compass className="w-3.5 h-3.5 text-purple-400" />
+            <span className="truncate max-w-[180px]">🏢 State Twin: {authUser?.assignedState} SDMA</span>
+            <span className="text-[9px] bg-purple-900/80 px-1.5 py-0.5 rounded text-purple-300 font-normal">🔒 SDMA</span>
+          </div>
+        ) : (
+          <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-cyan-500/30 shadow-xl bg-slate-950/90">
+            <button
+              onClick={() => setViewScope('city')}
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+                viewScope === 'city'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>City Twin</span>
+            </button>
 
-          <button
-            onClick={() => setViewScope('india')}
-            className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
-              viewScope === 'india'
-                ? 'bg-orange-500/20 text-orange-300 border border-orange-500/50 font-bold'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Globe className="w-3.5 h-3.5 text-orange-400" />
-            <span>🇮🇳 All-India Grid</span>
-          </button>
-        </div>
+            <button
+              onClick={() => setViewScope('india')}
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+                viewScope === 'india'
+                  ? 'bg-orange-500/20 text-orange-300 border border-orange-500/50 font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5 text-orange-400" />
+              <span>🇮🇳 All-India Grid</span>
+            </button>
+          </div>
+        )}
 
         {/* Base Map Style Selector */}
         <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-[11px] font-mono border border-slate-800 bg-slate-950/90">

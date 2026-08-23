@@ -3,15 +3,13 @@ import { CityDigitalTwinState, InfrastructureNode, SensorReading } from '../type
 import { AuthUser } from './LoginPage';
 import { DigitalTwinMap } from './DigitalTwinMap';
 import { ScenarioSandbox } from './ScenarioSandbox';
-import { SensorTelemetryPanel } from './SensorTelemetryPanel';
-import { IncidentCommanderPanel } from './IncidentCommanderPanel';
 import { 
-  Activity, Globe, Satellite, Video, Sparkles, Smartphone, 
+  Activity, Globe, Video, Sparkles, Smartphone, 
   ShieldCheck, ShieldAlert, ArrowRight, Phone, MapPin, 
-  CloudRain, Wind, Droplets, Gauge, Key, Lock, Building2, 
+  CloudRain, Wind, Droplets, Gauge, Lock, 
   CheckCircle2, AlertTriangle, Eye, Compass, Waves, FileText, 
-  Radio, Play, Pause, ChevronRight, Zap, RefreshCw, ExternalLink,
-  ChevronDown, Layers, Terminal, MessageSquare
+  Radio, Play, Pause, ChevronRight, Zap, RefreshCw,
+  ChevronDown, Layers, MessageSquare
 } from 'lucide-react';
 
 interface PublicScrollingPortalProps {
@@ -39,13 +37,11 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   onSwitchCity,
   onLaunchFullCockpit,
   onOpenGemini,
-  onOpenSatelliteSAR,
   onOpenDroneCCTV,
   onOpenWeather,
   onOpenCitizenSOS,
   onOpenGPSLocationSOS,
   onOpenWhatsApp,
-  onOpenGateways,
   onLoginRequest,
   onLogout,
   onControlCommand,
@@ -53,7 +49,6 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
 }) => {
   const [selectedCityId, setSelectedCityId] = useState<string>(state?.city_id || 'mumbai_monsoon');
   const [heroPrompt, setHeroPrompt] = useState<string>('What is the current flood status and safest evacuation route?');
-  const [visionMode, setVisionMode] = useState<'RGB' | 'THERMAL_FLIR' | 'NIGHT_VISION'>('RGB');
 
   const cityName = state?.city_name || 'Mumbai Mithi Basin';
   const rain = state?.rain_intensity_mmhr || 0;
@@ -79,23 +74,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
     { id: 'rajasthan_luni', name: 'Jodhpur (RJ)', state: 'Rajasthan', region: 'Luni Flash' },
     { id: 'madhya_pradesh_narmada', name: 'Jabalpur (MP)', state: 'Madhya Pradesh', region: 'Narmada Gorge' },
     { id: 'jammu_jhelum', name: 'Srinagar (JK)', state: 'Jammu & Kashmir', region: 'Jhelum Valley' },
-    { id: 'goa_mandovi', name: 'Panaji (GA)', state: 'Goa', region: 'Mandovi Estuary' },
-    { id: 'sikkim_teesta', name: 'Gangtok (SK)', state: 'Sikkim', region: 'Teesta GLOF' },
-    { id: 'tripura_howrah', name: 'Agartala (TR)', state: 'Tripura', region: 'Howrah River' },
-    { id: 'meghalaya_cherrapunji', name: 'Shillong (ML)', state: 'Meghalaya', region: 'Khasi Cloudburst' },
-    { id: 'manipur_imphal', name: 'Imphal (MN)', state: 'Manipur', region: 'Loktak Lake' },
-    { id: 'jharkhand_subarnarekha', name: 'Ranchi (JH)', state: 'Jharkhand', region: 'Subarnarekha Dam' },
-    { id: 'chhattisgarh_mahanadi', name: 'Raipur (CG)', state: 'Chhattisgarh', region: 'Hasdeo Bango' },
-    { id: 'haryana_gurugram', name: 'Gurugram (HR)', state: 'Haryana', region: 'Najafgarh Drain' },
-    { id: 'andaman_portblair', name: 'Port Blair (AN)', state: 'Andaman & Nicobar', region: 'Island Coast' },
-    { id: 'ladakh_indus', name: 'Leh (LA)', state: 'Ladakh', region: 'Indus Glacial' },
-    { id: 'arunachal_siang', name: 'Itanagar (AR)', state: 'Arunachal Pradesh', region: 'Siang Basin' },
-    { id: 'mizoram_tlawng', name: 'Aizawl (MZ)', state: 'Mizoram', region: 'Tlawng Valley' },
-    { id: 'nagaland_doyang', name: 'Kohima (NL)', state: 'Nagaland', region: 'Doyang Hydro' },
-    { id: 'chandigarh_sukhna', name: 'Chandigarh (CH)', state: 'Chandigarh', region: 'Sukhna Lake' },
-    { id: 'daman_damanganga', name: 'Daman (DD)', state: 'Dadra & Nagar Haveli and Daman & Diu', region: 'Damanganga' },
-    { id: 'lakshadweep_kavaratti', name: 'Kavaratti (LD)', state: 'Lakshadweep', region: 'Coral Atolls' },
-    { id: 'puducherry_coastal', name: 'Puducherry (PY)', state: 'Puducherry', region: 'Coromandel Coast' }
+    { id: 'goa_mandovi', name: 'Panaji (GA)', state: 'Goa', region: 'Mandovi Estuary' }
   ];
 
   const handleCityChange = (cityId: string) => {
@@ -104,19 +83,19 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   };
 
   const helplineDirectory = [
-    { number: '1070', label: 'NDMA National Disaster Helpline', desc: 'Central Flood & Cyclone Operations', color: 'from-red-600 to-rose-600', icon: '🚨' },
-    { number: '112', label: 'National All-in-One Emergency', desc: 'Police, Fire, Ambulance & NDRF', color: 'from-blue-600 to-indigo-600', icon: '👮' },
-    { number: '108', label: 'Medical EMS & Disaster Ambulance', desc: '24/7 Advanced Life Support Transport', color: 'from-emerald-600 to-teal-600', icon: '🚑' },
-    { number: '101', label: 'Fire & Flood Rescue Services', desc: 'Inflatable Rafts & Swift Water Teams', color: 'from-orange-600 to-amber-600', icon: '🚒' },
-    { number: '1916', label: 'Municipal Corporation Disaster Cell', desc: 'Waterlogging, Tree Falls & Subways', color: 'from-purple-600 to-pink-600', icon: '🏢' },
-    { number: '1077', label: 'District Disaster Management Cell', desc: 'Local Collectorate Relief Supplies', color: 'from-cyan-600 to-blue-600', icon: '📦' }
+    { label: 'National Disaster Helpline (NDRF)', number: '1078', desc: 'Toll-free 24/7 rescue dispatch & heavy boat extraction', color: 'from-orange-600 to-amber-600', icon: '🚤' },
+    { label: 'National Emergency Response (Police / Fire / EMS)', number: '112', desc: 'Unified pan-India emergency number for all first responders', color: 'from-red-600 to-rose-600', icon: '🚨' },
+    { label: 'State Disaster Management Control (SDMA)', number: '1070', desc: 'State-level relief commissioner & flood coordination hub', color: 'from-blue-600 to-cyan-600', icon: '🏢' },
+    { label: 'District Emergency Center (DDMA)', number: '1077', desc: 'Local district collectorate, sandbagging & relief camps', color: 'from-purple-600 to-indigo-600', icon: '📍' },
+    { label: 'Ambulance & Trauma Life Support', number: '108', desc: '24/7 Advanced life support & critical patient transport', color: 'from-emerald-600 to-teal-600', icon: '🚑' },
+    { label: 'Women & Child Crisis Safety Helpline', number: '1090', desc: 'Dedicated civilian protection & vulnerable citizen support', color: 'from-pink-600 to-rose-600', icon: '🛡️' }
   ];
 
   return (
-    <div className="min-h-screen bg-[#040711] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black overflow-x-hidden scroll-smooth">
+    <div className="w-full min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black">
       
-      {/* 1. STICKY GLASS HEADER NAVIGATION BAR */}
-      <nav className="sticky top-0 z-50 bg-[#060a14]/90 backdrop-blur-xl border-b border-cyan-500/30 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-2xl">
+      {/* 1. PUBLIC TOP NAVIGATION BAR */}
+      <nav className="sticky top-0 z-50 bg-[#060a14]/95 backdrop-blur-xl border-b border-cyan-500/30 px-4 lg:px-8 py-3 flex items-center justify-between shadow-2xl">
         <div className="flex items-center space-x-3">
           <a href="#hero" className="flex items-center space-x-2.5 group">
             <div className="p-1.5 rounded-xl bg-cyan-950/90 border border-cyan-400/50 text-cyan-400 shadow-[0_0_15px_rgba(0,210,255,0.3)]">
@@ -126,8 +105,8 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
               <span className="text-base font-black tracking-wider bg-gradient-to-r from-orange-400 via-white to-emerald-400 bg-clip-text text-transparent">
                 CIVICTWIN AI
               </span>
-              <span className="hidden sm:inline-block ml-2 text-[9px] font-mono px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-600">
-                INDIA DIGITAL TWIN
+              <span className="hidden sm:inline-block ml-2 text-[9px] font-mono px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-600 font-bold">
+                PUBLIC SAFETY PORTAL
               </span>
             </div>
           </a>
@@ -136,12 +115,10 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         {/* Center Page Section Links */}
         <div className="hidden xl:flex items-center space-x-6 text-xs font-mono font-bold text-slate-300">
           <a href="#hero" className="hover:text-cyan-400 transition-colors">Overview</a>
-          <a href="#cockpit" className="hover:text-cyan-400 transition-colors">Digital Twin</a>
-          <a href="#satellite" className="hover:text-cyan-400 transition-colors">Satellite SAR</a>
-          <a href="#surveillance" className="hover:text-cyan-400 transition-colors">CCTV / Drones</a>
-          <a href="#gemini" className="hover:text-cyan-400 transition-colors">Gemini AI</a>
-          <a href="#citizen" className="hover:text-cyan-400 transition-colors">Citizen SOS</a>
-          <a href="#gateways" className="hover:text-cyan-400 transition-colors">Gateways</a>
+          <a href="#cockpit" className="hover:text-cyan-400 transition-colors">Live Digital Twin</a>
+          <a href="#surveillance" className="hover:text-cyan-400 transition-colors">Live Surveillance</a>
+          <a href="#gemini" className="hover:text-cyan-400 transition-colors">Gemini AI Safety</a>
+          <a href="#citizen" className="hover:text-cyan-400 transition-colors">Emergency SOS & Helplines</a>
         </div>
 
         {/* Right Action Buttons */}
@@ -151,7 +128,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
             className="px-3.5 py-1.5 rounded-xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500 text-cyan-200 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(0,210,255,0.2)] flex items-center space-x-1.5 cursor-pointer"
           >
             <Compass className="w-3.5 h-3.5" />
-            <span>Full-Screen Twin</span>
+            <span>Full Cockpit</span>
           </button>
 
           <button
@@ -181,20 +158,20 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
       </nav>
 
-      {/* 2. SECTION 1: HERO SHOWCASE & LIVE TELEMETRY TICKER */}
-      <section id="hero" className="relative pt-12 pb-20 px-4 lg:px-8 max-w-7xl mx-auto space-y-8">
+      {/* 2. HERO SHOWCASE & LIVE TELEMETRY TICKER */}
+      <section id="hero" className="relative pt-12 pb-16 px-4 lg:px-8 max-w-7xl mx-auto space-y-7">
         
         {/* Background Glow Accents */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-tr from-cyan-500/15 via-blue-500/10 to-transparent blur-3xl pointer-events-none rounded-full" />
 
         {/* Top Badges */}
         <div className="flex flex-wrap items-center justify-center gap-2.5 text-center">
-          <span className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-cyan-950/90 border border-cyan-500/60 text-cyan-300 font-mono text-xs font-bold shadow-lg shadow-cyan-950">
+          <span className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-cyan-950/90 border border-cyan-500/60 text-cyan-300 font-mono text-xs font-bold shadow-lg">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
             <span>GOVERNMENT OF INDIA • CIVIL DEFENSE DIGITAL TWIN</span>
           </span>
-          <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs">
-            <span>NDMA CAP Protocol</span>
+          <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs font-bold">
+            <span>NDMA CAP Protocol Compliant</span>
           </span>
         </div>
 
@@ -203,11 +180,11 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
             Autonomous Urban Disaster Simulation &{' '}
             <span className="bg-gradient-to-r from-orange-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
-              Live Satellite Response Twin
+              Live Civil Response Twin
             </span>
           </h1>
           <p className="text-sm sm:text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Real-time multi-hazard digital twin modeling urban hydrology, flood surge, infrastructure cascades, offline citizen GPS rescues, and Google Gemini AI incident command across 20 Indian disaster corridors.
+            Real-time multi-hazard digital twin modeling urban hydrology, flood surge, infrastructure cascades, offline citizen GPS rescues, and Google Gemini AI public safety advice across Indian disaster corridors.
           </p>
         </div>
 
@@ -339,7 +316,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* 3 Core Quick Call-to-Action Tiles */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto pt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto pt-2">
           
           <div 
             onClick={onLaunchFullCockpit}
@@ -352,7 +329,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
               <span>Interactive Digital Twin</span>
               <ChevronRight className="w-4 h-4 text-cyan-400 group-hover:translate-x-1 transition-transform" />
             </h3>
-            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed font-sans">
               2D GIS Map & 3D Topographic Bathymetry with live flood inundation, road closures, and sensor gauges.
             </p>
           </div>
@@ -368,7 +345,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
               <span>Google Gemini AI Commander</span>
               <ChevronRight className="w-4 h-4 text-blue-400 group-hover:translate-x-1 transition-transform" />
             </h3>
-            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed font-sans">
               Real-time natural language disaster assistant with live telemetry reasoning and multi-lingual voice synthesis.
             </p>
           </div>
@@ -384,7 +361,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
               <span>Offline Citizen SOS Hub</span>
               <ChevronRight className="w-4 h-4 text-rose-400 group-hover:translate-x-1 transition-transform" />
             </h3>
-            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed font-sans">
               Zero-internet device GPS coordinate extraction & 1-tap cellular SMS dispatch to 112 / NDRF.
             </p>
           </div>
@@ -421,6 +398,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
           <div className="flex-1 relative">
             <DigitalTwinMap
               state={state}
+              authUser={authUser}
               onSelectNode={() => {}}
               onSelectSensor={() => {}}
               onSelectRoute={() => {}}
@@ -441,66 +419,12 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
       </section>
 
-      {/* 4. SECTION 3: SATELLITE SAR & METEOROLOGICAL RADAR */}
-      <section id="satellite" className="py-16 px-4 lg:px-8 max-w-7xl mx-auto space-y-8 border-t border-slate-800/80">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="text-[11px] font-mono font-bold text-blue-400 uppercase tracking-widest block">
-              ● SECTION 3 • EARTH OBSERVATION CONSTELLATION
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-white">
-              Copernicus Sentinel-1 SAR & ISRO Bhuvan Satellite Ingestion
-            </h2>
-          </div>
-
-          <button
-            onClick={onOpenSatelliteSAR}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold transition-all shadow-lg flex items-center space-x-2 cursor-pointer"
-          >
-            <Satellite className="w-4 h-4" />
-            <span>Launch Live Satellite SAR Viewer</span>
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs font-mono">
-          <div className="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-2">
-            <div className="text-cyan-400 font-bold text-sm">🛰️ Sentinel-1C C-Band SAR</div>
-            <p className="text-slate-300 leading-relaxed font-sans">
-              Microwave active radar pulses penetrate 100% of dense monsoon clouds and cyclone eye-walls to image the ground at 10m resolution.
-            </p>
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400">
-              Polarization: <strong>VV + VH Cross-Polar</strong>
-            </div>
-          </div>
-
-          <div className="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-2">
-            <div className="text-cyan-400 font-bold text-sm">🌊 Water Backscatter Anomaly</div>
-            <p className="text-slate-300 leading-relaxed font-sans">
-              Smooth flood water specularly reflects radar energy away from the sensor, creating dark backscatter values below <strong>-17.5 dB</strong>.
-            </p>
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400">
-              Mean Backscatter: <strong>-19.4 dB (Inundated)</strong>
-            </div>
-          </div>
-
-          <div className="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-2">
-            <div className="text-cyan-400 font-bold text-sm">📡 ISRO INSAT-3DR Doppler</div>
-            <p className="text-slate-300 leading-relaxed font-sans">
-              Ingests real-time precipitation velocity ($mm/h$), barometric cyclonic depression, and soil moisture from INSAT-3DR sounder mesh.
-            </p>
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400">
-              IMD Doppler Stream: <strong>{rain.toFixed(0)} mm/h</strong>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. SECTION 4: AI COMPUTER VISION CCTV & DRONE MATRIX */}
+      {/* 4. SECTION 3: AI COMPUTER VISION CCTV & DRONE MATRIX */}
       <section id="surveillance" className="py-16 px-4 lg:px-8 max-w-7xl mx-auto space-y-8 border-t border-slate-800/80">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <span className="text-[11px] font-mono font-bold text-purple-400 uppercase tracking-widest block">
-              ● SECTION 4 • RECONNAISSANCE & SURVEILLANCE
+              ● SECTION 3 • RECONNAISSANCE & SURVEILLANCE
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-white">
               AI Computer Vision CCTV & Autonomous Drone Feeds
@@ -559,12 +483,12 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
       </section>
 
-      {/* 6. SECTION 5: GOOGLE GEMINI AI INCIDENT COMMANDER */}
+      {/* 5. SECTION 4: GOOGLE GEMINI AI INCIDENT COMMANDER */}
       <section id="gemini" className="py-16 px-4 lg:px-8 max-w-7xl mx-auto space-y-8 border-t border-slate-800/80">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <span className="text-[11px] font-mono font-bold text-blue-400 uppercase tracking-widest block">
-              ● SECTION 5 • GENERATIVE INCIDENT REASONING
+              ● SECTION 4 • GENERATIVE INCIDENT REASONING
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-white">
               Google Gemini AI Incident Commander
@@ -625,15 +549,15 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
       </section>
 
-      {/* 7. SECTION 6: CITIZEN SAFETY & ZERO-INTERNET OFFLINE SOS */}
+      {/* 6. SECTION 5: CITIZEN SAFETY & ZERO-INTERNET OFFLINE SOS */}
       <section id="citizen" className="py-16 px-4 lg:px-8 max-w-7xl mx-auto space-y-8 border-t border-slate-800/80">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <span className="text-[11px] font-mono font-bold text-rose-400 uppercase tracking-widest block">
-              ● SECTION 6 • PUBLIC CIVIL PROTECTION
+              ● SECTION 5 • PUBLIC CIVIL PROTECTION & HELPLINES
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-white">
-              Citizen Emergency Safety & Zero-Internet SMS 112 Dispatch
+              Citizen Emergency Safety & 24/7 Helplines Directory
             </h2>
           </div>
 
@@ -681,48 +605,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
       </section>
 
-      {/* 8. SECTION 7: SATELLITE & PRODUCTION API GATEWAYS */}
-      <section id="gateways" className="py-16 px-4 lg:px-8 max-w-7xl mx-auto space-y-8 border-t border-slate-800/80">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="text-[11px] font-mono font-bold text-amber-400 uppercase tracking-widest block">
-              ● SECTION 7 • PRODUCTION INTEGRATIONS
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-white">
-              Satellite Gateways & Production API Keys
-            </h2>
-          </div>
-
-          <button
-            onClick={onOpenGateways}
-            className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-mono text-xs font-bold transition-all shadow-lg flex items-center space-x-2 cursor-pointer"
-          >
-            <Key className="w-4 h-4" />
-            <span>Configure Satellite & API Gateways</span>
-          </button>
-        </div>
-
-        <div className="p-6 rounded-3xl bg-slate-900/80 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2">
-            <h3 className="text-base font-bold text-white">
-              Connect Copernicus, ISRO Bhuvan, Twilio & Google Gemini APIs
-            </h3>
-            <p className="text-xs text-slate-400 leading-relaxed font-sans max-w-2xl">
-              Plug in your Copernicus OAuth token, ISRO Bhuvan API key, NASA EarthData token, Google Gemini AI key, or telecom SMS gateways. All credentials are encrypted with 256-bit AES.
-            </p>
-          </div>
-
-          <button
-            onClick={onOpenGateways}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-lg flex items-center space-x-2 shrink-0 cursor-pointer"
-          >
-            <Zap className="w-4 h-4" />
-            <span>Open Key Manager</span>
-          </button>
-        </div>
-      </section>
-
-      {/* 9. FOOTER */}
+      {/* 7. FOOTER */}
       <footer className="border-t border-slate-800 bg-[#02040a] py-10 px-4 lg:px-8 text-xs font-mono text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
