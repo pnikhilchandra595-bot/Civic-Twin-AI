@@ -424,6 +424,11 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
   };
 
+  // Sovereign Indian Territorial Boundary Check (Survey of India & NDMA Guidelines)
+  const isInsideIndia = (lat: number, lng: number) => {
+    return lat >= 6.5 && lat <= 37.5 && lng >= 68.0 && lng <= 97.5;
+  };
+
   // Initialize Leaflet Map
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -433,6 +438,10 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       const map = L.map(mapContainerRef.current, {
         center: initialCoords,
         zoom: 13,
+        minZoom: 4,
+        maxZoom: 19,
+        maxBounds: L.latLngBounds(L.latLng(5.0, 65.0), L.latLng(38.5, 99.0)),
+        maxBoundsViscosity: 0.95,
         zoomControl: false,
         attributionControl: false
       });
@@ -451,6 +460,11 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
       map.on('click', (e: L.LeafletMouseEvent) => {
         const { lat, lng } = e.latlng;
+        if (!isInsideIndia(lat, lng)) {
+          setClickCoordFeedback(`⚠️ Restricted to Indian National Territory (Survey of India / NDMA Guidelines)`);
+          setTimeout(() => setClickCoordFeedback(null), 3500);
+          return;
+        }
         setClickCoordFeedback(`📍 Resolving Micro-Catchment for [${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E]...`);
         setTimeout(() => setClickCoordFeedback(null), 4000);
         if (onResolveLocation) {
@@ -874,7 +888,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           </div>
         ) : (
           <div className="text-[9px] font-mono text-slate-400 bg-slate-950/80 px-2 py-0.5 rounded border border-slate-800 pointer-events-none">
-            💡 Click anywhere on map to inspect micro-catchment
+            🇮🇳 Click within Indian territory to inspect micro-catchment & flood risk
           </div>
         )}
       </div>
