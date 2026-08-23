@@ -307,12 +307,15 @@ erDiagram
 
 | Component | Status | Details |
 |---|:---:|---|
-| **Flood / Fire / Cyclone Risk Formulas** | **Live** | Computed deterministically in `hazard_models.py` & `feature_store.py` |
+| **Flood Risk Formula (Option A)** | **Live** | Formula-driven ($0.40\text{ Rain} + 0.30\text{ River} + 0.20\text{ Topo} + 0.10\text{ Soil}$) in `feature_store.py` |
+| **Fire Risk Formula** | **Live** | Formula-driven ($0.50\text{ HotspotDensity} + 0.30\text{ FRP} + 0.20\text{ Proximity}^{-1}$) in `feature_store.py` |
+| **Cyclone Risk Formula** | **Live** | Formula-driven ($0.40\text{ Wind} + 0.30\text{ HaversineTrackDist}^{-1} + 0.20\text{ Surge} + 0.10\text{ ETA}^{-1}$) in `feature_store.py` |
+| **Multi-Hazard Sandbox Engine** | **Live** | Real-time simulation of HAZMAT leaks, earthquakes, and urban fires in `hazard_models.py` |
 | **Cascade Trigger Logic** | **Live** | Real multi-level cascade logic in `state_manager.py` (substation → hospital diesel backup → road impassability) |
 | **Open-Meteo GloFAS River Flow** | **Live** | Real live API call to ECMWF GloFAS model with local caching |
 | **NASA FIRMS Fire Hotspots** | **Live** | Real-time NASA VIIRS/MODIS thermal anomaly WMS/GeoJSON |
 | **Rainfall Data (Open-Meteo)** | **Live** | Real-time global precipitation and Doppler radar grid |
-| **Confidence Scoring %** | **Live** | Real-time calculation from multi-source sensor agreement |
+| **Confidence Scoring %** | **Live** | Real-time calculation from 5 independent multi-sensor signals in `feature_store.py` |
 | **Citizen SOS + Media Upload** | **Live** | Base64 smartphone photo/video proof uploaded and linked to incident |
 | **Twilio & Fast2SMS Gateways** | **Live** | Genuinely dispatches carrier SMS when credentials configured; honest delivery receipts logged |
 | **CWC River Gauge Telemetry** | **Seeded Realistic Dataset** | Pre-calibrated baseline of 8 major Indian gauge thresholds ($H_{\text{current}} \text{ vs } H_{\text{danger}}$); live scraper in roadmap |
