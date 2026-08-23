@@ -276,4 +276,14 @@ class DigitalTwinStateManager:
             substation_tripped=self.state.substation_tripped
         )
 
+        try:
+            from app.db.database import civictwin_db
+            civictwin_db.save_state_snapshot(
+                city_id=self.state.city_id,
+                city_name=self.state.city_name,
+                state_dict=self.state.model_dump()
+            )
+        except Exception as e:
+            print(f"Failed to persist state snapshot: {e}")
+
 state_manager = DigitalTwinStateManager()

@@ -15,11 +15,19 @@ class NASAFIRMSIngestionService:
         self.map_key = os.getenv("NASA_FIRMS_API_KEY", "f92492eda2c0ae61f0d34bf1399a4548")
         # India Bounding Box: West=68°E, South=8°N, East=97°E, North=37°N
         self.area_bbox = "68,8,97,37"
+        self._cached_hotspots: List[Dict[str, Any]] = []
+        self._cache_timestamp: Optional[datetime.datetime] = None
+        self._cache_ttl_seconds = 600  # 10 minute cache
 
     async def fetch_live_india_hotspots(self, day_range: int = 1) -> List[Dict[str, Any]]:
         """
         Fetches live VIIRS 375m thermal anomaly hotspots for India over the last N days.
+        Uses 10-minute TTL in-memory cache to prevent NASA API rate limits.
         """
+        now = datetime.datetime.now()
+        if self._cached_hotspots and self._cache_timestamp and (now - self._cache_timestamp).total_seconds() < self._cache_ttl_seconds:
+            return self._cached_hotspots
+
         if not self.map_key:
             return self._fallback_hotspots()
 
@@ -44,6 +52,8 @@ class NASAFIRMSIngestionService:
                             "satellite": "VIIRS SNPP (NASA/NOAA)"
                         })
                     if hotspots:
+                        self._cached_hotspots = hotspots
+                        self._cache_timestamp = datetime.datetime.now()
                         return hotspots
         except Exception as e:
             print(f"NASA FIRMS API error: {e}")

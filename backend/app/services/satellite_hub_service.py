@@ -26,6 +26,9 @@ class CopernicusSatelliteHubService:
         self.statistics_url = "https://sh.dataspace.copernicus.eu/api/v1/statistics"
         self._cached_token: Optional[str] = None
         self._token_expires_at: Optional[datetime.datetime] = None
+        self._cached_ndwi: Dict[str, Any] = {}
+        self._ndwi_cached_at: Dict[str, datetime.datetime] = {}
+        self._cache_ttl_seconds = 600  # 10 min cache
 
     async def _get_oauth_access_token(self) -> Optional[str]:
         """
@@ -71,6 +74,12 @@ class CopernicusSatelliteHubService:
         """
         if bbox is None:
             bbox = [72.82, 18.95, 72.88, 19.02]  # Focused Mumbai Suburban bounding box
+
+        cache_key = f"{bbox[0]:.3f}_{bbox[1]:.3f}_{bbox[2]:.3f}_{bbox[3]:.3f}"
+        now_dt = datetime.datetime.now()
+        if cache_key in self._cached_ndwi and cache_key in self._ndwi_cached_at:
+            if (now_dt - self._ndwi_cached_at[cache_key]).total_seconds() < self._cache_ttl_seconds:
+                return self._cached_ndwi[cache_key]
 
         now = datetime.datetime.utcnow()
         if not date_to:
@@ -140,7 +149,7 @@ class CopernicusSatelliteHubService:
                         # Threshold check: NDWI > 0.20 indicates open surface water / inundation
                         inundation_confirmed = max_ndwi > 0.20 or mean_ndwi > 0.10
 
-                        return {
+                        result = {
                             "status": "success",
                             "source": "Copernicus Data Space Ecosystem (Sentinel-2 L2A)",
                             "satellite": "Sentinel-2 MSI (10m Resolution)",
@@ -152,6 +161,9 @@ class CopernicusSatelliteHubService:
                             "inundation_confirmed": inundation_confirmed,
                             "raw_statistics": data
                         }
+                        self._cached_ndwi[cache_key] = result
+                        self._ndwi_cached_at[cache_key] = datetime.datetime.now()
+                        return result
             except Exception as e:
                 print(f"Copernicus Statistical API error: {e}")
 

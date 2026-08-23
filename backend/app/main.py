@@ -30,6 +30,7 @@ from app.services.gps_beacon_stream import gps_beacon_engine
 from app.services.government_sso import government_sso_service
 from app.services.nasa_firms import nasa_firms_service
 from app.services.satellite_hub_service import satellite_hub_service
+from app.services.auth_service import auth_service, get_current_officer, Depends
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -376,16 +377,24 @@ async def toggle_road_blockage(road_id: str):
     return updated
 
 @app.post("/api/control", response_model=CityDigitalTwinState)
-async def update_simulation_control(cmd: SimulationControlCommand):
+async def update_simulation_control(
+    cmd: SimulationControlCommand,
+    officer: Dict[str, Any] = Depends(get_current_officer)
+):
     updated = state_manager.apply_control_command(cmd)
     await ws_manager.broadcast({
         "event": "state_update",
-        "data": updated.model_dump()
+        "data": updated.model_dump(),
+        "officer": officer.get("officer_name")
     })
     return updated
 
 @app.post("/api/playback")
-async def control_playback(action: str, speed: float = 1.0):
+async def control_playback(
+    action: str,
+    speed: float = 1.0,
+    officer: Dict[str, Any] = Depends(get_current_officer)
+):
     if action == "play":
         state_manager.is_playing = True
         state_manager.playback_speed = speed
@@ -410,13 +419,39 @@ async def control_playback(action: str, speed: float = 1.0):
     }
 
 @app.post("/api/reset", response_model=CityDigitalTwinState)
-async def reset_simulation(city_id: str = "mumbai_monsoon"):
+async def reset_simulation(
+    city_id: str = "mumbai_monsoon",
+    officer: Dict[str, Any] = Depends(get_current_officer)
+):
     res = state_manager.reset_scenario(city_id)
     await ws_manager.broadcast({
         "event": "state_update",
         "data": res.model_dump()
     })
     return res
+
+@app.post("/api/what-if/inject", response_model=CityDigitalTwinState)
+async def inject_what_if_crisis_event(
+    event_type: str = "100_year_storm",
+    officer: Dict[str, Any] = Depends(get_current_officer)
+):
+    """Simulates what-if extreme disaster injections (100-year cloudburst storm, dam breach, power trip)"""
+    if event_type == "100_year_storm":
+        cmd = SimulationControlCommand(rain_intensity_mmhr=75.0, storm_surge_m=2.8)
+    elif event_type == "dam_breach":
+        cmd = SimulationControlCommand(levee_breached=True, storm_surge_m=3.5)
+    elif event_type == "substation_failure":
+        cmd = SimulationControlCommand(substation_tripped=True)
+    else:
+        cmd = SimulationControlCommand(rain_intensity_mmhr=60.0)
+
+    updated = state_manager.apply_control_command(cmd)
+    await ws_manager.broadcast({
+        "event": "what_if_injected",
+        "event_type": event_type,
+        "data": updated.model_dump()
+    })
+    return updated
 
 @app.websocket("/ws/stream")
 async def websocket_endpoint(websocket: WebSocket):
@@ -651,14 +686,24 @@ class MeriPehchaanVerifyRequest(BaseModel):
 
 @app.post("/api/auth/meripehchaan-verify")
 def verify_officer_via_meripehchaan(req: MeriPehchaanVerifyRequest):
-    """Government Single Sign-On (MeriPehchaan / DigiLocker) National Officer Verification"""
-    return government_sso_service.verify_government_officer(
+    """Government Single Sign-On (MeriPehchaan / DigiLocker) National Officer Verification & JWT issuance"""
+    auth_result = government_sso_service.verify_government_officer(
         officer_name=req.officer_name,
         gov_email_or_id=req.gov_email_or_id,
         department=req.department,
         state=req.state,
         aadhaar_virtual_token=req.aadhaar_virtual_token
     )
+    token_claims = {
+        "sub": req.gov_email_or_id,
+        "officer_name": req.officer_name,
+        "department": req.department,
+        "state": req.state,
+        "clearance_level": auth_result.get("clearance_level", 3),
+        "role": "national_authority" if auth_result.get("clearance_level", 3) >= 5 else "district_officer"
+    }
+    auth_result["jwt_token"] = auth_service.create_access_token(token_claims)
+    return auth_result
 
 @app.get("/api/db/zones")
 def get_database_zones():

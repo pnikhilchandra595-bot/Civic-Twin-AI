@@ -26,14 +26,28 @@ class CivicTwinDatabase:
         self._init_db()
 
     def get_connection(self):
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=10.0)
         conn.row_factory = sqlite3.Row
+        # Enable Write-Ahead Logging (WAL) for high concurrency
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA synchronous=NORMAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
         return conn
 
     def _init_db(self):
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         with self.get_connection() as conn:
             cursor = conn.cursor()
+
+            # State Snapshots table
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS state_snapshots (
+                city_id TEXT PRIMARY KEY,
+                city_name TEXT NOT NULL,
+                state_json TEXT NOT NULL,
+                saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """)
 
             # 1. ZONES
             cursor.execute("""
@@ -263,10 +277,34 @@ class CivicTwinDatabase:
                 """, (lat, lng, resource_id))
             conn.commit()
 
-    def get_all_resources(self) -> List[Dict[str, Any]]:
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM resources;")
-            return [dict(row) for row in cursor.fetchall()]
+    def save_state_snapshot(self, city_id: str, city_name: str, state_dict: Dict[str, Any]):
+        """Persists digital twin state snapshot to SQLite so it survives restarts."""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                INSERT INTO state_snapshots (city_id, city_name, state_json, saved_at)
+                VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(city_id) DO UPDATE SET
+                    city_name = excluded.city_name,
+                    state_json = excluded.state_json,
+                    saved_at = CURRENT_TIMESTAMP;
+                """, (city_id, city_name, json.dumps(state_dict)))
+                conn.commit()
+        except Exception as e:
+            print(f"Error saving state snapshot: {e}")
+
+    def get_state_snapshot(self, city_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves persisted state snapshot if available."""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT state_json FROM state_snapshots WHERE city_id = ?;", (city_id,))
+                row = cursor.fetchone()
+                if row:
+                    return json.loads(row["state_json"])
+        except Exception as e:
+            print(f"Error getting state snapshot: {e}")
+        return None
 
 civictwin_db = CivicTwinDatabase()
