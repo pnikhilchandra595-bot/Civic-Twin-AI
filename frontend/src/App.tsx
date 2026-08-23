@@ -685,6 +685,7 @@ export const App: React.FC = () => {
       {isSAROpen && (
         <SatelliteSARModal
           report={sarReport}
+          authUser={authUser}
           onClose={() => setIsSAROpen(false)}
           onSyncLiveWeather={handleSyncLiveWeather}
           isSyncing={isSyncingWeather}
@@ -722,6 +723,7 @@ export const App: React.FC = () => {
         <DroneCCTVModal
           cityId={state?.city_id || 'mumbai_monsoon'}
           cityName={state?.city_name || 'Mumbai'}
+          authUser={authUser}
           onClose={() => setIsDroneCCTVOpen(false)}
         />
       )}
@@ -838,6 +840,7 @@ export const App: React.FC = () => {
       {isDistrictAtlasOpen && (
         <DistrictSelectionModal
           currentCityName={state?.city_name}
+          authUser={authUser}
           onSelectDistrict={(districtName, lat, lng) => handleResolveLocation(districtName, lat, lng)}
           onClose={() => setIsDistrictAtlasOpen(false)}
         />

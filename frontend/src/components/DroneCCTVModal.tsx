@@ -3,19 +3,22 @@ import {
   Video, Eye, EyeOff, AlertTriangle, ShieldCheck, 
   Maximize2, X, RefreshCw, Layers, Crosshair, Navigation, 
   Thermometer, Moon, Sun, Camera, Sparkles, Activity, Play, Pause, Volume2, VolumeX, Radio, Check,
-  Grid, Compass, Send, ShieldAlert, Zap, CheckCircle2
+  Grid, Compass, Send, ShieldAlert, Zap, CheckCircle2, Globe
 } from 'lucide-react';
 import { apiService, DroneCameraFeed } from '../services/api';
+import { AuthUser } from './LoginPage';
 
 interface DroneCCTVModalProps {
   cityId: string;
   cityName: string;
+  authUser?: AuthUser | null;
   onClose: () => void;
 }
 
 export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
   cityId,
   cityName,
+  authUser,
   onClose
 }) => {
   const [feeds, setFeeds] = useState<DroneCameraFeed[]>([]);
@@ -38,17 +41,33 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const isNational = !authUser || authUser.userType === 'national_authority';
+  const isStateOfficer = authUser?.userType === 'state_officer';
+  const assignedState = authUser?.assignedState || '';
+
   useEffect(() => {
     const fetchFeeds = async () => {
       const data = await apiService.getDroneCCTVFeeds(cityId);
-      setFeeds(data);
-      if (data.length > 0) {
-        const cityMatch = data.find(f => f.city_id === cityId);
-        setActiveFeedId(cityMatch ? cityMatch.camera_id : data[0].camera_id);
+      
+      // Hierarchical Role-Based CCTV & UAV Filter:
+      // State Officer only sees feeds from their assigned state (or live tactical field cam)
+      let authorizedFeeds = data;
+      if (isStateOfficer && assignedState) {
+        authorizedFeeds = data.filter(f => 
+          (f.state_name && f.state_name.toLowerCase().includes(assignedState.toLowerCase())) ||
+          f.city_id === cityId ||
+          f.camera_id === 'CAM-IPHONE-01'
+        );
+      }
+      
+      setFeeds(authorizedFeeds);
+      if (authorizedFeeds.length > 0) {
+        const cityMatch = authorizedFeeds.find(f => f.city_id === cityId);
+        setActiveFeedId(cityMatch ? cityMatch.camera_id : authorizedFeeds[0].camera_id);
       }
     };
     fetchFeeds();
-  }, [cityId]);
+  }, [cityId, isStateOfficer, assignedState]);
 
   const activeFeed = feeds.find(f => f.camera_id === activeFeedId) || feeds[0];
 
@@ -120,9 +139,23 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                 <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-red-950 border border-red-500 text-red-300 font-mono font-bold animate-pulse">
                   ● LIVE 60 FPS STREAM
                 </span>
+                {isStateOfficer && (
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-purple-950 border border-purple-500 text-purple-300 font-mono font-bold flex items-center space-x-1">
+                    <ShieldCheck className="w-3 h-3 text-purple-400" />
+                    <span>🔒 {assignedState} SDMA ONLY</span>
+                  </span>
+                )}
+                {isNational && (
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-950 border border-blue-500 text-blue-300 font-mono font-bold flex items-center space-x-1">
+                    <Globe className="w-3 h-3 text-blue-400" />
+                    <span>🌐 National All-India Access</span>
+                  </span>
+                )}
               </h2>
               <p className="text-xs text-slate-400 font-mono">
-                Real-Time Urban Flood Inundation & Victim Detection Network ({cityName})
+                {isStateOfficer 
+                  ? `Authorized State SDMA Surveillance Network • Displaying ${feeds.length} cameras registered in ${assignedState}`
+                  : `Real-Time Urban Flood Inundation & Victim Detection Network (${cityName})`}
               </p>
             </div>
           </div>
