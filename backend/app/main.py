@@ -31,6 +31,7 @@ from app.services.government_sso import government_sso_service
 from app.services.nasa_firms import nasa_firms_service
 from app.services.satellite_hub_service import satellite_hub_service
 from app.services.mosdac_service import mosdac_service
+from app.services.bhuvan_service import bhuvan_service
 from app.services.auth_service import auth_service, get_current_officer, Depends
 
 app = FastAPI(
@@ -657,6 +658,43 @@ async def get_mosdac_satellite_catalog(
         end_time=end_time,
         bounding_box=bounding_box,
         count=count
+    )
+
+# =========================================================================
+# ISRO BHUVAN NRSC (NATIONAL REMOTE SENSING CENTRE) SATELLITE WEB SERVICES
+# =========================================================================
+
+@app.get("/api/bhuvan/hospitals")
+async def get_bhuvan_hospitals_and_postal(lat: float = 19.076, lng: float = 72.877, radius_km: float = 5.0):
+    """ISRO Bhuvan Postal & Hospital Lifeline Infrastructure POI API (Token: 0d802eb03b...)"""
+    return await bhuvan_service.fetch_hospitals_and_postal(lat, lng, radius_km)
+
+@app.get("/api/bhuvan/village-geocode")
+async def get_bhuvan_village_geocode(query: str = "Kurla", state: Optional[str] = "Maharashtra"):
+    """ISRO Bhuvan Village & Rural Ward Geocoding Directory (Token: 87380f11d2...)"""
+    return await bhuvan_service.geocode_village_or_ward(query, state)
+
+@app.get("/api/bhuvan/lulc")
+async def get_bhuvan_lulc_statistics(district: str = "Mumbai Suburban", state: str = "Maharashtra"):
+    """ISRO Bhuvan 1:50K Land Use / Land Cover (LULC) Runoff Statistical API (Token: 0dcac2e137...)"""
+    return await bhuvan_service.fetch_lulc_statistics(district, state)
+
+@app.get("/api/bhuvan/geoid-elevation")
+async def get_bhuvan_geoid_elevation(lat: float = 19.076, lng: float = 72.877):
+    """ISRO Bhuvan Indian High-Precision Geoid Elevation Model (Token: 76b423acb3...)"""
+    return await bhuvan_service.fetch_geoid_elevation(lat, lng)
+
+class BhuvanRouteRequest(BaseModel):
+    start_lat: float
+    start_lng: float
+    end_lat: float
+    end_lng: float
+
+@app.post("/api/bhuvan/route")
+async def calculate_bhuvan_evacuation_route(req: BhuvanRouteRequest):
+    """ISRO Bhuvan Indian Road Network Evacuation Routing API (Token: c88f8e477f...)"""
+    return await bhuvan_service.calculate_bhuvan_evacuation_route(
+        req.start_lat, req.start_lng, req.end_lat, req.end_lng
     )
 
 # =========================================================================

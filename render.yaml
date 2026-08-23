@@ -25,3 +25,16 @@ services:
         sync: false
       - key: FAST2SMS_API_KEY
         sync: false
+      - key: BHUVAN_HOSPITAL_POSTAL_KEY
+        sync: false
+      - key: BHUVAN_VILLAGE_GEOCODE_KEY
+        sync: false
+      - key: BHUVAN_LULC_STATICS_KEY
+        sync: false
+      - key: BHUVAN_LULC_AOI_KEY
+        sync: false
+      - key: BHUVAN_ROUTING_KEY
+        sync: false
+      - key: BHUVAN_GEOID_KEY
+        sync: false
+
