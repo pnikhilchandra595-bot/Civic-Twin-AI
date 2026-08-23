@@ -345,6 +345,10 @@ export class DigitalTwinApiService {
     this.initWebSocket();
   }
 
+  onSOSReceived(callback: (sos: CitizenSOSReport) => void) {
+    this.onSOSReceivedCallback = callback;
+  }
+
   private initWebSocket() {
     try {
       this.ws = new WebSocket(WS_BASE);

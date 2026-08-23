@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   AlertOctagon, PhoneCall, MapPin, Users, Waves, 
-  CheckCircle2, X, Plus, ShieldAlert, Activity, Send, Filter 
+  CheckCircle2, X, Plus, ShieldAlert, Activity, Send, Filter, RefreshCw 
 } from 'lucide-react';
 import { apiService, CitizenSOSReport } from '../services/api';
 
@@ -34,10 +34,27 @@ export const CitizenSOSModal: React.FC<CitizenSOSModalProps> = ({
 
   useEffect(() => {
     const fetchSOS = async () => {
-      const data = await apiService.getCitizenSOSReports(cityId);
-      setReports(data);
+      try {
+        const data = await apiService.getCitizenSOSReports(cityId);
+        setReports(data);
+      } catch (err) {
+        console.warn('Failed to load SOS reports:', err);
+      }
     };
     fetchSOS();
+
+    // Auto-poll every 3 seconds for new live SOS signals
+    const interval = setInterval(fetchSOS, 3000);
+
+    // Register live WebSocket listener
+    apiService.onSOSReceived((newSOS) => {
+      setReports(prev => {
+        if (prev.some(r => r.id === newSOS.id)) return prev;
+        return [newSOS, ...prev];
+      });
+    });
+
+    return () => clearInterval(interval);
   }, [cityId]);
 
   const handleTriage = async (sosId: string, newStatus: string) => {
@@ -108,12 +125,25 @@ export const CitizenSOSModal: React.FC<CitizenSOSModalProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={async () => {
+                const data = await apiService.getCitizenSOSReports(cityId);
+                setReports(data);
+              }}
+              title="Refresh Live SOS Queue"
+              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-rose-300 hover:text-white cursor-pointer"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Top Controls */}

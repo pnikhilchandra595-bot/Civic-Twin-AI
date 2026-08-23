@@ -131,8 +131,10 @@ class CitizenSOSService:
             ))
 
     def get_all_reports(self, city_id: Optional[str] = None) -> List[CitizenSOSReport]:
-        if city_id:
-            return [r for r in self.reports if r.city_id == city_id]
+        if city_id and city_id != 'ALL':
+            matching = [r for r in self.reports if r.city_id == city_id]
+            others = [r for r in self.reports if r.city_id != city_id]
+            return matching + others
         return self.reports
 
     def add_sos_report(
