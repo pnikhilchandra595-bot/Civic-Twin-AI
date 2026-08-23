@@ -26,6 +26,7 @@ from app.db.database import civictwin_db
 from app.services.citizen_media_upload import citizen_media_service
 from app.services.gps_beacon_stream import gps_beacon_engine
 from app.services.government_sso import government_sso_service
+from app.services.nasa_firms import nasa_firms_service
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -577,6 +578,11 @@ async def get_imd_bulletins(state: Optional[str] = None):
 def get_feature_store_table():
     """Geospatial Feature Store Table & ML Option A/B Risk Scores per Indian Basin"""
     return geospatial_feature_store.get_national_feature_store_table()
+
+@app.get("/api/real-data/firms-hotspots")
+async def get_real_nasa_firms_hotspots(day_range: int = 1):
+    """Real Live NASA FIRMS Thermal Anomaly Fire Hotspots across India (Using Key f92492eda2c0ae61f0d34bf1399a4548)"""
+    return await nasa_firms_service.fetch_live_india_hotspots(day_range)
 
 # =========================================================================
 # CITIZEN SOS DAMAGE MEDIA, GPS BEACONS, GOVT SSO & PERSISTENT DB

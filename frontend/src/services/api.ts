@@ -442,6 +442,11 @@ export class DigitalTwinApiService {
     return await res.json();
   }
 
+  async getRealNASAFIRMSHotspots(dayRange: number = 1): Promise<any> {
+    const res = await fetch(`${API_BASE}/real-data/firms-hotspots?day_range=${dayRange}`);
+    return await res.json();
+  }
+
   async uploadCitizenMedia(base64Image: string, prefix?: string): Promise<any> {
     try {
       const res = await fetch(`${API_BASE}/citizen-sos/upload-media`, {
