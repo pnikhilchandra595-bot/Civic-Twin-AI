@@ -248,15 +248,17 @@ export const Header: React.FC<HeaderProps> = ({
       {/* RIGHT SECTION: Quick Action Buttons + Categorized Command Tools Dropdown */}
       <div className="flex items-center space-x-2">
         
-        {/* 1. Citizen SOS / Emergency Call Button */}
-        <button
-          onClick={onOpenCitizenSOS}
-          title={isCitizen ? "Request Instant Emergency SOS / Rescue" : "Citizen SOS Distress Queue"}
-          className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-rose-950/90 hover:bg-rose-900 border border-rose-600/70 text-rose-200 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
-        >
-          <AlertOctagon className="w-4 h-4 text-rose-400 animate-pulse" />
-          <span>{isCitizen ? "🆘 Request SOS" : "Citizen SOS"}</span>
-        </button>
+        {/* 1. Citizen SOS Distress Queue Button (Only for Officers, Hidden from Citizens) */}
+        {!isCitizen && (
+          <button
+            onClick={onOpenCitizenSOS}
+            title="Citizen SOS Distress Queue"
+            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-rose-950/90 hover:bg-rose-900 border border-rose-600/70 text-rose-200 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
+          >
+            <AlertOctagon className="w-4 h-4 text-rose-400 animate-pulse" />
+            <span>Citizen SOS</span>
+          </button>
+        )}
 
         {/* 2. Signature Google Gemini AI Button */}
         <button
