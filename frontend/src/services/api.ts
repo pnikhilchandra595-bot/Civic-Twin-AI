@@ -1,7 +1,11 @@
 import { CityDigitalTwinState, SimulationControlCommand } from '../types/digital_twin';
 
-const API_BASE = 'http://127.0.0.1:8000/api';
-const WS_BASE = 'ws://127.0.0.1:8000/ws/stream';
+const RAW_URL = ((import.meta as any).env?.VITE_API_URL as string) || 'http://127.0.0.1:8000';
+const CLEAN_URL = RAW_URL.replace(/\/api\/?$/, '').replace(/\/$/, '');
+const API_BASE = `${CLEAN_URL}/api`;
+const WS_BASE = CLEAN_URL.startsWith('https')
+  ? `${CLEAN_URL.replace(/^https/, 'wss')}/ws/stream`
+  : `${CLEAN_URL.replace(/^http/, 'ws')}/ws/stream`;
 
 export interface RadioMessage {
   id: string;
