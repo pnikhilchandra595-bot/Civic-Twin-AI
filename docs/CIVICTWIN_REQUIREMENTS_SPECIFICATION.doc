@@ -1,0 +1,75 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'><title>CivicTwin AI - Requirements Specification</title><style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #1e293b; line-height: 1.6; padding: 24px; background-color: #ffffff; }
+    h1 { font-size: 20pt; color: #0f172a; border-bottom: 2px solid #0284c7; padding-bottom: 6px; margin-top: 24px; margin-bottom: 12px; }
+    h2 { font-size: 14pt; color: #0369a1; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 20px; margin-bottom: 10px; }
+    h3 { font-size: 12pt; color: #334155; margin-top: 14px; margin-bottom: 8px; }
+    h4 { font-size: 11pt; color: #475569; margin-top: 12px; margin-bottom: 6px; }
+    table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 10pt; }
+    th { background-color: #f1f5f9; color: #0f172a; font-weight: bold; border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+    td { border: 1px solid #e2e8f0; padding: 7px 10px; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+    code { font-family: 'Consolas', 'Courier New', monospace; background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: #0f766e; }
+    pre { background-color: #0f172a; color: #f8fafc; padding: 14px; border-radius: 6px; font-family: 'Consolas', monospace; font-size: 9.5pt; overflow-x: auto; }
+    blockquote { border-left: 4px solid #0284c7; padding-left: 12px; color: #475569; font-style: italic; margin: 12px 0; background-color: #f0f9ff; padding: 8px 12px; }
+    hr { border: 0; height: 1px; background: #e2e8f0; margin: 20px 0; }
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 20px; margin-bottom: 10px; }
+    li { margin-bottom: 4px; }
+    </style></head>
+<body>
+<h1>📋 CIVICTWIN AI — REQUIREMENTS SPECIFICATION (SRS)</h1>
+<p><strong>Functional Requirements, Non-Functional Requirements, User Stories & Acceptance Criteria</strong></p>
+<hr/>
+<h2>1. System Purpose & Target Stakeholders</h2>
+<h3>1.1 Purpose</h3>
+<p>This document specifies the software, hardware, and operational requirements for <strong>CivicTwin AI</strong>, an intelligent cyber-physical digital twin designed for urban disaster management and climate resilience across India.</p>
+<h3>1.2 Target User Personas</h3>
+<ol><li><strong>National Emergency Director (NDMA / MHA)</strong>: Needs high-level sovereign situational awareness across all 28 states and 8 union territories, strategic resource deployment, and national hazard alerts.</li></ol>
+<ol><li><strong>State Disaster Management Officer (SDMA)</strong>: Needs regional flood monitoring, river basin telemetry, and multi-district evacuation coordination.</li></ol>
+<ol><li><strong>District Collector / Municipal Commissioner (DDMA)</strong>: Needs micro-ward level inundation maps, emergency shelter bed capacity, dam gate control simulations, and local SMS broadcasts.</li></ol>
+<ol><li><strong>First Responder (NDRF / SDRF / 108 EMS)</strong>: Needs dynamic turn-by-turn routing around flooded roads, live GPS vehicle tracking, and SOS distress triage.</li></ol>
+<ol><li><strong>Urban Citizen</strong>: Needs accessible, multilingual flood risk information, turn-by-turn evacuation navigation, emergency shelter locators, and a one-click SOS assistance beacon.</li></ol>
+<hr/>
+<h2>2. Functional Requirements (FR)</h2>
+<h3>Module 1: Pan-India Geospatial Digital Twin</h3>
+<ul><li><strong>FR-01 (Instant District Resolution)</strong>: The system shall dynamically generate micro-catchment terrain elevation, critical lifeline nodes, road networks, and flood zones for all 780+ Indian districts within 2.0 seconds of user selection or search.</li></ul>
+<ul><li><strong>FR-02 (Multi-Layer GIS Map Visualizer)</strong>: The system shall render interactive map layers including Esri High-Resolution Satellite Base (0.5m), NOAA Doppler radar overlays, Sentinel-2 NDWI water extents, NASA FIRMS active fire hotspots, and live sensor networks.</li></ul>
+<ul><li><strong>FR-03 (Camera Smooth Flying)</strong>: The map canvas shall smoothly fly (<code>map.flyTo</code>) to the precise GPS coordinates of any searched district or clicked location.</li></ul>
+<h3>Module 2: Multi-Hazard Physics & Cascades</h3>
+<ul><li><strong>FR-04 (Inundation Propagation Engine)</strong>: The system shall calculate flood water depth at every node and road segment using Manning's open channel flow formula, taking into account rainfall intensity (0–120 mm/hr) and storm surge (0–5 m).</li></ul>
+<ul><li><strong>FR-05 (Infrastructure Cascade Evaluation)</strong>: The system shall automatically evaluate failure propagation across graph dependencies, identifying when flooded substations or levees trip dependent hospitals, water pumping stations, and telecommunications towers.</li></ul>
+<ul><li><strong>FR-06 (Multi-Hazard Simulation Models)</strong>: The system shall simulate Gaussian toxic gas plume dispersion, earthquake ShakeMaps (Modified Mercalli Intensity), and slum fire propagation upon command.</li></ul>
+<ul><li><strong>FR-07 (What-If Crisis Sandbox)</strong>: The system shall support one-click injection of extreme scenario presets including *100-Year Cloudburst Storm*, *Dam Sluice Gate Breach*, and *Regional Substation Failure*.</li></ul>
+<h3>Module 3: Generative AI Incident Commander & IAP</h3>
+<ul><li><strong>FR-08 (Natural Language AI Copilot)</strong>: The system shall provide an interactive conversational AI Incident Commander (powered by Google Gemini) that parses live telemetry, answers tactical queries, and suggests NDRF asset deployments.</li></ul>
+<ul><li><strong>FR-09 (Automated ICS-201 Incident Action Plan)</strong>: The system shall automatically synthesize a standardized Incident Action Plan containing operational objectives, safety messages, and resource assignments.</li></ul>
+<h3>Module 4: Real-World Ingestion & Citizen SOS</h3>
+<ul><li><strong>FR-10 (Live Remote Sensing Ingestion)</strong>: The system shall ingest live NASA FIRMS thermal anomaly CSV data and Copernicus Sentinel-2 NDWI statistical calculations with in-memory TTL caching.</li></ul>
+<ul><li><strong>FR-11 (Citizen SOS Media Upload & Triage)</strong>: The system shall enable citizens to submit geotagged SOS assistance requests with photo evidence, validating file headers using magic-byte inspection (JPEG, PNG, WebP) and capping sizes at 5MB.</li></ul>
+<ul><li><strong>FR-12 (Multi-Carrier Telecom Alerts)</strong>: The system shall dispatch real-time emergency SMS and WhatsApp notifications formatted in compliance with the NDMA Common Alerting Protocol (CAP-CP).</li></ul>
+<hr/>
+<h2>3. Non-Functional Requirements (NFR)</h2>
+<h3>3.1 Performance & Scalability</h3>
+<ul><li><strong>NFR-01 (Sub-Second Simulation Response)</strong>: Hydrodynamic and cascade recomputations shall execute in under 150 milliseconds for up to 50 nodes and 100 road segments.</li></ul>
+<ul><li><strong>NFR-02 (Low Latency WebSocket Broadcasting)</strong>: Simulation state changes shall broadcast to all connected WebSocket clients within 50 milliseconds.</li></ul>
+<ul><li><strong>NFR-03 (Frontend Bundle Optimization)</strong>: The production frontend bundle shall use Rollup chunk-splitting to keep initial JavaScript download size under 1.0 MB for fast loading on 4G/5G mobile devices.</li></ul>
+<h3>3.2 Security & Data Protection</h3>
+<ul><li><strong>NFR-04 (Cryptographic JWT & RBAC)</strong>: Administrative and state-altering endpoints shall enforce HMAC-SHA256 JWT authorization tokens.</li></ul>
+<ul><li><strong>NFR-05 (Input Sanitization & Upload Safety)</strong>: All uploaded citizen media files shall undergo magic-byte header validation, 5MB file-size limits, and path-traversal filename sanitization.</li></ul>
+<ul><li><strong>NFR-06 (Database Concurrency & WAL Mode)</strong>: The relational database shall operate in SQLite Write-Ahead Logging (<code>WAL</code>) mode with a busy timeout of 5000ms to guarantee zero lock contention during concurrent reads and writes.</li></ul>
+<h3>3.3 Availability & Fault Tolerance</h3>
+<ul><li><strong>NFR-07 (Zero-Backend Standalone Fallback)</strong>: If the backend service is temporarily unreachable, the frontend shall seamlessly fall back to client-side synthetic state generation without crashing.</li></ul>
+<ul><li><strong>NFR-08 (External API Resiliency)</strong>: Third-party satellite and weather calls shall implement a 10-minute in-memory TTL cache and fallback baseline responses in case of upstream network outages.</li></ul>
+<hr/>
+<h2>4. Hardware & Software Requirements</h2>
+<table>
+<tr><th>Category</th><th>Component</th><th>Minimum Specification</th><th>Recommended Specification</th></tr>
+<tr><td>**Server Hardware**</td><td>CPU / RAM</td><td>2 vCPU, 2 GB RAM</td><td>4 vCPU, 8 GB RAM</td></tr>
+<tr><td>**Server Runtime**</td><td>Python Runtime</td><td>Python 3.10+ (FastAPI 0.110+, Uvicorn)</td><td>Python 3.11+</td></tr>
+<tr><td>**Client Device**</td><td>Web Browser</td><td>Modern Evergreen Browser (Chrome 90+, Edge, Firefox, Safari)</td><td>Chromium-based browser with WebGL enabled</td></tr>
+<tr><td>**Client Device**</td><td>Mobile Device</td><td>Android 10+ / iOS 14+ (4G LTE / 5G)</td><td>Android 12+ / iOS 16+</td></tr>
+<tr><td>**Database**</td><td>Persistence Storage</td><td>SQLite 3.35+ (with WAL mode enabled)</td><td>PostgreSQL 15+ with PostGIS extension</td></tr>
+<tr><td>**Cloud Hosting**</td><td>Deployment Platform</td><td>Render / Railway (Backend), Vercel (Frontend)</td><td>AWS ECS / EKS + CloudFront CDN</td></tr>
+</table>
+</body></html>
