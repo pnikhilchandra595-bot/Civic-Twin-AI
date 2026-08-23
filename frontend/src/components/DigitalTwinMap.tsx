@@ -998,37 +998,37 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       try {
         const cLat = state.center_coords[0];
         const cLng = state.center_coords[1];
-        const south = cLat - 0.15;
-        const west = cLng - 0.15;
-        const north = cLat + 0.15;
-        const east = cLng + 0.15;
+        const south = (cLat - 0.15).toFixed(4);
+        const west = (cLng - 0.15).toFixed(4);
+        const north = (cLat + 0.15).toFixed(4);
+        const east = (cLng + 0.15).toFixed(4);
 
-        // Construct official WMS GetMap PNG tile request URL
-        const bhuvanGetMapUrl = `https://bhuvan-vec1.nrsc.gov.in/bhuvan/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=india_boundaries&BBOX=${south},${west},${north},${east}&CRS=EPSG:4326&WIDTH=512&HEIGHT=512&FORMAT=image/png&TRANSPARENT=true`;
+        // Construct official ISRO Bhuvan OWS GetMap PNG tile request URL
+        const bhuvanGetMapUrl = `https://bhuvan-vec1.nrsc.gov.in/bhuvan/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=india_boundaries&BBOX=${west},${south},${east},${north}&WIDTH=512&HEIGHT=512&SRS=EPSG:4326&FORMAT=image/png&TRANSPARENT=true`;
 
         // Render returned PNG as a Leaflet ImageOverlay
-        const bhuvanImageOverlay = L.imageOverlay(bhuvanGetMapUrl, [[south, west], [north, east]], {
+        const bhuvanImageOverlay = L.imageOverlay(bhuvanGetMapUrl, [[parseFloat(south), parseFloat(west)], [parseFloat(north), parseFloat(east)]], {
           opacity: 0.65,
           interactive: true,
-          attribution: '© ISRO Bhuvan NRSC Disaster WMS'
+          attribution: '© ISRO Bhuvan NRSC Disaster WMS (bhuvan-vec1.nrsc.gov.in/bhuvan/ows)'
         }).addTo(layerGroup);
 
         bhuvanImageOverlay.bindTooltip(`
           <div class="text-xs font-mono p-1">
             <strong class="text-orange-400">🇮🇳 ISRO Bhuvan NRSC OGC WMS Layer</strong><br/>
-            WMS Query: <span class="text-white">GetMap 1.3.0 (EPSG:4326)</span><br/>
-            Layer: <span class="text-amber-300">india_boundaries / Disaster Zonation</span><br/>
-            Server: <span class="text-cyan-300">bhuvan-vec1.nrsc.gov.in</span>
+            OWS Query: <span class="text-white">GetMap 1.1.1 (EPSG:4326)</span><br/>
+            Layer: <span class="text-amber-300">india_boundaries / Flood Hazard Zonation</span><br/>
+            Server: <span class="text-cyan-300">bhuvan-vec1.nrsc.gov.in/bhuvan/ows</span>
           </div>
         `);
 
-        // Also add global tile layer WMS
-        L.tileLayer.wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wms', {
+        // Also add tile layer WMS via bhuvan/ows
+        L.tileLayer.wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/ows', {
           layers: 'india_boundaries',
           format: 'image/png',
           transparent: true,
-          version: '1.3.0',
-          crs: L.CRS.EPSG3857,
+          version: '1.1.1',
+          srs: 'EPSG:4326',
           opacity: 0.50,
           attribution: '© ISRO Bhuvan NRSC'
         } as any).addTo(layerGroup);
