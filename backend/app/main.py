@@ -22,6 +22,10 @@ from app.ai.gemini_service import gemini_ai_service
 from app.services.pan_india_geocoder import pan_india_engine, PAN_INDIA_DISTRICTS
 from app.services.cwc_imd_scraper import cwc_imd_service
 from app.services.feature_store import geospatial_feature_store
+from app.db.database import civictwin_db
+from app.services.citizen_media_upload import citizen_media_service
+from app.services.gps_beacon_stream import gps_beacon_engine
+from app.services.government_sso import government_sso_service
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -573,6 +577,84 @@ async def get_imd_bulletins(state: Optional[str] = None):
 def get_feature_store_table():
     """Geospatial Feature Store Table & ML Option A/B Risk Scores per Indian Basin"""
     return geospatial_feature_store.get_national_feature_store_table()
+
+# =========================================================================
+# CITIZEN SOS DAMAGE MEDIA, GPS BEACONS, GOVT SSO & PERSISTENT DB
+# =========================================================================
+
+class MediaUploadRequest(BaseModel):
+    base64_image: str
+    filename_prefix: Optional[str] = "citizen_flood_sos"
+
+@app.post("/api/citizen-sos/upload-media")
+def upload_citizen_damage_photo(req: MediaUploadRequest):
+    """Uploads and stores real citizen smartphone photo/video proof of flood damage"""
+    return citizen_media_service.save_base64_photo(req.base64_image, req.filename_prefix)
+
+class GPSBeaconPayload(BaseModel):
+    device_id: str
+    protocol: str = "traccar_mqtt"
+    lat: float
+    lng: float
+    speed_kmh: Optional[float] = 0.0
+    battery_pct: Optional[float] = 100.0
+    status: Optional[str] = "operational"
+
+@app.post("/api/iot/gps-beacon-update")
+async def ingest_hardware_gps_beacon(payload: GPSBeaconPayload):
+    """Ingests live MQTT / Traccar / OBD-II GPS beacon stream from physical NDRF/EMS vehicles"""
+    result = gps_beacon_engine.ingest_beacon_telemetry(
+        device_id=payload.device_id,
+        protocol=payload.protocol,
+        lat=payload.lat,
+        lng=payload.lng,
+        speed_kmh=payload.speed_kmh or 0.0,
+        battery_pct=payload.battery_pct or 100.0,
+        status=payload.status or "operational"
+    )
+    await ws_manager.broadcast({
+        "event": "gps_beacon_update",
+        "data": result
+    })
+    return result
+
+@app.get("/api/iot/gps-beacons")
+def get_all_active_gps_beacons():
+    """Returns all active hardware GPS beacons"""
+    return gps_beacon_engine.get_all_beacons()
+
+class MeriPehchaanVerifyRequest(BaseModel):
+    officer_name: str
+    gov_email_or_id: str
+    department: str
+    state: str
+    aadhaar_virtual_token: Optional[str] = None
+
+@app.post("/api/auth/meripehchaan-verify")
+def verify_officer_via_meripehchaan(req: MeriPehchaanVerifyRequest):
+    """Government Single Sign-On (MeriPehchaan / DigiLocker) National Officer Verification"""
+    return government_sso_service.verify_government_officer(
+        officer_name=req.officer_name,
+        gov_email_or_id=req.gov_email_or_id,
+        department=req.department,
+        state=req.state,
+        aadhaar_virtual_token=req.aadhaar_virtual_token
+    )
+
+@app.get("/api/db/zones")
+def get_database_zones():
+    """Queries persistent relational database ZONES table"""
+    return civictwin_db.get_all_zones()
+
+@app.get("/api/db/incidents")
+def get_database_incidents():
+    """Queries persistent relational database INCIDENTS table"""
+    return civictwin_db.get_all_incidents()
+
+@app.get("/api/db/resources")
+def get_database_resources():
+    """Queries persistent relational database RESOURCES table"""
+    return civictwin_db.get_all_resources()
 
 @app.get("/api/real-data/provenance")
 def get_data_provenance():

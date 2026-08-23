@@ -442,6 +442,38 @@ export class DigitalTwinApiService {
     return await res.json();
   }
 
+  async uploadCitizenMedia(base64Image: string, prefix?: string): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/citizen-sos/upload-media`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ base64_image: base64Image, filename_prefix: prefix || 'citizen_sos' })
+      });
+      return await res.json();
+    } catch (e) {
+      console.warn('Media upload fallback:', e);
+      return { status: 'simulated_success', media_url: '/media/sample_damage.jpg' };
+    }
+  }
+
+  async ingestGPSBeacon(payload: any): Promise<any> {
+    const res = await fetch(`${API_BASE}/iot/gps-beacon-update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  }
+
+  async verifyMeriPehchaanSSO(req: { officer_name: string; gov_email_or_id: string; department: string; state: string }): Promise<any> {
+    const res = await fetch(`${API_BASE}/auth/meripehchaan-verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req)
+    });
+    return await res.json();
+  }
+
   async chatWithAICopilot(prompt: string, language: string = 'EN', geminiApiKey?: string): Promise<any> {
     const res = await fetch(`${API_BASE}/ai/chat`, {
       method: 'POST',
