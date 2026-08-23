@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+.satellite-orb-leaflet-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
