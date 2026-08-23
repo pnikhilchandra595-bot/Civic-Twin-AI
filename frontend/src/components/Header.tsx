@@ -250,8 +250,8 @@ export const Header: React.FC<HeaderProps> = ({
           {state?.iap?.overall_threat_level || 'ELEVATED'}
         </span>
         <span className="text-slate-600">•</span>
-        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-cyan-950/90 border border-cyan-500/60 text-cyan-300 flex items-center space-x-1" title="Multi-Source Sensor Agreement: Sentinel-1 SAR + Open-Meteo GloFAS + CWC Gauges + IMD Bulletins">
-          <span>🎯 {state?.iap?.overall_threat_level === 'CRITICAL' ? '80.0%' : state?.iap?.overall_threat_level === 'ELEVATED' ? '60.0%' : '100.0%'} Confidence</span>
+        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-cyan-950/90 border border-cyan-500/60 text-cyan-300 flex items-center space-x-1" title="Multi-Hazard Sensor Agreement: Evaluated across Flood, Fire, and Cyclone Risk Indexes">
+          <span>🎯 {(state as any)?.confidence_pct ? `${(state as any).confidence_pct.toFixed(1)}%` : (state?.iap?.overall_threat_level === 'CRITICAL' ? '100.0%' : '66.7%')} Confidence</span>
         </span>
       </div>
 

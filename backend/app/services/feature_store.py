@@ -15,16 +15,13 @@ def haversine_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) ->
 
 class GeospatialFeatureStoreService:
     """
-    Structured Feature Store and Multi-Hazard Tabular Processing Layer:
-    Computes mathematical risk scores for Flood, Fire, and Cyclone with empirical
-    Source Confidence % based on independent sensor signal agreement.
+    Structured Feature Store and Multi-Hazard Processing Layer for District Risk:
+    Computes mathematical risk scores for Flood, Fire, and Cyclone using explicit
+    data inputs, with empirical multi-hazard agreement Confidence % metrics.
     """
 
     def __init__(self):
-        # Reference Bay of Bengal / Arabian Sea cyclonic depression center (Lat/Lng)
-        self.cyclone_depression_center = (18.45, 86.80)  # Off Odisha/AP Coast
-        self.cyclone_max_wind_kmh = 165.0
-        self.cyclone_hours_to_landfall = 18.0
+        pass
 
     def compute_district_features(
         self,
@@ -41,18 +38,23 @@ class GeospatialFeatureStoreService:
         historical_flood_freq_per_decade: int = 7,
         district_lat: float = 19.076,
         district_lng: float = 72.877,
-        hotspot_count_firms: int = 4,
-        mean_frp_mw: float = 38.5
+        fire_hotspot_density_pct: float = 24.5,
+        fire_frp_mw: float = 38.5,
+        fire_distance_to_urban_km: float = 2.4,
+        cyclone_wind_speed_kmh: float = 145.0,
+        cyclone_distance_to_track_km: float = 120.0,
+        cyclone_coastal_elevation_m: float = 8.5,
+        cyclone_eta_hours: float = 18.0
     ) -> Dict[str, Any]:
         """
         Extracts structured feature vector and calculates:
         1. Flood Risk Formula (Rain + River + Topo + Soil)
         2. Fire Risk Formula (Hotspot Density + FRP + Proximity)
-        3. Cyclone Risk Formula (Wind + Haversine Track Distance + Surge + ETA)
-        4. Empirical Source Confidence Score % (Source Agreement Metric)
+        3. Cyclone Risk Formula (Wind + Track Distance + Surge + ETA)
+        4. Empirical Multi-Hazard Confidence Score %
         """
         # =========================================================================
-        # 1. FLOOD RISK FORMULA (Option A Weighted Multi-Factor)
+        # 1. FLOOD RISK FORMULA: 0.40*Rain + 0.30*River + 0.20*Topo + 0.10*Soil
         # =========================================================================
         rain_norm = min(100.0, (rainfall_24h_mm / 150.0) * 100.0)
         river_norm = min(100.0, (river_rise_rate_m_hr / 0.35) * 100.0)
@@ -71,55 +73,45 @@ class GeospatialFeatureStoreService:
         # =========================================================================
         # 2. FIRE RISK FORMULA: 0.50*HotspotDensity + 0.30*FRP_norm + 0.20*Proximity_inv
         # =========================================================================
-        approx_zone_area_km2 = 250.0
-        hotspot_density_norm = min(1.0, (hotspot_count_firms / approx_zone_area_km2) * 50.0)
-        fire_frp_norm = min(1.0, mean_frp_mw / 80.0)
-        proximity_to_substation_inv = max(0.0, min(1.0, (5.0 - distance_to_water_km) / 5.0))
+        hotspot_density_norm = min(1.0, fire_hotspot_density_pct / 100.0)
+        frp_norm = min(1.0, fire_frp_mw / 100.0)
+        proximity_inv = max(0.0, min(1.0, (10.0 - fire_distance_to_urban_km) / 10.0))
 
         fire_risk_score = round(
             ((0.50 * hotspot_density_norm) + 
-             (0.30 * fire_frp_norm) + 
-             (0.20 * proximity_to_substation_inv)) * 100.0,
+             (0.30 * frp_norm) + 
+             (0.20 * proximity_inv)) * 100.0,
             1
         )
 
         # =========================================================================
-        # 3. CYCLONE RISK FORMULA (Haversine Track Distance + Surge + Wind + ETA)
+        # 3. CYCLONE RISK FORMULA: 0.40*Wind + 0.30*TrackDist_inv + 0.20*Surge + 0.10*ETA_inv
         # =========================================================================
-        dist_to_cyclone_km = haversine_distance_km(
-            district_lat, district_lng,
-            self.cyclone_depression_center[0], self.cyclone_depression_center[1]
-        )
-        track_dist_inverse = max(0.0, min(1.0, (800.0 - dist_to_cyclone_km) / 800.0))
-        wind_speed_norm = min(1.0, self.cyclone_max_wind_kmh / 200.0)
-        is_coastal = elevation_m < 25.0 and distance_to_water_km < 5.0
-        storm_surge_risk = max(0.0, min(1.0, (15.0 - elevation_m) / 15.0)) if is_coastal else 0.05
-        time_to_landfall_inv = max(0.0, min(1.0, (48.0 - self.cyclone_hours_to_landfall) / 48.0))
+        wind_norm = min(1.0, cyclone_wind_speed_kmh / 220.0)
+        track_inv = max(0.0, min(1.0, (600.0 - cyclone_distance_to_track_km) / 600.0))
+        surge_risk = max(0.0, min(1.0, (20.0 - cyclone_coastal_elevation_m) / 20.0)) if cyclone_coastal_elevation_m < 25.0 else 0.05
+        eta_inv = max(0.0, min(1.0, (48.0 - cyclone_eta_hours) / 48.0))
 
         cyclone_risk_score = round(
-            ((0.40 * wind_speed_norm) +
-             (0.30 * track_dist_inverse) +
-             (0.20 * storm_surge_risk) +
-             (0.10 * time_to_landfall_inv)) * 100.0,
+            ((0.40 * wind_norm) +
+             (0.30 * track_inv) +
+             (0.20 * surge_risk) +
+             (0.10 * eta_inv)) * 100.0,
             1
         )
 
         # =========================================================================
-        # 4. EMPIRICAL SOURCE CONFIDENCE SCORE % (Agreement Across 5 Independent Signals)
+        # 4. EMPIRICAL MULTI-HAZARD CONFIDENCE SCORE %
+        # Evaluates how many of the 3 hazard scores (Flood, Fire, Cyclone)
+        # individually cross their own "elevated" threshold (>= 45.0) out of 3 total.
         # =========================================================================
-        # Signal 1: Heavy 24h Precipitation (Rainfall > 60mm)
-        s1_rain = 1 if rainfall_24h_mm >= 60.0 else 0
-        # Signal 2: Rapid River Level Rise Rate (Rise > 0.15 m/hr)
-        s2_river = 1 if river_rise_rate_m_hr >= 0.15 else 0
-        # Signal 3: Topographical Drainage Trap (Elevation < 15m and Slope < 2.5 deg)
-        s3_topo = 1 if (elevation_m < 15.0 and slope_deg < 2.5) else 0
-        # Signal 4: High Soil Moisture Saturation (Soil > 70%)
-        s4_soil = 1 if soil_saturation_pct >= 70.0 else 0
-        # Signal 5: Historical Disaster Hotspot (Past frequency >= 6 per decade)
-        s5_hist = 1 if historical_flood_freq_per_decade >= 6 else 0
+        flood_elevated = 1 if flood_risk_score >= 45.0 else 0
+        fire_elevated = 1 if fire_risk_score >= 45.0 else 0
+        cyclone_elevated = 1 if cyclone_risk_score >= 45.0 else 0
 
-        agreeing_signals = s1_rain + s2_river + s3_topo + s4_soil + s5_hist
-        confidence_pct = round((agreeing_signals / 5.0) * 100.0, 1)
+        elevated_count = flood_elevated + fire_elevated + cyclone_elevated
+        # Source agreement percentage across evaluated multi-hazard risks
+        confidence_pct = round((elevated_count / 3.0) * 100.0, 1) if elevated_count > 0 else 100.0
 
         # Option B: XGBoost Inundation Probability Proxy
         ml_inundation_prob_48h = round(min(0.99, max(0.05, flood_risk_score / 100.0 * 1.05)), 2)
@@ -139,16 +131,21 @@ class GeospatialFeatureStoreService:
                 "soil_saturation_pct": soil_saturation_pct,
                 "distance_to_water_km": distance_to_water_km,
                 "historical_flood_freq_per_decade": historical_flood_freq_per_decade,
-                "distance_to_cyclone_eye_km": round(dist_to_cyclone_km, 1),
-                "firms_hotspots_count": hotspot_count_firms
+                "fire_hotspot_density_pct": fire_hotspot_density_pct,
+                "fire_frp_mw": fire_frp_mw,
+                "fire_distance_to_urban_km": fire_distance_to_urban_km,
+                "cyclone_wind_speed_kmh": cyclone_wind_speed_kmh,
+                "cyclone_distance_to_track_km": cyclone_distance_to_track_km,
+                "cyclone_coastal_elevation_m": cyclone_coastal_elevation_m,
+                "cyclone_eta_hours": cyclone_eta_hours
             },
             "risk_model_output": {
                 "hazard_type": "flood",
                 "option_a_composite_risk_score": flood_risk_score,
                 "threat_level": threat_level,
                 "confidence_pct": confidence_pct,
-                "agreeing_signals_count": agreeing_signals,
-                "total_signals_evaluated": 5,
+                "elevated_hazards_count": elevated_count,
+                "total_hazards_evaluated": 3,
                 "multi_hazard_scores": {
                     "flood_risk": flood_risk_score,
                     "fire_risk": fire_risk_score,
@@ -163,16 +160,17 @@ class GeospatialFeatureStoreService:
         }
 
     def get_national_feature_store_table(self) -> List[Dict[str, Any]]:
-        """Returns feature table across key Indian river basins with precise coordinates"""
+        """Returns feature table across key Indian river basins with full 18-feature tuple"""
         sample_districts = [
-            ("Mumbai Suburban", "Maharashtra", 112.5, 185.0, 480.0, 0.24, 6.2, 0.8, 88.0, 0.2, 9, 19.076, 72.877, 5, 42.0),
-            ("North East Delhi", "Delhi NCR", 78.0, 115.0, 310.0, 0.18, 204.0, 0.5, 75.0, 0.4, 6, 28.669, 77.262, 3, 31.0),
-            ("Kamrup Metropolitan", "Assam", 145.0, 220.0, 1850.0, 0.31, 52.0, 1.1, 94.0, 0.1, 10, 26.144, 91.736, 1, 15.0),
-            ("Chennai Central", "Tamil Nadu", 95.0, 150.0, 420.0, 0.20, 7.5, 0.6, 80.0, 0.3, 8, 13.082, 80.270, 2, 22.0),
-            ("Kolkata Municipal", "West Bengal", 88.0, 135.0, 610.0, 0.28, 9.0, 0.4, 85.0, 0.2, 7, 22.572, 88.363, 2, 28.0),
-            ("Ernakulam (Aluva)", "Kerala", 160.0, 240.0, 890.0, 0.35, 12.0, 2.5, 96.0, 0.1, 9, 10.107, 76.351, 1, 18.0),
-            ("Dehradun (Rishikesh)", "Uttarakhand", 130.0, 190.0, 740.0, 0.42, 340.0, 5.8, 82.0, 0.2, 8, 30.086, 78.267, 1, 12.0),
-            ("Cuttack Delta", "Odisha", 90.0, 140.0, 920.0, 0.22, 28.0, 0.7, 86.0, 0.3, 8, 20.462, 85.882, 3, 35.0)
+            # district, state, rain24, rain48, river_q, river_rate, elev, slope, soil, dist_w, flood_freq, lat, lng, fire_dens, fire_frp, fire_dist, cyc_wind, cyc_track_dist, cyc_elev, cyc_eta
+            ("Mumbai Suburban", "Maharashtra", 112.5, 185.0, 480.0, 0.24, 6.2, 0.8, 88.0, 0.2, 9, 19.076, 72.877, 35.0, 42.0, 1.8, 110.0, 240.0, 6.2, 14.0),
+            ("North East Delhi", "Delhi NCR", 78.0, 115.0, 310.0, 0.18, 204.0, 0.5, 75.0, 0.4, 6, 28.669, 77.262, 45.0, 31.0, 0.9, 45.0, 580.0, 204.0, 36.0),
+            ("Kamrup Metropolitan", "Assam", 145.0, 220.0, 1850.0, 0.31, 52.0, 1.1, 94.0, 0.1, 10, 26.144, 91.736, 12.0, 15.0, 4.2, 85.0, 410.0, 52.0, 24.0),
+            ("Chennai Central", "Tamil Nadu", 95.0, 150.0, 420.0, 0.20, 7.5, 0.6, 80.0, 0.3, 8, 13.082, 80.270, 28.0, 22.0, 2.1, 155.0, 90.0, 7.5, 10.0),
+            ("Kolkata Municipal", "West Bengal", 88.0, 135.0, 610.0, 0.28, 9.0, 0.4, 85.0, 0.2, 7, 22.572, 88.363, 20.0, 28.0, 1.5, 140.0, 110.0, 9.0, 12.0),
+            ("Ernakulam (Aluva)", "Kerala", 160.0, 240.0, 890.0, 0.35, 12.0, 2.5, 96.0, 0.1, 9, 10.107, 76.351, 15.0, 18.0, 3.5, 95.0, 320.0, 12.0, 20.0),
+            ("Dehradun (Rishikesh)", "Uttarakhand", 130.0, 190.0, 740.0, 0.42, 340.0, 5.8, 82.0, 0.2, 8, 30.086, 78.267, 10.0, 12.0, 5.0, 35.0, 720.0, 340.0, 48.0),
+            ("Cuttack Delta", "Odisha", 90.0, 140.0, 920.0, 0.22, 28.0, 0.7, 86.0, 0.3, 8, 20.462, 85.882, 30.0, 35.0, 2.8, 175.0, 60.0, 28.0, 8.0)
         ]
 
         return [self.compute_district_features(*args) for args in sample_districts]
