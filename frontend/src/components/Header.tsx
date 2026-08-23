@@ -187,8 +187,8 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             )}
 
-            {/* 780+ Districts Atlas Button */}
-            {onOpenDistrictAtlas && (
+            {/* 780+ Districts Atlas Button (Only for Authorized Officers, Hidden from Citizens) */}
+            {!isCitizen && onOpenDistrictAtlas && (
               <button
                 onClick={onOpenDistrictAtlas}
                 className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-600/30 via-cyan-600/30 to-emerald-600/30 hover:from-orange-600/50 hover:to-emerald-600/50 border border-cyan-500/50 text-cyan-200 text-xs font-mono font-bold flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
@@ -278,13 +278,14 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="hidden sm:inline">{isCitizen ? "Helplines" : "Real Alert"}</span>
         </button>
 
-        {/* 4. CATEGORIZED COMMAND DECK TOOLS DROPDOWN (Replaces the 12 crowded icons!) */}
-        <div className="relative" ref={toolsMenuRef}>
-          <button
-            onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
-            title="Command Deck: Surveillance, Hydrology, Physics, Hospital, and Operations Tools"
-            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 hover:border-cyan-400 text-slate-200 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
-          >
+        {/* 4. CATEGORIZED COMMAND DECK TOOLS DROPDOWN (Hidden from Citizens) */}
+        {!isCitizen && (
+          <div className="relative" ref={toolsMenuRef}>
+            <button
+              onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
+              title="Command Deck: Surveillance, Hydrology, Physics, Hospital, and Operations Tools"
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 hover:border-cyan-400 text-slate-200 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
+            >
             <Grid className="w-4 h-4 text-cyan-400" />
             <span className="hidden sm:inline">Tools</span>
             <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
@@ -446,16 +447,19 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
         </div>
+      )}
 
-        {/* 5. Live Weather Sync Button */}
-        <button
-          onClick={onSyncLiveWeather}
-          disabled={isSyncingWeather}
-          title="Sync Live IMD Weather"
-          className="p-2 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 text-blue-300 hover:text-blue-200 transition-all cursor-pointer"
-        >
-          <CloudRain className={`w-4 h-4 ${isSyncingWeather ? 'animate-spin' : ''}`} />
-        </button>
+        {/* 5. Live Weather Sync Button (Only for Officers) */}
+        {!isCitizen && (
+          <button
+            onClick={onSyncLiveWeather}
+            disabled={isSyncingWeather}
+            title="Sync Live IMD Weather"
+            className="p-2 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 text-blue-300 hover:text-blue-200 transition-all cursor-pointer"
+          >
+            <CloudRain className={`w-4 h-4 ${isSyncingWeather ? 'animate-spin' : ''}`} />
+          </button>
+        )}
 
         {/* 6. Officer Profile & Logout */}
         {authUser && (
