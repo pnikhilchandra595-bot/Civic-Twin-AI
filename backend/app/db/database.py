@@ -58,6 +58,7 @@ class CivicTwinDatabase:
                 hazard_type TEXT NOT NULL,
                 risk_score REAL NOT NULL,
                 risk_level TEXT NOT NULL,
+                confidence_pct REAL DEFAULT 85.0,
                 data_sources JSON,
                 predicted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 valid_until TIMESTAMP,
