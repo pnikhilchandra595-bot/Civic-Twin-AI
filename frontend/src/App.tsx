@@ -461,6 +461,7 @@ export const App: React.FC = () => {
 
           <DigitalTwinMap
             state={state}
+            authUser={authUser}
             onSelectNode={(n) => { setSelectedNode(n); setSelectedSensor(null); }}
             onSelectSensor={(s: SensorReading) => { setSelectedSensor(s); setSelectedNode(null); }}
             onSelectRoute={(r) => console.log('Selected route:', r)}
