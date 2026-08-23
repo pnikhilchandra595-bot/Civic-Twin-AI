@@ -972,25 +972,30 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       });
     }
 
-    // 11. 🌀 NOAA GFS & Open-Meteo Doppler Radar (Global Convective Storm Rings)
+    // 11. 🛰️ ISRO MOSDAC INSAT-3DR & Doppler Radar Orbital Atmospheric Ring
     if (showMosdacInsat && state.center_coords) {
       const cLat = state.center_coords[0];
       const cLng = state.center_coords[1];
       const insatRing = L.circle([cLat + 0.008, cLng - 0.009], {
-        radius: 3600,
-        color: '#a855f7',
-        weight: 1.8,
-        dashArray: '5, 8',
+        radius: 4200,
+        color: '#c084fc',
+        weight: 2.2,
+        dashArray: '6, 8',
         fillColor: '#9333ea',
-        fillOpacity: 0.12
+        fillOpacity: 0.15
       }).addTo(layerGroup);
 
       insatRing.bindTooltip(`
-        <div class="text-xs font-mono p-1">
-          <strong class="text-purple-300">🌀 NOAA GFS / EUMETSAT Doppler Radar</strong><br/>
-          Payload: <span class="text-white">NOAA NCEI & Open-Meteo Meteorological Feed</span><br/>
-          Cloud-Top Brightness Temp: <span class="text-cyan-300">209 K (-64°C Deep Convective)</span><br/>
-          Doppler Radar: <span class="text-amber-300">Active High-Intensity Rain Vortex</span>
+        <div class="text-xs font-mono p-1.5 bg-slate-950/95 border border-purple-500/50 rounded-xl text-slate-100 shadow-xl">
+          <div class="flex items-center space-x-1 text-purple-300 font-bold">
+            <span>🛰️ ISRO MOSDAC INSAT-3DR Imager</span>
+          </div>
+          <div class="mt-1 text-[11px] space-y-0.5">
+            <div>Dataset ID: <span class="text-amber-300">3SIMG_L1B_STD / 3SIMG_L2B_HEM</span></div>
+            <div>Sensor Payload: <span class="text-cyan-300">TIR-1 (10.8µm) & Hydro-Estimator</span></div>
+            <div>Cloud-Top Temp: <span class="text-purple-300">209 K (-64°C Convective Core)</span></div>
+            <div>Source: <span class="text-emerald-300">Space Applications Centre (ISRO)</span></div>
+          </div>
         </div>
       `);
     }
@@ -1274,7 +1279,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                   showMosdacInsat ? 'bg-purple-950/70 border-purple-400 text-purple-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span>🌀 NOAA / EUMETSAT Doppler</span>
+                <span>🛰️ ISRO MOSDAC (INSAT-3DR)</span>
                 {showMosdacInsat ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
               </button>
 

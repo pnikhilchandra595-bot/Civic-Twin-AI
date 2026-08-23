@@ -163,6 +163,32 @@ export const SatelliteSARModal: React.FC<SatelliteSARModalProps> = ({
               />
             </div>
           </div>
+
+          {/* 🛰️ ISRO MOSDAC Satellite Orbital Telemetry Card */}
+          <div className="p-3.5 rounded-2xl bg-purple-950/30 border border-purple-500/40 space-y-2 mt-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-xs font-mono font-bold text-purple-300">
+                <span>🛰️ ISRO MOSDAC (INSAT-3DR Atmospheric & Hydro-Estimator)</span>
+              </div>
+              <span className="px-2 py-0.5 rounded-md bg-purple-900/60 border border-purple-500 text-[10px] font-mono text-purple-200 font-bold">
+                Live SAC-ISRO
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-[11px] font-mono">
+              <div className="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                <div className="text-slate-500 text-[10px]">Dataset ID</div>
+                <div className="text-amber-300 font-bold">3SIMG_L1B_STD</div>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                <div className="text-slate-500 text-[10px]">Rain Estimator</div>
+                <div className="text-cyan-300 font-bold">3SIMG_L2B_HEM</div>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                <div className="text-slate-500 text-[10px]">Sea Surface Temp</div>
+                <div className="text-emerald-300 font-bold">3RIMG_L2B_SST</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* National Command Modification Panel (Only for Level 5 National Officers) */}
