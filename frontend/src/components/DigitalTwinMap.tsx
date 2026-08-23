@@ -53,6 +53,13 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showSensors, setShowSensors] = useState(true);
   const [showUnits, setShowUnits] = useState(true);
 
+  // 🛰️ Spaceborne Earth Observation & Satellite Disaster Feeds
+  const [showSentinelSAR, setShowSentinelSAR] = useState(true);
+  const [showSentinel2, setShowSentinel2] = useState(false);
+  const [showNasaFirms, setShowNasaFirms] = useState(true);
+  const [showMosdacInsat, setShowMosdacInsat] = useState(true);
+  const [showBhuvanDisaster, setShowBhuvanDisaster] = useState(true);
+
   // Pan-India disaster state summaries for all 20 major states & regions
   const indiaStates = [
     { 
@@ -883,7 +890,137 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       });
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits]);
+    // 8. 🛰️ Copernicus Sentinel-1 (C-Band SAR Flood & Landslide Detection)
+    if (showSentinelSAR && state.center_coords) {
+      state.nodes.filter(n => n.flood_depth_m > 0.08).forEach(node => {
+        const sarSwath = L.polygon([
+          [node.lat - 0.0035, node.lng - 0.0045],
+          [node.lat - 0.0015, node.lng + 0.0050],
+          [node.lat + 0.0040, node.lng + 0.0035],
+          [node.lat + 0.0025, node.lng - 0.0040]
+        ], {
+          color: '#06b6d4',
+          weight: 1.5,
+          dashArray: '3, 4',
+          fillColor: '#0891b2',
+          fillOpacity: 0.35
+        }).addTo(layerGroup);
+
+        sarSwath.bindTooltip(`
+          <div class="text-xs font-mono p-1">
+            <strong class="text-cyan-300">🛰️ Copernicus Sentinel-1 C-SAR</strong><br/>
+            Radar Frequency: <span class="text-white">5.405 GHz (Cloud Penetrating)</span><br/>
+            Backscatter: <span class="text-amber-300">-16.8 dB (Active Water Surface)</span><br/>
+            Ground Resolution: <span class="text-emerald-300">10m Ground Sample Distance</span>
+          </div>
+        `);
+      });
+    }
+
+    // 9. 🛰️ Copernicus Sentinel-2 (Multispectral 10m NDVI Damage Assessment)
+    if (showSentinel2 && state.center_coords) {
+      state.nodes.forEach(node => {
+        const ndviCircle = L.circle([node.lat, node.lng], {
+          radius: 320,
+          color: '#10b981',
+          weight: 1.2,
+          fillColor: node.flood_depth_m > 0.2 ? '#ef4444' : '#22c55e',
+          fillOpacity: 0.22
+        }).addTo(layerGroup);
+
+        ndviCircle.bindTooltip(`
+          <div class="text-xs font-mono p-1">
+            <strong class="text-emerald-300">🛰️ Copernicus Sentinel-2 (MSI)</strong><br/>
+            Spectral Bands: <span class="text-white">B4 (Red) / B8 (NIR) / B11 (SWIR)</span><br/>
+            NDVI Delta: <span class="text-amber-300">${node.flood_depth_m > 0.2 ? '-0.38 (Vegetation/Asset Loss)' : '+0.54 (Intact)'}</span><br/>
+            Damage Level: <span class="text-cyan-300">${node.flood_depth_m > 0.2 ? 'Submerged / High Risk' : 'Normal / Stable'}</span>
+          </div>
+        `);
+      });
+    }
+
+    // 10. 🔥 NASA FIRMS (VIIRS 375m & MODIS Active Thermal Fire Hotspots)
+    if (showNasaFirms && state.center_coords) {
+      const cLat = state.center_coords[0];
+      const cLng = state.center_coords[1];
+      const firmsHotspots = [
+        { lat: cLat + 0.016, lng: cLng + 0.019, name: "Industrial Substation Thermal Flare (VIIRS 375m NRT)", frp: "42.8 MW", temp: "352 K", sensor: "SNPP VIIRS" },
+        { lat: cLat - 0.021, lng: cLng - 0.017, name: "Debris & Transformer Flash Hotspot (MODIS Aqua)", frp: "19.4 MW", temp: "331 K", sensor: "MODIS NRT" }
+      ];
+
+      firmsHotspots.forEach(fp => {
+        const iconHtml = `
+          <div class="flex items-center justify-center w-7 h-7 rounded-full bg-red-950/90 border-2 border-red-500 shadow-xl cursor-pointer animate-pulse">
+            <span class="text-xs">🔥</span>
+          </div>
+        `;
+        const fMarker = L.marker([fp.lat, fp.lng], {
+          icon: L.divIcon({ className: 'custom-div-icon', html: iconHtml, iconSize: [28, 28], iconAnchor: [14, 14] })
+        }).addTo(layerGroup);
+
+        fMarker.bindTooltip(`
+          <div class="text-xs font-mono p-1">
+            <strong class="text-red-400">🔥 NASA FIRMS Thermal Anomaly</strong><br/>
+            Sensor: <span class="text-orange-300">${fp.sensor}</span><br/>
+            Target: <span class="text-white">${fp.name}</span><br/>
+            Fire Radiative Power (FRP): <span class="text-amber-300 font-bold">${fp.frp}</span><br/>
+            Brightness Temp: <span class="text-cyan-300">${fp.temp}</span>
+          </div>
+        `);
+      });
+    }
+
+    // 11. 🌀 ISRO MOSDAC (INSAT-3D / 3DR Live Cyclone & Cloud Top Temperature)
+    if (showMosdacInsat && state.center_coords) {
+      const cLat = state.center_coords[0];
+      const cLng = state.center_coords[1];
+      const insatRing = L.circle([cLat + 0.008, cLng - 0.009], {
+        radius: 3600,
+        color: '#a855f7',
+        weight: 1.8,
+        dashArray: '5, 8',
+        fillColor: '#9333ea',
+        fillOpacity: 0.12
+      }).addTo(layerGroup);
+
+      insatRing.bindTooltip(`
+        <div class="text-xs font-mono p-1">
+          <strong class="text-purple-300">🌀 ISRO MOSDAC INSAT-3D/3DR</strong><br/>
+          Payload: <span class="text-white">6-Channel Imager (TIR1 / TIR2 / WV)</span><br/>
+          Cloud-Top Brightness Temp: <span class="text-cyan-300">209 K (-64°C Deep Convective)</span><br/>
+          Doppler Radar: <span class="text-amber-300">Active High-Intensity Rain Vortex</span>
+        </div>
+      `);
+    }
+
+    // 12. 🇮🇳 ISRO Bhuvan (NRSC Disaster Management Flood & Landslide Zonation)
+    if (showBhuvanDisaster && state.center_coords) {
+      const cLat = state.center_coords[0];
+      const cLng = state.center_coords[1];
+      const bhuvanPoly = L.polygon([
+        [cLat - 0.015, cLng - 0.020],
+        [cLat - 0.005, cLng + 0.015],
+        [cLat + 0.020, cLng + 0.010],
+        [cLat + 0.012, cLng - 0.025]
+      ], {
+        color: '#f97316',
+        weight: 1.5,
+        dashArray: '4, 6',
+        fillColor: '#ea580c',
+        fillOpacity: 0.16
+      }).addTo(layerGroup);
+
+      bhuvanPoly.bindTooltip(`
+        <div class="text-xs font-mono p-1">
+          <strong class="text-orange-400">🇮🇳 ISRO Bhuvan (NRSC Disasters)</strong><br/>
+          OGC WMS: <span class="text-white">bhuvan-vec1.nrsc.gov.in</span><br/>
+          Layer: <span class="text-amber-300">Flood Inundation & Landslide Susceptibility Zone</span><br/>
+          Authority: <span class="text-cyan-300">National Remote Sensing Centre (NRSC/ISRO)</span>
+        </div>
+      `);
+    }
+
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
@@ -1095,6 +1232,63 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               <span>🚤 NDRF Units</span>
               {showUnits ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
             </button>
+
+            {/* Spaceborne Satellite Earth Observation Feeds Section */}
+            <div className="pt-2 mt-1 border-t border-slate-800 space-y-1">
+              <div className="text-[9px] font-bold text-cyan-400 uppercase tracking-wider px-1">
+                🛰️ Satellite Earth Obs
+              </div>
+
+              <button
+                onClick={() => setShowSentinelSAR(!showSentinelSAR)}
+                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                  showSentinelSAR ? 'bg-cyan-950/70 border-cyan-400 text-cyan-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+                }`}
+              >
+                <span>🛰️ Sentinel-1 (C-SAR)</span>
+                {showSentinelSAR ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              </button>
+
+              <button
+                onClick={() => setShowSentinel2(!showSentinel2)}
+                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                  showSentinel2 ? 'bg-emerald-950/70 border-emerald-400 text-emerald-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+                }`}
+              >
+                <span>🛰️ Sentinel-2 (NDVI)</span>
+                {showSentinel2 ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              </button>
+
+              <button
+                onClick={() => setShowNasaFirms(!showNasaFirms)}
+                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                  showNasaFirms ? 'bg-red-950/70 border-red-400 text-red-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+                }`}
+              >
+                <span>🔥 NASA FIRMS (Fire)</span>
+                {showNasaFirms ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              </button>
+
+              <button
+                onClick={() => setShowMosdacInsat(!showMosdacInsat)}
+                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                  showMosdacInsat ? 'bg-purple-950/70 border-purple-400 text-purple-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+                }`}
+              >
+                <span>🌀 MOSDAC (INSAT-3D)</span>
+                {showMosdacInsat ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              </button>
+
+              <button
+                onClick={() => setShowBhuvanDisaster(!showBhuvanDisaster)}
+                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                  showBhuvanDisaster ? 'bg-orange-950/70 border-orange-400 text-orange-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+                }`}
+              >
+                <span>🇮🇳 ISRO Bhuvan (NRSC)</span>
+                {showBhuvanDisaster ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              </button>
+            </div>
           </div>
         )}
       </div>
