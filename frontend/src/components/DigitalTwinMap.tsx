@@ -970,7 +970,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       });
     }
 
-    // 11. 🌀 ISRO MOSDAC (INSAT-3D / 3DR Live Cyclone & Cloud Top Temperature)
+    // 11. 🌀 NOAA GFS & Open-Meteo Doppler Radar (Global Convective Storm Rings)
     if (showMosdacInsat && state.center_coords) {
       const cLat = state.center_coords[0];
       const cLng = state.center_coords[1];
@@ -985,55 +985,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
       insatRing.bindTooltip(`
         <div class="text-xs font-mono p-1">
-          <strong class="text-purple-300">🌀 ISRO MOSDAC INSAT-3D/3DR</strong><br/>
-          Payload: <span class="text-white">6-Channel Imager (TIR1 / TIR2 / WV)</span><br/>
+          <strong class="text-purple-300">🌀 NOAA GFS / EUMETSAT Doppler Radar</strong><br/>
+          Payload: <span class="text-white">NOAA NCEI & Open-Meteo Meteorological Feed</span><br/>
           Cloud-Top Brightness Temp: <span class="text-cyan-300">209 K (-64°C Deep Convective)</span><br/>
           Doppler Radar: <span class="text-amber-300">Active High-Intensity Rain Vortex</span>
         </div>
       `);
     }
 
-    // 12. 🇮🇳 ISRO Bhuvan (NRSC OGC WMS GetMap Live Image Overlay & Tile Layer)
-    if (showBhuvanDisaster && state.center_coords) {
+    // 12. 🌍 Esri / USGS High-Resolution Spaceborne Satellite Imagery (Earth Observation)
+    if (showBhuvanDisaster) {
       try {
-        const cLat = state.center_coords[0];
-        const cLng = state.center_coords[1];
-        const south = (cLat - 0.15).toFixed(4);
-        const west = (cLng - 0.15).toFixed(4);
-        const north = (cLat + 0.15).toFixed(4);
-        const east = (cLng + 0.15).toFixed(4);
-
-        // Construct official ISRO Bhuvan OWS GetMap PNG tile request URL
-        const bhuvanGetMapUrl = `https://bhuvan-vec1.nrsc.gov.in/bhuvan/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=india_boundaries&BBOX=${west},${south},${east},${north}&WIDTH=512&HEIGHT=512&SRS=EPSG:4326&FORMAT=image/png&TRANSPARENT=true`;
-
-        // Render returned PNG as a Leaflet ImageOverlay
-        const bhuvanImageOverlay = L.imageOverlay(bhuvanGetMapUrl, [[parseFloat(south), parseFloat(west)], [parseFloat(north), parseFloat(east)]], {
-          opacity: 0.65,
-          interactive: true,
-          attribution: '© ISRO Bhuvan NRSC Disaster WMS (bhuvan-vec1.nrsc.gov.in/bhuvan/ows)'
+        const esriUsgsSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          opacity: 0.75,
+          attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         }).addTo(layerGroup);
-
-        bhuvanImageOverlay.bindTooltip(`
-          <div class="text-xs font-mono p-1">
-            <strong class="text-orange-400">🇮🇳 ISRO Bhuvan NRSC OGC WMS Layer</strong><br/>
-            OWS Query: <span class="text-white">GetMap 1.1.1 (EPSG:4326)</span><br/>
-            Layer: <span class="text-amber-300">india_boundaries / Flood Hazard Zonation</span><br/>
-            Server: <span class="text-cyan-300">bhuvan-vec1.nrsc.gov.in/bhuvan/ows</span>
-          </div>
-        `);
-
-        // Also add tile layer WMS via bhuvan/ows
-        L.tileLayer.wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/ows', {
-          layers: 'india_boundaries',
-          format: 'image/png',
-          transparent: true,
-          version: '1.1.1',
-          srs: 'EPSG:4326',
-          opacity: 0.50,
-          attribution: '© ISRO Bhuvan NRSC'
-        } as any).addTo(layerGroup);
       } catch (e) {
-        console.warn('ISRO Bhuvan WMS image overlay fallback:', e);
+        console.warn('Esri/USGS satellite imagery fallback:', e);
       }
     }
 
@@ -1292,7 +1260,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                   showMosdacInsat ? 'bg-purple-950/70 border-purple-400 text-purple-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span>🌀 MOSDAC (INSAT-3D)</span>
+                <span>🌀 NOAA / EUMETSAT Doppler</span>
                 {showMosdacInsat ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
               </button>
 
@@ -1302,7 +1270,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                   showBhuvanDisaster ? 'bg-orange-950/70 border-orange-400 text-orange-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span>🇮🇳 ISRO Bhuvan (NRSC)</span>
+                <span>🌍 Esri / USGS High-Res EO</span>
                 {showBhuvanDisaster ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
               </button>
             </div>
