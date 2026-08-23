@@ -16,5 +16,22 @@ export default defineConfig({
         ws: true,
       }
     }
+  },
+  build: {
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core React
+          'react-vendor': ['react', 'react-dom'],
+          // Leaflet map (largest chunk)
+          'leaflet-vendor': ['leaflet'],
+          // Lucide icons
+          'icons-vendor': ['lucide-react'],
+          // All district data (large static dataset)
+          'districts-data': ['./src/data/allIndianDistricts'],
+        }
+      }
+    }
   }
 })

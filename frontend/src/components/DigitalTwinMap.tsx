@@ -18,6 +18,7 @@ interface DigitalTwinMapProps {
   onSelectRoute: (route: EvacuationRoute) => void;
   onSwitchCity?: (cityId: string) => void;
   onResolveLocation?: (query?: string, lat?: number, lng?: number) => void;
+  isSyncing?: boolean;
 }
 
 export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
@@ -27,7 +28,8 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   onSelectSensor,
   onSelectRoute,
   onSwitchCity,
-  onResolveLocation
+  onResolveLocation,
+  isSyncing = false
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -1011,6 +1013,18 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
       {/* Leaflet Map Canvas Container */}
       <div ref={mapContainerRef} className="w-full h-full z-0" />
+
+      {/* District Synthesis Loading Overlay */}
+      {isSyncing && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/75 backdrop-blur-sm rounded-2xl">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
+            <div className="text-cyan-300 text-sm font-mono font-semibold tracking-widest uppercase animate-pulse">
+              Synthesizing Digital Twin…
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Top-Left Geographic Toolbar */}
       <div className="absolute top-3 left-3 z-10 flex flex-col space-y-1.5">

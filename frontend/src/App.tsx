@@ -107,6 +107,7 @@ export const App: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isSyncingWeather, setIsSyncingWeather] = useState<boolean>(false);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false); // true while district synthesis is in progress
   
   const [radioMessages, setRadioMessages] = useState<RadioMessage[]>([]);
   const [sarReport, setSarReport] = useState<SatelliteSARReport | null>(null);
@@ -226,6 +227,7 @@ export const App: React.FC = () => {
 
   const handleResolveLocation = async (query: string = '', lat?: number, lng?: number) => {
     try {
+      setIsSyncing(true);
       setToastAlert(`🔍 Resolving micro-catchment terrain & infrastructure...`);
       const newState = await apiService.resolvePanIndiaLocation(query, lat, lng);
       setState(newState);
@@ -233,6 +235,10 @@ export const App: React.FC = () => {
       setTimeout(() => setToastAlert(null), 4000);
     } catch (e) {
       console.error('Resolve location error:', e);
+      setToastAlert(`❌ Failed to resolve location. Try another district.`);
+      setTimeout(() => setToastAlert(null), 3500);
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -467,6 +473,7 @@ export const App: React.FC = () => {
             onSelectRoute={(r) => console.log('Selected route:', r)}
             onSwitchCity={handleSwitchCity}
             onResolveLocation={handleResolveLocation}
+            isSyncing={isSyncing}
           />
         </section>
 

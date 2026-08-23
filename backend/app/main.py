@@ -4,6 +4,8 @@ from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 import asyncio
 import json
+from dotenv import load_dotenv
+load_dotenv()  # Load .env file for local dev; on Render, env vars are injected directly
 
 from app.models.schemas import (
     CityDigitalTwinState, SimulationControlCommand

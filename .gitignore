@@ -31,3 +31,9 @@ ENV/
 .DS_Store
 Thumbs.db
 *.log
+
+# Scratch/test scripts (may contain credentials)
+scratch/
+
+# SQLite databases
+*.db
