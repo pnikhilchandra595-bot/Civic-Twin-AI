@@ -323,6 +323,7 @@ erDiagram
 | **Cyclone Data** | **Historical Replay** | Replay of real Bay of Bengal cyclonic wind & storm surge tracks |
 | **Sentinel-1 SAR Radar** | **Synthetic Radar Model** | Calibrated to ESA C-band SAR $\sigma^0 < -15\text{ dB}$ surface water physics |
 | **Sentinel-2 MSI (NDWI Index)** | **Live** | Real-time Copernicus Data Space Ecosystem Statistical API (`sh.dataspace.copernicus.eu`) |
+| **ISRO Bhuvan Disaster Overlay** | **Illustrative Overlay** | Live GetMap integration attempted; public OWS `GetCapabilities` times out under testing (consistent with Bhuvan server capacity limitations); designed to connect once valid layer names or NDEM credentials are available |
 | **GPS Beacon Tracking** | **Demo-Simulated** | Real FastAPI endpoint + simulated kinematic vehicle stream |
 | **MeriPehchaan / DigiLocker SSO** | **Roadmap** | Simulated verification UI pending formal e-Governance partnership |
 | **Gemini AI (English, Hindi)** | **Live** | Live Google Gemini 1.5 prompt generation |
