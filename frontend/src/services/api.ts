@@ -471,6 +471,41 @@ export class DigitalTwinApiService {
     return await res.json();
   }
 
+  async getMOSDACCatalog(datasetId: string = "3SIMG_L1B_STD", count: number = 10): Promise<any> {
+    const res = await fetch(`${API_BASE}/real-data/mosdac-catalog?dataset_id=${datasetId}&count=${count}`);
+    return await res.json();
+  }
+
+  async getBhuvanHospitals(lat: number = 19.076, lng: number = 72.877, radiusKm: number = 5.0): Promise<any> {
+    const res = await fetch(`${API_BASE}/bhuvan/hospitals?lat=${lat}&lng=${lng}&radius_km=${radiusKm}`);
+    return await res.json();
+  }
+
+  async getBhuvanVillageGeocode(query: string = "Kurla", state?: string): Promise<any> {
+    const url = state ? `${API_BASE}/bhuvan/village-geocode?query=${encodeURIComponent(query)}&state=${encodeURIComponent(state)}` : `${API_BASE}/bhuvan/village-geocode?query=${encodeURIComponent(query)}`;
+    const res = await fetch(url);
+    return await res.json();
+  }
+
+  async getBhuvanLULC(district: string = "Mumbai Suburban", state: string = "Maharashtra"): Promise<any> {
+    const res = await fetch(`${API_BASE}/bhuvan/lulc?district=${encodeURIComponent(district)}&state=${encodeURIComponent(state)}`);
+    return await res.json();
+  }
+
+  async getBhuvanGeoidElevation(lat: number = 19.076, lng: number = 72.877): Promise<any> {
+    const res = await fetch(`${API_BASE}/bhuvan/geoid-elevation?lat=${lat}&lng=${lng}`);
+    return await res.json();
+  }
+
+  async calculateBhuvanRoute(startLat: number, startLng: number, endLat: number, endLng: number): Promise<any> {
+    const res = await fetch(`${API_BASE}/bhuvan/route`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_lat: startLat, start_lng: startLng, end_lat: endLat, end_lng: endLng })
+    });
+    return await res.json();
+  }
+
   async uploadCitizenMedia(base64Image: string, prefix?: string): Promise<any> {
     try {
       const res = await fetch(`${API_BASE}/citizen-sos/upload-media`, {
