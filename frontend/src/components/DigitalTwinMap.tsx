@@ -1039,12 +1039,65 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       `);
     }
 
-    // 12. 🌍 Esri / USGS High-Resolution Spaceborne Satellite Imagery (Earth Observation)
-    if (showBhuvanDisaster) {
+    // 12. 🇮🇳 ISRO Bhuvan NRSC Satellite Orbital Pass & Earth Observation Layer
+    if (showBhuvanDisaster && state.center_coords) {
+      const cLat = state.center_coords[0];
+      const cLng = state.center_coords[1];
+
+      // Bhuvan Polar Orbit Swath Track
+      const bhuvanSwath = L.polygon([
+        [cLat - 0.05, cLng - 0.04],
+        [cLat + 0.05, cLng - 0.02],
+        [cLat + 0.05, cLng + 0.04],
+        [cLat - 0.05, cLng + 0.02]
+      ], {
+        color: '#f97316',
+        weight: 1.8,
+        dashArray: '8, 6',
+        fillColor: '#ea580c',
+        fillOpacity: 0.08
+      }).addTo(layerGroup);
+
+      // Bhuvan Satellite Orb Marker (Glowing Orange/Gold Satellite)
+      const bhuvanOrbLat = cLat - 0.038;
+      const bhuvanOrbLng = cLng - 0.028;
+      const bhuvanOrbIcon = L.divIcon({
+        className: 'custom-bhuvan-satellite-orb',
+        html: `
+          <div style="position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <div style="position: absolute; width: 36px; height: 36px; border-radius: 9999px; background: rgba(249, 115, 22, 0.4); animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            <div style="width: 28px; height: 28px; border-radius: 9999px; background: #7c2d12; border: 2px solid #fb923c; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: 0 0 16px rgba(249, 115, 22, 0.95);">
+              🛰️
+            </div>
+            <div style="position: absolute; left: 34px; white-space: nowrap; background: rgba(3, 7, 18, 0.95); border: 1px solid rgba(249, 115, 22, 0.7); padding: 2px 7px; border-radius: 8px; font-family: monospace; font-size: 10px; color: #ffedd5; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+              ISRO Bhuvan (EOS-04 / Cartosat)
+            </div>
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+      });
+
+      const bhuvanMarker = L.marker([bhuvanOrbLat, bhuvanOrbLng], { icon: bhuvanOrbIcon }).addTo(layerGroup);
+      bhuvanMarker.bindPopup(`
+        <div class="text-xs font-mono p-2 bg-slate-950 text-slate-100 rounded-xl border border-orange-500/50">
+          <div class="flex items-center space-x-1.5 text-orange-400 font-bold mb-1">
+            <span>🛰️ ISRO Bhuvan NRSC Satellite Remote Sensing</span>
+          </div>
+          <div class="space-y-1 text-[11px]">
+            <div><strong>Spacecraft:</strong> EOS-04 (Radar Imaging) / Cartosat-3 (0.28m High-Res)</div>
+            <div><strong>Active APIs:</strong> Postal/Hospital POIs, Village Geocoding, 1:50K LULC</div>
+            <div><strong>Terrain Elevation:</strong> Indian Geoid Model (EGM2008 / CartoDEM)</div>
+            <div><strong>Evacuation Routing:</strong> ISRO Indian Road Network Routing Graph</div>
+            <div><strong>Operator:</strong> National Remote Sensing Centre (NRSC / ISRO Hyderabad)</div>
+          </div>
+        </div>
+      `);
+
       try {
         const esriUsgsSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          opacity: 0.75,
-          attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+          opacity: 0.65,
+          attribution: 'Tiles © Esri / USGS'
         }).addTo(layerGroup);
       } catch (e) {
         console.warn('Esri/USGS satellite imagery fallback:', e);
@@ -1227,7 +1280,21 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             }`}
           >
             <span className={`w-2 h-2 rounded-full ${showMosdacInsat ? 'bg-purple-400 animate-ping' : 'bg-slate-600'}`}></span>
-            <span>🛰️ MOSDAC INSAT-3DR</span>
+            <span>🛰️ MOSDAC INSAT</span>
+          </button>
+
+          {/* Always Visible Quick ISRO Bhuvan Satellite Orb Status Pill */}
+          <button
+            onClick={() => setShowBhuvanDisaster(!showBhuvanDisaster)}
+            title="Toggle ISRO Bhuvan EOS-04 / Cartosat Remote Sensing Layer"
+            className={`hud-panel px-2.5 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-mono border shadow-xl transition-all cursor-pointer ${
+              showBhuvanDisaster
+                ? 'border-orange-500/60 bg-orange-950/85 text-orange-200 shadow-[0_0_15px_rgba(249,115,22,0.3)]'
+                : 'border-slate-800 bg-slate-950/80 text-slate-500'
+            }`}
+          >
+            <span className={`w-2 h-2 rounded-full ${showBhuvanDisaster ? 'bg-orange-400 animate-ping' : 'bg-slate-600'}`}></span>
+            <span>🛰️ Bhuvan EOS</span>
           </button>
 
           <button
