@@ -425,6 +425,23 @@ export class DigitalTwinApiService {
     return await res.json();
   }
 
+  async getCWCRiverGauges(state?: string): Promise<any> {
+    const url = state ? `${API_BASE}/real-data/cwc-river-gauges?state=${encodeURIComponent(state)}` : `${API_BASE}/real-data/cwc-river-gauges`;
+    const res = await fetch(url);
+    return await res.json();
+  }
+
+  async getIMDBulletins(state?: string): Promise<any> {
+    const url = state ? `${API_BASE}/real-data/imd-bulletins?state=${encodeURIComponent(state)}` : `${API_BASE}/real-data/imd-bulletins`;
+    const res = await fetch(url);
+    return await res.json();
+  }
+
+  async getFeatureStore(): Promise<any> {
+    const res = await fetch(`${API_BASE}/real-data/feature-store`);
+    return await res.json();
+  }
+
   async chatWithAICopilot(prompt: string, language: string = 'EN', geminiApiKey?: string): Promise<any> {
     const res = await fetch(`${API_BASE}/ai/chat`, {
       method: 'POST',

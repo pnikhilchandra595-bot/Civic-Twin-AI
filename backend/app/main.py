@@ -20,6 +20,8 @@ from app.services.integrations_hub import integrations_hub, IntegrationConfig, C
 from app.services.openmeteo_flood import openmeteo_flood_service
 from app.ai.gemini_service import gemini_ai_service
 from app.services.pan_india_geocoder import pan_india_engine, PAN_INDIA_DISTRICTS
+from app.services.cwc_imd_scraper import cwc_imd_service
+from app.services.feature_store import geospatial_feature_store
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -556,6 +558,21 @@ async def get_osm_infrastructure(
         "count": len(nodes),
         "nodes": nodes
     }
+
+@app.get("/api/real-data/cwc-river-gauges")
+async def get_cwc_river_gauges(state: Optional[str] = None):
+    """Real Central Water Commission (CWC) River Gauge Water Levels & Warning Thresholds"""
+    return await cwc_imd_service.fetch_cwc_river_gauges(state)
+
+@app.get("/api/real-data/imd-bulletins")
+async def get_imd_bulletins(state: Optional[str] = None):
+    """Real IMD (India Meteorological Department) District-wise Weather Warning Bulletins"""
+    return await cwc_imd_service.fetch_imd_bulletins(state)
+
+@app.get("/api/real-data/feature-store")
+def get_feature_store_table():
+    """Geospatial Feature Store Table & ML Option A/B Risk Scores per Indian Basin"""
+    return geospatial_feature_store.get_national_feature_store_table()
 
 @app.get("/api/real-data/provenance")
 def get_data_provenance():
