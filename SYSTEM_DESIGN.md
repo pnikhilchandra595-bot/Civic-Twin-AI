@@ -307,21 +307,22 @@ erDiagram
 
 | Component | Status | Details |
 |---|:---:|---|
-| **Flood / Fire / Cyclone Risk Formulas** | **Live** | Computed deterministically from real/historical telemetry |
-| **Cascade Trigger Logic** | **Live** | Real backend logic in `state_manager.py` |
-| **NASA FIRMS Fire Hotspots** | **Live** | Real-time NASA VIIRS/MODIS API |
-| **Rainfall Data (Open-Meteo)** | **Live** | Real-time global precipitation grid |
-| **CWC River Gauge Telemetry** | **Live** | Real gauge station thresholds & rate-of-rise |
-| **Cyclone Data** | **Live Historical Replay** | Real Bay of Bengal cyclone track data |
-| **Sentinel-1 SAR Radar** | **Live** | Latest available pass, static overlay, timestamped |
-| **Confidence Scoring %** | **Live** | Computed from independent sensor agreement |
-| **Citizen SOS + Media Upload** | **Live** | Smartphone photo proof attached to incident |
-| **Twilio & Fast2SMS** | **Live** | Real SMS OTP & broadcast dispatch |
-| **GPS Beacon Tracking** | **Demo-Simulated** | Real endpoint + simulated vehicle stream |
-| **MeriPehchaan / DigiLocker SSO** | **Roadmap** | Simulated verification UI |
-| **Gemini AI (English, Hindi)** | **Live** | Live Gemini 1.5 prompt generation |
-| **Gemini AI (Marathi, Kannada, Tamil)** | **Roadmap** | Multilingual prompt expansion |
-| **National / State / District RBAC** | **Live** | Role-scoped UI views and geographic grids |
+| **Flood / Fire / Cyclone Risk Formulas** | **Live** | Computed deterministically in `hazard_models.py` & `feature_store.py` |
+| **Cascade Trigger Logic** | **Live** | Real multi-level cascade logic in `state_manager.py` (substation → hospital diesel backup → road impassability) |
+| **Open-Meteo GloFAS River Flow** | **Live** | Real live API call to ECMWF GloFAS model with local caching |
+| **NASA FIRMS Fire Hotspots** | **Live** | Real-time NASA VIIRS/MODIS thermal anomaly WMS/GeoJSON |
+| **Rainfall Data (Open-Meteo)** | **Live** | Real-time global precipitation and Doppler radar grid |
+| **Confidence Scoring %** | **Live** | Real-time calculation from multi-source sensor agreement |
+| **Citizen SOS + Media Upload** | **Live** | Base64 smartphone photo/video proof uploaded and linked to incident |
+| **Twilio & Fast2SMS Gateways** | **Live** | Genuinely dispatches carrier SMS when credentials configured; honest delivery receipts logged |
+| **CWC River Gauge Telemetry** | **Seeded Realistic Dataset** | Pre-calibrated baseline of 8 major Indian gauge thresholds ($H_{\text{current}} \text{ vs } H_{\text{danger}}$); live scraper in roadmap |
+| **IMD Warning Bulletins** | **Seeded Realistic Dataset** | Calibrated district-wise Red/Orange/Yellow weather warnings |
+| **Cyclone Data** | **Historical Replay** | Replay of real Bay of Bengal cyclonic wind & storm surge tracks |
+| **Sentinel-1 SAR Radar** | **Synthetic Radar Model** | Calibrated to ESA C-band SAR $\sigma^0 < -15\text{ dB}$ surface water physics |
+| **GPS Beacon Tracking** | **Demo-Simulated** | Real FastAPI endpoint + simulated kinematic vehicle stream |
+| **MeriPehchaan / DigiLocker SSO** | **Roadmap** | Simulated verification UI pending formal e-Governance partnership |
+| **Gemini AI (English, Hindi)** | **Live** | Live Google Gemini 1.5 prompt generation |
+| **National / State / District RBAC** | **Live on Frontend** | Geographically scopes atlas and grid toolbars by officer clearance |
 
 ---
 

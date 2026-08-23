@@ -141,10 +141,20 @@ class RealSMSAlertGateway:
         delivery_results = []
         gateways_dispatched = []
 
-        # 1. Instant Real Phone Push via ntfy.sh (Zero config, completely free, works on any smartphone immediately!)
+        recipient_statuses = {}
         for phone in cleaned_numbers:
-            # Create a clean topic id based on phone number or generic civic twin alert channel
-            topic_id = f"civictwin_{phone.replace('+', '')}"
+            recipient_statuses[phone] = {
+                "phone": phone,
+                "sms_delivered": False,
+                "sms_gateway": None,
+                "sid": None,
+                "push_delivered": False
+            }
+
+        # 1. Real instant push delivery via ntfy.sh (No auth required, 100% free & open)
+        for phone in cleaned_numbers:
+            clean_digits = ''.join(filter(str.isdigit, phone))
+            topic_id = f"civictwin_{clean_digits[-10:] if len(clean_digits) >= 10 else clean_digits}"
             try:
                 async with httpx.AsyncClient(timeout=6.0) as client:
                     await client.post(
@@ -156,6 +166,7 @@ class RealSMSAlertGateway:
                         },
                         content=formatted_alert.encode("utf-8")
                     )
+                recipient_statuses[phone]["push_delivered"] = True
                 gateways_dispatched.append(f"Instant Push (ntfy.sh/{topic_id})")
             except Exception as e:
                 print(f"ntfy dispatch error for {topic_id}: {e}")
@@ -192,7 +203,10 @@ class RealSMSAlertGateway:
                             }
                         )
                         if resp.status_code == 200:
-                            gateways_dispatched.append("Fast2SMS India Telecom Live SMS Gateway (Delivered)")
+                            gateways_dispatched.append("Fast2SMS India Live Gateway")
+                            for ph in cleaned_numbers:
+                                recipient_statuses[ph]["sms_delivered"] = True
+                                recipient_statuses[ph]["sms_gateway"] = "Fast2SMS (India)"
             except Exception as e:
                 print(f"Fast2SMS error: {e}")
 
@@ -202,7 +216,7 @@ class RealSMSAlertGateway:
                 async with httpx.AsyncClient(timeout=8.0) as client:
                     for num in cleaned_numbers:
                         e164_num = num if num.startswith("+") else f"+91{num}"
-                        await client.post(
+                        t_resp = await client.post(
                             f"https://api.twilio.com/2010-04-01/Accounts/{self.twilio_account_sid}/Messages.json",
                             auth=(self.twilio_account_sid, self.twilio_auth_token),
                             data={
@@ -211,7 +225,12 @@ class RealSMSAlertGateway:
                                 "Body": formatted_alert
                             }
                         )
-                    gateways_dispatched.append("Twilio Global Telecom Carrier Gateway (Delivered)")
+                        if t_resp.status_code in (200, 201):
+                            t_data = t_resp.json()
+                            recipient_statuses[num]["sms_delivered"] = True
+                            recipient_statuses[num]["sms_gateway"] = "Twilio Telecom Gateway"
+                            recipient_statuses[num]["sid"] = t_data.get("sid", "SENT")
+                    gateways_dispatched.append("Twilio Global Carrier Gateway")
             except Exception as e:
                 print(f"Twilio error: {e}")
 
@@ -229,26 +248,35 @@ class RealSMSAlertGateway:
                             "timestamp": timestamp
                         }
                     )
-                gateways_dispatched.append("Webhook / Telegram Dispatch Hub")
+                gateways_dispatched.append("Webhook Dispatch Hub")
             except Exception as e:
                 print(f"Webhook dispatch error: {e}")
 
         if not gateways_dispatched:
-            gateways_dispatched.append("Direct Web Push & Telecom Carrier Hub")
+            gateways_dispatched.append("Local Dispatch Queue (Simulation Mode)")
 
-        # Generate recipient receipts
+        # Generate recipient receipts with honest statuses
         for idx, phone in enumerate(cleaned_numbers):
-            clean_phone = phone.replace('+', '')
-            carrier = "Jio 5G" if idx % 3 == 0 else "Airtel Emergency" if idx % 3 == 1 else "Vodafone Idea"
-            tx_id = f"IND-SMS-TX-{datetime.datetime.now().strftime('%m%d%H%M')}-{idx+101}"
+            clean_phone = ''.join(filter(str.isdigit, phone))
+            st = recipient_statuses.get(phone, {})
             
+            if st.get("sms_delivered"):
+                status_label = "SENT_VIA_CARRIER"
+                carrier_label = st.get("sms_gateway", "Telecom Gateway")
+            elif st.get("push_delivered"):
+                status_label = "PUSH_NOTIFIED"
+                carrier_label = "Web Push Channel (ntfy.sh)"
+            else:
+                status_label = "LOGGED_LOCAL_SIMULATION"
+                carrier_label = "Local System Queue"
+
             rec = {
                 "phone_number": phone,
-                "carrier": carrier,
-                "transaction_id": tx_id,
-                "status": "DELIVERED_TO_HANDSET",
+                "carrier": carrier_label,
+                "transaction_id": st.get("sid") or f"LOG-{datetime.datetime.now().strftime('%m%d%H%M')}-{idx+101}",
+                "status": status_label,
                 "delivery_time": timestamp,
-                "live_push_link": f"https://ntfy.sh/civictwin_{clean_phone}",
+                "live_push_link": f"https://ntfy.sh/civictwin_{clean_phone[-10:] if len(clean_phone) >= 10 else clean_phone}",
                 "message_preview": formatted_alert[:95] + "..."
             }
             delivery_results.append(rec)
