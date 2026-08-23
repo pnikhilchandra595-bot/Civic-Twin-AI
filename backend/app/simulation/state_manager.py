@@ -37,7 +37,11 @@ class DigitalTwinStateManager:
         return self.state
 
     def switch_city(self, city_id: str) -> CityDigitalTwinState:
-        self.state = load_indian_city_scenario(city_id)
+        try:
+            self.state = load_indian_city_scenario(city_id)
+        except Exception:
+            from app.services.pan_india_geocoder import pan_india_engine
+            self.state = pan_india_engine.resolve_location(query=city_id)
         self.recompute_all()
         return self.state
 

@@ -976,4 +976,10 @@ def generate_base_scenario(city_id: str = "mumbai_monsoon") -> CityDigitalTwinSt
     return state
 
 def load_indian_city_scenario(city_id: str) -> CityDigitalTwinState:
-    return generate_base_scenario(city_id)
+    cities = get_available_indian_cities()
+    matching = [c for c in cities if c["id"] == city_id]
+    if matching:
+        return generate_base_scenario(city_id)
+    else:
+        from app.services.pan_india_geocoder import pan_india_engine
+        return pan_india_engine.resolve_location(query=city_id)
