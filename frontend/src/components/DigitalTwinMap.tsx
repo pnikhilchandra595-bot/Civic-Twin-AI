@@ -972,23 +972,62 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       });
     }
 
-    // 11. 🛰️ ISRO MOSDAC INSAT-3DR & Doppler Radar Orbital Atmospheric Ring
+    // 11. 🛰️ ISRO MOSDAC INSAT-3DR Geostationary Atmospheric Satellite Orbital Ring & Satellite Orb
     if (showMosdacInsat && state.center_coords) {
       const cLat = state.center_coords[0];
       const cLng = state.center_coords[1];
-      const insatRing = L.circle([cLat + 0.008, cLng - 0.009], {
-        radius: 4200,
+      
+      // Geostationary Atmospheric Trajectory Ring
+      const insatRing = L.circle([cLat, cLng], {
+        radius: 4800,
         color: '#c084fc',
         weight: 2.2,
         dashArray: '6, 8',
         fillColor: '#9333ea',
-        fillOpacity: 0.15
+        fillOpacity: 0.12
       }).addTo(layerGroup);
+
+      // Satellite Orbital Orb Marker (Pulsating ISRO Satellite Orb)
+      const orbLat = cLat + 0.032;
+      const orbLng = cLng + 0.032;
+      const satelliteOrbIcon = L.divIcon({
+        className: 'custom-satellite-orb',
+        html: `
+          <div style="position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <div style="position: absolute; width: 36px; height: 36px; border-radius: 9999px; background: rgba(192, 132, 252, 0.4); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            <div style="width: 28px; height: 28px; border-radius: 9999px; background: #3b0764; border: 2px solid #c084fc; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: 0 0 16px rgba(192, 132, 252, 0.9);">
+              🛰️
+            </div>
+            <div style="position: absolute; left: 34px; white-space: nowrap; background: rgba(3, 7, 18, 0.95); border: 1px solid rgba(192, 132, 252, 0.6); padding: 2px 7px; border-radius: 8px; font-family: monospace; font-size: 10px; color: #e9d5ff; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+              ISRO INSAT-3DR (MOSDAC)
+            </div>
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+      });
+
+      const orbMarker = L.marker([orbLat, orbLng], { icon: satelliteOrbIcon }).addTo(layerGroup);
+      orbMarker.bindPopup(`
+        <div class="text-xs font-mono p-2 bg-slate-950 text-slate-100 rounded-xl border border-purple-500/50">
+          <div class="flex items-center space-x-1.5 text-purple-300 font-bold mb-1">
+            <span>🛰️ ISRO INSAT-3DR / MOSDAC Geostationary Satellite</span>
+          </div>
+          <div class="space-y-1 text-[11px]">
+            <div><strong>Mission:</strong> INSAT-3DR Geostationary Imager & Sounder</div>
+            <div><strong>Sub-Satellite Point:</strong> 74.0°E Geostationary Orbit</div>
+            <div><strong>Live Products:</strong> <code>3SIMG_L1B_STD</code>, <code>3SIMG_L2B_HEM</code></div>
+            <div><strong>Hydro-Estimator (HEM):</strong> Real-Time Rainfall Rate Precipitation</div>
+            <div><strong>Thermal Ingestion:</strong> TIR-1 (10.8µm) Cloud-Top Temp: 209 K</div>
+            <div><strong>Data Source:</strong> Space Applications Centre (SAC / ISRO)</div>
+          </div>
+        </div>
+      `);
 
       insatRing.bindTooltip(`
         <div class="text-xs font-mono p-1.5 bg-slate-950/95 border border-purple-500/50 rounded-xl text-slate-100 shadow-xl">
           <div class="flex items-center space-x-1 text-purple-300 font-bold">
-            <span>🛰️ ISRO MOSDAC INSAT-3DR Imager</span>
+            <span>🛰️ ISRO MOSDAC INSAT-3DR Orbit</span>
           </div>
           <div class="mt-1 text-[11px] space-y-0.5">
             <div>Dataset ID: <span class="text-amber-300">3SIMG_L1B_STD / 3SIMG_L2B_HEM</span></div>
@@ -1174,16 +1213,32 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         )}
       </div>
 
-      {/* Top-Right Collapsible GIS Layer Controls */}
+      {/* Top-Right Collapsible GIS Layer Controls & Satellite Orbit HUD */}
       <div className="absolute top-3 right-3 z-10 flex flex-col items-end space-y-1.5">
-        <button
-          onClick={() => setIsLayersOpen(!isLayersOpen)}
-          className="hud-panel px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-mono border border-slate-700 bg-slate-950/90 text-cyan-300 shadow-xl hover:border-cyan-500 transition-all"
-        >
-          <Layers className="w-3.5 h-3.5 text-cyan-400" />
-          <span>GIS Layers</span>
-          <ChevronDown className={`w-3 h-3 transition-transform ${isLayersOpen ? 'rotate-180' : ''}`} />
-        </button>
+        <div className="flex items-center space-x-1.5">
+          {/* Always Visible Quick MOSDAC Satellite Orb Status Pill */}
+          <button
+            onClick={() => setShowMosdacInsat(!showMosdacInsat)}
+            title="Toggle ISRO MOSDAC INSAT-3DR Geostationary Orbit Layer"
+            className={`hud-panel px-2.5 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-mono border shadow-xl transition-all cursor-pointer ${
+              showMosdacInsat
+                ? 'border-purple-500/60 bg-purple-950/85 text-purple-200 shadow-[0_0_15px_rgba(192,132,252,0.3)]'
+                : 'border-slate-800 bg-slate-950/80 text-slate-500'
+            }`}
+          >
+            <span className={`w-2 h-2 rounded-full ${showMosdacInsat ? 'bg-purple-400 animate-ping' : 'bg-slate-600'}`}></span>
+            <span>🛰️ MOSDAC INSAT-3DR</span>
+          </button>
+
+          <button
+            onClick={() => setIsLayersOpen(!isLayersOpen)}
+            className="hud-panel px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-mono border border-slate-700 bg-slate-950/90 text-cyan-300 shadow-xl hover:border-cyan-500 transition-all cursor-pointer"
+          >
+            <Layers className="w-3.5 h-3.5 text-cyan-400" />
+            <span>GIS Layers</span>
+            <ChevronDown className={`w-3 h-3 transition-transform ${isLayersOpen ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
 
         {isLayersOpen && (
           <div className="hud-panel p-2.5 rounded-xl flex flex-col space-y-1 text-[11px] font-mono border border-slate-800 bg-slate-950/95 shadow-2xl min-w-[190px]">
