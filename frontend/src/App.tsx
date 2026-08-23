@@ -40,6 +40,7 @@ import {
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon 
 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 
 export const App: React.FC = () => {
   // Authentication state
@@ -845,6 +846,7 @@ export const App: React.FC = () => {
           onClose={() => setIsDistrictAtlasOpen(false)}
         />
       )}
+      <Analytics />
     </div>
   );
 };
