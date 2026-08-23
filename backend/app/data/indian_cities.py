@@ -813,16 +813,26 @@ def _build_generic_state_scenario(selected: Dict[str, Any]) -> Dict[str, Any]:
 
 def generate_base_scenario(city_id: str = "mumbai_monsoon") -> CityDigitalTwinState:
     cities = {c["id"]: c for c in get_available_indian_cities()}
-    selected = cities.get(city_id, cities["mumbai_monsoon"])
+    target_id = city_id
+    if target_id not in cities:
+        for k, v in cities.items():
+            if target_id.lower() in k.lower() or target_id.lower() in v["name"].lower() or target_id.lower() in v["state"].lower():
+                target_id = k
+                break
 
-    if city_id == "mumbai_monsoon":
-        spec = _build_mumbai_scenario()
-    elif city_id == "delhi_yamuna":
-        spec = _build_delhi_scenario()
-    elif city_id == "bengaluru_lakes":
-        spec = _build_bengaluru_scenario()
+    if target_id in cities:
+        selected = cities[target_id]
+        if target_id == "mumbai_monsoon":
+            spec = _build_mumbai_scenario()
+        elif target_id == "delhi_yamuna":
+            spec = _build_delhi_scenario()
+        elif target_id == "bengaluru_lakes":
+            spec = _build_bengaluru_scenario()
+        else:
+            spec = _build_generic_state_scenario(selected)
     else:
-        spec = _build_generic_state_scenario(selected)
+        from app.services.pan_india_geocoder import pan_india_engine
+        return pan_india_engine.resolve_location(query=city_id)
 
     nodes: List[InfrastructureNode] = spec["nodes"]
     roads: List[RoadEdge] = spec["roads"]
