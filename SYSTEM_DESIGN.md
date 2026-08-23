@@ -6,17 +6,18 @@
 ## 1. Executive Summary & Problem Statement
 
 ### 1.1 Problem Statement
-India faces catastrophic seasonal monsoon floods, cyclonic storm surges, and glacial cloudbursts affecting over 40 million citizens annually. Traditional disaster management suffers from:
+India faces catastrophic seasonal monsoon floods, cyclonic storm surges, wildfires, and glacial cloudbursts affecting over 40 million citizens annually. Traditional disaster management suffers from:
 1. **Data Silos**: Fragmented communication between National (NDMA), State (SDMA), District (DDMA), and first responders (NDRF, 108 EMS).
 2. **Delayed Inundation Warnings**: Optical satellites are blocked by cloud cover; physical gauge networks lack automated forward-looking predictive cascade models.
 3. **Citizen Exclusion**: Citizens lack real-time localized hyper-local telemetry, GPS SOS routing, and multilingual conversational safety advice.
 
 ### 1.2 The CivicTwin AI Solution
-CivicTwin AI is an end-to-end, high-performance **Cyber-Physical Digital Twin** that unifies:
-- **Spaceborne Remote Sensing**: Cloud-penetrating C-Band Radar (Sentinel-1 SAR), Multispectral Damage Indices (Sentinel-2), Thermal Hotspots (NASA FIRMS), and Cyclone Doppler (ISRO MOSDAC & Bhuvan).
-- **Physics-Informed Cascade Prediction**: Dynamic rainfall accumulation, river discharge kinetics, elevation slope drainage, and power grid failure cascading.
-- **Role-Based Command & Control**: Strict 4-tier cryptographic clearance separating National Command from State SDMAs, District DDMAs, and Citizens.
-- **Telecom & AI Delivery**: Real-time SMS OTPs via Fast2SMS and Twilio, GPS-triggered emergency broadcasts, and Google Gemini AI multilingual safety advice.
+CivicTwin AI is a **Cyber-Physical Digital Twin** that unifies:
+- **Spaceborne Remote Sensing**: Cloud-penetrating C-Band Radar (Sentinel-1 SAR), Multispectral Damage Indices (Sentinel-2), Thermal Hotspots (NASA FIRMS), and Cyclone tracking (ISRO MOSDAC & Bhuvan).
+- **Physics-Informed Cascade Prediction**: A single hazard-agnostic risk engine driving flood, fire, and cyclone prediction, plus infrastructure cascade failure modeling (power grid, road network, medical facilities).
+- **Explainable Source Confidence**: Calculates empirical confidence metrics based on multi-satellite and ground gauge agreement percentage.
+- **Role-Based Command & Control**: A 4-tier clearance model separating National Command from State SDMAs, District DDMAs, and Citizens.
+- **Telecom & AI Delivery**: Live SMS alerts via Twilio/Fast2SMS, GPS-triggered emergency broadcasts, and Google Gemini AI multilingual safety advice.
 
 ---
 
@@ -40,8 +41,11 @@ graph TD
         FSTORE["Geospatial Feature Store (feature_store.py)"]
     end
 
-    subgraph PREDICTION_ENGINE ["3. Prediction & Cascade Engine"]
-        HYBRID["Option A: Multi-Factor Hybrid Model (0.40 Rain + 0.30 River + 0.20 Topo + 0.10 Soil)"]
+    subgraph PREDICTION_ENGINE ["3. Multi-Hazard Prediction & Cascade Engine"]
+        HYBRID["Flood: 0.40 Rain + 0.30 River + 0.20 Topo + 0.10 Soil"]
+        FIRE_ENGINE["Fire: 0.50 Hotspot Density + 0.30 FRP + 0.20 Proximity"]
+        CYCLONE_ENGINE["Cyclone: 0.40 Wind + 0.30 Track Dist + 0.20 Surge + 0.10 ETA"]
+        CONF["Confidence Score (Source Agreement %)"]
         CASCADE["Vulnerability Cascade (Substation Trip, Road Closures)"]
         IAP["Incident Action Plan (IAP) Generator"]
     end
@@ -68,7 +72,12 @@ graph TD
     SATELLITE_AND_WEATHER --> PREPROC
     PREPROC --> FSTORE
     FSTORE --> HYBRID
-    HYBRID --> CASCADE
+    FSTORE --> FIRE_ENGINE
+    FSTORE --> CYCLONE_ENGINE
+    HYBRID --> CONF
+    FIRE_ENGINE --> CONF
+    CYCLONE_ENGINE --> CONF
+    CONF --> CASCADE
     CASCADE --> IAP
     IAP --> DB
     DB --> SERVING_LAYER
@@ -80,41 +89,52 @@ graph TD
 ## 3. The 5-Layer End-to-End Engineering Pipeline
 
 ### Layer 1: Data Ingestion Layer
-Ingests real-time spaceborne remote sensing and ground telemetry without requiring manual operator polling:
-1. **Copernicus Sentinel-1 (C-Band SAR)**: $5.405\text{ GHz}$ synthetic aperture radar backscatter ($\sigma^0 < -15\text{ dB}$) for all-weather, day/night cloud-penetrating water detection.
-2. **Copernicus Sentinel-2**: $10\text{m}$ resolution multispectral imagery calculating Normalized Difference Vegetation Index ($\text{NDVI}$) and Normalized Difference Water Index ($\text{NDWI}$) for infrastructure damage grading.
-3. **NASA FIRMS**: VIIRS $375\text{m}$ and MODIS active fire hotspots and Fire Radiative Power ($\text{MW}$).
-4. **ISRO MOSDAC INSAT-3D/3DR**: 6-channel imager thermal infrared ($TIR1$) cloud-top brightness temperature tracking convective storm cores ($209\text{ K} / -64^\circ\text{C}$).
-5. **ISRO Bhuvan NRSC**: OGC Web Map Service (WMS) vector overlays for Flood Hazard Zonation and Landslide Susceptibility.
-6. **Central Water Commission (CWC)**: Automated scraper parsing river water levels and danger marks ($H_{\text{current}} \text{ vs } H_{\text{danger}}$) across 8 major Indian river basins.
-7. **India Meteorological Department (IMD)**: Automated scraper ingesting official Color-Coded District Warning Bulletins (**Red**, **Orange**, **Yellow**).
+Ingests spaceborne remote sensing and ground telemetry:
+1. **Copernicus Sentinel-1 (C-Band SAR)**: $5.405\text{ GHz}$ synthetic aperture radar backscatter ($\sigma^0 < -15\text{ dB}$) for all-weather, day/night cloud-penetrating water detection. *(Revisit cycle ~6–12 days; static overlay of latest available pass)*.
+2. **Copernicus Sentinel-2**: $10\text{m}$ resolution multispectral imagery calculating $\text{NDVI}$ and $\text{NDWI}$ for infrastructure damage grading.
+3. **NASA FIRMS**: VIIRS $375\text{m}$ and MODIS active fire hotspots and Fire Radiative Power ($\text{MW}$) — near real-time (~3hr satellite latency).
+4. **ISRO MOSDAC INSAT-3D/3DR**: Thermal infrared cloud-top brightness temperature tracking convective storm cores, updated every ~30 min.
+5. **ISRO Bhuvan NRSC**: OGC WMS vector overlays for Flood Hazard Zonation and Landslide Susceptibility.
+6. **Central Water Commission (CWC)**: Scraper parsing river water levels and danger marks across major Indian river basins.
+7. **India Meteorological Department (IMD)**: Scraper ingesting official Color-Coded District Warning Bulletins (**Red**/**Orange**/**Yellow**) and cyclone advisories.
 
 ### Layer 2: Data Processing & Feature Store Layer
-- **Reprojection**: Standardizes all external GeoTIFFs, WMS tiles, and Overpass vectors to **EPSG:4326** (WGS84).
-- **Feature Store Vector Table**:
-  - `rainfall_24h_mm`, `rainfall_48h_mm`
-  - `river_discharge_m3s`, `river_rise_rate_m_hr`
-  - `elevation_m`, `slope_deg`
-  - `soil_saturation_pct`, `distance_to_waterway_km`
-  - `historical_flood_freq_per_decade`
+- **Reprojection**: Standardizes all external GeoTIFFs, WMS tiles, and vectors to **EPSG:4326** (WGS84).
+- **Feature Store Vector Table**: `rainfall_24h_mm`, `rainfall_48h_mm`, `river_discharge_m3s`, `river_rise_rate_m_hr`, `elevation_m`, `slope_deg`, `soil_saturation_pct`, `distance_to_waterway_km`, `historical_flood_freq_per_decade`, `hotspot_density`, `fire_radiative_power_mw`, `wind_speed_kmh`, `distance_to_cyclone_track_km`.
 
-### Layer 3: Prediction & Cascading Failure Engine
-Implements the explainable Multi-Factor Physics Risk Index:
-$$\text{Composite Flood Risk Score} = (0.40 \times \text{Rain}_{\text{norm}}) + (0.30 \times \text{River}_{\text{norm}}) + (0.20 \times \text{Topo}_{\text{factor}}) + (0.10 \times \text{Soil}_{\text{norm}})$$
+### Layer 3: Multi-Hazard Prediction & Cascading Failure Engine
+
+#### Hazard Formulas:
+- **🌊 Flood Risk Index**:
+  $$\text{Flood Risk} = 0.40 \times \text{Rain}_{\text{norm}} + 0.30 \times \text{River}_{\text{norm}} + 0.20 \times \text{Topo}_{\text{factor}} + 0.10 \times \text{Soil}_{\text{norm}}$$
+
+- **🔥 Fire Risk Index**:
+  $$\text{Fire Risk} = 0.50 \times \text{HotspotDensity} + 0.30 \times \text{FRP}_{\text{norm}} + 0.20 \times \text{Proximity}_{\text{inverse}}$$
+
+- **🌀 Cyclone Risk Index**:
+  $$\text{Cyclone Risk} = 0.40 \times \text{Wind}_{\text{norm}} + 0.30 \times \text{TrackDist}_{\text{inverse}} + 0.20 \times \text{SurgeRisk}_{\text{elevation}} + 0.10 \times \text{ETA}_{\text{inverse}}$$
+
+- **🎯 Source Confidence Score %** (applies to all hazards):
+  $$\text{Confidence \%} = \frac{\text{Sources Agreeing on Elevated Risk}}{\text{Total Available Independent Sources}} \times 100$$
+
+All three formulas write to the same `risk_assessments` table via a shared `hazard_type` field — one engine, three inputs.
 
 #### Cascading Trigger Matrix:
-- $\text{Water Depth} \ge 0.30\text{m}$ at electrical substation $\rightarrow$ Status trips to `offline` (power blackouts).
-- $\text{Water Depth} \ge 0.25\text{m}$ on road corridor $\rightarrow$ Status changes to `impassable` (traffic diverted).
-- Submerged hospital $\rightarrow$ Dispatches backup dewatering pumps and re-routes ambulances to alternate medical nodes.
+- $\text{Water Depth} \ge 0.30\text{m}$ at electrical substation $\rightarrow$ status trips to `offline`.
+- $\text{Water Depth} \ge 0.25\text{m}$ on road corridor $\rightarrow$ status changes to `impassable`.
+- Submerged hospital $\rightarrow$ switches to `degraded (diesel backup)` then `offline`, dispatches backup pumps, and reroutes ambulances.
+- $\text{Fire Risk} \ge \text{CRITICAL}$ AND $\text{asset} < 2\text{km}$ $\rightarrow$ asset flagged `at_risk`, nearest fire unit suggested.
+- $\text{Cyclone Risk} \ge \text{HIGH}$ AND $\text{asset\_type} = \text{coastal}$ $\rightarrow$ zone flagged for evacuation, nearest shelter activation suggested.
+- Any $\text{Risk} \ge \text{CRITICAL}$ with no active incident $\rightarrow$ auto-creates incident (`reported_by = 'ai_prediction'`).
 
 ### Layer 4: Alerting & Telecom Serving Layer
-- **Fast2SMS Indian Gateway**: Direct Indian cell tower delivery for OTPs and high-priority cellular notifications.
-- **Twilio Carrier API**: Global E.164 cellular SMS delivery.
-- **WhatsApp Direct Gateway**: One-tap pre-filled emergency NDMA disaster alerts.
-- **ntfy.sh & Web Notification**: Free zero-latency instant smartphone sirens.
+- **Twilio Carrier API**: Live cellular SMS dispatch for verified phone numbers.
+- **Fast2SMS Indian Gateway**: Direct Indian telecom tower delivery.
+- **ntfy.sh & Web Push**: Free zero-latency instant smartphone sirens.
+- **WebSocket Stream**: Real-time event broadcasting (`/ws/stream`) updating map coordinates with zero polling lag.
 
 ### Layer 5: AI Explanation Layer (Google Gemini)
-- Sits atop the state engine to parse complex multi-hazard parameters and generate structured, conversational disaster advice in 5 Indian languages: **English**, **Hindi (हिंदी)**, **Marathi (मराठी)**, **Kannada (ಕನ್ನಡ)**, and **Tamil (தமிழ்)**.
+- Parses multi-hazard parameters and generates structured, conversational disaster advice. **Live in English and Hindi**; Marathi, Kannada, and Tamil are available on the language roadmap.
 
 ---
 
@@ -152,6 +172,7 @@ erDiagram
         string hazard_type
         float risk_score
         string risk_level
+        float confidence_pct
         json data_sources
         timestamp predicted_at
         timestamp valid_until
@@ -242,7 +263,7 @@ erDiagram
 | **Geographic Scope** | All 36 States & UTs (786+ Districts) | Assigned State Only (e.g. MH) | Assigned District Only (e.g. Mumbai) | Local GPS Geofence |
 | **Map Grid Views** | `City Twin` & `🇮🇳 All-India Grid` | `Local Twin` & `🏢 State Grid` | `Ward Triage` & `📍 District Grid` | Public Citizen Map |
 | **District Atlas** | `🇮🇳 780+ Districts Atlas` | `🏢 State SDMA Districts` | `📍 District DDMA Triage` | **Hidden / Blocked** |
-| **Satellite Radar** | Real-time SAR Retasking | Read-Only SAR Maps | Read-Only SAR Maps | **Hidden / Blocked** |
+| **Satellite Radar** | Priority SAR Pass Retrieval | Read-Only SAR Maps | Read-Only SAR Maps | **Hidden / Blocked** |
 | **Crisis Sandbox** | Full Timeline Simulation | Local Scenario Playback | Local Scenario Playback | **Hidden / Blocked** |
 | **Dispatch Control** | NDRF All Battalions & Army | State Police & SDMA EMS | Municipal Pumps & Local EMS | 1-Click SOS Trigger |
 | **Auth Mechanism** | Officer Password + MeriPehchaan | Officer Password + SDMA Badge | Officer Password + DDMA Badge | Mobile SMS OTP |
@@ -251,15 +272,15 @@ erDiagram
 
 ## 6. Hardware, IoT & Government Integrations
 
-1. **Physical GPS Beacons (Traccar / LoRaWAN / OBD-II)**:
+1. **Physical GPS Beacons (Traccar / LoRaWAN / OBD-II)** — *Demo-Simulated*:
    - Endpoint: `POST /api/iot/gps-beacon-update`
-   - Ingests real-world vehicle tracking streams from physical ambulances and rescue boats, broadcasting live positions over WebSockets.
-2. **Citizen SOS Damage Media Upload**:
+   - Real endpoint and WebSocket broadcast logic; for demo purposes, coordinates are pushed to this real endpoint.
+2. **Citizen SOS Damage Media Upload** — *Live*:
    - Endpoint: `POST /api/citizen-sos/upload-media`
-   - Accepts base64 encoded photo/video evidence of flood depth and attaches it to the incident record for first-responder verification.
-3. **Government Single Sign-On (MeriPehchaan / DigiLocker)**:
+   - Accepts base64 encoded photo/video evidence and attaches it to the incident record for first-responder verification.
+3. **Government Single Sign-On (MeriPehchaan / DigiLocker)** — *Roadmap*:
    - Endpoint: `POST /api/auth/meripehchaan-verify`
-   - Validates official `.gov.in` / `.nic.in` credentials and issues cryptographic clearance badges.
+   - Requires formal registration with National e-Governance Division; mock verification UI provided for hackathon demonstration.
 
 ---
 
@@ -273,8 +294,8 @@ erDiagram
 │ Geospatial Maps   │ Leaflet.js, OpenStreetMap, CartoDB Voyager, Esri World  │
 │ Backend Server    │ Python 3.11+, FastAPI (Async), Uvicorn, WebSockets      │
 │ Database Layer    │ SQLite / PostgreSQL, PostGIS-Compatible GeoJSON Schema │
-│ AI Engine         │ Google Gemini 1.5 Pro / Flash via official Gemini SDK   │
-│ Telecom Gateway   │ Fast2SMS (Indian Towers) & Twilio Carrier API           │
+│ AI Engine         │ Google Gemini via official SDK (English + Hindi Live)   │
+│ Telecom Gateway   │ Twilio (Live Trial) · Fast2SMS Gateway (Live)           │
 │ Remote Sensing    │ Sentinel-1 SAR, Sentinel-2 MSI, NASA FIRMS, ISRO Bhuvan │
 │ Hosting & CI/CD   │ Vercel (Edge Frontend), Python Backend Server, GitHub   │
 └───────────────────┴─────────────────────────────────────────────────────────┘
@@ -282,12 +303,26 @@ erDiagram
 
 ---
 
-## 8. Data Provenance & Hackathon Integrity Manifest
+## 8. Build Status — What's Live vs Simulated vs Roadmap
 
-To ensure 100% transparency for hackathon judges and evaluators:
-1. **Live External Feeds**: Weather radar, river discharge forecasts, OSM infrastructure entities, and satellite layers are ingested from external APIs.
-2. **Deterministic Physics Simulation**: Substation electrical tripping, road inundation depth calculations, and pump drainage rates are computed dynamically by the simulation engine in `state_manager.py`.
-3. **Territorial Sovereignty**: All map boundaries and spatial interactions are strictly clamped to **Sovereign Indian National Territory** in compliance with Survey of India and NDMA guidelines.
+| Component | Status | Details |
+|---|:---:|---|
+| **Flood / Fire / Cyclone Risk Formulas** | **Live** | Computed deterministically from real/historical telemetry |
+| **Cascade Trigger Logic** | **Live** | Real backend logic in `state_manager.py` |
+| **NASA FIRMS Fire Hotspots** | **Live** | Real-time NASA VIIRS/MODIS API |
+| **Rainfall Data (Open-Meteo)** | **Live** | Real-time global precipitation grid |
+| **CWC River Gauge Telemetry** | **Live** | Real gauge station thresholds & rate-of-rise |
+| **Cyclone Data** | **Live Historical Replay** | Real Bay of Bengal cyclone track data |
+| **Sentinel-1 SAR Radar** | **Live** | Latest available pass, static overlay, timestamped |
+| **Confidence Scoring %** | **Live** | Computed from independent sensor agreement |
+| **Citizen SOS + Media Upload** | **Live** | Smartphone photo proof attached to incident |
+| **Twilio & Fast2SMS** | **Live** | Real SMS OTP & broadcast dispatch |
+| **GPS Beacon Tracking** | **Demo-Simulated** | Real endpoint + simulated vehicle stream |
+| **MeriPehchaan / DigiLocker SSO** | **Roadmap** | Simulated verification UI |
+| **Gemini AI (English, Hindi)** | **Live** | Live Gemini 1.5 prompt generation |
+| **Gemini AI (Marathi, Kannada, Tamil)** | **Roadmap** | Multilingual prompt expansion |
+| **National / State / District RBAC** | **Live** | Role-scoped UI views and geographic grids |
 
 ---
-*Authored by Antigravity AI & The CivicTwin AI Engineering Team.*
+
+*Authored by the CivicTwin AI Engineering Team.*
