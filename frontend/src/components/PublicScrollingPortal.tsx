@@ -42,12 +42,10 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   onLogout
 }) => {
   const [heroPrompt, setHeroPrompt] = useState<string>('Where are the nearest safe high-ground relief shelters?');
-  const [aiAnswers, setAiAnswers] = useState<Array<{ q: string; a: string }>>([
-    {
-      q: 'Where are the nearest safe high-ground relief shelters?',
-      a: 'Active relief camps are set up at Municipal Stadiums, High-Ground Central Schools, and Zilla Parishad Halls. Tap the 1-Click SOS button to transmit your live GPS location for directed evacuation transport.'
-    }
-  ]);
+  const [activeAnswer, setActiveAnswer] = useState<{ q: string; a: string }>({
+    q: 'Where are the nearest safe high-ground relief shelters?',
+    a: 'High-ground relief shelters are active at Government Colleges, Indoor Stadiums, and Higher Secondary Schools. All facilities provide clean drinking water, dry rations, and medical first-aid.'
+  });
   const [isAsking, setIsAsking] = useState(false);
 
   const cityName = state?.city_name || 'Mumbai Mithi Basin';
@@ -81,9 +79,9 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         response = "Dial 112 for immediate first responders or 1078 for NDRF flood boat rescue. You can also tap the red SOS button on this page to transmit your live GPS location.";
       }
 
-      setAiAnswers(prev => [{ q: query, a: response }, ...prev.slice(0, 4)]);
+      setActiveAnswer({ q: query, a: response });
       setIsAsking(false);
-    }, 600);
+    }, 400);
   };
 
   return (
@@ -324,20 +322,20 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
             </button>
           </div>
 
-          {/* Render Latest AI Advice Stream */}
-          <div className="space-y-2 pt-2 border-t border-slate-800">
-            {aiAnswers.map((item, idx) => (
-              <div key={idx} className="p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/30 space-y-1 text-xs">
-                <div className="font-bold text-cyan-300 font-mono flex items-center space-x-1.5">
-                  <Sparkles className="w-3 h-3 text-cyan-400" />
-                  <span>Q: {item.q}</span>
+          {/* Render Single Active AI Advice Box */}
+          {activeAnswer && (
+            <div className="pt-2 border-t border-slate-800">
+              <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-500/40 space-y-1.5 text-xs shadow-lg">
+                <div className="font-bold text-cyan-300 font-mono flex items-center space-x-1.5 text-sm">
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
+                  <span>Q: {activeAnswer.q}</span>
                 </div>
-                <div className="text-slate-200 font-sans leading-relaxed pl-4">
-                  {item.a}
+                <div className="text-slate-200 font-sans leading-relaxed pl-5 text-xs sm:text-sm">
+                  {activeAnswer.a}
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
