@@ -993,31 +993,21 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       `);
     }
 
-    // 12. 🇮🇳 ISRO Bhuvan (NRSC Disaster Management Flood & Landslide Zonation)
-    if (showBhuvanDisaster && state.center_coords) {
-      const cLat = state.center_coords[0];
-      const cLng = state.center_coords[1];
-      const bhuvanPoly = L.polygon([
-        [cLat - 0.015, cLng - 0.020],
-        [cLat - 0.005, cLng + 0.015],
-        [cLat + 0.020, cLng + 0.010],
-        [cLat + 0.012, cLng - 0.025]
-      ], {
-        color: '#f97316',
-        weight: 1.5,
-        dashArray: '4, 6',
-        fillColor: '#ea580c',
-        fillOpacity: 0.16
-      }).addTo(layerGroup);
-
-      bhuvanPoly.bindTooltip(`
-        <div class="text-xs font-mono p-1">
-          <strong class="text-orange-400">🇮🇳 ISRO Bhuvan (NRSC Disasters)</strong><br/>
-          OGC WMS: <span class="text-white">bhuvan-vec1.nrsc.gov.in</span><br/>
-          Layer: <span class="text-amber-300">Flood Inundation & Landslide Susceptibility Zone</span><br/>
-          Authority: <span class="text-cyan-300">National Remote Sensing Centre (NRSC/ISRO)</span>
-        </div>
-      `);
+    // 12. 🇮🇳 ISRO Bhuvan (NRSC OGC WMS GetMap Tile Layer)
+    if (showBhuvanDisaster) {
+      try {
+        const bhuvanWmsLayer = L.tileLayer.wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wms', {
+          layers: 'india_boundaries',
+          format: 'image/png',
+          transparent: true,
+          version: '1.3.0',
+          crs: L.CRS.EPSG3857,
+          opacity: 0.70,
+          attribution: '© ISRO Bhuvan NRSC'
+        } as any).addTo(layerGroup);
+      } catch (e) {
+        console.warn('ISRO Bhuvan WMS tile layer fallback:', e);
+      }
     }
 
   }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster]);
