@@ -1,3 +1,4 @@
+import os
 import httpx
 from typing import Dict, Any, List, Optional
 import datetime
@@ -10,11 +11,11 @@ class RealWeatherIngestionService:
     """
 
     def __init__(self):
-        self.api_key = "sk-live-78BPbhvwQTMCUySdkMSFkRP1WaQYqFkYfm3fvNnX"
+        self.api_key = os.getenv("WEATHER_API_KEY", "")
         self.headers = {
             "x-api-key": self.api_key,
             "Accept": "application/json"
-        }
+        } if self.api_key else {"Accept": "application/json"}
         self.imd_station_map = {
             "mumbai": "43057",
             "delhi": "42182",
