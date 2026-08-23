@@ -51,7 +51,27 @@ export const App: React.FC = () => {
 
   const [state, setState] = useState<CityDigitalTwinState>(DEFAULT_FALLBACK_STATE);
   
-  // View mode: defaults to public multi-page showcase
+  // Device detection: Mobile is dedicated to Public Citizen Portal, Desktop has full Command Cockpit
+  const [isMobileDevice, setIsMobileDevice] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobileDevice(mobile);
+      if (mobile) {
+        setViewMode('SCROLLING_PORTAL');
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // View mode: defaults to public portal on mobile, flexible on desktop
   const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('SCROLLING_PORTAL');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
@@ -239,7 +259,14 @@ export const App: React.FC = () => {
           state={state}
           authUser={authUser}
           onSwitchCity={handleSwitchCity}
-          onLaunchFullCockpit={() => setViewMode('COCKPIT')}
+          onLaunchFullCockpit={() => {
+            if (isMobileDevice) {
+              setToastAlert('💻 Full Multi-Hazard Digital Twin & Sandbox is designed for Desktop screens. Mobile is dedicated to Public Safety & Helplines.');
+              setTimeout(() => setToastAlert(null), 5000);
+            } else {
+              setViewMode('COCKPIT');
+            }
+          }}
           onOpenGemini={() => setIsAICopilotOpen(true)}
           onOpenSatelliteSAR={() => setIsSAROpen(true)}
           onOpenDroneCCTV={() => setIsDroneCCTVOpen(true)}
@@ -278,7 +305,12 @@ export const App: React.FC = () => {
                   handleLogin(user);
                   setIsLoginModalOpen(false);
                   if (user.userType !== 'citizen') {
-                    setViewMode('COCKPIT');
+                    if (!isMobileDevice) {
+                      setViewMode('COCKPIT');
+                    } else {
+                      setToastAlert(`🔒 Authenticated as ${user.name}. Open on Desktop for Full GIS Twin.`);
+                      setTimeout(() => setToastAlert(null), 5000);
+                    }
                   }
                 }}
               />
