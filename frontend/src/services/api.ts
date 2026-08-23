@@ -441,6 +441,20 @@ export class DigitalTwinApiService {
     return await res.json();
   }
 
+  async sendRealOTP(phone: string, otpCode: string): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/auth/send-real-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp_code: otpCode })
+      });
+      return await res.json();
+    } catch (e) {
+      console.warn('Real OTP gateway call fallback:', e);
+      return { status: 'simulated_fallback' };
+    }
+  }
+
   disconnectWebSocket() {
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
     if (this.ws) {

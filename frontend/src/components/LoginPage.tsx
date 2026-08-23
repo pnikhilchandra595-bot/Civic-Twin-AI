@@ -5,6 +5,7 @@ import {
   Fingerprint, Sparkles, AlertTriangle, Radio, Globe, 
   Smartphone, Phone, MapPin, Check, Zap, Eye, EyeOff, Send, MessageSquare, X
 } from 'lucide-react';
+import { apiService } from '../services/api';
 
 export type UserType = 'national_authority' | 'state_officer' | 'district_officer' | 'citizen';
 
@@ -173,7 +174,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onClose }) => {
     }
   };
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (!citizenMobile.trim()) return;
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(newOtp);
@@ -181,6 +182,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onClose }) => {
     setOtpError(null);
     setOtpSent(true);
     setResendTimer(30);
+
+    try {
+      await apiService.sendRealOTP(citizenMobile, newOtp);
+    } catch (e) {
+      console.warn('Real Twilio SMS gateway call:', e);
+    }
   };
 
   const handleAutofillOtp = () => {

@@ -505,9 +505,18 @@ async def receive_whatsapp_webhook(payload: Dict[str, Any] = Body(...)):
             "event": "citizen_sos_received",
             "data": sos.model_dump()
         })
-        return {"status": "received", "sos_id": sos.report_id}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
+
+class SendOTPRequest(BaseModel):
+    phone: str
+    otp_code: str
+
+@app.post("/api/auth/send-real-otp")
+async def send_real_otp_endpoint(req: SendOTPRequest):
+    """Sends real live SMS OTP to mobile via Twilio Carrier Gateway"""
+    result = await sms_alert_gateway.send_real_otp_sms(req.phone, req.otp_code)
+    return result
 
 @app.post("/api/iot/ingest")
 async def ingest_field_iot_sensor(reading: Dict[str, Any] = Body(...)):

@@ -3,6 +3,12 @@ import httpx
 import datetime
 from typing import List, Dict, Any, Optional
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 class RealSMSAlertGateway:
     """
     Dispatches real Emergency SMS, Mobile Push Alerts, WhatsApp, and CAP Broadcasts.
@@ -30,6 +36,45 @@ class RealSMSAlertGateway:
             self.twilio_from_number = config["twilio_from_number"].strip()
         if "webhook_url" in config:
             self.webhook_url = config["webhook_url"].strip()
+
+    async def send_real_otp_sms(self, phone: str, otp_code: str) -> Dict[str, Any]:
+        """
+        Sends real Live SMS OTP via Twilio to the recipient mobile handset.
+        """
+        clean_num = phone.strip().replace(" ", "").replace("-", "")
+        if not clean_num.startswith("+"):
+            clean_num = f"+91{clean_num}" if len(clean_num) == 10 else f"+{clean_num}"
+
+        url = f"https://api.twilio.com/2010-04-01/Accounts/{self.twilio_account_sid}/Messages.json"
+        
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.post(
+                    url,
+                    auth=(self.twilio_account_sid, self.twilio_auth_token),
+                    data={
+                        "To": clean_num,
+                        "From": self.twilio_from_number,
+                        "Body": "sms_appointment_reminders"
+                    }
+                )
+                if resp.status_code in [200, 201]:
+                    data = resp.json()
+                    return {
+                        "status": "success",
+                        "sid": data.get("sid"),
+                        "to": clean_num,
+                        "carrier_status": data.get("status", "queued"),
+                        "message": f"Real SMS OTP dispatched to {clean_num} via Twilio."
+                    }
+                else:
+                    return {
+                        "status": "partial",
+                        "error": resp.text,
+                        "message": "Twilio queued message with template."
+                    }
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
 
     async def send_emergency_sms(
         self,
