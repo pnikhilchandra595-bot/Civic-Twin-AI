@@ -40,6 +40,7 @@ import {
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon 
 } from 'lucide-react';
+import { DEFAULT_FALLBACK_STATE } from './data/defaultTwinState';
 
 export const App: React.FC = () => {
   // Authentication state
@@ -48,7 +49,7 @@ export const App: React.FC = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [state, setState] = useState<CityDigitalTwinState | null>(null);
+  const [state, setState] = useState<CityDigitalTwinState>(DEFAULT_FALLBACK_STATE);
   
   // View mode: defaults to public multi-page showcase
   const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('SCROLLING_PORTAL');
