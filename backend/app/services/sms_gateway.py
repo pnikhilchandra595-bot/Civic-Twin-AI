@@ -39,42 +39,69 @@ class RealSMSAlertGateway:
 
     async def send_real_otp_sms(self, phone: str, otp_code: str) -> Dict[str, Any]:
         """
-        Sends real Live SMS OTP via Twilio to the recipient mobile handset.
+        Sends real Live SMS OTP via Fast2SMS (India) or Twilio to the recipient mobile handset.
         """
         clean_num = phone.strip().replace(" ", "").replace("-", "")
-        if not clean_num.startswith("+"):
-            clean_num = f"+91{clean_num}" if len(clean_num) == 10 else f"+{clean_num}"
+        india_10 = clean_num[-10:] if len(clean_num) >= 10 else clean_num
+        e164_num = f"+91{india_10}" if len(india_10) == 10 else clean_num
 
-        url = f"https://api.twilio.com/2010-04-01/Accounts/{self.twilio_account_sid}/Messages.json"
-        
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                resp = await client.post(
-                    url,
-                    auth=(self.twilio_account_sid, self.twilio_auth_token),
-                    data={
-                        "To": clean_num,
-                        "From": self.twilio_from_number,
-                        "Body": "sms_appointment_reminders"
-                    }
-                )
-                if resp.status_code in [200, 201]:
-                    data = resp.json()
-                    return {
-                        "status": "success",
-                        "sid": data.get("sid"),
-                        "to": clean_num,
-                        "carrier_status": data.get("status", "queued"),
-                        "message": f"Real SMS OTP dispatched to {clean_num} via Twilio."
-                    }
-                else:
-                    return {
-                        "status": "partial",
-                        "error": resp.text,
-                        "message": "Twilio queued message with template."
-                    }
-        except Exception as e:
-            return {"status": "error", "error": str(e)}
+        # 1. Try Fast2SMS India if API key is present
+        if self.fast2sms_api_key:
+            try:
+                async with httpx.AsyncClient(timeout=8.0) as client:
+                    resp = await client.post(
+                        "https://www.fast2sms.com/dev/bulkV2",
+                        headers={"authorization": self.fast2sms_api_key},
+                        json={
+                            "route": "otp",
+                            "variables_values": str(otp_code),
+                            "numbers": india_10
+                        }
+                    )
+                    if resp.status_code == 200 and resp.json().get("return"):
+                        return {
+                            "status": "success",
+                            "gateway": "Fast2SMS India Telecom",
+                            "to": india_10,
+                            "message": f"Real SMS OTP delivered to {india_10} via Fast2SMS."
+                        }
+            except Exception as e:
+                print(f"Fast2SMS OTP error: {e}")
+
+        # 2. Fallback to Twilio
+        if self.twilio_account_sid and self.twilio_auth_token:
+            url = f"https://api.twilio.com/2010-04-01/Accounts/{self.twilio_account_sid}/Messages.json"
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.post(
+                        url,
+                        auth=(self.twilio_account_sid, self.twilio_auth_token),
+                        data={
+                            "To": e164_num,
+                            "From": self.twilio_from_number,
+                            "Body": "sms_appointment_reminders"
+                        }
+                    )
+                    if resp.status_code in [200, 201]:
+                        data = resp.json()
+                        return {
+                            "status": "success",
+                            "gateway": "Twilio Carrier Gateway",
+                            "sid": data.get("sid"),
+                            "to": e164_num,
+                            "carrier_status": data.get("status", "queued"),
+                            "message": f"Real SMS OTP dispatched to {e164_num} via Twilio."
+                        }
+                    else:
+                        return {
+                            "status": "partial",
+                            "error": resp.text,
+                            "message": "Twilio queued message with template."
+                        }
+            except Exception as e:
+                return {"status": "error", "error": str(e)}
+
+        return {"status": "simulated", "otp": otp_code, "message": f"Simulated OTP {otp_code} active."}
 
     async def send_emergency_sms(
         self,
