@@ -30,6 +30,7 @@ from app.services.gps_beacon_stream import gps_beacon_engine
 from app.services.government_sso import government_sso_service
 from app.services.nasa_firms import nasa_firms_service
 from app.services.satellite_hub_service import satellite_hub_service
+from app.services.mosdac_service import mosdac_service
 from app.services.auth_service import auth_service, get_current_officer, Depends
 
 app = FastAPI(
@@ -197,16 +198,17 @@ async def triage_citizen_sos(payload: Dict[str, Any] = Body(...)):
 
 # --- CCTV & Drone Reconnaissance Streams ---
 @app.get("/api/drone/feeds")
+@app.get("/api/cctv/streams")
 def get_drone_cctv_feeds(city_id: Optional[str] = None):
     return drone_cctv_service.get_feeds_by_city(city_id)
 
 # --- Multi-Hazard Physics Simulator ---
 @app.post("/api/hazards/simulate")
 async def simulate_multi_hazard(payload: Dict[str, Any] = Body(...)):
-    hazard_type = payload.get("hazard_type", "HAZMAT_TOXIC_GAS_LEAK")
+    raw_type = str(payload.get("hazard_type", "HAZMAT_TOXIC_GAS_LEAK")).upper()
     lat, lng = state_manager.state.center_coords
 
-    if hazard_type == "HAZMAT_TOXIC_GAS_LEAK":
+    if "GAS" in raw_type or "HAZMAT" in raw_type or "CHEMICAL" in raw_type:
         result = multi_hazard_engine.calculate_hazmat_gas_plume(
             source_lat=lat,
             source_lng=lng,
@@ -215,14 +217,14 @@ async def simulate_multi_hazard(payload: Dict[str, Any] = Body(...)):
             wind_speed_kmh=state_manager.state.wind_speed_kmh,
             wind_direction_deg=state_manager.state.wind_direction_deg
         )
-    elif hazard_type == "EARTHQUAKE_SHAKEMAP":
+    elif "QUAKE" in raw_type or "SEISMIC" in raw_type or "EARTHQUAKE" in raw_type:
         result = multi_hazard_engine.calculate_earthquake_shakemap(
             epicenter_lat=lat,
             epicenter_lng=lng,
             magnitude_richter=payload.get("magnitude_richter", 6.8),
             focal_depth_km=payload.get("focal_depth_km", 10.0)
         )
-    elif hazard_type == "URBAN_FIRE":
+    elif "FIRE" in raw_type or "SLUM" in raw_type or "THERMAL" in raw_type:
         result = multi_hazard_engine.calculate_slum_fire_spread(
             origin_lat=lat,
             origin_lng=lng,
@@ -230,7 +232,15 @@ async def simulate_multi_hazard(payload: Dict[str, Any] = Body(...)):
             fuel_density_high=True
         )
     else:
-        raise HTTPException(status_code=400, detail="Unknown hazard type")
+        # Default to Hazmat/Flood multi-hazard plume
+        result = multi_hazard_engine.calculate_hazmat_gas_plume(
+            source_lat=lat,
+            source_lng=lng,
+            chemical_name="Chlorine (Cl2)",
+            release_rate_kg_s=30.0,
+            wind_speed_kmh=state_manager.state.wind_speed_kmh,
+            wind_direction_deg=state_manager.state.wind_direction_deg
+        )
 
     await ws_manager.broadcast({
         "event": "multi_hazard_simulated",
@@ -631,6 +641,23 @@ async def get_copernicus_ndwi(
 ):
     """Real Live Copernicus Data Space Ecosystem (Sentinel-2 L2A) NDWI Water Index Statistical API"""
     return await satellite_hub_service.fetch_ndwi_water_statistics([west, south, east, north])
+
+@app.get("/api/real-data/mosdac-catalog")
+async def get_mosdac_satellite_catalog(
+    dataset_id: str = "3SIMG_L1B_STD",
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    bounding_box: Optional[str] = None,
+    count: int = 10
+):
+    """Real Live ISRO MOSDAC (Meteorological & Oceanographic Satellite Data Archival Centre) Search Catalog API"""
+    return await mosdac_service.search_mosdac_catalog(
+        dataset_id=dataset_id,
+        start_time=start_time,
+        end_time=end_time,
+        bounding_box=bounding_box,
+        count=count
+    )
 
 # =========================================================================
 # CITIZEN SOS DAMAGE MEDIA, GPS BEACONS, GOVT SSO & PERSISTENT DB
