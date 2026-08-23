@@ -6,7 +6,7 @@ import {
 import { 
   Compass, Layers, Eye, EyeOff, Navigation, ShieldCheck, 
   AlertTriangle, Radio, Activity, Zap, Check, Maximize2, 
-  Map as MapIcon, Globe, Waves, PhoneCall, ArrowRight, ShieldAlert, ChevronDown 
+  Map as MapIcon, Globe, Waves, PhoneCall, ArrowRight, ShieldAlert, ChevronDown, Building2 
 } from 'lucide-react';
 import { AuthUser } from './LoginPage';
 
@@ -42,7 +42,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [baseMap, setBaseMap] = useState<'dark' | 'satellite' | 'street'>('dark');
-  const [viewScope, setViewScope] = useState<'city' | 'india'>('city');
+  const [viewScope, setViewScope] = useState<'city' | 'india' | 'state_grid' | 'district_grid'>('city');
   const [isLayersOpen, setIsLayersOpen] = useState(false);
   const [clickCoordFeedback, setClickCoordFeedback] = useState<string | null>(null);
   
@@ -417,6 +417,54 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     }
   ];
 
+  // Specific State District Maps for State SDMA Officers
+  const stateDistrictsMap: Record<string, Array<{ name: string; coords: [number, number]; threat: string; rainfall: string; color: string; cityId: string }>> = {
+    'Maharashtra': [
+      { name: 'Mumbai City & Mithi Basin', coords: [19.076, 72.877], threat: 'CRITICAL', rainfall: '84 mm/h', color: '#ef4444', cityId: 'mumbai_monsoon' },
+      { name: 'Thane & Kalyan Division', coords: [19.2183, 72.9781], threat: 'ELEVATED', rainfall: '52 mm/h', color: '#f59e0b', cityId: 'mumbai_monsoon' },
+      { name: 'Raigad & Mahad Basin', coords: [18.2355, 73.4475], threat: 'CRITICAL', rainfall: '92 mm/h', color: '#ef4444', cityId: 'mumbai_monsoon' },
+      { name: 'Pune & Mutha Valley', coords: [18.5204, 73.8567], threat: 'MONITOR', rainfall: '28 mm/h', color: '#10b981', cityId: 'mumbai_monsoon' },
+      { name: 'Kolhapur & Panchganga', coords: [16.7050, 74.2433], threat: 'ELEVATED', rainfall: '45 mm/h', color: '#f59e0b', cityId: 'mumbai_monsoon' },
+      { name: 'Nagpur & Vidarbha SDMA Hub', coords: [21.1458, 79.0882], threat: 'MONITOR', rainfall: '19 mm/h', color: '#10b981', cityId: 'mumbai_monsoon' }
+    ],
+    'Delhi NCR': [
+      { name: 'North-East Yamuna Floodplain', coords: [28.6692, 77.2628], threat: 'CRITICAL', rainfall: '68 mm/h', color: '#ef4444', cityId: 'delhi_yamuna' },
+      { name: 'Central Secretariat & ITO', coords: [28.6139, 77.2090], threat: 'ELEVATED', rainfall: '42 mm/h', color: '#f59e0b', cityId: 'delhi_yamuna' },
+      { name: 'Najafgarh Drain & Dwarka', coords: [28.6128, 77.0378], threat: 'ELEVATED', rainfall: '55 mm/h', color: '#f59e0b', cityId: 'delhi_yamuna' },
+      { name: 'Okhla Barrage & Yamuna South', coords: [28.5355, 77.2600], threat: 'MONITOR', rainfall: '22 mm/h', color: '#10b981', cityId: 'delhi_yamuna' }
+    ],
+    'Tamil Nadu': [
+      { name: 'Chennai Central & Adyar Basin', coords: [13.0827, 80.2707], threat: 'CRITICAL', rainfall: '78 mm/h', color: '#ef4444', cityId: 'chennai_cyclone' },
+      { name: 'Cuddalore Coastal Delta', coords: [11.7480, 79.7714], threat: 'ELEVATED', rainfall: '60 mm/h', color: '#f59e0b', cityId: 'chennai_cyclone' },
+      { name: 'Madurai & Vaigai Basin', coords: [9.9252, 78.1198], threat: 'MONITOR', rainfall: '25 mm/h', color: '#10b981', cityId: 'chennai_cyclone' }
+    ],
+    'Karnataka': [
+      { name: 'Bengaluru Urban & Vrishabhavathi', coords: [12.9716, 77.5946], threat: 'ELEVATED', rainfall: '48 mm/h', color: '#f59e0b', cityId: 'bengaluru_urban' },
+      { name: 'Dakshina Kannada & Mangaluru', coords: [12.9141, 74.8560], threat: 'CRITICAL', rainfall: '88 mm/h', color: '#ef4444', cityId: 'bengaluru_urban' },
+      { name: 'Belagavi & Krishna Basin', coords: [15.8497, 74.4977], threat: 'ELEVATED', rainfall: '54 mm/h', color: '#f59e0b', cityId: 'bengaluru_urban' }
+    ],
+    'West Bengal': [
+      { name: 'Kolkata Metropolitan Hooghly', coords: [22.5726, 88.3639], threat: 'CRITICAL', rainfall: '72 mm/h', color: '#ef4444', cityId: 'kolkata_hooghly' },
+      { name: 'Sundarbans Coastal Estuary', coords: [21.9497, 88.9004], threat: 'CRITICAL', rainfall: '95 mm/h', color: '#ef4444', cityId: 'kolkata_hooghly' },
+      { name: 'Siliguri & Teesta Valley', coords: [26.7271, 88.3953], threat: 'ELEVATED', rainfall: '64 mm/h', color: '#f59e0b', cityId: 'kolkata_hooghly' }
+    ],
+    'Assam': [
+      { name: 'Guwahati & Kamrup Brahmaputra', coords: [26.1445, 91.7362], threat: 'CRITICAL', rainfall: '82 mm/h', color: '#ef4444', cityId: 'assam_brahmaputra' },
+      { name: 'Kaziranga Lowlands & Golaghat', coords: [26.5775, 93.1711], threat: 'CRITICAL', rainfall: '89 mm/h', color: '#ef4444', cityId: 'assam_brahmaputra' },
+      { name: 'Dibrugarh & Upper Assam', coords: [27.4728, 94.9120], threat: 'ELEVATED', rainfall: '58 mm/h', color: '#f59e0b', cityId: 'assam_brahmaputra' }
+    ],
+    'Kerala': [
+      { name: 'Wayanad & Idukki Hill Slopes', coords: [11.6854, 76.1320], threat: 'CRITICAL', rainfall: '98 mm/h', color: '#ef4444', cityId: 'kerala_monsoon' },
+      { name: 'Kochi & Vembanad Estuary', coords: [9.9312, 76.2673], threat: 'CRITICAL', rainfall: '74 mm/h', color: '#ef4444', cityId: 'kerala_monsoon' },
+      { name: 'Alappuzha Kuttanad Lowland', coords: [9.4981, 76.3388], threat: 'ELEVATED', rainfall: '62 mm/h', color: '#f59e0b', cityId: 'kerala_monsoon' }
+    ],
+    'Uttarakhand': [
+      { name: 'Rishikesh & Ganga Upper Basin', coords: [30.0869, 78.2676], threat: 'CRITICAL', rainfall: '85 mm/h', color: '#ef4444', cityId: 'uttarakhand_cloudburst' },
+      { name: 'Chamoli & Alaknanda Gorge', coords: [30.4167, 79.3333], threat: 'CRITICAL', rainfall: '90 mm/h', color: '#ef4444', cityId: 'uttarakhand_cloudburst' },
+      { name: 'Dehradun Valley & Song River', coords: [30.3165, 78.0322], threat: 'ELEVATED', rainfall: '56 mm/h', color: '#f59e0b', cityId: 'uttarakhand_cloudburst' }
+    ]
+  };
+
   // Tile URL Map
   const tileUrls = {
     dark: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png',
@@ -501,6 +549,16 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
     if (viewScope === 'india') {
       mapInstanceRef.current.flyTo([22.5937, 78.9629], 5, { duration: 1.5 });
+    } else if (viewScope === 'state_grid') {
+      const stateName = authUser?.assignedState || 'Maharashtra';
+      const districts = stateDistrictsMap[stateName] || stateDistrictsMap['Maharashtra'];
+      if (districts && districts[0]) {
+        mapInstanceRef.current.flyTo(districts[0].coords, 7, { duration: 1.3 });
+      }
+    } else if (viewScope === 'district_grid') {
+      if (state && state.center_coords) {
+        mapInstanceRef.current.flyTo(state.center_coords, 11, { duration: 1.2 });
+      }
     } else if (state && state.center_coords) {
       mapInstanceRef.current.flyTo(state.center_coords, 13, { duration: 1.2 });
     }
@@ -547,6 +605,48 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             onSwitchCity(st.cityId);
           }
           map.flyTo(st.coords, 13, { duration: 1.2 });
+        });
+      });
+
+      return;
+    }
+
+    // 1b. If in State SDMA Grid Mode: Render district badges ONLY within assigned state
+    if (viewScope === 'state_grid') {
+      const stateName = authUser?.assignedState || 'Maharashtra';
+      const districts = stateDistrictsMap[stateName] || stateDistrictsMap['Maharashtra'];
+
+      districts.forEach(dst => {
+        const iconHtml = `
+          <div class="flex flex-col items-center cursor-pointer group transform hover:scale-110 transition-all">
+            <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-slate-950/95 border backdrop-blur-md shadow-2xl" style="border-color: ${dst.color}">
+              <span class="w-2.5 h-2.5 rounded-full animate-ping" style="background-color: ${dst.color}"></span>
+              <span class="text-xs font-extrabold text-white whitespace-nowrap">${dst.name}</span>
+              <span class="text-[9px] font-mono px-1.5 py-0.2 rounded font-bold" style="background-color: ${dst.color}30; color: ${dst.color}">
+                ${dst.threat}
+              </span>
+            </div>
+            <div class="text-[9px] font-mono text-purple-300 bg-slate-900/90 px-1.5 py-0.2 rounded-b border-b border-x border-slate-700 shadow-md">
+              🌧️ ${dst.rainfall} • ${stateName} SDMA
+            </div>
+          </div>
+        `;
+
+        const dstMarker = L.marker(dst.coords, {
+          icon: L.divIcon({
+            className: 'custom-div-icon',
+            html: iconHtml,
+            iconSize: [180, 40],
+            iconAnchor: [90, 20]
+          })
+        }).addTo(layerGroup);
+
+        dstMarker.on('click', () => {
+          setViewScope('city');
+          if (onSwitchCity) {
+            onSwitchCity(dst.cityId);
+          }
+          map.flyTo(dst.coords, 13, { duration: 1.2 });
         });
       });
 
@@ -792,18 +892,58 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
       {/* Top-Left Geographic Toolbar */}
       <div className="absolute top-3 left-3 z-10 flex flex-col space-y-1.5">
-        {/* Pan-India vs City Twin Scope Switcher */}
+        {/* Role-Specific Geographic Grid Switcher */}
         {isDistrictOfficer ? (
-          <div className="hud-panel p-1.5 px-3 rounded-xl flex items-center space-x-2 text-xs font-mono border border-amber-500/50 shadow-xl bg-amber-950/90 text-amber-200 font-bold">
-            <Compass className="w-3.5 h-3.5 text-amber-400" />
-            <span className="truncate max-w-[180px]">🏢 District Twin: {authUser?.assignedDistrict || state?.city_name}</span>
-            <span className="text-[9px] bg-amber-900/80 px-1.5 py-0.5 rounded text-amber-300 font-normal">🔒 DDMA</span>
+          <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-amber-500/40 shadow-xl bg-slate-950/90">
+            <button
+              onClick={() => setViewScope('city')}
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+                viewScope === 'city'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>Ward Triage</span>
+            </button>
+
+            <button
+              onClick={() => setViewScope('district_grid')}
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+                viewScope === 'district_grid'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Building2 className="w-3.5 h-3.5 text-amber-400" />
+              <span>📍 {authUser?.assignedDistrict || 'District'} Grid (DDMA)</span>
+            </button>
           </div>
         ) : isStateOfficer ? (
-          <div className="hud-panel p-1.5 px-3 rounded-xl flex items-center space-x-2 text-xs font-mono border border-purple-500/50 shadow-xl bg-purple-950/90 text-purple-200 font-bold">
-            <Compass className="w-3.5 h-3.5 text-purple-400" />
-            <span className="truncate max-w-[180px]">🏢 State Twin: {authUser?.assignedState} SDMA</span>
-            <span className="text-[9px] bg-purple-900/80 px-1.5 py-0.5 rounded text-purple-300 font-normal">🔒 SDMA</span>
+          <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-purple-500/40 shadow-xl bg-slate-950/90">
+            <button
+              onClick={() => setViewScope('city')}
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+                viewScope === 'city'
+                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50 font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>Local Twin</span>
+            </button>
+
+            <button
+              onClick={() => setViewScope('state_grid')}
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+                viewScope === 'state_grid'
+                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50 font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Building2 className="w-3.5 h-3.5 text-purple-400" />
+              <span>🏢 {authUser?.assignedState || 'State'} Grid (SDMA)</span>
+            </button>
           </div>
         ) : (
           <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-cyan-500/30 shadow-xl bg-slate-950/90">
