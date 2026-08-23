@@ -993,20 +993,47 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       `);
     }
 
-    // 12. 🇮🇳 ISRO Bhuvan (NRSC OGC WMS GetMap Tile Layer)
-    if (showBhuvanDisaster) {
+    // 12. 🇮🇳 ISRO Bhuvan (NRSC OGC WMS GetMap Live Image Overlay & Tile Layer)
+    if (showBhuvanDisaster && state.center_coords) {
       try {
-        const bhuvanWmsLayer = L.tileLayer.wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wms', {
+        const cLat = state.center_coords[0];
+        const cLng = state.center_coords[1];
+        const south = cLat - 0.15;
+        const west = cLng - 0.15;
+        const north = cLat + 0.15;
+        const east = cLng + 0.15;
+
+        // Construct official WMS GetMap PNG tile request URL
+        const bhuvanGetMapUrl = `https://bhuvan-vec1.nrsc.gov.in/bhuvan/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=india_boundaries&BBOX=${south},${west},${north},${east}&CRS=EPSG:4326&WIDTH=512&HEIGHT=512&FORMAT=image/png&TRANSPARENT=true`;
+
+        // Render returned PNG as a Leaflet ImageOverlay
+        const bhuvanImageOverlay = L.imageOverlay(bhuvanGetMapUrl, [[south, west], [north, east]], {
+          opacity: 0.65,
+          interactive: true,
+          attribution: '© ISRO Bhuvan NRSC Disaster WMS'
+        }).addTo(layerGroup);
+
+        bhuvanImageOverlay.bindTooltip(`
+          <div class="text-xs font-mono p-1">
+            <strong class="text-orange-400">🇮🇳 ISRO Bhuvan NRSC OGC WMS Layer</strong><br/>
+            WMS Query: <span class="text-white">GetMap 1.3.0 (EPSG:4326)</span><br/>
+            Layer: <span class="text-amber-300">india_boundaries / Disaster Zonation</span><br/>
+            Server: <span class="text-cyan-300">bhuvan-vec1.nrsc.gov.in</span>
+          </div>
+        `);
+
+        // Also add global tile layer WMS
+        L.tileLayer.wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wms', {
           layers: 'india_boundaries',
           format: 'image/png',
           transparent: true,
           version: '1.3.0',
           crs: L.CRS.EPSG3857,
-          opacity: 0.70,
+          opacity: 0.50,
           attribution: '© ISRO Bhuvan NRSC'
         } as any).addTo(layerGroup);
       } catch (e) {
-        console.warn('ISRO Bhuvan WMS tile layer fallback:', e);
+        console.warn('ISRO Bhuvan WMS image overlay fallback:', e);
       }
     }
 
