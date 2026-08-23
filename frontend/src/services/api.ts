@@ -447,6 +447,11 @@ export class DigitalTwinApiService {
     return await res.json();
   }
 
+  async getRealCopernicusNDWI(west: number = 72.82, south: number = 18.95, east: number = 72.95, north: number = 19.15): Promise<any> {
+    const res = await fetch(`${API_BASE}/real-data/copernicus-ndwi?west=${west}&south=${south}&east=${east}&north=${north}`);
+    return await res.json();
+  }
+
   async uploadCitizenMedia(base64Image: string, prefix?: string): Promise<any> {
     try {
       const res = await fetch(`${API_BASE}/citizen-sos/upload-media`, {

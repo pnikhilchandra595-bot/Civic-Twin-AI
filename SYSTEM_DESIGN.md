@@ -322,6 +322,7 @@ erDiagram
 | **IMD Warning Bulletins** | **Seeded Realistic Dataset** | Calibrated district-wise Red/Orange/Yellow weather warnings |
 | **Cyclone Data** | **Historical Replay** | Replay of real Bay of Bengal cyclonic wind & storm surge tracks |
 | **Sentinel-1 SAR Radar** | **Synthetic Radar Model** | Calibrated to ESA C-band SAR $\sigma^0 < -15\text{ dB}$ surface water physics |
+| **Sentinel-2 MSI (NDWI Index)** | **Live** | Real-time Copernicus Data Space Ecosystem Statistical API (`sh.dataspace.copernicus.eu`) |
 | **GPS Beacon Tracking** | **Demo-Simulated** | Real FastAPI endpoint + simulated kinematic vehicle stream |
 | **MeriPehchaan / DigiLocker SSO** | **Roadmap** | Simulated verification UI pending formal e-Governance partnership |
 | **Gemini AI (English, Hindi)** | **Live** | Live Google Gemini 1.5 prompt generation |
