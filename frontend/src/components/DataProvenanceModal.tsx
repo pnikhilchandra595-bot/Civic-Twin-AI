@@ -8,12 +8,14 @@ import { apiService } from '../services/api';
 interface DataProvenanceModalProps {
   cityId: string;
   cityName: string;
+  centerCoords?: [number, number];
   onClose: () => void;
 }
 
 export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
   cityId,
   cityName,
+  centerCoords,
   onClose
 }) => {
   const [activeTab, setActiveTab] = useState<'WEATHER' | 'GLOFAS_RIVER' | 'OSM_OVERPASS' | 'PROVENANCE' | 'NUMERICAL_DATA' | 'ISRO_BHUVAN'>('ISRO_BHUVAN');
@@ -30,23 +32,28 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
   const fetchAllRealData = async () => {
     try {
       setIsLoading(true);
-      const w = await apiService.getRealWeatherData(19.076, 72.877);
+      const lat = centerCoords?.[0] || 19.076;
+      const lng = centerCoords?.[1] || 72.877;
+
+      const w = await apiService.getRealWeatherData(lat, lng);
       setWeatherData(w);
-      const r = await apiService.getRealRiverDischarge(19.076, 72.877);
+      const r = await apiService.getRealRiverDischarge(lat, lng);
       setRiverData(r);
-      const o = await apiService.getRealOSMInfrastructure(18.90, 72.80, 19.20, 73.00);
+      const o = await apiService.getRealOSMInfrastructure(lat - 0.15, lng - 0.15, lat + 0.15, lng + 0.15);
       setOsmData(o);
       const m = await apiService.getDataProvenanceManifest();
       setManifest(m);
 
-      // Fetch ISRO Bhuvan Real Services
-      const bh = await apiService.getBhuvanHospitals(19.076, 72.877);
+      // Fetch Real Live Hospitals via OSM Overpass Healthcare API
+      const bh = await apiService.getBhuvanHospitals(lat, lng, 8.0);
       setBhuvanHospitals(bh);
-      const bl = await apiService.getBhuvanLULC('Mumbai Suburban', 'Maharashtra');
+
+      const districtName = cityName.split(':')[0].trim();
+      const bl = await apiService.getBhuvanLULC(districtName, 'India');
       setBhuvanLULC(bl);
-      const bg = await apiService.getBhuvanGeoidElevation(19.076, 72.877);
+      const bg = await apiService.getBhuvanGeoidElevation(lat, lng);
       setBhuvanGeoid(bg);
-      const br = await apiService.calculateBhuvanRoute(19.07, 72.87, 19.09, 72.89);
+      const br = await apiService.calculateBhuvanRoute(lat, lng, lat + 0.02, lng + 0.02);
       setBhuvanRoute(br);
     } catch (e) {
       console.error('Error fetching real data:', e);
@@ -388,14 +395,20 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
 
             {/* 1. Hospitals & Lifeline Infrastructure POI Table */}
             <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-2">
                 <div className="flex items-center space-x-2 text-orange-400 font-bold text-xs">
-                  <Hospital className="w-4 h-4" />
-                  <span>1. Critical Lifeline Hospitals & Postal Depots (Token: 0d802eb0...)</span>
+                  <Hospital className="w-4 h-4 text-rose-400" />
+                  <span>1. Emergency Hospitals, Trauma Centers & Lifelines</span>
                 </div>
-                <span className="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/50 font-bold">
-                  {bhuvanHospitals?.hospitals?.length || 3} Lifeline Facilities
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-[10px] text-emerald-300 bg-emerald-950/90 px-2.5 py-0.5 rounded-full border border-emerald-500/60 font-mono font-bold flex items-center space-x-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                    <span>{bhuvanHospitals?.source ? 'Live OSM Overpass' : 'Calibrated Baseline'}</span>
+                  </span>
+                  <span className="text-[10px] text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/50 font-bold">
+                    {bhuvanHospitals?.hospitals?.length || 3} Facilities
+                  </span>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -407,13 +420,16 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                   <div key={idx} className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-orange-500/50 transition-all flex flex-col justify-between space-y-2">
                     <div>
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-slate-500 font-bold uppercase">{hosp.type === 'postal' ? '📦 Relief Depot' : '🏥 Emergency Hospital'}</span>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase">{hosp.type === 'postal' ? '📦 Relief Depot' : '🏥 Emergency Hospital'}</span>
                         <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-600/50">
                           {hosp.status || 'Active'}
                         </span>
                       </div>
-                      <h4 className="text-white font-bold text-xs mt-1">{hosp.name}</h4>
-                      <p className="text-[10px] text-slate-400 font-mono mt-0.5">GPS: [{hosp.lat?.toFixed(3)}, {hosp.lng?.toFixed(3)}]</p>
+                      <h4 className="text-white font-bold text-xs mt-1 truncate" title={hosp.name}>{hosp.name}</h4>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono mt-0.5">
+                        <span>GPS: [{hosp.lat?.toFixed(3)}, {hosp.lng?.toFixed(3)}]</span>
+                        {hosp.operator && <span className="text-cyan-400 truncate max-w-[110px]" title={hosp.operator}>{hosp.operator}</span>}
+                      </div>
                     </div>
 
                     {hosp.beds ? (

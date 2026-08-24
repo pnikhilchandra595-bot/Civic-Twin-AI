@@ -819,6 +819,7 @@ export const App: React.FC = () => {
         <DataProvenanceModal
           cityId={state?.city_id || 'mumbai_monsoon'}
           cityName={state?.city_name || 'Mumbai'}
+          centerCoords={state?.center_coords}
           onClose={() => setIsProvenanceOpen(false)}
         />
       )}
