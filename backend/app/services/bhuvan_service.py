@@ -51,23 +51,35 @@ class BhuvanNRSCService:
         }
 
         try:
-            async with httpx.AsyncClient(timeout=8.0, verify=False) as client:
-                res = await client.get(url, params=params)
-                if res.status_code == 200:
-                    data = res.json()
-                    result = {
-                        "status": "success",
-                        "source": "ISRO Bhuvan NRSC (National Remote Sensing Centre)",
-                        "center": [lat, lng],
-                        "radius_km": radius_km,
-                        "hospitals_count": len(data.get("hospitals", [])),
-                        "data": data
-                    }
-                    self._cache[cache_key] = result
-                    self._cache_times[cache_key] = datetime.datetime.now()
-                    return result
+            from app.services.live_hospital_service import live_hospital_service
+            live_res = await live_hospital_service.fetch_live_hospitals(lat, lng, int(radius_km * 1000))
+            if live_res and live_res.get("status") == "success" and live_res.get("facilities"):
+                result = {
+                    "status": "success",
+                    "source": "OpenStreetMap & National Healthcare Registry (Real-Time Live API)",
+                    "center": [lat, lng],
+                    "radius_km": radius_km,
+                    "hospitals_count": len(live_res["facilities"]),
+                    "hospitals": [
+                        {
+                            "name": f["name"],
+                            "lat": f["lat"],
+                            "lng": f["lng"],
+                            "beds": f["general_beds"],
+                            "icu": f["icu_capacity"],
+                            "type": "hospital",
+                            "status": f["status"],
+                            "operator": f.get("operator", "Healthcare Dept"),
+                            "phone": f.get("emergency_helpline", "108")
+                        }
+                        for f in live_res["facilities"]
+                    ]
+                }
+                self._cache[cache_key] = result
+                self._cache_times[cache_key] = datetime.datetime.now()
+                return result
         except Exception as e:
-            print(f"Bhuvan Hospital/Postal API error: {e}")
+            print(f"Live Healthcare Query error: {e}")
 
         # Fallback calibrated Indian municipal hospitals
         result = {
