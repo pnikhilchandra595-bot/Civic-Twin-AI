@@ -8,13 +8,13 @@
 
 ### 1. 🛰️ Spaceborne Intelligence: Dual ISRO Satellite Integration (MOSDAC & Bhuvan)
 - **ISRO MOSDAC (SAC Ahmedabad)**: Live atmospheric telemetry querying `https://mosdac.gov.in/apios/datasets.json`. Ingests INSAT-3DR TIR-1 cloud-top brightness temperatures ($209\,\text{K} / -64^\circ\text{C}$) and Hydro-Estimator precipitation rain rates (`3SIMG_L2B_HEM`).
-- **ISRO Bhuvan (NRSC Hyderabad)**: Configured with 6 official verified NRSC API keys:
-  - `0d802eb03b5778f0359dde49c270c80da3bb23f9` — Hospital & Postal Lifeline POIs
-  - `87380f11d28a8722a7d8b8af5290fff95936119f` — Village & Ward Geocoding Directory
-  - `0dcac2e1377bac67b448dbb4cf5d30a6f34fef41` — 1:50K LULC Runoff Statistics ($C = 0.78$)
-  - `93d87c8195ad905d3acd64f5a45090c93376b723` — AOI-wise Land Cover Allocation
-  - `c88f8e477f8e2770e2799d464bfe06b661e25715` — Evacuation Road Network Routing
-  - `76b423acb3169f67aa092000bc3de3beb340acf2` — High-Precision Indian Geoid Elevation Model
+- **ISRO Bhuvan (NRSC Hyderabad)**: Configured via secure environment variables (`BHUVAN_*_KEY`):
+  - `BHUVAN_HOSPITAL_POSTAL_KEY` — Hospital & Postal Lifeline POIs
+  - `BHUVAN_VILLAGE_GEOCODE_KEY` — Village & Ward Geocoding Directory
+  - `BHUVAN_LULC_STATICS_KEY` — 1:50K LULC Runoff Statistics ($C = 0.78$)
+  - `BHUVAN_LULC_AOI_KEY` — AOI-wise Land Cover Allocation
+  - `BHUVAN_ROUTING_KEY` — Evacuation Road Network Routing
+  - `BHUVAN_GEOID_KEY` — High-Precision Indian Geoid Elevation Model
 - **Copernicus Sentinel-1 & 2 SAR / Optical**: Active C-band microwave radar backscatter ($\sigma^0 < -16.0\,\text{dB}$) for cloud-penetrating water extraction and Sentinel-2 NDWI ($+0.42$).
 - **NASA FIRMS**: VIIRS thermal anomaly hotspots and Fire Radiative Power ($28.6\,\text{MW}$).
 

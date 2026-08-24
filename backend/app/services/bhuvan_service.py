@@ -17,12 +17,12 @@ class BhuvanNRSCService:
     """
 
     def __init__(self):
-        self.hospital_postal_key = os.getenv("BHUVAN_HOSPITAL_POSTAL_KEY", "0d802eb03b5778f0359dde49c270c80da3bb23f9")
-        self.village_geocode_key = os.getenv("BHUVAN_VILLAGE_GEOCODE_KEY", "87380f11d28a8722a7d8b8af5290fff95936119f")
-        self.lulc_statics_key = os.getenv("BHUVAN_LULC_STATICS_KEY", "0dcac2e1377bac67b448dbb4cf5d30a6f34fef41")
-        self.lulc_aoi_key = os.getenv("BHUVAN_LULC_AOI_KEY", "93d87c8195ad905d3acd64f5a45090c93376b723")
-        self.routing_key = os.getenv("BHUVAN_ROUTING_KEY", "c88f8e477f8e2770e2799d464bfe06b661e25715")
-        self.geoid_key = os.getenv("BHUVAN_GEOID_KEY", "76b423acb3169f67aa092000bc3de3beb340acf2")
+        self.hospital_postal_key = os.getenv("BHUVAN_HOSPITAL_POSTAL_KEY", "")
+        self.village_geocode_key = os.getenv("BHUVAN_VILLAGE_GEOCODE_KEY", "")
+        self.lulc_statics_key = os.getenv("BHUVAN_LULC_STATICS_KEY", "")
+        self.lulc_aoi_key = os.getenv("BHUVAN_LULC_AOI_KEY", "")
+        self.routing_key = os.getenv("BHUVAN_ROUTING_KEY", "")
+        self.geoid_key = os.getenv("BHUVAN_GEOID_KEY", "")
 
         self.base_url = "https://bhuvan-app1.nrsc.gov.in/api"
         self._cache: Dict[str, Any] = {}
