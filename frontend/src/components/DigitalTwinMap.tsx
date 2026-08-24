@@ -1147,22 +1147,20 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-    // 13. 🇮🇳 Real Live ISRO Bhuvan OGC GeoServer WMS Layer (Universal Pan-India + State Specific)
+    // 13. 🇮🇳 Real Live ISRO Bhuvan Satellite Remote Sensing & GIS Layer
     if (showBhuvanWMS) {
       try {
         const stateStr = (state as any)?.state || (state?.city_name?.includes(':') ? state.city_name.split(':')[0].trim() : (state?.city_name || 'Maharashtra'));
-        const matchedStateLayer = STATE_BHUVAN_LAYERS[stateStr] || 'nuis:AND_PB_UL10K';
-        
-        // Combine universal national hydro/boundary layers with state urban layers
-        const combinedLayers = `INDIA_STATE_QL,RIVER,WATERBODY,BASIN_DRAIN,${matchedStateLayer}`;
 
-        const bhuvanWmsLayer = (L.tileLayer as any).wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/wms', {
-          layers: combinedLayers,
+        // Real High-Resolution ISRO Cartosat / Resourcesat Satellite Imagery
+        const bhuvanRasterWms = (L.tileLayer as any).wms('https://bhuvan-ras2.nrsc.gov.in/mapcache', {
+          layers: 'bhuvan_l4_rs2a_2017,liss3_2022_q4',
           format: 'image/png',
-          transparent: true,
-          opacity: 0.85,
+          transparent: false,
+          opacity: 0.90,
           version: '1.1.1',
-          attribution: `© ISRO / NRSC Bhuvan Live GeoServer (Pan-India & ${stateStr})`
+          zIndex: 10,
+          attribution: `© ISRO / NRSC Bhuvan High-Resolution Satellite (${stateStr})`
         }).addTo(layerGroup);
       } catch (e) {
         console.warn('ISRO Bhuvan Live WMS Tile error:', e);
