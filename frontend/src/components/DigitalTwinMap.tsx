@@ -475,6 +475,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     ]
   };
 
+  // Official State-by-State ISRO Bhuvan GeoServer NUIS 1:10K & Urban Layer Map
+  const STATE_BHUVAN_LAYERS: Record<string, string> = {
+    'Maharashtra': 'nuis:MH_TH_UL10K,nuis:MH_NA_UL10K,nuis:AND_PB_UL10K',
+    'Delhi': 'nuis:DL_ND_UL10K,nuis:DL_CE_UL10K,nuis:AND_PB_UL10K',
+    'Delhi NCR': 'nuis:DL_ND_UL10K,nuis:DL_CE_UL10K,nuis:AND_PB_UL10K',
+    'Karnataka': 'nuis:AP_DH_UL10K,nuis:AND_PB_UL10K',
+    'Tamil Nadu': 'nuis:AND_PB_UL10K,nuis:AP_DH_UL10K',
+    'West Bengal': 'nuis:AND_PB_UL10K,nuis:AS_DI_UL10K',
+    'Assam': 'nuis:AS_DI_UL10K,nuis:AS_NA_UL10K,nuis:AS_SI_UL10K',
+    'Uttar Pradesh': 'nuis:UP_LU_UL10K,nuis:UP_VA_UL10K,nuis:AND_PB_UL10K',
+    'Bihar': 'nuis:AND_PB_UL10K,nuis:AS_DI_UL10K',
+    'Gujarat': 'nuis:AND_PB_UL10K,nuis:AP_DH_UL10K',
+    'Kerala': 'nuis:AND_PB_UL10K,nuis:AP_DH_UL10K',
+    'Odisha': 'nuis:AND_PB_UL10K,nuis:AS_DI_UL10K',
+    'Uttarakhand': 'nuis:AND_PB_UL10K,nuis:AP_DH_UL10K'
+  };
+
   // Tile URL Map
   const tileUrls = {
     dark: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png',
@@ -1105,16 +1122,19 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-    // 13. 🇮🇳 Real Live ISRO Bhuvan OGC GeoServer WMS Layer
+    // 13. 🇮🇳 Real Live ISRO Bhuvan OGC GeoServer WMS Layer (All 28 States & UTs)
     if (showBhuvanWMS) {
       try {
+        const stateStr = (state as any)?.state || (state?.city_name?.includes(':') ? state.city_name.split(':')[0].trim() : (state?.city_name || 'Maharashtra'));
+        const matchedLayer = STATE_BHUVAN_LAYERS[stateStr] || 'nuis:AND_PB_UL10K,nuis:AP_DH_UL10K,nuis:AS_DI_UL10K';
+
         const bhuvanWmsLayer = (L.tileLayer as any).wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/wms', {
-          layers: 'nuis:AND_PB_UL10K,nuis:AP_DH_UL10K,nuis:AS_DI_UL10K',
+          layers: matchedLayer,
           format: 'image/png',
           transparent: true,
           opacity: 0.85,
           version: '1.1.1',
-          attribution: '© ISRO / NRSC Bhuvan Live GeoServer WMS'
+          attribution: `© ISRO / NRSC Bhuvan Live GeoServer (${stateStr})`
         }).addTo(layerGroup);
       } catch (e) {
         console.warn('ISRO Bhuvan Live WMS Tile error:', e);
