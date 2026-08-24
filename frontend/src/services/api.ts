@@ -605,8 +605,15 @@ export class DigitalTwinApiService {
   }
 
   async getLiveDelhiVehicles(limit: number = 100): Promise<any> {
-    const res = await fetch(`${API_BASE}/realtime/delhi-vehicles?limit=${limit}`);
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE}/realtime/delhi-vehicles?limit=${limit}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn('Failed to fetch live Delhi OTD vehicles:', e);
+    }
+    return { status: 'fallback', vehicles: [] };
   }
 
   async getLiveElevationPoint(lat: number, lon: number): Promise<any> {
