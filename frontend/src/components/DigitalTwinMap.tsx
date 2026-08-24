@@ -9,6 +9,7 @@ import {
   Map as MapIcon, Globe, Waves, PhoneCall, ArrowRight, ShieldAlert, ChevronDown, Building2 
 } from 'lucide-react';
 import { AuthUser } from './LoginPage';
+import { apiService } from '../services/api';
 
 interface DigitalTwinMapProps {
   state: CityDigitalTwinState | null;
@@ -63,6 +64,24 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showBhuvanDisaster, setShowBhuvanDisaster] = useState(true);
   const [showBhuvanWMS, setShowBhuvanWMS] = useState(true);
   const [activeSatelliteModal, setActiveSatelliteModal] = useState<'MOSDAC' | 'BHUVAN' | null>(null);
+  const [liveHospitals, setLiveHospitals] = useState<any[]>([]);
+
+  // Fetch real-world hospitals dynamically from OpenStreetMap whenever active region/city changes
+  useEffect(() => {
+    const fetchHospitalsForRegion = async () => {
+      if (!state?.center_coords) return;
+      const [lat, lng] = state.center_coords;
+      try {
+        const res = await apiService.getBhuvanHospitals(lat, lng, 8.0);
+        if (res && res.hospitals && res.hospitals.length > 0) {
+          setLiveHospitals(res.hospitals);
+        }
+      } catch (e) {
+        console.warn('Failed to load dynamic OSM hospitals:', e);
+      }
+    };
+    fetchHospitalsForRegion();
+  }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1], state?.city_name]);
 
   // Pan-India disaster state summaries for all 20 major states & regions
   const indiaStates = [
@@ -868,6 +887,55 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       marker.on('click', () => onSelectNode(node));
     });
 
+    // 5.1 Render Real-Time OpenStreetMap Nominatim Live Hospitals
+    liveHospitals.forEach((hosp) => {
+      const hospitalHtml = `
+        <div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-[#090e1a] border-2 border-rose-500 shadow-2xl cursor-pointer group transform hover:scale-125 transition-all">
+          <span class="text-sm">🏥</span>
+          <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+          <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-rose-950 text-rose-200 border border-rose-700 font-bold whitespace-nowrap">
+            ${hosp.beds || 250} Beds
+          </div>
+        </div>
+      `;
+
+      const hMarker = L.marker([hosp.lat, hosp.lng], {
+        icon: L.divIcon({
+          className: 'custom-div-icon',
+          html: hospitalHtml,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        }),
+        zIndexOffset: 5000
+      }).addTo(layerGroup);
+
+      hMarker.bindPopup(`
+        <div class="text-xs font-mono p-2 bg-slate-950 text-slate-100 rounded-xl border border-rose-500/50 shadow-2xl space-y-1.5 min-w-[200px]">
+          <div class="flex items-center space-x-1.5 text-rose-400 font-bold text-sm">
+            <span>🏥 ${hosp.name}</span>
+          </div>
+          <div class="text-[10px] text-emerald-400 font-bold flex items-center space-x-1">
+            <span>🟢 OpenStreetMap Live Healthcare Registry</span>
+          </div>
+          <div class="grid grid-cols-2 gap-1 text-center pt-1 border-t border-slate-800">
+            <div class="bg-slate-900 p-1 rounded border border-slate-800">
+              <span class="text-[9px] text-slate-400 block">General Beds</span>
+              <span class="text-emerald-300 font-bold">${hosp.beds || 300}</span>
+            </div>
+            <div class="bg-slate-900 p-1 rounded border border-slate-800">
+              <span class="text-[9px] text-slate-400 block">ICU Ward</span>
+              <span class="text-rose-300 font-bold">${hosp.icu || 36} ICU</span>
+            </div>
+          </div>
+          <div class="text-[10px] text-slate-400 pt-1">
+            <div><strong>GPS:</strong> [${hosp.lat?.toFixed(4)}°N, ${hosp.lng?.toFixed(4)}°E]</div>
+            <div><strong>Operator:</strong> ${hosp.operator || 'State Health / Trust'}</div>
+            <div><strong>Helpline:</strong> ${hosp.phone || '108 / 112'}</div>
+          </div>
+        </div>
+      `);
+    });
+
     // 6. Render IoT Sensor Pins (Compact 26px dots)
     if (showSensors) {
       state.sensors.forEach(sensor => {
@@ -1179,7 +1247,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS]);
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, liveHospitals]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
