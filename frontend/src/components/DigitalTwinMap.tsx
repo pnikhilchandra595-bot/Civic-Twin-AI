@@ -43,7 +43,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   // Map settings & search
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [baseMap, setBaseMap] = useState<'dark' | 'satellite' | 'street'>('dark');
+  const [baseMap, setBaseMap] = useState<'dark' | 'satellite' | 'street' | 'bhuvan'>('dark');
   const [viewScope, setViewScope] = useState<'city' | 'india' | 'state_grid' | 'district_grid'>('city');
   const [isLayersOpen, setIsLayersOpen] = useState(false);
   const [clickCoordFeedback, setClickCoordFeedback] = useState<string | null>(null);
@@ -523,11 +523,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
       L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-      const baseLayer = L.tileLayer(tileUrls[baseMap], {
-        maxZoom: 19,
-        subdomains: 'abcd'
-      }).addTo(map);
+      const createBaseTileLayer = (style: 'dark' | 'satellite' | 'street' | 'bhuvan') => {
+        if (style === 'bhuvan') {
+          return (L.tileLayer as any).wms('https://bhuvan-ras2.nrsc.gov.in/mapcache', {
+            layers: 'bhuvan_l4_rs2a_2017,liss3_2022_q4',
+            format: 'image/png',
+            transparent: false,
+            maxZoom: 19,
+            attribution: '© ISRO / NRSC Bhuvan Satellite Imagery'
+          });
+        }
+        return L.tileLayer(tileUrls[style], {
+          maxZoom: 19,
+          subdomains: 'abcd'
+        });
+      };
 
+      const baseLayer = createBaseTileLayer(baseMap).addTo(map);
       tileLayerRef.current = baseLayer;
 
       const layersGroup = L.layerGroup().addTo(map);
@@ -562,10 +574,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   useEffect(() => {
     if (mapInstanceRef.current && tileLayerRef.current) {
       mapInstanceRef.current.removeLayer(tileLayerRef.current);
-      const newLayer = L.tileLayer(tileUrls[baseMap], {
-        maxZoom: 19,
-        subdomains: 'abcd'
-      }).addTo(mapInstanceRef.current);
+      
+      let newLayer: L.TileLayer;
+      if (baseMap === 'bhuvan') {
+        newLayer = (L.tileLayer as any).wms('https://bhuvan-ras2.nrsc.gov.in/mapcache', {
+          layers: 'bhuvan_l4_rs2a_2017,liss3_2022_q4',
+          format: 'image/png',
+          transparent: false,
+          maxZoom: 19,
+          attribution: '© ISRO / NRSC Bhuvan Satellite Imagery'
+        }).addTo(mapInstanceRef.current);
+      } else {
+        newLayer = L.tileLayer(tileUrls[baseMap], {
+          maxZoom: 19,
+          subdomains: 'abcd'
+        }).addTo(mapInstanceRef.current);
+      }
+      
       tileLayerRef.current = newLayer;
     }
   }, [baseMap]);
@@ -1245,18 +1270,18 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         )}
 
         {/* Base Map Style Selector */}
-        <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-[11px] font-mono border border-slate-800 bg-slate-950/90">
-          {(['dark', 'satellite', 'street'] as const).map(style => (
+        <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-[11px] font-mono border border-slate-800 bg-slate-950/90 shadow-lg">
+          {(['dark', 'satellite', 'street', 'bhuvan'] as const).map(style => (
             <button
               key={style}
               onClick={() => setBaseMap(style)}
               className={`px-2 py-0.5 rounded-lg capitalize transition-all ${
                 baseMap === style
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold shadow-sm'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              {style === 'dark' ? '🌃 Dark' : style === 'satellite' ? '🛰️ Sat' : '🗺️ Street'}
+              {style === 'dark' ? '🌃 Dark' : style === 'satellite' ? '🛰️ Sat' : style === 'street' ? '🗺️ Street' : '🇮🇳 ISRO Bhuvan'}
             </button>
           ))}
         </div>
