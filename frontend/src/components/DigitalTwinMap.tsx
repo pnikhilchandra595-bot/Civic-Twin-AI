@@ -499,10 +499,13 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
   };
 
-  // Sovereign Indian Territorial Boundary Check (Survey of India & NDMA Guidelines)
+  // Sovereign Indian Territorial Boundary Check (Survey of India & NDMA Sovereign Guidelines)
   const isInsideIndia = (lat: number, lng: number) => {
-    return lat >= 6.5 && lat <= 37.5 && lng >= 68.0 && lng <= 97.5;
+    return lat >= 6.0 && lat <= 37.5 && lng >= 68.0 && lng <= 97.5;
   };
+
+  // Indian Sovereign Bounding Box
+  const INDIA_BOUNDS = L.latLngBounds(L.latLng(6.0, 68.0), L.latLng(37.5, 97.5));
 
   // Initialize Leaflet Map
   useEffect(() => {
@@ -513,10 +516,10 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       const map = L.map(mapContainerRef.current, {
         center: initialCoords,
         zoom: 13,
-        minZoom: 4,
+        minZoom: 5,
         maxZoom: 19,
-        maxBounds: L.latLngBounds(L.latLng(5.0, 65.0), L.latLng(38.5, 99.0)),
-        maxBoundsViscosity: 0.95,
+        maxBounds: INDIA_BOUNDS,
+        maxBoundsViscosity: 1.0,
         zoomControl: false,
         attributionControl: false
       });
@@ -530,12 +533,16 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             format: 'image/png',
             transparent: false,
             version: '1.1.1',
+            minZoom: 5,
             maxZoom: 19,
+            bounds: INDIA_BOUNDS,
             attribution: '© ISRO / NRSC Bhuvan High-Resolution Satellite'
           });
         }
         return L.tileLayer(tileUrls[style], {
+          minZoom: 5,
           maxZoom: 19,
+          bounds: INDIA_BOUNDS,
           subdomains: 'abcd'
         });
       };
@@ -583,12 +590,16 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           format: 'image/png',
           transparent: false,
           version: '1.1.1',
+          minZoom: 5,
           maxZoom: 19,
+          bounds: INDIA_BOUNDS,
           attribution: '© ISRO / NRSC Bhuvan High-Resolution Satellite'
         }).addTo(mapInstanceRef.current);
       } else {
         newLayer = L.tileLayer(tileUrls[baseMap], {
+          minZoom: 5,
           maxZoom: 19,
+          bounds: INDIA_BOUNDS,
           subdomains: 'abcd'
         }).addTo(mapInstanceRef.current);
       }
