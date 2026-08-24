@@ -61,6 +61,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showNasaFirms, setShowNasaFirms] = useState(true);
   const [showMosdacInsat, setShowMosdacInsat] = useState(true);
   const [showBhuvanDisaster, setShowBhuvanDisaster] = useState(true);
+  const [showBhuvanWMS, setShowBhuvanWMS] = useState(true);
 
   // Pan-India disaster state summaries for all 20 major states & regions
   const indiaStates = [
@@ -1104,7 +1105,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster]);
+    // 13. 🇮🇳 Real Live ISRO Bhuvan OGC GeoServer WMS Layer
+    if (showBhuvanWMS) {
+      try {
+        const bhuvanWmsLayer = (L.tileLayer as any).wms('https://bhuvan-vec1.nrsc.gov.in/bhuvan/wms', {
+          layers: 'nuis:AND_PB_UL10K,nuis:AP_DH_UL10K,nuis:AS_DI_UL10K',
+          format: 'image/png',
+          transparent: true,
+          opacity: 0.85,
+          version: '1.1.1',
+          attribution: '© ISRO / NRSC Bhuvan Live GeoServer WMS'
+        }).addTo(layerGroup);
+      } catch (e) {
+        console.warn('ISRO Bhuvan Live WMS Tile error:', e);
+      }
+    }
+
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
@@ -1413,6 +1430,16 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               >
                 <span>🌍 Esri / USGS High-Res EO</span>
                 {showBhuvanDisaster ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              </button>
+
+              <button
+                onClick={() => setShowBhuvanWMS(!showBhuvanWMS)}
+                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                  showBhuvanWMS ? 'bg-amber-950/80 border-amber-500 text-amber-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+                }`}
+              >
+                <span>🇮🇳 ISRO Bhuvan Live WMS</span>
+                {showBhuvanWMS ? <Eye className="w-3 h-3 text-amber-400" /> : <EyeOff className="w-3 h-3" />}
               </button>
             </div>
           </div>
