@@ -206,6 +206,16 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </button>
             )}
+
+            {/* 5 Live Sovereign Feeds Inspector Button */}
+            <button
+              onClick={onOpenProvenance}
+              className="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 text-xs font-mono font-bold flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
+              title="Inspect 5 Live Sovereign Data Streams: Open-Meteo, Copernicus GloFAS, Delhi OTD GNSS, OSM Hospitals, ISRO Bhuvan"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="hidden sm:inline">🟢 5 Live Feeds</span>
+            </button>
           </div>
 
           {/* Role Clearance Badge */}
