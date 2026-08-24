@@ -65,6 +65,31 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showBhuvanWMS, setShowBhuvanWMS] = useState(true);
   const [activeSatelliteModal, setActiveSatelliteModal] = useState<'MOSDAC' | 'BHUVAN' | null>(null);
   const [liveHospitals, setLiveHospitals] = useState<any[]>([]);
+  const [liveDelhiVehicles, setLiveDelhiVehicles] = useState<any[]>([]);
+
+  // Stream Live Delhi OTD Satellite GPS Vehicles (Delhi NCR)
+  useEffect(() => {
+    const isDelhi = state?.city_id === 'delhi_yamuna' || state?.city_name?.toLowerCase().includes('delhi');
+    if (!isDelhi) {
+      setLiveDelhiVehicles([]);
+      return;
+    }
+
+    const pollDelhiVehicles = async () => {
+      try {
+        const res = await apiService.getLiveDelhiVehicles(80);
+        if (res && res.vehicles && res.vehicles.length > 0) {
+          setLiveDelhiVehicles(res.vehicles);
+        }
+      } catch (e) {
+        console.warn('Failed to poll Delhi OTD live vehicles:', e);
+      }
+    };
+
+    pollDelhiVehicles();
+    const interval = setInterval(pollDelhiVehicles, 6000);
+    return () => clearInterval(interval);
+  }, [state?.city_id, state?.city_name]);
 
   // Fetch real-world hospitals dynamically from OpenStreetMap whenever active region/city changes
   useEffect(() => {
@@ -1021,6 +1046,60 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       });
     }
 
+    // 7.1 Render Real-Time Delhi OTD Satellite GPS Vehicles (AIS-140 Live Stream)
+    if (showUnits && liveDelhiVehicles.length > 0) {
+      liveDelhiVehicles.forEach((veh) => {
+        const isAmb = veh.vehicle_type === 'EMERGENCY_AMBULANCE';
+        const iconEmoji = isAmb ? '🚑' : '🚌';
+        const iconColor = isAmb ? '#ef4444' : '#00d2ff';
+
+        const vehHtml = `
+          <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-[#090e1a] border-2 shadow-2xl cursor-pointer group transform hover:scale-125 transition-all" style="border-color: ${iconColor}">
+            <span class="text-xs">${iconEmoji}</span>
+            <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full ${isAmb ? 'bg-rose-500 animate-ping' : 'bg-cyan-400'}"></span>
+            <div class="absolute -bottom-3.5 left-1/2 -translate-x-1/2 text-[7px] font-mono px-1 rounded bg-slate-950 text-slate-300 border border-slate-700 font-bold whitespace-nowrap">
+              ${veh.id.slice(-6)}
+            </div>
+          </div>
+        `;
+
+        const vMarker = L.marker([veh.lat, veh.lng], {
+          icon: L.divIcon({
+            className: 'custom-div-icon',
+            html: vehHtml,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+          }),
+          zIndexOffset: 6000
+        }).addTo(layerGroup);
+
+        vMarker.bindPopup(`
+          <div class="text-xs font-mono p-2 bg-slate-950 text-slate-100 rounded-xl border border-cyan-500/50 shadow-2xl space-y-1 min-w-[210px]">
+            <div class="flex items-center space-x-1.5 text-cyan-300 font-bold text-xs">
+              <span>${iconEmoji} ${veh.name}</span>
+            </div>
+            <div class="text-[10px] text-emerald-400 font-bold flex items-center space-x-1">
+              <span>🟢 Live Satellite GNSS (Delhi OTD AIS-140)</span>
+            </div>
+            <div class="grid grid-cols-2 gap-1 text-center pt-1 border-t border-slate-800">
+              <div class="bg-slate-900 p-1 rounded border border-slate-800">
+                <span class="text-[8px] text-slate-400 block">Speed</span>
+                <span class="text-white font-bold">${veh.speed_kmh} km/h</span>
+              </div>
+              <div class="bg-slate-900 p-1 rounded border border-slate-800">
+                <span class="text-[8px] text-slate-400 block">Bearing</span>
+                <span class="text-amber-300 font-bold">${veh.bearing}°</span>
+              </div>
+            </div>
+            <div class="text-[9px] text-slate-400 pt-1">
+              <div><strong>GPS:</strong> [${veh.lat.toFixed(5)}°N, ${veh.lng.toFixed(5)}°E]</div>
+              <div><strong>Constellation:</strong> ISRO NavIC / GPS L1/L5</div>
+            </div>
+          </div>
+        `);
+      });
+    }
+
     // 8. 🛰️ Copernicus Sentinel-1 (C-Band SAR Flood & Landslide Detection)
     if (showSentinelSAR && state.center_coords) {
       state.nodes.filter(n => n.flood_depth_m > 0.08).forEach(node => {
@@ -1247,7 +1326,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, liveHospitals]);
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, liveHospitals, liveDelhiVehicles]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">

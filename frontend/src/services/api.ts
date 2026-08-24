@@ -604,6 +604,11 @@ export class DigitalTwinApiService {
     return await res.json();
   }
 
+  async getLiveDelhiVehicles(limit: number = 100): Promise<any> {
+    const res = await fetch(`${API_BASE}/realtime/delhi-vehicles?limit=${limit}`);
+    return await res.json();
+  }
+
   async getLiveElevationPoint(lat: number, lon: number): Promise<any> {
     const res = await fetch(`${API_BASE}/elevation/point?lat=${lat}&lon=${lon}`);
     return await res.json();

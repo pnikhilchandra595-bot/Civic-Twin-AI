@@ -250,6 +250,12 @@ async def simulate_multi_hazard(payload: Dict[str, Any] = Body(...)):
     })
     return result
 
+# --- Real-Time Delhi Open Transit Data (AIS-140 Satellite GPS) ---
+@app.get("/api/realtime/delhi-vehicles")
+async def get_realtime_delhi_vehicles(limit: int = Query(default=120, le=500)):
+    from app.services.live_delhi_otd_service import live_delhi_otd_service
+    return await live_delhi_otd_service.fetch_live_delhi_vehicles(limit=limit)
+
 # --- Voice-Activated AI Incident Commander Co-Pilot ---
 @app.post("/api/ai/voice-command")
 async def process_voice_radio_command(payload: Dict[str, Any] = Body(...)):
