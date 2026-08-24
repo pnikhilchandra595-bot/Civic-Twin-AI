@@ -863,9 +863,9 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       });
     }
 
-    // 7. Render Moving Units & Tactical NDRF Assets (Distinct Tactical Badges)
+    // 7. Render Moving Units & Tactical NDRF Assets (Compact Tactical Vehicle Pins)
     if (showUnits) {
-      state.dispatch_units.forEach(unit => {
+      state.dispatch_units.forEach((unit, uIdx) => {
         let unitEmoji = '🚑';
         let badgeBg = 'bg-rose-950/95 border-rose-500 text-rose-200';
 
@@ -883,19 +883,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           badgeBg = 'bg-amber-950/95 border-amber-500 text-amber-200';
         }
 
+        // Slight angle dispersion to prevent exact point overlap
+        const angle = (uIdx * (2 * Math.PI)) / Math.max(1, state.dispatch_units.length);
+        const dispLat = unit.lat + (Math.sin(angle) * 0.0025);
+        const dispLng = unit.lng + (Math.cos(angle) * 0.0025);
+
         const unitHtml = `
-          <div class="flex items-center space-x-1 px-2.5 py-0.8 rounded-full ${badgeBg} border text-[10px] font-mono font-bold shadow-2xl cursor-pointer transform hover:scale-120 transition-all">
+          <div class="flex items-center justify-center w-7 h-7 rounded-full ${badgeBg} border-2 shadow-2xl cursor-pointer transform hover:scale-125 transition-all text-xs font-mono font-bold">
             <span>${unitEmoji}</span>
-            <span class="truncate max-w-[85px]">${unit.callsign.split('(')[0].trim()}</span>
           </div>
         `;
 
-        const uMarker = L.marker([unit.lat, unit.lng], {
+        const uMarker = L.marker([dispLat, dispLng], {
           icon: L.divIcon({
             className: 'custom-div-icon',
             html: unitHtml,
-            iconSize: [110, 26],
-            iconAnchor: [55, 13]
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
           })
         }).addTo(layerGroup);
 
@@ -1005,24 +1009,21 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         fillOpacity: 0.12
       }).addTo(layerGroup);
 
-      // Satellite Orbital Orb Marker (Pulsating ISRO Satellite Orb)
-      const orbLat = cLat + 0.010;
-      const orbLng = cLng + 0.012;
+      // Satellite Orbital Orb Marker (Sleek Compact Pulsating ISRO Satellite Orb)
+      const orbLat = cLat + 0.022;
+      const orbLng = cLng + 0.026;
       const satelliteOrbIcon = L.divIcon({
         className: 'satellite-orb-leaflet-icon !bg-transparent !border-0',
         html: `
-          <div style="position: relative; display: flex; align-items: center; cursor: pointer; z-index: 9999;">
-            <div style="position: absolute; width: 36px; height: 36px; border-radius: 9999px; background: rgba(192, 132, 252, 0.45); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
-            <div style="width: 32px; height: 32px; border-radius: 9999px; background: #3b0764; border: 2.5px solid #c084fc; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 0 20px rgba(192, 132, 252, 1);">
+          <div style="position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9999;" title="ISRO INSAT-3DR (MOSDAC)">
+            <div style="position: absolute; width: 36px; height: 36px; border-radius: 9999px; background: rgba(192, 132, 252, 0.4); animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            <div style="width: 32px; height: 32px; border-radius: 9999px; background: #3b0764; border: 2px solid #c084fc; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 0 16px rgba(192, 132, 252, 0.9);">
               🛰️
-            </div>
-            <div style="margin-left: 8px; white-space: nowrap; background: rgba(3, 7, 18, 0.96); border: 1.5px solid #c084fc; padding: 3px 8px; border-radius: 8px; font-family: monospace; font-size: 11px; color: #f3e8ff; font-weight: bold; box-shadow: 0 4px 16px rgba(0,0,0,0.8);">
-              ISRO INSAT-3DR (MOSDAC)
             </div>
           </div>
         `,
-        iconSize: [230, 36],
-        iconAnchor: [16, 16]
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
       });
 
       const orbMarker = L.marker([orbLat, orbLng], { icon: satelliteOrbIcon, zIndexOffset: 10000 }).addTo(layerGroup);
@@ -1076,24 +1077,21 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         fillOpacity: 0.08
       }).addTo(layerGroup);
 
-      // Bhuvan Satellite Orb Marker (Glowing Orange/Gold Satellite)
-      const bhuvanOrbLat = cLat - 0.010;
-      const bhuvanOrbLng = cLng - 0.012;
+      // Bhuvan Satellite Orb Marker (Sleek Compact Orange/Gold Satellite)
+      const bhuvanOrbLat = cLat - 0.022;
+      const bhuvanOrbLng = cLng - 0.026;
       const bhuvanOrbIcon = L.divIcon({
         className: 'satellite-orb-leaflet-icon !bg-transparent !border-0',
         html: `
-          <div style="position: relative; display: flex; align-items: center; cursor: pointer; z-index: 9999;">
-            <div style="position: absolute; width: 36px; height: 36px; border-radius: 9999px; background: rgba(249, 115, 22, 0.45); animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
-            <div style="width: 32px; height: 32px; border-radius: 9999px; background: #7c2d12; border: 2.5px solid #fb923c; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 0 20px rgba(249, 115, 22, 1);">
+          <div style="position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9999;" title="ISRO Bhuvan (EOS-04 / Cartosat)">
+            <div style="position: absolute; width: 36px; height: 36px; border-radius: 9999px; background: rgba(249, 115, 22, 0.4); animation: ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            <div style="width: 32px; height: 32px; border-radius: 9999px; background: #7c2d12; border: 2px solid #fb923c; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 0 16px rgba(249, 115, 22, 0.9);">
               🛰️
-            </div>
-            <div style="margin-left: 8px; white-space: nowrap; background: rgba(3, 7, 18, 0.96); border: 1.5px solid #fb923c; padding: 3px 8px; border-radius: 8px; font-family: monospace; font-size: 11px; color: #fff7ed; font-weight: bold; box-shadow: 0 4px 16px rgba(0,0,0,0.8);">
-              ISRO Bhuvan (EOS-04 / Cartosat)
             </div>
           </div>
         `,
-        iconSize: [240, 36],
-        iconAnchor: [16, 16]
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
       });
 
       const bhuvanMarker = L.marker([bhuvanOrbLat, bhuvanOrbLng], { icon: bhuvanOrbIcon, zIndexOffset: 10000 }).addTo(layerGroup);
