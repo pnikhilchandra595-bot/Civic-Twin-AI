@@ -526,11 +526,12 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       const createBaseTileLayer = (style: 'dark' | 'satellite' | 'street' | 'bhuvan') => {
         if (style === 'bhuvan') {
           return (L.tileLayer as any).wms('https://bhuvan-ras2.nrsc.gov.in/mapcache', {
-            layers: 'bhuvan_l4_rs2a_2017,liss3_2022_q4',
+            layers: 'bhuvan_l4_rs2a_2017',
             format: 'image/png',
             transparent: false,
+            version: '1.1.1',
             maxZoom: 19,
-            attribution: '© ISRO / NRSC Bhuvan Satellite Imagery'
+            attribution: '© ISRO / NRSC Bhuvan High-Resolution Satellite'
           });
         }
         return L.tileLayer(tileUrls[style], {
@@ -578,11 +579,12 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       let newLayer: L.TileLayer;
       if (baseMap === 'bhuvan') {
         newLayer = (L.tileLayer as any).wms('https://bhuvan-ras2.nrsc.gov.in/mapcache', {
-          layers: 'bhuvan_l4_rs2a_2017,liss3_2022_q4',
+          layers: 'bhuvan_l4_rs2a_2017',
           format: 'image/png',
           transparent: false,
+          version: '1.1.1',
           maxZoom: 19,
-          attribution: '© ISRO / NRSC Bhuvan Satellite Imagery'
+          attribution: '© ISRO / NRSC Bhuvan High-Resolution Satellite'
         }).addTo(mapInstanceRef.current);
       } else {
         newLayer = L.tileLayer(tileUrls[baseMap], {
