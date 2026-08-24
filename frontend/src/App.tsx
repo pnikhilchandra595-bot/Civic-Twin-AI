@@ -39,7 +39,8 @@ import { DistrictSelectionModal } from './components/DistrictSelectionModal';
 import { CitizenQRCodeModal } from './components/CitizenQRCodeModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
-  Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon 
+  Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon,
+  QrCode, TrendingUp
 } from 'lucide-react';
 import { DEFAULT_FALLBACK_STATE } from './data/defaultTwinState';
 
@@ -503,95 +504,113 @@ export const App: React.FC = () => {
         {/* ========================================================================= */}
         {/* SECTION 3: REAL-TIME OPERATIONAL INTELLIGENCE GRID (3 SPACIOUS COLUMNS)    */}
         {/* ========================================================================= */}
+        {/* SECTION 3: REAL-TIME OPERATIONAL INTELLIGENCE GRID                         */}
+        {/* ========================================================================= */}
         <section className="space-y-3">
           <div className="flex items-center space-x-2 text-sm font-mono font-bold text-white uppercase tracking-wider">
             <ShieldAlert className="w-4 h-4 text-rose-400" />
             <span>3. Real-Time Operations & Inter-Agency Tactical Intelligence</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
             
-            {/* Column A: Citizen SOS Live Feed Card */}
-            <div className="p-4 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] flex flex-col justify-between space-y-3 shadow-lg">
+            {/* Card 1: Citizen SOS Live Feed Card */}
+            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] flex flex-col justify-between space-y-2.5 shadow-lg">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1.5">
                   <AlertOctagon className="w-4 h-4 text-rose-400" />
                   <span className="text-xs font-bold font-mono text-white">Citizen SOS Queue</span>
                 </div>
-                <button
-                  onClick={() => setIsCitizenSOSOpen(true)}
-                  className="text-[10px] font-mono text-rose-400 hover:text-rose-300 underline font-bold"
-                >
-                  Expand Full Queue ➔
-                </button>
               </div>
-
-              <p className="text-xs text-slate-300 font-sans leading-relaxed">
-                Crowdsourced WhatsApp & Telegram distress signals. AI automatically scores report authenticity and coordinates rapid rescue dispatch.
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                Crowdsourced WhatsApp & Telegram distress signals with AI confidence triage scoring.
               </p>
-
               <button
                 onClick={() => setIsCitizenSOSOpen(true)}
-                className="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600/60 text-rose-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5"
+                className="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600/60 text-rose-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
                 <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
-                <span>Open Citizen SOS Distress Triage</span>
+                <span>Open SOS Triage</span>
               </button>
             </div>
 
-            {/* Column B: CCTV & Drone Video Recon Card */}
-            <div className="p-4 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] flex flex-col justify-between space-y-3 shadow-lg">
+            {/* Card 2: Citizen Smartphone QR Beacon Card (NEW!) */}
+            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-rose-500/30 flex flex-col justify-between space-y-2.5 shadow-lg">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1.5">
+                  <QrCode className="w-4 h-4 text-rose-400 animate-pulse" />
+                  <span className="text-xs font-bold font-mono text-rose-300">Citizen QR Beacon</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                Shareable mobile QR code for instant zero-download hardware GPS locking and 112 SMS dispatch.
+              </p>
+              <button
+                onClick={() => setIsQRCodeOpen(true)}
+                className="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-500/60 text-rose-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+              >
+                <QrCode className="w-3.5 h-3.5 text-rose-400" />
+                <span>Open QR Beacon</span>
+              </button>
+            </div>
+
+            {/* Card 3: 3D Topographic Elevation Slicing Card (NEW!) */}
+            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-cyan-500/30 flex flex-col justify-between space-y-2.5 shadow-lg">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div className="flex items-center space-x-1.5">
+                  <TrendingUp className="w-4 h-4 text-cyan-400 animate-pulse" />
+                  <span className="text-xs font-bold font-mono text-cyan-300">3D Elevation Cut</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                2D/3D cutaway terrain bathymetry analyzing riverbed, levee crest, and flood spillover points.
+              </p>
+              <button
+                onClick={() => setIsElevationOpen(true)}
+                className="w-full py-2 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+              >
+                <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Open Elevation Cut</span>
+              </button>
+            </div>
+
+            {/* Card 4: CCTV & Drone Video Recon Card */}
+            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] flex flex-col justify-between space-y-2.5 shadow-lg">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div className="flex items-center space-x-1.5">
                   <Video className="w-4 h-4 text-cyan-400" />
                   <span className="text-xs font-bold font-mono text-white">CCTV & Drone Matrix</span>
                 </div>
-                <button
-                  onClick={() => setIsDroneCCTVOpen(true)}
-                  className="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 underline font-bold"
-                >
-                  View 4 Live Channels ➔
-                </button>
               </div>
-
-              <p className="text-xs text-slate-300 font-sans leading-relaxed">
-                Live municipal subway cameras and autonomous UAV survey drone feeds with real-time YOLOv8 vehicle, pedestrian & depth detection.
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                Municipal subway cameras and UAV survey drone feeds with real-time YOLOv8 vehicle detection.
               </p>
-
               <button
                 onClick={() => setIsDroneCCTVOpen(true)}
-                className="w-full py-2 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5"
+                className="w-full py-2 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
                 <Video className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Launch Video Recon Matrix</span>
+                <span>Launch CCTV Matrix</span>
               </button>
             </div>
 
-            {/* Column C: Push-to-Talk Voice AI Radio Card */}
-            <div className="p-4 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] flex flex-col justify-between space-y-3 shadow-lg">
+            {/* Card 5: Push-to-Talk Voice AI Radio Card */}
+            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] flex flex-col justify-between space-y-2.5 shadow-lg">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1.5">
                   <MessageSquare className="w-4 h-4 text-purple-400" />
                   <span className="text-xs font-bold font-mono text-white">Voice Radio Co-Pilot</span>
                 </div>
-                <button
-                  onClick={() => setIsVoiceRadioOpen(true)}
-                  className="text-[10px] font-mono text-purple-400 hover:text-purple-300 underline font-bold"
-                >
-                  Push-To-Talk Mic ➔
-                </button>
               </div>
-
-              <p className="text-xs text-slate-300 font-sans leading-relaxed">
-                Speak natural voice directives directly into the digital twin. AI synthesizes realistic radio voice responses with walkie-talkie audio.
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                Tactical walkie-talkie voice radio with authentic squelch static SFX and AI SITREP responses.
               </p>
-
               <button
                 onClick={() => setIsVoiceRadioOpen(true)}
-                className="w-full py-2 bg-purple-950/80 hover:bg-purple-900 border border-purple-500/60 text-purple-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5"
+                className="w-full py-2 bg-purple-950/80 hover:bg-purple-900 border border-purple-500/60 text-purple-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                <span>Open Push-To-Talk Voice Radio</span>
+                <span>Push-To-Talk Radio</span>
               </button>
             </div>
 

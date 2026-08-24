@@ -260,7 +260,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* RIGHT SECTION: Quick Action Buttons + Categorized Command Tools Dropdown */}
       <div className="flex items-center space-x-2">
         
-        {/* 1. Citizen SOS Distress Queue Button (Only for Officers, Hidden from Citizens) */}
+        {/* 1. Citizen SOS Distress Queue Button */}
         {!isCitizen && (
           <button
             onClick={onOpenCitizenSOS}
@@ -272,7 +272,27 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        {/* 2. Signature Google Gemini AI Button */}
+        {/* 2. Direct Citizen QR Beacon Button */}
+        <button
+          onClick={onOpenQRCode}
+          title="Shareable Citizen Emergency Mobile QR Beacon"
+          className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-rose-950/60 border border-rose-500/50 text-rose-300 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
+        >
+          <QrCode className="w-4 h-4 text-rose-400" />
+          <span className="hidden md:inline">Citizen QR</span>
+        </button>
+
+        {/* 3. Direct 3D Elevation Slicing Button */}
+        <button
+          onClick={onOpenElevation}
+          title="3D Topographic Elevation & Levee Spillover Slicing"
+          className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-cyan-950/60 border border-cyan-500/50 text-cyan-300 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
+        >
+          <TrendingUp className="w-4 h-4 text-cyan-400" />
+          <span className="hidden md:inline">3D Elevation</span>
+        </button>
+
+        {/* 4. Signature Google Gemini AI Button */}
         <button
           onClick={onOpenAICopilot}
           title="Google Gemini AI Incident Commander"
