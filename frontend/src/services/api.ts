@@ -501,6 +501,16 @@ export class DigitalTwinApiService {
     return await res.json();
   }
 
+  async getLiveElevationPoint(lat: number, lon: number): Promise<any> {
+    const res = await fetch(`${API_BASE}/elevation/point?lat=${lat}&lon=${lon}`);
+    return await res.json();
+  }
+
+  async getLiveElevationProfile(startLat: number, startLon: number, endLat: number, endLon: number, samples: number = 6): Promise<any> {
+    const res = await fetch(`${API_BASE}/elevation/profile?start_lat=${startLat}&start_lon=${startLon}&end_lat=${endLat}&end_lon=${endLon}&samples=${samples}`);
+    return await res.json();
+  }
+
   async calculateBhuvanRoute(startLat: number, startLng: number, endLat: number, endLng: number): Promise<any> {
     const res = await fetch(`${API_BASE}/bhuvan/route`, {
       method: 'POST',

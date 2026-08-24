@@ -32,6 +32,7 @@ from app.services.nasa_firms import nasa_firms_service
 from app.services.satellite_hub_service import satellite_hub_service
 from app.services.mosdac_service import mosdac_service
 from app.services.bhuvan_service import bhuvan_service
+from app.services.copernicus_elevation_service import copernicus_elevation_service
 from app.services.auth_service import auth_service, get_current_officer, Depends
 
 app = FastAPI(
@@ -658,6 +659,28 @@ async def get_mosdac_satellite_catalog(
         end_time=end_time,
         bounding_box=bounding_box,
         count=count
+    )
+
+# =========================================================================
+# COPERNICUS & NASA SRTM 30M GLOBAL DIGITAL ELEVATION MODEL (DEM)
+# =========================================================================
+
+@app.get("/api/elevation/point")
+async def get_copernicus_point_elevation(lat: float = 19.076, lon: float = 72.877):
+    """Real Live Copernicus 30m Global DEM (GLO-30) Ground Elevation API"""
+    return await copernicus_elevation_service.fetch_point_elevation(lat, lon)
+
+@app.get("/api/elevation/profile")
+async def get_copernicus_elevation_profile(
+    start_lat: float = 19.068, 
+    start_lon: float = 72.870, 
+    end_lat: float = 19.090, 
+    end_lon: float = 72.885, 
+    samples: int = 10
+):
+    """Real Live Copernicus 30m Corridor Bathymetric & Topographic Elevation Profile API"""
+    return await copernicus_elevation_service.fetch_corridor_elevation_profile(
+        start_lat, start_lon, end_lat, end_lon, samples
     )
 
 # =========================================================================
