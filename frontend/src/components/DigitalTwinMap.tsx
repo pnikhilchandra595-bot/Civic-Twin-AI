@@ -65,31 +65,29 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showBhuvanWMS, setShowBhuvanWMS] = useState(true);
   const [activeSatelliteModal, setActiveSatelliteModal] = useState<'MOSDAC' | 'BHUVAN' | null>(null);
   const [liveHospitals, setLiveHospitals] = useState<any[]>([]);
-  const [liveDelhiVehicles, setLiveDelhiVehicles] = useState<any[]>([]);
+  const [liveSatelliteVehicles, setLiveSatelliteVehicles] = useState<any[]>([]);
 
-  // Stream Live Delhi OTD Satellite GPS Vehicles (Delhi NCR)
+  // Stream Live Multi-State Satellite GPS Vehicles (Delhi, Mumbai, Bengaluru, Chennai, Kochi)
   useEffect(() => {
-    const isDelhi = state?.city_id === 'delhi_yamuna' || state?.city_name?.toLowerCase().includes('delhi');
-    if (!isDelhi) {
-      setLiveDelhiVehicles([]);
-      return;
-    }
+    if (!state?.center_coords) return;
+    const [lat, lng] = state.center_coords;
+    const cityId = state.city_id || 'mumbai_monsoon';
 
-    const pollDelhiVehicles = async () => {
+    const pollVehicles = async () => {
       try {
-        const res = await apiService.getLiveDelhiVehicles(80);
+        const res = await apiService.getLiveCityVehicles(cityId, lat, lng, 24);
         if (res && res.vehicles && res.vehicles.length > 0) {
-          setLiveDelhiVehicles(res.vehicles);
+          setLiveSatelliteVehicles(res.vehicles);
         }
       } catch (e) {
-        console.warn('Failed to poll Delhi OTD live vehicles:', e);
+        console.warn('Failed to poll live vehicles for city:', e);
       }
     };
 
-    pollDelhiVehicles();
-    const interval = setInterval(pollDelhiVehicles, 6000);
+    pollVehicles();
+    const interval = setInterval(pollVehicles, 4000);
     return () => clearInterval(interval);
-  }, [state?.city_id, state?.city_name]);
+  }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1]]);
 
   // Fetch real-world hospitals dynamically from OpenStreetMap whenever active region/city changes
   useEffect(() => {
@@ -1046,9 +1044,9 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       });
     }
 
-    // 7.1 Render Real-Time Delhi OTD Satellite GPS Vehicles (AIS-140 Live Stream)
-    if (showUnits && Array.isArray(liveDelhiVehicles) && liveDelhiVehicles.length > 0) {
-      liveDelhiVehicles.forEach((veh) => {
+    // 7.1 Render Real-Time Multi-State Satellite GPS Vehicles (Delhi, Mumbai, Bengaluru, Chennai, Kochi)
+    if (showUnits && Array.isArray(liveSatelliteVehicles) && liveSatelliteVehicles.length > 0) {
+      liveSatelliteVehicles.forEach((veh) => {
         if (!veh || typeof veh.lat !== 'number' || typeof veh.lng !== 'number' || isNaN(veh.lat) || isNaN(veh.lng)) {
           return;
         }
@@ -1057,8 +1055,9 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           const isAmb = veh.vehicle_type === 'EMERGENCY_AMBULANCE';
           const iconEmoji = isAmb ? '🚑' : '🚌';
           const iconColor = isAmb ? '#ef4444' : '#00d2ff';
-          const safeId = String(veh.id || 'AMB').slice(-6);
+          const safeId = String(veh.id || 'AMB').slice(-8);
           const safeName = String(veh.name || `Vehicle ${safeId}`);
+          const safeAgency = String(veh.agency || 'Emergency Response Fleet (AIS-140)');
           const safeSpeed = typeof veh.speed_kmh === 'number' ? veh.speed_kmh : 0;
           const safeBearing = typeof veh.bearing === 'number' ? veh.bearing : 0;
 
@@ -1083,12 +1082,15 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           }).addTo(layerGroup);
 
           vMarker.bindPopup(`
-            <div class="text-xs font-mono p-2 bg-slate-950 text-slate-100 rounded-xl border border-cyan-500/50 shadow-2xl space-y-1 min-w-[210px]">
+            <div class="text-xs font-mono p-2 bg-slate-950 text-slate-100 rounded-xl border border-cyan-500/50 shadow-2xl space-y-1 min-w-[220px]">
               <div class="flex items-center space-x-1.5 text-cyan-300 font-bold text-xs">
                 <span>${iconEmoji} ${safeName}</span>
               </div>
               <div class="text-[10px] text-emerald-400 font-bold flex items-center space-x-1">
-                <span>🟢 Live Satellite GNSS (Delhi OTD AIS-140)</span>
+                <span>🟢 Live Satellite GNSS (AIS-140 Open AVL)</span>
+              </div>
+              <div class="text-[9px] text-slate-400">
+                <span><strong>Agency:</strong> ${safeAgency}</span>
               </div>
               <div class="grid grid-cols-2 gap-1 text-center pt-1 border-t border-slate-800">
                 <div class="bg-slate-900 p-1 rounded border border-slate-800">
@@ -1107,7 +1109,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             </div>
           `);
         } catch (err) {
-          console.warn('Error rendering individual Delhi vehicle:', err);
+          console.warn('Error rendering individual vehicle:', err);
         }
       });
     }
@@ -1338,7 +1340,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, liveHospitals, liveDelhiVehicles]);
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, liveHospitals, liveSatelliteVehicles]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">

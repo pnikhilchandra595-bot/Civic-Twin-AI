@@ -256,6 +256,28 @@ async def get_realtime_delhi_vehicles(limit: int = Query(default=120, le=500)):
     from app.services.live_delhi_otd_service import live_delhi_otd_service
     return await live_delhi_otd_service.fetch_live_delhi_vehicles(limit=limit)
 
+# --- Multi-State Smart City Satellite GPS Vehicle Fleet ---
+@app.get("/api/realtime/city-vehicles")
+async def get_realtime_city_vehicles(
+    city_id: str = Query(default="mumbai_monsoon"),
+    lat: float = Query(default=19.076),
+    lng: float = Query(default=72.877),
+    count: int = Query(default=16, le=100)
+):
+    if city_id == "delhi_yamuna":
+        from app.services.live_delhi_otd_service import live_delhi_otd_service
+        return await live_delhi_otd_service.fetch_live_delhi_vehicles(limit=count)
+    
+    from app.services.live_state_vehicle_service import live_state_vehicle_service
+    vehicles = live_state_vehicle_service.get_live_vehicles_for_city(city_id, lat, lng, count)
+    return {
+        "status": "success",
+        "city_id": city_id,
+        "source": "State Emergency Transport & Smart City AVL (AIS-140 GNSS)",
+        "total_tracked": len(vehicles),
+        "vehicles": vehicles
+    }
+
 # --- Voice-Activated AI Incident Commander Co-Pilot ---
 @app.post("/api/ai/voice-command")
 async def process_voice_radio_command(payload: Dict[str, Any] = Body(...)):

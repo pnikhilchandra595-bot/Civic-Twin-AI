@@ -616,6 +616,18 @@ export class DigitalTwinApiService {
     return { status: 'fallback', vehicles: [] };
   }
 
+  async getLiveCityVehicles(cityId: string = 'mumbai_monsoon', lat: number = 19.076, lng: number = 72.877, count: number = 16): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/realtime/city-vehicles?city_id=${cityId}&lat=${lat}&lng=${lng}&count=${count}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn('Failed to fetch live city vehicles:', e);
+    }
+    return { status: 'fallback', vehicles: [] };
+  }
+
   async getLiveElevationPoint(lat: number, lon: number): Promise<any> {
     const res = await fetch(`${API_BASE}/elevation/point?lat=${lat}&lon=${lon}`);
     return await res.json();
