@@ -88,6 +88,45 @@ class AudioSirenService {
     } catch (e) {}
   }
 
+  public playRadioSquelchStatic(type: 'open' | 'close' = 'open') {
+    try {
+      this.initAudio();
+      if (!this.audioCtx) return;
+      if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+
+      const duration = type === 'open' ? 0.12 : 0.18;
+      const bufferSize = Math.floor(this.audioCtx.sampleRate * duration);
+      const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+      const output = buffer.getChannelData(0);
+
+      // Generate realistic white noise
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = this.audioCtx.createBufferSource();
+      whiteNoise.buffer = buffer;
+
+      // Bandpass filter (300 Hz - 3400 Hz typical military walkie-talkie spectrum)
+      const filter = this.audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1800;
+      filter.Q.value = 1.2;
+
+      const gain = this.audioCtx.createGain();
+      const now = this.audioCtx.currentTime;
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      whiteNoise.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.audioCtx.destination);
+
+      whiteNoise.start(now);
+      whiteNoise.stop(now + duration);
+    } catch (e) {}
+  }
+
   public stop() {
     if (this.osc1) {
       try { this.osc1.stop(); } catch (e) {}

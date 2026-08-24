@@ -4,6 +4,7 @@ import {
   Check, X, Activity, MessageSquare, Send, CornerDownLeft 
 } from 'lucide-react';
 import { apiService } from '../services/api';
+import { audioSiren } from '../services/audioSiren';
 
 interface VoiceRadioCoPilotProps {
   cityName: string;
@@ -58,7 +59,10 @@ export const VoiceRadioCoPilot: React.FC<VoiceRadioCoPilotProps> = ({
     if (isListening) {
       recognitionRef.current.stop();
       setIsListening(false);
+      audioSiren.playRadioSquelchStatic('close');
     } else {
+      audioSiren.playRadioClick();
+      audioSiren.playRadioSquelchStatic('open');
       setTranscript('');
       recognitionRef.current.start();
       setIsListening(true);
@@ -68,9 +72,13 @@ export const VoiceRadioCoPilot: React.FC<VoiceRadioCoPilotProps> = ({
   const speakResponse = (text: string) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
+      audioSiren.playRadioSquelchStatic('open');
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1.05;
       utterance.pitch = 0.95;
+      utterance.onend = () => {
+        audioSiren.playRadioSquelchStatic('close');
+      };
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -79,6 +87,7 @@ export const VoiceRadioCoPilot: React.FC<VoiceRadioCoPilotProps> = ({
     const textToSend = queryText || transcript;
     if (!textToSend.trim()) return;
 
+    audioSiren.playRadioClick();
     const time = new Date().toLocaleTimeString();
 
     // Add Operator message

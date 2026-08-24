@@ -33,6 +33,7 @@ interface HeaderProps {
   onOpenAICopilot: () => void;
   onOpenMultiHazard: () => void;
   onOpenDistrictAtlas?: () => void;
+  onOpenQRCode?: () => void;
   onSyncLiveWeather: () => void;
   isSyncingWeather: boolean;
   onSwitchCity: (cityId: string) => void;
@@ -63,6 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAICopilot,
   onOpenMultiHazard,
   onOpenDistrictAtlas,
+  onOpenQRCode,
   onSyncLiveWeather,
   isSyncingWeather,
   onSwitchCity,
@@ -347,11 +349,11 @@ export const Header: React.FC<HeaderProps> = ({
                   </button>
 
                   <button
-                    onClick={() => { setIsToolsMenuOpen(false); onOpenMobileCompanion(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    onClick={() => { setIsToolsMenuOpen(false); if (onOpenQRCode) onOpenQRCode(); else onOpenMobileCompanion(); }}
+                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-rose-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
                   >
-                    <QrCode className="w-4 h-4 text-cyan-400" />
-                    <span>Mobile QR</span>
+                    <QrCode className="w-4 h-4 text-rose-400" />
+                    <span>Citizen QR Beacon</span>
                   </button>
                 </div>
               </div>
@@ -375,7 +377,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
                   >
                     <TrendingUp className="w-4 h-4 text-cyan-400" />
-                    <span>Bathymetry</span>
+                    <span>3D Elevation Cut</span>
                   </button>
 
                   <button

@@ -119,14 +119,90 @@ export const ElevationProfileModal: React.FC<ElevationProfileModalProps> = ({
           </button>
         </div>
 
+        {/* Interactive Hydraulic Slider */}
+        <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex items-center space-x-2">
+            <Waves className="w-4 h-4 text-blue-400 animate-pulse" />
+            <span className="text-white font-bold">Simulate Hydraulic Flood Surge:</span>
+          </div>
+          <div className="flex items-center space-x-3 w-full sm:w-72">
+            <span className="text-slate-400 text-[10px]">Normal</span>
+            <input 
+              type="range"
+              min="0"
+              max="5"
+              step="0.2"
+              defaultValue="1.5"
+              className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+              id="surge-slider"
+            />
+            <span className="text-rose-400 font-bold text-[10px] whitespace-nowrap">+5.0m Surge</span>
+          </div>
+        </div>
+
         {/* Visual 2D Elevation Slice Graph */}
         <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="font-bold text-white">{current.name}</span>
+            <span className="font-bold text-white flex items-center space-x-2">
+              <Layers className="w-4 h-4 text-cyan-400" />
+              <span>{current.name}</span>
+            </span>
             <span className="text-cyan-400 font-bold">Corridor Length: {current.distance_km} km</span>
           </div>
 
-          {/* Graphical Step Bars */}
+          {/* SVG Continuous Cross-Section Terrain Cutaway */}
+          <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 overflow-x-auto">
+            <svg viewBox="0 0 800 200" className="w-full h-44 min-w-[600px] overflow-visible">
+              <defs>
+                <linearGradient id="terrainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#334155" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="#0f172a" stopOpacity="0.9" />
+                </linearGradient>
+                <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.6" />
+                  <stop offset="100%" stopColor="#0284c7" stopOpacity="0.8" />
+                </linearGradient>
+              </defs>
+
+              {/* Terrain Polygon */}
+              <polygon
+                points="50,180 50,150 180,90 320,130 460,110 600,140 750,40 750,180"
+                fill="url(#terrainGrad)"
+                stroke="#64748b"
+                strokeWidth="2"
+              />
+
+              {/* Water Inundation Polygon */}
+              <polygon
+                points="50,180 50,115 620,115 620,140 600,140 460,110 320,130 180,90 50,150"
+                fill="url(#waterGrad)"
+                stroke="#06b6d4"
+                strokeWidth="1.5"
+                strokeDasharray="4 2"
+              />
+
+              {/* Key Waypoint Markers */}
+              <circle cx="50" cy="150" r="5" fill="#f43f5e" />
+              <text x="50" y="140" fill="#fda4af" fontSize="10" fontFamily="monospace" textAnchor="middle">River Bed (1.2m)</text>
+
+              <circle cx="180" cy="90" r="5" fill="#f59e0b" />
+              <text x="180" y="80" fill="#fde68a" fontSize="10" fontFamily="monospace" textAnchor="middle">Levee Crest (3.8m)</text>
+
+              <circle cx="320" cy="130" r="5" fill="#f43f5e" />
+              <text x="320" y="120" fill="#fda4af" fontSize="10" fontFamily="monospace" textAnchor="middle">Arterial Road</text>
+
+              <circle cx="460" cy="110" r="5" fill="#f43f5e" />
+              <text x="460" y="100" fill="#fda4af" fontSize="10" fontFamily="monospace" textAnchor="middle">Power Substation</text>
+
+              <circle cx="600" cy="140" r="5" fill="#f43f5e" />
+              <text x="600" y="130" fill="#fda4af" fontSize="10" fontFamily="monospace" textAnchor="middle">Subway Basin</text>
+
+              <circle cx="750" cy="40" r="5" fill="#10b981" />
+              <text x="750" y="30" fill="#6ee7b7" fontSize="10" fontFamily="monospace" textAnchor="middle">Hospital Ridge (Safe)</text>
+            </svg>
+          </div>
+
+          {/* Graphical Step Cards */}
           <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
             {current.points.map((p, idx) => {
               const isFlooded = p.ground_elev <= p.flood_water_level;

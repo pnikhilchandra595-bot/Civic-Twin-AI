@@ -36,6 +36,7 @@ import { WhatsAppSimulatorModal } from './components/WhatsAppSimulatorModal';
 import { PublicGPSLocationSOSModal } from './components/PublicGPSLocationSOSModal';
 import { MobileHeadAppModal } from './components/MobileHeadAppModal';
 import { DistrictSelectionModal } from './components/DistrictSelectionModal';
+import { CitizenQRCodeModal } from './components/CitizenQRCodeModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon 
@@ -103,6 +104,7 @@ export const App: React.FC = () => {
   const [isLiveWeatherOpen, setIsLiveWeatherOpen] = useState<boolean>(false);
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState<boolean>(false);
   const [isDistrictAtlasOpen, setIsDistrictAtlasOpen] = useState<boolean>(false);
+  const [isQRCodeOpen, setIsQRCodeOpen] = useState<boolean>(false);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
@@ -416,6 +418,7 @@ export const App: React.FC = () => {
         onOpenAICopilot={() => setIsAICopilotOpen(true)}
         onOpenMultiHazard={() => setIsMultiHazardOpen(true)}
         onOpenDistrictAtlas={() => setIsDistrictAtlasOpen(true)}
+        onOpenQRCode={() => setIsQRCodeOpen(true)}
         onSyncLiveWeather={() => setIsLiveWeatherOpen(true)}
         isSyncingWeather={isSyncingWeather}
         onSwitchCity={handleSwitchCity}
@@ -815,6 +818,15 @@ export const App: React.FC = () => {
         <MobileHeadAppModal
           state={state}
           onClose={() => setIsMobileCompanionOpen(false)}
+        />
+      )}
+
+      {/* Citizen Smartphone SOS QR Code Beacon Modal */}
+      {isQRCodeOpen && (
+        <CitizenQRCodeModal
+          cityName={state?.city_name || 'Mumbai'}
+          cityId={state?.city_id || 'mumbai_monsoon'}
+          onClose={() => setIsQRCodeOpen(false)}
         />
       )}
 
