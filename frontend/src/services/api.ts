@@ -216,7 +216,47 @@ export class DigitalTwinApiService {
       const res = await fetch(`${API_BASE}/realtime/air-sensors?lat=${lat}&lng=${lng}&radius_deg=${radiusDeg}`);
       if (res.ok) return await res.json();
     } catch (e) {
-      console.warn('Live PurpleAir API endpoint unreachable:', e);
+      // Backend not running on Vercel; fetch directly from PurpleAir public CORS endpoint
+    }
+    try {
+      const nwlng = lng - radiusDeg;
+      const nwlat = lat + radiusDeg;
+      const selng = lng + radiusDeg;
+      const selat = lat - radiusDeg;
+      const directUrl = `https://api.purpleair.com/v1/sensors?fields=name,latitude,longitude,pm2.5,humidity,temperature&nwlng=${nwlng.toFixed(4)}&nwlat=${nwlat.toFixed(4)}&selng=${selng.toFixed(4)}&selat=${selat.toFixed(4)}`;
+      const pRes = await fetch(directUrl, {
+        headers: { 'X-API-Key': '5817167C-A095-11F1-9E30-4201AC1DC129' }
+      });
+      if (pRes.ok) {
+        const raw = await pRes.json();
+        const fields: string[] = raw.fields || [];
+        const rows: any[][] = raw.data || [];
+        const idxMap: Record<string, number> = {};
+        fields.forEach((f, i) => { idxMap[f] = i; });
+        const sensors = rows.map(r => {
+          const sLat = r[idxMap['latitude'] ?? 2];
+          const sLng = r[idxMap['longitude'] ?? 3];
+          const pm25 = r[idxMap['pm2.5'] ?? 6] ?? 25.0;
+          let aqiCat = 'Good';
+          let aqiCol = '#10b981';
+          if (pm25 > 120) { aqiCat = 'Severe / Hazardous'; aqiCol = '#ef4444'; }
+          else if (pm25 > 60) { aqiCat = 'Poor / Unhealthy'; aqiCol = '#f97316'; }
+          else if (pm25 > 30) { aqiCat = 'Moderate'; aqiCol = '#f59e0b'; }
+          return {
+            sensor_index: r[idxMap['sensor_index'] ?? 0],
+            name: String(r[idxMap['name'] ?? 1] || 'PurpleAir Station').split('(')[0].trim(),
+            lat: Number(sLat),
+            lng: Number(sLng),
+            pm2_5: Number(pm25),
+            aqi_category: aqiCat,
+            aqi_color: aqiCol,
+            hardware_type: 'Physical Laser Particle Counter (Plantower PMS5003)'
+          };
+        }).filter(s => !isNaN(s.lat) && !isNaN(s.lng));
+        return { status: 'success', count: sensors.length, sensors };
+      }
+    } catch (e) {
+      console.warn('Direct PurpleAir fetch fallback error:', e);
     }
     return { status: 'fallback', count: 0, sensors: [] };
   }
@@ -226,7 +266,30 @@ export class DigitalTwinApiService {
       const res = await fetch(`${API_BASE}/realtime/iot-stream`);
       if (res.ok) return await res.json();
     } catch (e) {
-      console.warn('Live ThingSpeak API endpoint unreachable:', e);
+      // Direct CORS fallback
+    }
+    try {
+      const tsRes = await fetch('https://api.thingspeak.com/channels/12397/feeds.json?results=2');
+      if (tsRes.ok) {
+        const data = await tsRes.json();
+        const latest = (data.feeds && data.feeds.length > 0) ? data.feeds[data.feeds.length - 1] : {};
+        return {
+          status: 'success',
+          source: 'MathWorks ThingSpeak Open IoT Cloud (Direct Live Stream)',
+          active_channels: [{
+            channel_id: 12397,
+            name: data.channel?.name || 'Cheshire WeatherStation IoT',
+            last_update_utc: latest.created_at,
+            telemetry_fields: {
+              field1_temp_or_wind: latest.field1,
+              field2_humidity_or_rain: latest.field2,
+              field6_barometric_pressure: latest.field6
+            }
+          }]
+        };
+      }
+    } catch (e) {
+      console.warn('Direct ThingSpeak fetch error:', e);
     }
     return { status: 'fallback', active_channels: [] };
   }
@@ -236,7 +299,34 @@ export class DigitalTwinApiService {
       const res = await fetch(`${API_BASE}/realtime/multihazard-events`);
       if (res.ok) return await res.json();
     } catch (e) {
-      console.warn('Live NASA EONET endpoint unreachable:', e);
+      // Direct CORS fallback
+    }
+    try {
+      const eRes = await fetch('https://eonet.gsfc.nasa.gov/api/v3/events?limit=30');
+      if (eRes.ok) {
+        const data = await eRes.json();
+        const parsed = (data.events || []).map((ev: any) => {
+          const geometries = ev.geometry || [];
+          const latestGeo = geometries[geometries.length - 1] || {};
+          const coords = latestGeo.coordinates || [];
+          if (coords.length >= 2 && typeof coords[0] === 'number') {
+            return {
+              id: ev.id,
+              title: ev.title,
+              category: ev.categories?.[0]?.title || 'Natural Hazard',
+              lat: Number(coords[1]),
+              lng: Number(coords[0]),
+              date: latestGeo.date,
+              link: ev.link,
+              source: 'NASA Earth Observatory (EONET Direct)'
+            };
+          }
+          return null;
+        }).filter(Boolean);
+        return { status: 'success', count: parsed.length, events: parsed };
+      }
+    } catch (e) {
+      console.warn('Direct NASA EONET fetch error:', e);
     }
     return { status: 'fallback', events: [] };
   }
@@ -246,7 +336,33 @@ export class DigitalTwinApiService {
       const res = await fetch(`${API_BASE}/realtime/seismic-feed`);
       if (res.ok) return await res.json();
     } catch (e) {
-      console.warn('Live EMSC Seismic endpoint unreachable:', e);
+      // Direct CORS fallback
+    }
+    try {
+      const sRes = await fetch('https://www.seismicportal.eu/fdsnws/event/1/query?format=json&limit=30');
+      if (sRes.ok) {
+        const data = await sRes.json();
+        const quakes = (data.features || []).map((feat: any) => {
+          const coords = feat.geometry?.coordinates || [];
+          const props = feat.properties || {};
+          if (coords.length >= 2) {
+            return {
+              id: props.unid,
+              region: props.flynn_region || 'Active Fault Zone',
+              magnitude: Number(props.mag || 4.0),
+              depth_km: Number(coords[2] || 10.0),
+              lat: Number(coords[1]),
+              lng: Number(coords[0]),
+              time_utc: props.time,
+              source: 'EMSC Global Seismometer Network (Direct)'
+            };
+          }
+          return null;
+        }).filter(Boolean);
+        return { status: 'success', count: quakes.length, earthquakes: quakes };
+      }
+    } catch (e) {
+      console.warn('Direct EMSC seismic fetch error:', e);
     }
     return { status: 'fallback', earthquakes: [] };
   }
@@ -256,7 +372,30 @@ export class DigitalTwinApiService {
       const res = await fetch(`${API_BASE}/realtime/air-quality?lat=${lat}&lng=${lng}`);
       if (res.ok) return await res.json();
     } catch (e) {
-      console.warn('Live Open-Meteo Air Quality endpoint unreachable:', e);
+      // Direct CORS fallback
+    }
+    try {
+      const aqRes = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,us_aqi`);
+      if (aqRes.ok) {
+        const data = await aqRes.json();
+        const cur = data.current || {};
+        return {
+          status: 'success',
+          source: 'Open-Meteo Air Chemistry (Direct Live Stream)',
+          lat,
+          lng,
+          pm2_5: cur.pm2_5,
+          pm10: cur.pm10,
+          carbon_monoxide_ugm3: cur.carbon_monoxide,
+          nitrogen_dioxide_ugm3: cur.nitrogen_dioxide,
+          sulphur_dioxide_ugm3: cur.sulphur_dioxide,
+          ozone_ugm3: cur.ozone,
+          us_aqi: cur.us_aqi,
+          timestamp: cur.time
+        };
+      }
+    } catch (e) {
+      console.warn('Direct Open-Meteo Air fetch error:', e);
     }
     return { status: 'fallback' };
   }
