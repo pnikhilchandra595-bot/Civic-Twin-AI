@@ -767,29 +767,30 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     if (showFloodHeatmap) {
       state.nodes.forEach(node => {
         if (node.flood_depth_m > 0.05) {
-          const radiusMeters = Math.min(700, 200 + node.flood_depth_m * 350);
-          const opacity = Math.min(0.55, 0.20 + (node.flood_depth_m / 1.5) * 0.35);
+          const floodDepth = node.flood_depth_m ?? 0;
+          const radiusMeters = Math.min(700, 200 + floodDepth * 350);
+          const opacity = Math.min(0.55, 0.20 + (floodDepth / 1.5) * 0.35);
 
           const floodCircle = L.circle([node.lat, node.lng], {
             radius: radiusMeters,
             color: '#00d2ff',
             weight: 1.2,
-            fillColor: node.flood_depth_m >= 0.35 ? '#ef4444' : '#0284c7',
+            fillColor: floodDepth >= 0.35 ? '#ef4444' : '#0284c7',
             fillOpacity: opacity
           }).addTo(layerGroup);
 
-          floodCircle.bindTooltip(`🌊 Inundation: ${node.name} (${node.flood_depth_m.toFixed(2)}m water depth)`);
+          floodCircle.bindTooltip(`🌊 Inundation: ${node.name} (${floodDepth.toFixed(2)}m water depth)`);
         }
       });
     }
 
     // 3. Render Roads & Arterial Corridors
-    if (showRoads) {
+    if (showRoads && Array.isArray(state.roads)) {
       state.roads.forEach(road => {
         const isImpassable = road.status === 'impassable' || road.status === 'closed_emergency';
         const isEvac = road.is_evacuation_corridor && !isImpassable;
 
-        const latLngs: [number, number][] = road.coordinates.map(pt => [pt[1], pt[0]]);
+        const latLngs: [number, number][] = (road.coordinates || []).map(pt => [pt[1], pt[0]]);
 
         const roadColor = isImpassable 
           ? '#ef4444' 
@@ -806,18 +807,20 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           dashArray: isImpassable ? '6, 8' : undefined
         }).addTo(layerGroup);
 
+        const safeSpeed = road.current_speed_kmh ?? 35;
+        const safeFlood = road.flood_depth_m ?? 0;
         polyline.bindTooltip(`
           <div class="text-xs font-mono">
             <strong>${road.name}</strong><br/>
-            Status: <span style="color: ${roadColor}">${road.status.toUpperCase()}</span><br/>
-            Speed: ${road.current_speed_kmh.toFixed(0)} km/h | Flood: ${road.flood_depth_m.toFixed(2)}m
+            Status: <span style="color: ${roadColor}">${(road.status || 'clear').toUpperCase()}</span><br/>
+            Speed: ${safeSpeed.toFixed(0)} km/h | Flood: ${safeFlood.toFixed(2)}m
           </div>
         `);
       });
     }
 
     // 4. Render Evacuation Routes (Active green corridors)
-    if (showEvacuationRoutes) {
+    if (showEvacuationRoutes && Array.isArray(state.evacuation_routes)) {
       state.evacuation_routes.forEach(route => {
         if (route.coordinates && route.coordinates.length >= 2) {
           const waypointsLatLng: [number, number][] = route.coordinates.map(wp => [wp[1], wp[0]]);
@@ -829,11 +832,13 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           }).addTo(layerGroup);
 
           evacLine.on('click', () => onSelectRoute(route));
+          const safeScore = route.safety_score ?? 0.95;
+          const safeTime = route.estimated_time_min ?? 10;
           evacLine.bindTooltip(`
             <div class="text-xs font-mono">
               <strong>✅ SAFE EVACUATION CORRIDOR</strong><br/>
               ${route.source_name} ➔ ${route.target_shelter_name}<br/>
-              Safety Score: ${(route.safety_score * 100).toFixed(0)}% | Time: ${route.estimated_time_min.toFixed(0)} min
+              Safety Score: ${(safeScore * 100).toFixed(0)}% | Time: ${safeTime.toFixed(0)} min
             </div>
           `);
         }
@@ -841,74 +846,77 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     }
 
     // 5. Render Critical Infrastructure Nodes (COMPACT CLEAN ROUND PINS - NO CLUTTER!)
-    state.nodes.forEach(node => {
-      const isCritical = node.status === 'critical' || node.status === 'offline' || node.flood_depth_m >= 0.3;
-      const isWarning = node.status === 'warning' || (node.flood_depth_m > 0.05 && node.flood_depth_m < 0.3);
+    if (Array.isArray(state.nodes)) {
+      state.nodes.forEach(node => {
+        const floodDepth = node.flood_depth_m ?? 0;
+        const isCritical = node.status === 'critical' || node.status === 'offline' || floodDepth >= 0.3;
+        const isWarning = node.status === 'warning' || (floodDepth > 0.05 && floodDepth < 0.3);
 
-      let iconEmoji = '🏥';
-      let iconColor = '#00d2ff';
+        let iconEmoji = '🏥';
+        let iconColor = '#00d2ff';
 
-      if (node.node_type === 'hospital') {
-        iconEmoji = '🏥';
-        iconColor = '#ef4444';
-      } else if (node.node_type === 'shelter') {
-        iconEmoji = '🏫';
-        iconColor = '#10b981';
-      } else if (node.node_type === 'substation') {
-        iconEmoji = '⚡';
-        iconColor = '#f59e0b';
-      } else if (node.node_type === 'water_treatment') {
-        iconEmoji = '🌊';
-        iconColor = '#0284c7';
-      } else if (node.node_type === 'bridge') {
-        iconEmoji = '🌉';
-        iconColor = '#38bdf8';
-      } else if (node.node_type === 'dam_levee') {
-        iconEmoji = '🛡️';
-        iconColor = '#8b5cf6';
-      } else if (node.node_type === 'fire_station') {
-        iconEmoji = '🚒';
-        iconColor = '#f97316';
-      } else if (node.node_type === 'residential_district') {
-        iconEmoji = '🏘️';
-        iconColor = '#64748b';
-      }
+        if (node.node_type === 'hospital') {
+          iconEmoji = '🏥';
+          iconColor = '#ef4444';
+        } else if (node.node_type === 'shelter') {
+          iconEmoji = '🏫';
+          iconColor = '#10b981';
+        } else if (node.node_type === 'substation') {
+          iconEmoji = '⚡';
+          iconColor = '#f59e0b';
+        } else if (node.node_type === 'water_treatment') {
+          iconEmoji = '🌊';
+          iconColor = '#0284c7';
+        } else if (node.node_type === 'bridge') {
+          iconEmoji = '🌉';
+          iconColor = '#38bdf8';
+        } else if (node.node_type === 'dam_levee') {
+          iconEmoji = '🛡️';
+          iconColor = '#8b5cf6';
+        } else if (node.node_type === 'fire_station') {
+          iconEmoji = '🚒';
+          iconColor = '#f97316';
+        } else if (node.node_type === 'residential_district') {
+          iconEmoji = '🏘️';
+          iconColor = '#64748b';
+        }
 
-      const statusRing = isCritical ? '#ef4444' : isWarning ? '#f59e0b' : '#10b981';
+        const statusRing = isCritical ? '#ef4444' : isWarning ? '#f59e0b' : '#10b981';
 
-      // Compact circular pin with floating status pip (32x32px)
-      const compactNodeHtml = `
-        <div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-[#090e1a] border-2 shadow-xl cursor-pointer group transform hover:scale-125 transition-all" style="border-color: ${isCritical ? '#ef4444' : iconColor}">
-          <span class="text-sm">${iconEmoji}</span>
-          <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full ${isCritical ? 'animate-ping' : ''}" style="background-color: ${statusRing}"></span>
-          ${node.flood_depth_m > 0.05 ? `
-            <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 py-0.2 rounded bg-red-950 text-red-300 border border-red-700 font-bold whitespace-nowrap">
-              ${node.flood_depth_m.toFixed(1)}m
-            </div>
-          ` : ''}
-        </div>
-      `;
+        // Compact circular pin with floating status pip (32x32px)
+        const compactNodeHtml = `
+          <div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-[#090e1a] border-2 shadow-xl cursor-pointer group transform hover:scale-125 transition-all" style="border-color: ${isCritical ? '#ef4444' : iconColor}">
+            <span class="text-sm">${iconEmoji}</span>
+            <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full ${isCritical ? 'animate-ping' : ''}" style="background-color: ${statusRing}"></span>
+            ${floodDepth > 0.05 ? `
+              <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 py-0.2 rounded bg-red-950 text-red-300 border border-red-700 font-bold whitespace-nowrap">
+                ${floodDepth.toFixed(1)}m
+              </div>
+            ` : ''}
+          </div>
+        `;
 
-      const marker = L.marker([node.lat, node.lng], {
-        icon: L.divIcon({
-          className: 'custom-div-icon',
-          html: compactNodeHtml,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16]
-        })
-      }).addTo(layerGroup);
+        const marker = L.marker([node.lat, node.lng], {
+          icon: L.divIcon({
+            className: 'custom-div-icon',
+            html: compactNodeHtml,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
+          })
+        }).addTo(layerGroup);
 
-      marker.bindTooltip(`
-        <div class="text-xs font-mono p-1">
-          <strong class="text-white">${node.name}</strong><br/>
-          Type: <span class="capitalize text-cyan-300">${node.node_type.replace('_', ' ')}</span><br/>
-          Status: <span style="color: ${statusRing}">${node.status.toUpperCase()}</span><br/>
-          Flood Depth: <span class="text-amber-300">${node.flood_depth_m.toFixed(2)}m</span>
-        </div>
-      `);
+        marker.bindTooltip(`
+          <div class="text-xs font-mono p-1">
+            <strong class="text-white">${node.name}</strong><br/>
+            Type: <span class="capitalize text-cyan-300">${(node.node_type || 'Infrastructure').replace('_', ' ')}</span><br/>
+            Status: <span style="color: ${statusRing}">${(node.status || 'operational').toUpperCase()}</span><br/>
+            Flood Depth: <span class="text-amber-300">${floodDepth.toFixed(2)}m</span>
+          </div>
+        `);
 
-      marker.on('click', () => onSelectNode(node));
-    });
+        marker.on('click', () => onSelectNode(node));
+      });
+    }
 
     // 5.1 Render Real-Time OpenStreetMap Nominatim Live Hospitals
     liveHospitals.forEach((hosp) => {
@@ -982,10 +990,11 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           })
         }).addTo(layerGroup);
 
+        const safeVal = sensor.current_value ?? 0;
         sMarker.bindTooltip(`
           <div class="text-xs font-mono">
             <strong>${sensor.name}</strong><br/>
-            Reading: <span class="text-cyan-300 font-bold">${sensor.current_value.toFixed(1)} ${sensor.unit}</span> (${sensor.trend})
+            Reading: <span class="text-cyan-300 font-bold">${safeVal.toFixed(1)} ${sensor.unit}</span> (${sensor.trend})
           </div>
         `);
 
@@ -1674,9 +1683,9 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       {/* Floating Bottom Left Live Region Indicator */}
       <div className="absolute bottom-3 left-3 z-10 hud-panel px-3 py-1.5 rounded-xl flex items-center space-x-2 text-[11px] font-mono border border-cyan-500/30 bg-slate-950/90 shadow-xl">
         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-        <span className="text-white font-bold truncate max-w-[200px]">{state?.city_name.split(':')[0] || 'Twin'}</span>
+        <span className="text-white font-bold truncate max-w-[200px]">{state?.city_name?.split(':')[0] || 'Twin'}</span>
         <span className="text-slate-600">|</span>
-        <span className="text-cyan-300">🌧️ {state?.rain_intensity_mmhr.toFixed(0) || 0} mm/h</span>
+        <span className="text-cyan-300">🌧️ {(state?.rain_intensity_mmhr ?? 35).toFixed(0)} mm/h</span>
       </div>
 
       {/* Floating Bottom Right Dedicated Satellite Orbs Telemetry Deck */}
@@ -1757,7 +1766,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                 <div className="grid grid-cols-2 gap-2 text-center">
                   <div className="p-2 rounded-xl bg-purple-950/40 border border-purple-500/40">
                     <span className="text-[10px] text-purple-300 block">🌧️ Instant Rain Rate</span>
-                    <span className="text-sm font-bold text-white">{state?.rain_intensity_mmhr.toFixed(1) || 35.0} mm/h</span>
+                    <span className="text-sm font-bold text-white">{(state?.rain_intensity_mmhr ?? 35).toFixed(1)} mm/h</span>
                     <span className="text-[9px] text-purple-400 block">Hydro-Estimator HE_3SIMG</span>
                   </div>
                   <div className="p-2 rounded-xl bg-purple-950/40 border border-purple-500/40">

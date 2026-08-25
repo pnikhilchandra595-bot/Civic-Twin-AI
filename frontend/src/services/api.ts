@@ -764,7 +764,8 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       capacity_used: 1650,
       backup_power_hours: 48.0,
       structural_integrity: 1.0,
-      population_density: 3800
+      population_density: 3800,
+      flood_depth_m: 0.0
     },
     {
       id: "node-hosp-2",
@@ -819,7 +820,14 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       lat: lat - 0.008,
       lng: lng - 0.006,
       elevation_m: 10.5,
-      status: "operational" as any
+      status: "operational" as any,
+      vulnerability_index: 0.35,
+      flood_depth_m: 0.0,
+      capacity_total: 500,
+      capacity_used: 250,
+      backup_power_hours: 24.0,
+      structural_integrity: 1.0,
+      population_density: 1200
     },
     {
       id: "node-shelter-1",
@@ -831,7 +839,10 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       status: "operational" as any,
       capacity_total: 9000,
       capacity_used: 2200,
-      population_density: 2200
+      population_density: 2200,
+      flood_depth_m: 0.0,
+      vulnerability_index: 0.12,
+      structural_integrity: 1.0
     },
     {
       id: "node-shelter-2",
@@ -843,7 +854,10 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       status: "operational" as any,
       capacity_total: 4800,
       capacity_used: 1100,
-      population_density: 1100
+      population_density: 1100,
+      flood_depth_m: 0.0,
+      vulnerability_index: 0.15,
+      structural_integrity: 1.0
     },
     {
       id: "node-fire-1",
@@ -852,7 +866,13 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       lat: lat + 0.004,
       lng: lng + 0.004,
       elevation_m: 20.0,
-      status: "operational" as any
+      status: "operational" as any,
+      flood_depth_m: 0.0,
+      vulnerability_index: 0.20,
+      structural_integrity: 1.0,
+      capacity_total: 800,
+      capacity_used: 300,
+      population_density: 1500
     },
     {
       id: "node-radar-1",
@@ -861,7 +881,10 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       lat: lat + 0.038,
       lng: lng + 0.035,
       elevation_m: 45.0,
-      status: "operational" as any
+      status: "operational" as any,
+      flood_depth_m: 0.0,
+      vulnerability_index: 0.10,
+      structural_integrity: 1.0
     },
     {
       id: "node-bridge-1",
@@ -870,7 +893,10 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       lat: lat - 0.005,
       lng: lng + 0.008,
       elevation_m: 16.8,
-      status: "operational" as any
+      status: "operational" as any,
+      flood_depth_m: 0.0,
+      vulnerability_index: 0.40,
+      structural_integrity: 0.95
     },
     {
       id: "node-dam-1",
@@ -880,7 +906,9 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       lng: lng - 0.025,
       elevation_m: 14.2,
       status: "warning" as any,
-      vulnerability_index: 0.88
+      vulnerability_index: 0.88,
+      flood_depth_m: 0.15,
+      structural_integrity: 0.88
     },
     {
       id: "node-res-1",
@@ -891,7 +919,9 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       elevation_m: 9.8,
       status: "critical" as any,
       flood_depth_m: 0.88,
-      population_density: 17800
+      population_density: 17800,
+      vulnerability_index: 0.92,
+      structural_integrity: 0.75
     },
     {
       id: "node-res-2",
@@ -902,7 +932,9 @@ export function synthesizeClientSideState(query: string = '', targetLat?: number
       elevation_m: 8.5,
       status: "critical" as any,
       flood_depth_m: 1.35,
-      population_density: 12400
+      population_density: 12400,
+      vulnerability_index: 0.95,
+      structural_integrity: 0.70
     }
   ];
 
