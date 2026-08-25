@@ -63,6 +63,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showMosdacInsat, setShowMosdacInsat] = useState(true);
   const [showBhuvanDisaster, setShowBhuvanDisaster] = useState(true);
   const [showBhuvanWMS, setShowBhuvanWMS] = useState(true);
+  const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [activeSatelliteModal, setActiveSatelliteModal] = useState<'MOSDAC' | 'BHUVAN' | null>(null);
   const [liveHospitals, setLiveHospitals] = useState<any[]>([]);
   const [liveSatelliteVehicles, setLiveSatelliteVehicles] = useState<any[]>([]);
@@ -1018,7 +1019,8 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       });
 
       // 6.1 Render Live Physical IoT Air Quality & Particle Sensors (PurpleAir Real Hardware)
-      liveAirSensors.forEach(air => {
+      if (showPurpleAir && Array.isArray(liveAirSensors)) {
+        liveAirSensors.forEach(air => {
         const aqiColor = air.aqi_color || '#10b981';
         const airHtml = `
           <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-[#090e1a] border-2 shadow-xl cursor-pointer transform hover:scale-125 transition-all" style="border-color: ${aqiColor}">
@@ -1048,6 +1050,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           </div>
         `);
       });
+      }
     }
 
     // 7. Render Moving Units & Tactical NDRF Assets (Compact Tactical Vehicle Pins)
@@ -1397,7 +1400,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, liveHospitals, liveSatelliteVehicles, liveAirSensors]);
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, liveHospitals, liveSatelliteVehicles, liveAirSensors]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
@@ -1646,6 +1649,19 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             >
               <span>📡 IoT Sensors</span>
               {showSensors ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+            </button>
+
+            <button
+              onClick={() => setShowPurpleAir(!showPurpleAir)}
+              className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                showPurpleAir ? 'bg-emerald-950/80 border-emerald-500 text-emerald-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+              }`}
+            >
+              <span className="flex items-center space-x-1">
+                <span>💨</span>
+                <span>PurpleAir IoT (PM2.5)</span>
+              </span>
+              {showPurpleAir ? <Eye className="w-3 h-3 text-emerald-400" /> : <EyeOff className="w-3 h-3" />}
             </button>
 
             <button
