@@ -39,4 +39,6 @@ services:
         sync: false
       - key: DELHI_OTD_API_KEY
         value: "gmnSpSaKqninoz0DQqF0ew2DhgCLPB1B"
+      - key: PURPLEAIR_API_KEY
+        value: "5817167C-A095-11F1-9E30-4201AC1DC129"
 

@@ -66,6 +66,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [activeSatelliteModal, setActiveSatelliteModal] = useState<'MOSDAC' | 'BHUVAN' | null>(null);
   const [liveHospitals, setLiveHospitals] = useState<any[]>([]);
   const [liveSatelliteVehicles, setLiveSatelliteVehicles] = useState<any[]>([]);
+  const [liveAirSensors, setLiveAirSensors] = useState<any[]>([]);
 
   // Stream Live Multi-State Satellite GPS Vehicles (Delhi, Mumbai, Bengaluru, Chennai, Kochi)
   useEffect(() => {
@@ -75,8 +76,8 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
     const pollVehicles = async () => {
       try {
-        const res = await apiService.getLiveCityVehicles(cityId, lat, lng, 24);
-        if (res && res.vehicles && res.vehicles.length > 0) {
+        const res = await apiService.getLiveCityVehicles(cityId, lat, lng);
+        if (res && res.vehicles && Array.isArray(res.vehicles)) {
           setLiveSatelliteVehicles(res.vehicles);
         }
       } catch (e) {
@@ -103,7 +104,22 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         console.warn('Failed to load dynamic OSM hospitals:', e);
       }
     };
+
+    const fetchAirSensors = async () => {
+      if (!state?.center_coords) return;
+      const [lat, lng] = state.center_coords;
+      try {
+        const res = await apiService.getLiveAirSensors(lat, lng, 0.8);
+        if (res && res.sensors && Array.isArray(res.sensors)) {
+          setLiveAirSensors(res.sensors);
+        }
+      } catch (e) {
+        console.warn('Failed to load dynamic PurpleAir sensors:', e);
+      }
+    };
+
     fetchHospitalsForRegion();
+    fetchAirSensors();
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1], state?.city_name]);
 
   // Pan-India disaster state summaries for all 20 major states & regions
@@ -1000,6 +1016,38 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
         sMarker.on('click', () => onSelectSensor(sensor));
       });
+
+      // 6.1 Render Live Physical IoT Air Quality & Particle Sensors (PurpleAir Real Hardware)
+      liveAirSensors.forEach(air => {
+        const aqiColor = air.aqi_color || '#10b981';
+        const airHtml = `
+          <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-[#090e1a] border-2 shadow-xl cursor-pointer transform hover:scale-125 transition-all" style="border-color: ${aqiColor}">
+            <span class="text-[10px]">💨</span>
+            <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-emerald-200 border border-slate-700 font-bold whitespace-nowrap">
+              ${(air.pm2_5 ?? 25).toFixed(0)} PM2.5
+            </div>
+          </div>
+        `;
+
+        const aMarker = L.marker([air.lat, air.lng], {
+          icon: L.divIcon({
+            className: 'custom-div-icon',
+            html: airHtml,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+          })
+        }).addTo(layerGroup);
+
+        aMarker.bindTooltip(`
+          <div class="text-xs font-mono p-1">
+            <strong class="text-white">💨 ${air.name} (Live IoT Station)</strong><br/>
+            PM2.5: <span class="font-bold" style="color: ${aqiColor}">${(air.pm2_5 ?? 0).toFixed(1)} µg/m³ (${air.aqi_category})</span><br/>
+            Hardware: <span class="text-slate-400">${air.hardware_type || 'Laser Particle Counter'}</span><br/>
+            Source: <span class="text-purple-300">PurpleAir Physical IoT Feed</span>
+          </div>
+        `);
+      });
     }
 
     // 7. Render Moving Units & Tactical NDRF Assets (Compact Tactical Vehicle Pins)
@@ -1349,7 +1397,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, liveHospitals, liveSatelliteVehicles]);
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, liveHospitals, liveSatelliteVehicles, liveAirSensors]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">

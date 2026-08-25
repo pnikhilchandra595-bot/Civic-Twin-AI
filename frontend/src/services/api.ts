@@ -211,6 +211,26 @@ export class DigitalTwinApiService {
     return res.json();
   }
 
+  async getLiveAirSensors(lat: number = 28.6139, lng: number = 77.2090, radiusDeg: number = 0.8): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/realtime/air-sensors?lat=${lat}&lng=${lng}&radius_deg=${radiusDeg}`);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Live PurpleAir API endpoint unreachable:', e);
+    }
+    return { status: 'fallback', count: 0, sensors: [] };
+  }
+
+  async getLiveThingSpeakStream(): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/realtime/iot-stream`);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Live ThingSpeak API endpoint unreachable:', e);
+    }
+    return { status: 'fallback', active_channels: [] };
+  }
+
   async getSatelliteSARReport(): Promise<SatelliteSARReport> {
     const res = await fetch(`${API_BASE}/satellite/sar-report`);
     if (!res.ok) throw new Error('Failed to fetch SAR report');

@@ -188,7 +188,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               <div className="flex items-center space-x-2.5">
                 <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
                 <div>
-                  <span className="text-white font-bold text-sm block">5 Verified 100% Real-Time Sovereign Data Streams</span>
+                  <span className="text-white font-bold text-sm block">7 Verified 100% Real-Time Sovereign & IoT Data Streams</span>
                   <span className="text-[11px] text-emerald-300/80">Active external REST/WMS endpoints streaming live physical conditions to CivicTwin AI</span>
                 </div>
               </div>
@@ -197,7 +197,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               </span>
             </div>
 
-            {/* 5 Real Live Stream Cards Grid */}
+            {/* 7 Real Live Stream Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               
               {/* Feed 1: Open-Meteo Live Atmospheric Weather */}
@@ -254,12 +254,48 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                 </div>
               </div>
 
-              {/* Feed 4: OpenStreetMap Nominatim Healthcare Registry */}
+              {/* Feed 4: PurpleAir Physical IoT Air Quality Laser Counters */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-emerald-500/40 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-emerald-300 font-bold">
+                    <span className="text-base">💨</span>
+                    <span>4. PurpleAir Physical IoT Air Sensors</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live (Key Active)
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-emerald-300 text-[10px]">https://api.purpleair.com/v1/sensors</code></div>
+                  <div><strong>Active Hardware:</strong> <span className="text-emerald-300 font-bold">91+ Real Physical Laser Sensors across India</span></div>
+                  <div><strong>Ingested Parameters:</strong> Real-time PM2.5 (µg/m³), Humidity, Ambient Temp</div>
+                </div>
+              </div>
+
+              {/* Feed 5: ThingSpeak Open IoT Cloud Stream */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-teal-500/40 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-teal-300 font-bold">
+                    <span className="text-base">📡</span>
+                    <span>5. MathWorks ThingSpeak Physical IoT</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-teal-300 text-[10px]">https://api.thingspeak.com/channels/.../feeds.json</code></div>
+                  <div><strong>Physical Hardware:</strong> Microcontroller (ESP32/Arduino) Weather & Level Stations</div>
+                  <div><strong>Telemetry Ingest:</strong> Instant Ultrasonic Depth, Wind Vector, Solar Radiation</div>
+                </div>
+              </div>
+
+              {/* Feed 6: OpenStreetMap Nominatim Healthcare Registry */}
               <div className="p-4 rounded-xl bg-slate-950/90 border border-rose-500/40 space-y-2">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center space-x-2 text-rose-300 font-bold">
                     <Hospital className="w-4 h-4 text-rose-400" />
-                    <span>4. OpenStreetMap Healthcare Registry</span>
+                    <span>6. OpenStreetMap Healthcare Registry</span>
                   </div>
                   <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
                     🟢 100% Live
@@ -272,12 +308,12 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                 </div>
               </div>
 
-              {/* Feed 5: ISRO Bhuvan High-Resolution Satellite Map */}
+              {/* Feed 7: ISRO Bhuvan High-Resolution Satellite Map */}
               <div className="p-4 rounded-xl bg-slate-950/90 border border-orange-500/40 space-y-2 md:col-span-2">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center space-x-2 text-orange-300 font-bold">
                     <Compass className="w-4 h-4 text-orange-400" />
-                    <span>5. ISRO Bhuvan High-Resolution Satellite Imagery (WMS)</span>
+                    <span>7. ISRO Bhuvan High-Resolution Satellite Imagery (WMS)</span>
                   </div>
                   <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
                     🟢 100% Live

@@ -929,3 +929,25 @@ async def chat_with_gemini_commander(req: AIChatRequest):
     return result
 
 
+@app.get("/api/realtime/air-sensors")
+async def get_live_air_sensors(
+    lat: float = Query(28.6139, description="Center latitude"),
+    lng: float = Query(77.2090, description="Center longitude"),
+    radius_deg: float = Query(0.8, description="Bounding radius in degrees")
+):
+    """
+    Ingests live physical IoT air quality sensors from PurpleAir API.
+    """
+    from app.services.live_purpleair_service import live_purpleair_service
+    return await live_purpleair_service.fetch_live_india_air_sensors(lat, lng, radius_deg)
+
+
+@app.get("/api/realtime/iot-stream")
+async def get_live_iot_stream():
+    """
+    Ingests live hardware sensor packets from ThingSpeak open IoT cloud channels.
+    """
+    from app.services.live_thingspeak_service import live_thingspeak_service
+    return await live_thingspeak_service.fetch_live_iot_feeds()
+
+
