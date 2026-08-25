@@ -1786,81 +1786,86 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         </div>
 
         {isLayersOpen && (
-          <div className="hud-panel p-2.5 rounded-xl flex flex-col space-y-1 text-[11px] font-mono border border-slate-800 bg-slate-950/95 shadow-2xl min-w-[190px]">
+          <div className="hud-panel p-2.5 rounded-xl flex flex-col space-y-1 text-[11px] font-mono border border-slate-800 bg-slate-950/95 shadow-2xl min-w-[220px] max-w-[250px] max-h-[360px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900 z-50">
+            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-1 pb-1 border-b border-slate-800/80 flex justify-between items-center">
+              <span>GIS & Sensor Layers</span>
+              <span className="text-cyan-400 text-[8px] bg-cyan-950/80 px-1 rounded border border-cyan-800">12 Live</span>
+            </div>
+
             <button
               onClick={() => setShowFloodHeatmap(!showFloodHeatmap)}
-              className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                 showFloodHeatmap ? 'bg-cyan-950/60 border-cyan-500/40 text-cyan-300' : 'bg-slate-900/40 border-slate-800 text-slate-500'
               }`}
             >
-              <span>🌊 Inundation</span>
-              {showFloodHeatmap ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              <span className="truncate pr-1">🌊 Inundation</span>
+              {showFloodHeatmap ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             <button
               onClick={() => setShowRoads(!showRoads)}
-              className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                 showRoads ? 'bg-cyan-950/60 border-cyan-500/40 text-cyan-300' : 'bg-slate-900/40 border-slate-800 text-slate-500'
               }`}
             >
-              <span>🛣️ Road Status</span>
-              {showRoads ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              <span className="truncate pr-1">🛣️ Road Status</span>
+              {showRoads ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             <button
               onClick={() => setShowEvacuationRoutes(!showEvacuationRoutes)}
-              className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                 showEvacuationRoutes ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300' : 'bg-slate-900/40 border-slate-800 text-slate-500'
               }`}
             >
-              <span>✅ Safe Corridors</span>
-              {showEvacuationRoutes ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              <span className="truncate pr-1">✅ Safe Corridors</span>
+              {showEvacuationRoutes ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             <button
               onClick={() => setShowSensors(!showSensors)}
-              className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                 showSensors ? 'bg-cyan-950/60 border-cyan-500/40 text-cyan-300' : 'bg-slate-900/40 border-slate-800 text-slate-500'
               }`}
             >
-              <span>📡 IoT Sensors</span>
-              {showSensors ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              <span className="truncate pr-1">📡 IoT Sensors</span>
+              {showSensors ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             <button
               onClick={() => setShowPurpleAir(!showPurpleAir)}
-              className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                 showPurpleAir ? 'bg-emerald-950/80 border-emerald-500 text-emerald-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
               }`}
             >
-              <span className="flex items-center space-x-1">
+              <span className="flex items-center space-x-1 truncate pr-1">
                 <span>💨</span>
-                <span>PurpleAir IoT (PM2.5)</span>
+                <span className="truncate">PurpleAir PM2.5</span>
               </span>
-              {showPurpleAir ? <Eye className="w-3 h-3 text-emerald-400" /> : <EyeOff className="w-3 h-3" />}
+              {showPurpleAir ? <Eye className="w-3 h-3 text-emerald-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             <button
               onClick={() => setShowTomTomTraffic(!showTomTomTraffic)}
-              className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                 showTomTomTraffic ? 'bg-amber-950/80 border-amber-500 text-amber-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
               }`}
             >
-              <span className="flex items-center space-x-1">
+              <span className="flex items-center space-x-1 truncate pr-1">
                 <span>🚦</span>
-                <span>TomTom Live Traffic Flow</span>
+                <span className="truncate">TomTom Traffic</span>
               </span>
-              {showTomTomTraffic ? <Eye className="w-3 h-3 text-amber-400" /> : <EyeOff className="w-3 h-3" />}
+              {showTomTomTraffic ? <Eye className="w-3 h-3 text-amber-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             <button
               onClick={() => setShowUnits(!showUnits)}
-              className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                 showUnits ? 'bg-cyan-950/60 border-cyan-500/40 text-cyan-300' : 'bg-slate-900/40 border-slate-800 text-slate-500'
               }`}
             >
-              <span>🚤 NDRF Units</span>
-              {showUnits ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              <span className="truncate pr-1">🚤 NDRF Units</span>
+              {showUnits ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             {/* Spaceborne Satellite Earth Observation Feeds Section */}
@@ -1871,88 +1876,88 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
               <button
                 onClick={() => setShowSentinelSAR(!showSentinelSAR)}
-                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                   showSentinelSAR ? 'bg-cyan-950/70 border-cyan-400 text-cyan-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span>🛰️ Sentinel-1 (C-SAR)</span>
-                {showSentinelSAR ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                <span className="truncate pr-1">🛰️ Sentinel-1 (SAR)</span>
+                {showSentinelSAR ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
               </button>
 
               <button
                 onClick={() => setShowSentinel2(!showSentinel2)}
-                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                   showSentinel2 ? 'bg-emerald-950/70 border-emerald-400 text-emerald-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span>🛰️ Sentinel-2 (NDVI)</span>
-                {showSentinel2 ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                <span className="truncate pr-1">🛰️ Sentinel-2 (NDVI)</span>
+                {showSentinel2 ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
               </button>
 
               <button
                 onClick={() => setShowNasaFirms(!showNasaFirms)}
-                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                   showNasaFirms ? 'bg-red-950/70 border-red-400 text-red-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span>🔥 NASA FIRMS (Fire)</span>
-                {showNasaFirms ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                <span className="truncate pr-1">🔥 NASA FIRMS (Fire)</span>
+                {showNasaFirms ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
               </button>
 
               <button
                 onClick={() => setShowMosdacInsat(!showMosdacInsat)}
-                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                   showMosdacInsat ? 'bg-purple-950/70 border-purple-400 text-purple-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span>🛰️ ISRO MOSDAC (INSAT-3DR)</span>
-                {showMosdacInsat ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                <span className="truncate pr-1">🛰️ INSAT-3DR</span>
+                {showMosdacInsat ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
               </button>
 
               <button
                 onClick={() => setShowSeismic(!showSeismic)}
-                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                   showSeismic ? 'bg-rose-950/80 border-rose-400 text-rose-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span className="flex items-center space-x-1">
+                <span className="flex items-center space-x-1 truncate pr-1">
                   <span>🌍</span>
-                  <span>EMSC Earthquakes (Live)</span>
+                  <span className="truncate">EMSC Earthquakes</span>
                 </span>
-                {showSeismic ? <Eye className="w-3 h-3 text-rose-400" /> : <EyeOff className="w-3 h-3" />}
+                {showSeismic ? <Eye className="w-3 h-3 text-rose-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
               </button>
 
               <button
                 onClick={() => setShowEonetEvents(!showEonetEvents)}
-                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                   showEonetEvents ? 'bg-amber-950/80 border-amber-400 text-amber-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span className="flex items-center space-x-1">
+                <span className="flex items-center space-x-1 truncate pr-1">
                   <span>🛰️</span>
-                  <span>NASA EONET Multi-Hazard</span>
+                  <span className="truncate">NASA EONET</span>
                 </span>
-                {showEonetEvents ? <Eye className="w-3 h-3 text-amber-400" /> : <EyeOff className="w-3 h-3" />}
+                {showEonetEvents ? <Eye className="w-3 h-3 text-amber-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
               </button>
 
               <button
                 onClick={() => setShowBhuvanDisaster(!showBhuvanDisaster)}
-                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                   showBhuvanDisaster ? 'bg-orange-950/70 border-orange-400 text-orange-200 font-bold' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span>🌍 Esri / USGS High-Res EO</span>
-                {showBhuvanDisaster ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                <span className="truncate pr-1">🌍 Esri / USGS EO</span>
+                {showBhuvanDisaster ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
               </button>
 
               <button
                 onClick={() => setShowBhuvanWMS(!showBhuvanWMS)}
-                className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
                   showBhuvanWMS ? 'bg-amber-950/80 border-amber-500 text-amber-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
                 }`}
               >
-                <span>🇮🇳 ISRO Bhuvan Live WMS</span>
-                {showBhuvanWMS ? <Eye className="w-3 h-3 text-amber-400" /> : <EyeOff className="w-3 h-3" />}
+                <span className="truncate pr-1">🇮🇳 ISRO Bhuvan WMS</span>
+                {showBhuvanWMS ? <Eye className="w-3 h-3 text-amber-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
               </button>
             </div>
           </div>
