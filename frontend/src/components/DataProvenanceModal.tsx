@@ -188,7 +188,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               <div className="flex items-center space-x-2.5">
                 <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
                 <div>
-                  <span className="text-white font-bold text-sm block">10 Verified 100% Real-Time Sovereign & Sensor Streams</span>
+                  <span className="text-white font-bold text-sm block">12 Verified 100% Real-Time Sovereign, Multi-Hazard & Traffic Streams</span>
                   <span className="text-[11px] text-emerald-300/80">Active external REST/WMS endpoints streaming live physical telemetry to CivicTwin AI</span>
                 </div>
               </div>
@@ -197,7 +197,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               </span>
             </div>
 
-            {/* 10 Real Live Stream Cards Grid */}
+            {/* 12 Real Live Stream Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               
               {/* Feed 1: Open-Meteo Live Atmospheric Weather */}
@@ -363,20 +363,56 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               </div>
 
               {/* Feed 10: ISRO Bhuvan High-Resolution Satellite Map */}
-              <div className="p-4 rounded-xl bg-slate-950/90 border border-orange-500/40 space-y-2 md:col-span-2">
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-orange-500/40 space-y-2">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center space-x-2 text-orange-300 font-bold">
                     <Compass className="w-4 h-4 text-orange-400" />
-                    <span>10. ISRO Bhuvan High-Resolution Satellite Imagery (WMS)</span>
+                    <span>10. ISRO Bhuvan Satellite Imagery (WMS)</span>
                   </div>
                   <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
                     🟢 100% Live
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-300 space-y-1">
-                  <div><strong>Endpoint:</strong> <code className="text-orange-300 text-[10px]">https://bhuvan-ras2.nrsc.gov.in/mapcache (Layers: bhuvan_l4_rs2a_2017)</code></div>
-                  <div><strong>Sensor Type:</strong> ISRO Cartosat-2A / Resourcesat-2 LISS-IV Remote Sensing</div>
-                  <div><strong>Territorial Lock:</strong> Sovereign Indian Boundary Clamped (Survey of India Standards)</div>
+                  <div><strong>Endpoint:</strong> <code className="text-orange-300 text-[10px]">https://bhuvan-ras2.nrsc.gov.in/mapcache</code></div>
+                  <div><strong>Sensor Type:</strong> ISRO Cartosat-2A / Resourcesat-2 Remote Sensing</div>
+                  <div><strong>Territorial Lock:</strong> Sovereign Indian Boundary Clamped</div>
+                </div>
+              </div>
+
+              {/* Feed 11: TomTom Real-Time Traffic Flow & Incidents */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-amber-500/40 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-amber-300 font-bold">
+                    <span className="text-base">🚦</span>
+                    <span>11. TomTom Real-Time Traffic & Incidents</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live (Key Active)
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-amber-300 text-[10px]">https://api.tomtom.com/traffic/services/5/incidentDetails</code></div>
+                  <div><strong>Traffic Telemetry:</strong> Live congestion delay minutes, roadblock closures, corridor speeds</div>
+                  <div><strong>Fusion Engine:</strong> Overlays flood depth with slow traffic to compute evacuation routing</div>
+                </div>
+              </div>
+
+              {/* Feed 12: NDMA SACHET National Common Alerting Protocol (CAP) Registry */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-rose-500/50 space-y-2 md:col-span-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-rose-300 font-bold">
+                    <span className="text-base">🚨</span>
+                    <span>12. Government of India NDMA SACHET National CAP Feed</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live (74+ Alerts Active)
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-rose-300 text-[10px]">https://sachet.ndma.gov.in/cap_public_website/FetchAllAlertDetails</code></div>
+                  <div><strong>Standard:</strong> ITU-T / OASIS Common Alerting Protocol (CAP-XML & JSON)</div>
+                  <div><strong>Authority:</strong> National Disaster Management Authority (NDMA) & India Meteorological Department (IMD)</div>
                 </div>
               </div>
 

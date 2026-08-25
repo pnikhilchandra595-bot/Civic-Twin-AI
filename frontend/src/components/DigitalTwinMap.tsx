@@ -66,12 +66,14 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSeismic, setShowSeismic] = useState(true);
   const [showEonetEvents, setShowEonetEvents] = useState(true);
+  const [showTomTomTraffic, setShowTomTomTraffic] = useState(true);
   const [activeSatelliteModal, setActiveSatelliteModal] = useState<'MOSDAC' | 'BHUVAN' | null>(null);
   const [liveHospitals, setLiveHospitals] = useState<any[]>([]);
   const [liveSatelliteVehicles, setLiveSatelliteVehicles] = useState<any[]>([]);
   const [liveAirSensors, setLiveAirSensors] = useState<any[]>([]);
   const [liveSeismic, setLiveSeismic] = useState<any[]>([]);
   const [liveEonetEvents, setLiveEonetEvents] = useState<any[]>([]);
+  const [liveTrafficIncidents, setLiveTrafficIncidents] = useState<any[]>([]);
 
   // Stream Live Multi-State Satellite GPS Vehicles (Delhi, Mumbai, Bengaluru, Chennai, Kochi)
   useEffect(() => {
@@ -95,7 +97,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     return () => clearInterval(interval);
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1]]);
 
-  // Fetch real-world hospitals, PurpleAir, EMSC Earthquakes, and NASA EONET events
+  // Fetch real-world hospitals, PurpleAir, EMSC Earthquakes, NASA EONET, and TomTom traffic
   useEffect(() => {
     const fetchHospitalsForRegion = async () => {
       if (!state?.center_coords) return;
@@ -140,9 +142,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     };
 
+    const fetchTraffic = async () => {
+      if (!state?.center_coords) return;
+      const [lat, lng] = state.center_coords;
+      try {
+        const res = await apiService.getLiveTrafficIncidents(lat, lng, 0.35);
+        if (res && Array.isArray(res.incidents)) {
+          setLiveTrafficIncidents(res.incidents);
+        }
+      } catch (e) {
+        console.warn('Failed to load live TomTom traffic incidents:', e);
+      }
+    };
+
     fetchHospitalsForRegion();
     fetchAirSensors();
     fetchSeismicAndEonet();
+    fetchTraffic();
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1], state?.city_name]);
 
   // Pan-India disaster state summaries for all 20 major states & regions
@@ -1516,7 +1532,51 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents]);
+    // 14. 🚦 Real Live TomTom Traffic Flow Raster Tiles & Live Incidents
+    if (showTomTomTraffic) {
+      try {
+        L.tileLayer('https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key=MOUuKPsdQzqcmuZG8xjKMtn3I9WTkO3V', {
+          opacity: 0.85,
+          zIndex: 15,
+          attribution: '© TomTom Real-Time Traffic Flow'
+        }).addTo(layerGroup);
+      } catch (e) {
+        console.warn('TomTom Traffic Tile error:', e);
+      }
+
+      if (Array.isArray(liveTrafficIncidents)) {
+        liveTrafficIncidents.forEach(inc => {
+          if (inc.lat && inc.lng) {
+            const incColor = inc.color || '#ef4444';
+            const incHtml = `
+              <div class="relative flex items-center justify-center w-6 h-6 rounded-full bg-slate-950 border-2 shadow-xl cursor-pointer transform hover:scale-125 transition-all" style="border-color: ${incColor}">
+                <span class="text-[9px]">🚦</span>
+                ${inc.delay_minutes > 5 ? `<div class="absolute inset-0 rounded-full animate-ping opacity-50" style="background-color: ${incColor}"></div>` : ''}
+              </div>
+            `;
+            const tMarker = L.marker([inc.lat, inc.lng], {
+              icon: L.divIcon({
+                className: 'custom-div-icon',
+                html: incHtml,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+              })
+            }).addTo(layerGroup);
+
+            tMarker.bindTooltip(`
+              <div class="text-xs font-mono p-1">
+                <strong class="text-amber-300">🚦 TomTom Incident: ${inc.description}</strong><br/>
+                Corridor: <span class="text-white">${inc.from_location} ➔ ${inc.to_location}</span><br/>
+                Delay: <span class="font-bold text-rose-400">+${inc.delay_minutes} mins</span> (${inc.severity})<br/>
+                Source: <span class="text-slate-400">TomTom Real-Time Traffic API</span>
+              </div>
+            `);
+          }
+        });
+      }
+    }
+
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
@@ -1778,6 +1838,19 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                 <span>PurpleAir IoT (PM2.5)</span>
               </span>
               {showPurpleAir ? <Eye className="w-3 h-3 text-emerald-400" /> : <EyeOff className="w-3 h-3" />}
+            </button>
+
+            <button
+              onClick={() => setShowTomTomTraffic(!showTomTomTraffic)}
+              className={`w-full flex items-center justify-between p-1.5 rounded-lg border transition-all ${
+                showTomTomTraffic ? 'bg-amber-950/80 border-amber-500 text-amber-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+              }`}
+            >
+              <span className="flex items-center space-x-1">
+                <span>🚦</span>
+                <span>TomTom Live Traffic Flow</span>
+              </span>
+              {showTomTomTraffic ? <Eye className="w-3 h-3 text-amber-400" /> : <EyeOff className="w-3 h-3" />}
             </button>
 
             <button

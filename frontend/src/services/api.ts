@@ -400,6 +400,87 @@ export class DigitalTwinApiService {
     return { status: 'fallback' };
   }
 
+  async getLiveTrafficIncidents(lat: number = 28.6139, lng: number = 77.2090, radiusDeg: number = 0.3): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/realtime/traffic-incidents?lat=${lat}&lng=${lng}&radius_deg=${radiusDeg}`);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      // Direct CORS fallback to TomTom v5 Incidents API
+    }
+    try {
+      const minLon = lng - radiusDeg;
+      const minLat = lat - radiusDeg;
+      const maxLon = lng + radiusDeg;
+      const maxLat = lat + radiusDeg;
+      const url = `https://api.tomtom.com/traffic/services/5/incidentDetails?key=MOUuKPsdQzqcmuZG8xjKMtn3I9WTkO3V&bbox=${minLon.toFixed(4)},${minLat.toFixed(4)},${maxLon.toFixed(4)},${maxLat.toFixed(4)}&fields={incidents{type,geometry{type,coordinates},properties{iconCategory,magnitudeOfDelay,events{description,code},startTime,endTime,from,to,length,delay}}}&language=en-GB`;
+      const tRes = await fetch(url);
+      if (tRes.ok) {
+        const data = await tRes.json();
+        const raw = data.incidents || [];
+        const incidents = raw.slice(0, 40).map((inc: any, i: number) => {
+          const props = inc.properties || {};
+          const geom = inc.geometry || {};
+          const coords = geom.coordinates || [];
+          let incLat = lat;
+          let incLng = lng;
+          if (geom.type === 'Point' && coords.length >= 2) {
+            incLng = coords[0]; incLat = coords[1];
+          } else if (geom.type === 'LineString' && coords.length > 0 && coords[0].length >= 2) {
+            incLng = coords[0][0]; incLat = coords[0][1];
+          }
+          const events = props.events || [];
+          const desc = events[0]?.description || 'Traffic Congestion';
+          const delaySec = props.delay || 0;
+          return {
+            id: String(props.id || i),
+            description: desc,
+            from_location: props.from || 'Urban Corridor',
+            to_location: props.to || 'Major Junction',
+            delay_seconds: delaySec,
+            delay_minutes: Math.round(delaySec / 60),
+            severity: delaySec > 600 ? 'Major Delay' : 'Moderate Delay',
+            color: delaySec > 600 ? '#ef4444' : '#f59e0b',
+            lat: incLat,
+            lng: incLng,
+            source: 'TomTom Live Traffic Intelligence'
+          };
+        });
+        return { status: 'success', count: incidents.length, incidents };
+      }
+    } catch (e) {
+      console.warn('Direct TomTom fetch error:', e);
+    }
+    return { status: 'fallback', count: 0, incidents: [] };
+  }
+
+  async getLiveNDMAAlerts(): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/realtime/ndma-alerts`);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      // Backend not running; fetch directly
+    }
+    try {
+      const nRes = await fetch('https://sachet.ndma.gov.in/cap_public_website/FetchAllAlertDetails');
+      if (nRes.ok) {
+        const data = await nRes.json();
+        const alerts = (Array.isArray(data) ? data : []).map((item: any) => ({
+          identifier: item.identifier,
+          disaster_type: item.disaster_type || 'Severe Weather Alert',
+          severity: String(item.severity || 'ALERT').toUpperCase(),
+          area_description: item.area_description || 'District Sub-division',
+          start_time: item.effective_start_time || 'Immediate',
+          color: (item.severity?.includes('SEVERE') || item.severity?.includes('WARNING')) ? '#ef4444' : '#f59e0b',
+          issuing_authority: 'National Disaster Management Authority (NDMA)'
+        }));
+        return { status: 'success', count: alerts.length, alerts };
+      }
+    } catch (e) {
+      console.warn('Direct NDMA fetch error:', e);
+    }
+    return { status: 'fallback', count: 0, alerts: [] };
+  }
+
   async getSatelliteSARReport(): Promise<SatelliteSARReport> {
     const res = await fetch(`${API_BASE}/satellite/sar-report`);
     if (!res.ok) throw new Error('Failed to fetch SAR report');
