@@ -1646,6 +1646,10 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               Source: <span class="text-sky-400">OpenSky Network ADS-B Stream</span>
             </div>
           `);
+        }
+      });
+    }
+
     // 16. ⛺ Real Live Relief Shelters & Evacuation Camps (OSM + DDMA)
     if (showShelters && Array.isArray(liveShelters)) {
       liveShelters.forEach(s => {
