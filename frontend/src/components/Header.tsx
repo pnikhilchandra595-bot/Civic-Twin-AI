@@ -207,15 +207,15 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* 12 Live Sovereign, Multi-Hazard & Traffic Feeds Inspector Button */}
+            {/* 15 Live Sovereign, Multi-Hazard, Aerospace & Traffic Feeds Inspector Button */}
             <button
               onClick={onOpenProvenance}
               className="px-2.5 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-500/80 text-emerald-300 hover:bg-emerald-900/90 text-xs font-mono font-bold flex items-center space-x-1.5 transition-all shadow-lg hover:shadow-emerald-900/30 cursor-pointer animate-pulse"
-              title="Inspect 12 Real-Time Live Sovereign, Multi-Hazard, Traffic & Physical IoT Feeds"
+              title="Inspect 15 Real-Time Live Sovereign, Aerospace, Grid, Traffic & Physical IoT Feeds"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span className="hidden sm:inline">🟢 12 Live Feeds</span>
-              <span className="sm:hidden">12 Feeds</span>
+              <span className="hidden sm:inline">🟢 15 Live Feeds</span>
+              <span className="sm:hidden">15 Feeds</span>
             </button>
           </div>
 

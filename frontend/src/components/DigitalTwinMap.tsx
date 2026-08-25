@@ -67,6 +67,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showSeismic, setShowSeismic] = useState(true);
   const [showEonetEvents, setShowEonetEvents] = useState(true);
   const [showTomTomTraffic, setShowTomTomTraffic] = useState(true);
+  const [showAircraft, setShowAircraft] = useState(true);
   const [activeSatelliteModal, setActiveSatelliteModal] = useState<'MOSDAC' | 'BHUVAN' | null>(null);
   const [liveHospitals, setLiveHospitals] = useState<any[]>([]);
   const [liveSatelliteVehicles, setLiveSatelliteVehicles] = useState<any[]>([]);
@@ -74,6 +75,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [liveSeismic, setLiveSeismic] = useState<any[]>([]);
   const [liveEonetEvents, setLiveEonetEvents] = useState<any[]>([]);
   const [liveTrafficIncidents, setLiveTrafficIncidents] = useState<any[]>([]);
+  const [liveAircraft, setLiveAircraft] = useState<any[]>([]);
 
   // Stream Live Multi-State Satellite GPS Vehicles (Delhi, Mumbai, Bengaluru, Chennai, Kochi)
   useEffect(() => {
@@ -97,7 +99,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     return () => clearInterval(interval);
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1]]);
 
-  // Fetch real-world hospitals, PurpleAir, EMSC Earthquakes, NASA EONET, and TomTom traffic
+  // Fetch real-world hospitals, PurpleAir, EMSC Earthquakes, NASA EONET, TomTom, and Aviation
   useEffect(() => {
     const fetchHospitalsForRegion = async () => {
       if (!state?.center_coords) return;
@@ -155,10 +157,24 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     };
 
+    const fetchAviation = async () => {
+      if (!state?.center_coords) return;
+      const [lat, lng] = state.center_coords;
+      try {
+        const res = await apiService.getLiveAviationStream(lat, lng, 1.2);
+        if (res && Array.isArray(res.aircraft)) {
+          setLiveAircraft(res.aircraft);
+        }
+      } catch (e) {
+        console.warn('Failed to load live OpenSky aviation:', e);
+      }
+    };
+
     fetchHospitalsForRegion();
     fetchAirSensors();
     fetchSeismicAndEonet();
     fetchTraffic();
+    fetchAviation();
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1], state?.city_name]);
 
   // Pan-India disaster state summaries for all 20 major states & regions
@@ -1571,12 +1587,41 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                 Source: <span class="text-slate-400">TomTom Real-Time Traffic API</span>
               </div>
             `);
-          }
-        });
-      }
+    // 15. ✈️ Real Live OpenSky Network Aircraft & Air Ambulance ADS-B Telemetry
+    if (showAircraft && Array.isArray(liveAircraft)) {
+      liveAircraft.forEach(ac => {
+        if (ac.lat && ac.lng) {
+          const acHtml = `
+            <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-sky-950 border-2 border-sky-400 shadow-2xl cursor-pointer transform hover:scale-125 transition-all">
+              <span class="text-[11px]">${ac.emoji || '✈️'}</span>
+              <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-sky-200 border border-sky-700 font-bold whitespace-nowrap">
+                ${ac.callsign || 'FLIGHT'}
+              </div>
+            </div>
+          `;
+          const aMarker = L.marker([ac.lat, ac.lng], {
+            icon: L.divIcon({
+              className: 'custom-div-icon',
+              html: acHtml,
+              iconSize: [28, 28],
+              iconAnchor: [14, 14]
+            })
+          }).addTo(layerGroup);
+
+          aMarker.bindTooltip(`
+            <div class="text-xs font-mono p-1">
+              <strong class="text-sky-300">${ac.emoji} ${ac.callsign} (${ac.aircraft_type})</strong><br/>
+              Altitude: <span class="text-white font-bold">${ac.altitude_m} m</span><br/>
+              Ground Speed: <span class="text-emerald-300">${ac.velocity_kmh} km/h</span><br/>
+              Transponder: <span class="text-slate-400">ICAO24: ${ac.icao24}</span><br/>
+              Source: <span class="text-sky-400">OpenSky Network ADS-B Stream</span>
+            </div>
+          `);
+        }
+      });
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents]);
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, showAircraft, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents, liveAircraft]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
@@ -1856,6 +1901,19 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                 <span className="truncate">TomTom Traffic</span>
               </span>
               {showTomTomTraffic ? <Eye className="w-3 h-3 text-amber-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
+            </button>
+
+            <button
+              onClick={() => setShowAircraft(!showAircraft)}
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
+                showAircraft ? 'bg-sky-950/80 border-sky-400 text-sky-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+              }`}
+            >
+              <span className="flex items-center space-x-1 truncate pr-1">
+                <span>✈️</span>
+                <span className="truncate">Air Rescue (ADS-B)</span>
+              </span>
+              {showAircraft ? <Eye className="w-3 h-3 text-sky-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             <button

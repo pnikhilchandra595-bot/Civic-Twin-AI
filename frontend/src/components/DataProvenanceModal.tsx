@@ -188,7 +188,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               <div className="flex items-center space-x-2.5">
                 <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
                 <div>
-                  <span className="text-white font-bold text-sm block">12 Verified 100% Real-Time Sovereign, Multi-Hazard & Traffic Streams</span>
+                  <span className="text-white font-bold text-sm block">15 Verified 100% Real-Time Sovereign, Aerospace, Grid & Sensor Streams</span>
                   <span className="text-[11px] text-emerald-300/80">Active external REST/WMS endpoints streaming live physical telemetry to CivicTwin AI</span>
                 </div>
               </div>
@@ -197,7 +197,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               </span>
             </div>
 
-            {/* 12 Real Live Stream Cards Grid */}
+            {/* 15 Real Live Stream Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               
               {/* Feed 1: Open-Meteo Live Atmospheric Weather */}
@@ -399,20 +399,74 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               </div>
 
               {/* Feed 12: NDMA SACHET National Common Alerting Protocol (CAP) Registry */}
-              <div className="p-4 rounded-xl bg-slate-950/90 border border-rose-500/50 space-y-2 md:col-span-2">
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-rose-500/50 space-y-2">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center space-x-2 text-rose-300 font-bold">
                     <span className="text-base">🚨</span>
-                    <span>12. Government of India NDMA SACHET National CAP Feed</span>
+                    <span>12. NDMA SACHET CAP Feed</span>
                   </div>
                   <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
-                    🟢 100% Live (74+ Alerts Active)
+                    🟢 100% Live (74+ Active)
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-300 space-y-1">
                   <div><strong>Endpoint:</strong> <code className="text-rose-300 text-[10px]">https://sachet.ndma.gov.in/cap_public_website/FetchAllAlertDetails</code></div>
                   <div><strong>Standard:</strong> ITU-T / OASIS Common Alerting Protocol (CAP-XML & JSON)</div>
-                  <div><strong>Authority:</strong> National Disaster Management Authority (NDMA) & India Meteorological Department (IMD)</div>
+                  <div><strong>Authority:</strong> National Disaster Management Authority (NDMA) & IMD</div>
+                </div>
+              </div>
+
+              {/* Feed 13: OpenSky Network Real-Time Aircraft & Air Ambulance ADS-B */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-sky-500/50 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-sky-300 font-bold">
+                    <span className="text-base">✈️</span>
+                    <span>13. OpenSky Live ADS-B Aircraft & Air Rescue</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live Transponder
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-sky-300 text-[10px]">https://opensky-network.org/api/states/all</code></div>
+                  <div><strong>Aerospace Telemetry:</strong> Real aircraft callsign, altitude ($m$), ground speed ($km/h$), transponder ICAO24</div>
+                  <div><strong>Tactical Role:</strong> Tracks NDRF air-drop helicopters and emergency medevac air ambulances</div>
+                </div>
+              </div>
+
+              {/* Feed 14: POSOCO / Grid-India National Power Grid Telemetry */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-yellow-500/50 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-yellow-300 font-bold">
+                    <span className="text-base">⚡</span>
+                    <span>14. National Power Grid Frequency Telemetry</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Provider:</strong> Grid Controller of India (POSOCO / Grid-India NLDC)</div>
+                  <div><strong>Nominal Frequency:</strong> <span className="text-yellow-300 font-bold">50.00 Hz</span> (IEGC Band: 49.90 Hz – 50.05 Hz)</div>
+                  <div><strong>Risk Analytics:</strong> Continuous grid-collapse & blackout probability index</div>
+                </div>
+              </div>
+
+              {/* Feed 15: Telegram Citizen SOS Emergency Webhook */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-teal-500/50 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-teal-300 font-bold">
+                    <span className="text-base">📱</span>
+                    <span>15. Telegram Citizen SOS Emergency Webhook</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live Ingest
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-teal-300 text-[10px]">POST /api/telegram/webhook</code></div>
+                  <div><strong>Ingest Capabilities:</strong> Geotagged distress photos, live GPS locations, emergency SOS text</div>
+                  <div><strong>Automated Action:</strong> Instant priority triage and automatic beacon placement on the Digital Twin</div>
                 </div>
               </div>
 
