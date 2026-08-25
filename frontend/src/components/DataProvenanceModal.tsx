@@ -188,8 +188,8 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               <div className="flex items-center space-x-2.5">
                 <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
                 <div>
-                  <span className="text-white font-bold text-sm block">7 Verified 100% Real-Time Sovereign & IoT Data Streams</span>
-                  <span className="text-[11px] text-emerald-300/80">Active external REST/WMS endpoints streaming live physical conditions to CivicTwin AI</span>
+                  <span className="text-white font-bold text-sm block">10 Verified 100% Real-Time Sovereign & Sensor Streams</span>
+                  <span className="text-[11px] text-emerald-300/80">Active external REST/WMS endpoints streaming live physical telemetry to CivicTwin AI</span>
                 </div>
               </div>
               <span className="px-2.5 py-1 rounded-full bg-emerald-950 border border-emerald-400 text-emerald-300 text-[10px] font-bold">
@@ -197,7 +197,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               </span>
             </div>
 
-            {/* 7 Real Live Stream Cards Grid */}
+            {/* 10 Real Live Stream Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               
               {/* Feed 1: Open-Meteo Live Atmospheric Weather */}
@@ -272,12 +272,66 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                 </div>
               </div>
 
-              {/* Feed 5: ThingSpeak Open IoT Cloud Stream */}
+              {/* Feed 5: EMSC Global Real-Time Seismometer Network */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-rose-500/40 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-rose-300 font-bold">
+                    <span className="text-base">🌍</span>
+                    <span>5. EMSC Live Seismology Network</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-rose-300 text-[10px]">https://www.seismicportal.eu/fdsnws/event/1/query</code></div>
+                  <div><strong>Telemetry:</strong> Live Magnitude (M), Focal Depth (km), Epicenter Coordinates</div>
+                  <div><strong>Coverage:</strong> Real-time global seismic monitoring network</div>
+                </div>
+              </div>
+
+              {/* Feed 6: NASA EONET Multi-Hazard Event Tracker */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-amber-500/40 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-amber-300 font-bold">
+                    <span className="text-base">🛰️</span>
+                    <span>6. NASA EONET Multi-Hazard Events</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-amber-300 text-[10px]">https://eonet.gsfc.nasa.gov/api/v3/events</code></div>
+                  <div><strong>Hazard Tracking:</strong> Wildfires, Cyclones, Volcanic Plumes, Floods</div>
+                  <div><strong>Source:</strong> NASA Goddard Space Flight Center Earth Observatory</div>
+                </div>
+              </div>
+
+              {/* Feed 7: Open-Meteo Atmospheric Chemistry & AQI */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-indigo-500/40 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-indigo-300 font-bold">
+                    <span className="text-base">🧪</span>
+                    <span>7. Open-Meteo Air Chemistry API</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-indigo-300 text-[10px]">https://air-quality-api.open-meteo.com/v1/air-quality</code></div>
+                  <div><strong>Gases Monitored:</strong> PM10, PM2.5, CO, NO₂, SO₂, O₃, US & European AQI</div>
+                  <div><strong>Frequency:</strong> Hourly updating atmospheric chemical assimilation</div>
+                </div>
+              </div>
+
+              {/* Feed 8: ThingSpeak Open IoT Cloud Stream */}
               <div className="p-4 rounded-xl bg-slate-950/90 border border-teal-500/40 space-y-2">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center space-x-2 text-teal-300 font-bold">
                     <span className="text-base">📡</span>
-                    <span>5. MathWorks ThingSpeak Physical IoT</span>
+                    <span>8. MathWorks ThingSpeak Physical IoT</span>
                   </div>
                   <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
                     🟢 100% Live
@@ -290,12 +344,12 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                 </div>
               </div>
 
-              {/* Feed 6: OpenStreetMap Nominatim Healthcare Registry */}
+              {/* Feed 9: OpenStreetMap Nominatim Healthcare Registry */}
               <div className="p-4 rounded-xl bg-slate-950/90 border border-rose-500/40 space-y-2">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center space-x-2 text-rose-300 font-bold">
                     <Hospital className="w-4 h-4 text-rose-400" />
-                    <span>6. OpenStreetMap Healthcare Registry</span>
+                    <span>9. OpenStreetMap Healthcare Registry</span>
                   </div>
                   <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
                     🟢 100% Live
@@ -308,12 +362,12 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                 </div>
               </div>
 
-              {/* Feed 7: ISRO Bhuvan High-Resolution Satellite Map */}
+              {/* Feed 10: ISRO Bhuvan High-Resolution Satellite Map */}
               <div className="p-4 rounded-xl bg-slate-950/90 border border-orange-500/40 space-y-2 md:col-span-2">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center space-x-2 text-orange-300 font-bold">
                     <Compass className="w-4 h-4 text-orange-400" />
-                    <span>7. ISRO Bhuvan High-Resolution Satellite Imagery (WMS)</span>
+                    <span>10. ISRO Bhuvan High-Resolution Satellite Imagery (WMS)</span>
                   </div>
                   <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
                     🟢 100% Live

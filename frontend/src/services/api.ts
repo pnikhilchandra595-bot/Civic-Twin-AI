@@ -231,6 +231,36 @@ export class DigitalTwinApiService {
     return { status: 'fallback', active_channels: [] };
   }
 
+  async getLiveMultiHazardEvents(): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/realtime/multihazard-events`);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Live NASA EONET endpoint unreachable:', e);
+    }
+    return { status: 'fallback', events: [] };
+  }
+
+  async getLiveSeismicFeed(): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/realtime/seismic-feed`);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Live EMSC Seismic endpoint unreachable:', e);
+    }
+    return { status: 'fallback', earthquakes: [] };
+  }
+
+  async getLiveOpenMeteoAirQuality(lat: number = 28.6139, lng: number = 77.2090): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/realtime/air-quality?lat=${lat}&lng=${lng}`);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Live Open-Meteo Air Quality endpoint unreachable:', e);
+    }
+    return { status: 'fallback' };
+  }
+
   async getSatelliteSARReport(): Promise<SatelliteSARReport> {
     const res = await fetch(`${API_BASE}/satellite/sar-report`);
     if (!res.ok) throw new Error('Failed to fetch SAR report');

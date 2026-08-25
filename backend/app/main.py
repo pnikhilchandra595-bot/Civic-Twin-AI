@@ -951,3 +951,33 @@ async def get_live_iot_stream():
     return await live_thingspeak_service.fetch_live_iot_feeds()
 
 
+@app.get("/api/realtime/multihazard-events")
+async def get_live_multihazard_events():
+    """
+    Ingests live natural disaster events from NASA EONET.
+    """
+    from app.services.live_multihazard_service import live_multihazard_service
+    return await live_multihazard_service.fetch_nasa_eonet_events()
+
+
+@app.get("/api/realtime/seismic-feed")
+async def get_live_seismic_feed():
+    """
+    Ingests real-time global earthquake telemetry from EMSC seismometer network.
+    """
+    from app.services.live_multihazard_service import live_multihazard_service
+    return await live_multihazard_service.fetch_emsc_earthquakes()
+
+
+@app.get("/api/realtime/air-quality")
+async def get_live_air_quality(
+    lat: float = Query(28.6139, description="Latitude"),
+    lng: float = Query(77.2090, description="Longitude")
+):
+    """
+    Ingests live atmospheric chemistry & AQI from Open-Meteo Air Quality API.
+    """
+    from app.services.live_multihazard_service import live_multihazard_service
+    return await live_multihazard_service.fetch_open_meteo_air_quality(lat, lng)
+
+
