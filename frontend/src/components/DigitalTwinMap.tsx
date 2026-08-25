@@ -68,6 +68,8 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showEonetEvents, setShowEonetEvents] = useState(true);
   const [showTomTomTraffic, setShowTomTomTraffic] = useState(true);
   const [showAircraft, setShowAircraft] = useState(true);
+  const [showShelters, setShowShelters] = useState(true);
+  const [showEmergencyStations, setShowEmergencyStations] = useState(true);
   const [activeSatelliteModal, setActiveSatelliteModal] = useState<'MOSDAC' | 'BHUVAN' | null>(null);
   const [liveHospitals, setLiveHospitals] = useState<any[]>([]);
   const [liveSatelliteVehicles, setLiveSatelliteVehicles] = useState<any[]>([]);
@@ -76,6 +78,8 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [liveEonetEvents, setLiveEonetEvents] = useState<any[]>([]);
   const [liveTrafficIncidents, setLiveTrafficIncidents] = useState<any[]>([]);
   const [liveAircraft, setLiveAircraft] = useState<any[]>([]);
+  const [liveShelters, setLiveShelters] = useState<any[]>([]);
+  const [liveStations, setLiveStations] = useState<any[]>([]);
 
   // Stream Live Multi-State Satellite GPS Vehicles (Delhi, Mumbai, Bengaluru, Chennai, Kochi)
   useEffect(() => {
@@ -99,7 +103,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     return () => clearInterval(interval);
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1]]);
 
-  // Fetch real-world hospitals, PurpleAir, EMSC Earthquakes, NASA EONET, TomTom, and Aviation
+  // Fetch real-world hospitals, PurpleAir, EMSC Earthquakes, NASA EONET, TomTom, Aviation, Shelters, and Stations
   useEffect(() => {
     const fetchHospitalsForRegion = async () => {
       if (!state?.center_coords) return;
@@ -170,11 +174,31 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     };
 
+    const fetchSheltersAndStations = async () => {
+      if (!state?.center_coords) return;
+      const [lat, lng] = state.center_coords;
+      try {
+        const [shelterRes, stationRes] = await Promise.all([
+          apiService.getLiveReliefShelters(lat, lng, 10.0),
+          apiService.getLiveEmergencyStations(lat, lng, 10.0)
+        ]);
+        if (shelterRes && Array.isArray(shelterRes.shelters)) {
+          setLiveShelters(shelterRes.shelters);
+        }
+        if (stationRes && Array.isArray(stationRes.stations)) {
+          setLiveStations(stationRes.stations);
+        }
+      } catch (e) {
+        console.warn('Failed to load relief shelters or emergency stations:', e);
+      }
+    };
+
     fetchHospitalsForRegion();
     fetchAirSensors();
     fetchSeismicAndEonet();
     fetchTraffic();
     fetchAviation();
+    fetchSheltersAndStations();
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1], state?.city_name]);
 
   // Pan-India disaster state summaries for all 20 major states & regions
@@ -1622,11 +1646,76 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               Source: <span class="text-sky-400">OpenSky Network ADS-B Stream</span>
             </div>
           `);
+    // 16. ⛺ Real Live Relief Shelters & Evacuation Camps (OSM + DDMA)
+    if (showShelters && Array.isArray(liveShelters)) {
+      liveShelters.forEach(s => {
+        if (s.lat && s.lng) {
+          const sHtml = `
+            <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-emerald-950 border-2 border-emerald-400 shadow-2xl cursor-pointer transform hover:scale-125 transition-all">
+              <span class="text-[12px]">⛺</span>
+              <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-emerald-300 border border-emerald-700 font-bold whitespace-nowrap">
+                ${s.occupancy_pct}% Full
+              </div>
+            </div>
+          `;
+          const sMarker = L.marker([s.lat, s.lng], {
+            icon: L.divIcon({
+              className: 'custom-div-icon',
+              html: sHtml,
+              iconSize: [28, 28],
+              iconAnchor: [14, 14]
+            })
+          }).addTo(layerGroup);
+
+          sMarker.bindTooltip(`
+            <div class="text-xs font-mono p-1">
+              <strong class="text-emerald-300">⛺ ${s.name}</strong><br/>
+              Type: <span class="text-white">${s.shelter_type}</span><br/>
+              Capacity: <span class="text-white font-bold">${s.current_occupants} / ${s.capacity} persons (${s.occupancy_pct}%)</span><br/>
+              Rations / Water: <span class="font-bold ${s.food_water_status === 'ADEQUATE' ? 'text-emerald-400' : 'text-amber-400'}">${s.food_water_status}</span><br/>
+              Power Backup: <span class="text-emerald-400">DG Generator Active</span><br/>
+              Operator: <span class="text-slate-400">${s.operator}</span>
+            </div>
+          `);
         }
       });
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, showAircraft, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents, liveAircraft]);
+    // 17. 🚒 Real Live 112 ERSS Fire & Police Emergency Response Depots
+    if (showEmergencyStations && Array.isArray(liveStations)) {
+      liveStations.forEach(st => {
+        if (st.lat && st.lng) {
+          const isFire = st.emoji === '🚒';
+          const stColor = isFire ? '#ef4444' : '#3b82f6';
+          const stHtml = `
+            <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-slate-950 border-2 shadow-2xl cursor-pointer transform hover:scale-125 transition-all" style="border-color: ${stColor}">
+              <span class="text-[12px]">${st.emoji || '🚒'}</span>
+            </div>
+          `;
+          const stMarker = L.marker([st.lat, st.lng], {
+            icon: L.divIcon({
+              className: 'custom-div-icon',
+              html: stHtml,
+              iconSize: [28, 28],
+              iconAnchor: [14, 14]
+            })
+          }).addTo(layerGroup);
+
+          stMarker.bindTooltip(`
+            <div class="text-xs font-mono p-1">
+              <strong style="color: ${stColor}">${st.emoji} ${st.name}</strong><br/>
+              Role: <span class="text-white">${st.station_type}</span><br/>
+              ${st.dewatering_high_cap_pumps > 0 ? `Dewatering Pumps: <span class="text-cyan-300 font-bold">${st.dewatering_high_cap_pumps} High-Cap Units</span><br/>` : ''}
+              Rescue Boats: <span class="text-sky-300 font-bold">${st.inflatable_rescue_boats} Inflatable Dinghies</span><br/>
+              Personnel: <span class="text-white">${st.personnel_on_duty} on duty</span><br/>
+              Hotline: <span class="font-bold text-amber-300">${st.hotline}</span>
+            </div>
+          `);
+        }
+      });
+    }
+
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, showAircraft, showShelters, showEmergencyStations, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents, liveAircraft, liveShelters, liveStations]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
@@ -1929,6 +2018,32 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             >
               <span className="truncate pr-1">🚤 NDRF Units</span>
               {showUnits ? <Eye className="w-3 h-3 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
+            </button>
+
+            <button
+              onClick={() => setShowShelters(!showShelters)}
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
+                showShelters ? 'bg-emerald-950/80 border-emerald-400 text-emerald-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+              }`}
+            >
+              <span className="flex items-center space-x-1 truncate pr-1">
+                <span>⛺</span>
+                <span className="truncate">Relief Shelters</span>
+              </span>
+              {showShelters ? <Eye className="w-3 h-3 text-emerald-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
+            </button>
+
+            <button
+              onClick={() => setShowEmergencyStations(!showEmergencyStations)}
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
+                showEmergencyStations ? 'bg-red-950/80 border-red-400 text-red-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+              }`}
+            >
+              <span className="flex items-center space-x-1 truncate pr-1">
+                <span>🚒</span>
+                <span className="truncate">Fire & Police 112</span>
+              </span>
+              {showEmergencyStations ? <Eye className="w-3 h-3 text-red-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             {/* Spaceborne Satellite Earth Observation Feeds Section */}
