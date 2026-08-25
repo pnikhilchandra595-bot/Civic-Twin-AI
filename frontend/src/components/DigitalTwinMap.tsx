@@ -1587,6 +1587,11 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                 Source: <span class="text-slate-400">TomTom Real-Time Traffic API</span>
               </div>
             `);
+          }
+        });
+      }
+    }
+
     // 15. ✈️ Real Live OpenSky Network Aircraft & Air Ambulance ADS-B Telemetry
     if (showAircraft && Array.isArray(liveAircraft)) {
       liveAircraft.forEach(ac => {
