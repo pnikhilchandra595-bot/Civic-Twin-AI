@@ -501,7 +501,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                 </div>
                 <div className="text-[11px] text-slate-300 space-y-1">
                   <div><strong>Endpoint:</strong> <code className="text-cyan-300 text-[10px]">http://www.ioc-sealevelmonitoring.org</code></div>
-                  <div><strong>Hydrometric Data:</strong> Real-time sea surface height ($m$), storm surge deviation ($\Delta \text{MSL}$)</div>
+                  <div><strong>Hydrometric Data:</strong> Real-time sea surface height (m), storm surge deviation (Delta MSL)</div>
                   <div><strong>Warning System:</strong> High-tide coastal surge threshold alert triggering</div>
                 </div>
               </div>
