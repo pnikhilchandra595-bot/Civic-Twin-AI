@@ -70,6 +70,8 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [showAircraft, setShowAircraft] = useState(true);
   const [showShelters, setShowShelters] = useState(true);
   const [showEmergencyStations, setShowEmergencyStations] = useState(true);
+  const [showMaritime, setShowMaritime] = useState(true);
+  const [showTideGauges, setShowTideGauges] = useState(true);
   const [activeSatelliteModal, setActiveSatelliteModal] = useState<'MOSDAC' | 'BHUVAN' | null>(null);
   const [liveHospitals, setLiveHospitals] = useState<any[]>([]);
   const [liveSatelliteVehicles, setLiveSatelliteVehicles] = useState<any[]>([]);
@@ -80,6 +82,8 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [liveAircraft, setLiveAircraft] = useState<any[]>([]);
   const [liveShelters, setLiveShelters] = useState<any[]>([]);
   const [liveStations, setLiveStations] = useState<any[]>([]);
+  const [liveMaritimeVessels, setLiveMaritimeVessels] = useState<any[]>([]);
+  const [liveTideData, setLiveTideData] = useState<any>(null);
 
   // Stream Live Multi-State Satellite GPS Vehicles (Delhi, Mumbai, Bengaluru, Chennai, Kochi)
   useEffect(() => {
@@ -103,7 +107,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     return () => clearInterval(interval);
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1]]);
 
-  // Fetch real-world hospitals, PurpleAir, EMSC Earthquakes, NASA EONET, TomTom, Aviation, Shelters, and Stations
+  // Fetch real-world hospitals, PurpleAir, EMSC Earthquakes, NASA EONET, TomTom, Aviation, Shelters, and Maritime
   useEffect(() => {
     const fetchHospitalsForRegion = async () => {
       if (!state?.center_coords) return;
@@ -193,12 +197,32 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     };
 
+    const fetchMaritimeAndTides = async () => {
+      if (!state?.center_coords) return;
+      const [lat, lng] = state.center_coords;
+      try {
+        const [vesselRes, tideRes] = await Promise.all([
+          apiService.getLiveCoastalVessels(lat, lng, 0.5),
+          apiService.getLiveTideGauges(lat, lng)
+        ]);
+        if (vesselRes && Array.isArray(vesselRes.vessels)) {
+          setLiveMaritimeVessels(vesselRes.vessels);
+        }
+        if (tideRes && tideRes.current_sea_level_m) {
+          setLiveTideData(tideRes);
+        }
+      } catch (e) {
+        console.warn('Failed to load maritime or tide data:', e);
+      }
+    };
+
     fetchHospitalsForRegion();
     fetchAirSensors();
     fetchSeismicAndEonet();
     fetchTraffic();
     fetchAviation();
     fetchSheltersAndStations();
+    fetchMaritimeAndTides();
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1], state?.city_name]);
 
   // Pan-India disaster state summaries for all 20 major states & regions
@@ -1715,11 +1739,72 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               Hotline: <span class="font-bold text-amber-300">${st.hotline}</span>
             </div>
           `);
+    // 18. 🚢 Real Live Maritime AIS Vessel Stream (AISStream Coast Guard & Rescue Cutters)
+    if (showMaritime && Array.isArray(liveMaritimeVessels)) {
+      liveMaritimeVessels.forEach(v => {
+        if (v.lat && v.lng) {
+          const vHtml = `
+            <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-blue-950 border-2 border-blue-400 shadow-2xl cursor-pointer transform hover:scale-125 transition-all">
+              <span class="text-[12px]">${v.emoji || '🚢'}</span>
+              <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-blue-300 border border-blue-700 font-bold whitespace-nowrap">
+                ${v.sog_knots} kts
+              </div>
+            </div>
+          `;
+          const vMarker = L.marker([v.lat, v.lng], {
+            icon: L.divIcon({
+              className: 'custom-div-icon',
+              html: vHtml,
+              iconSize: [28, 28],
+              iconAnchor: [14, 14]
+            })
+          }).addTo(layerGroup);
+
+          vMarker.bindTooltip(`
+            <div class="text-xs font-mono p-1">
+              <strong class="text-blue-300">🚢 ${v.name}</strong><br/>
+              Type: <span class="text-white">${v.vessel_type}</span><br/>
+              Speed: <span class="text-emerald-300 font-bold">${v.sog_knots} knots</span> (${v.cog_deg}° heading)<br/>
+              Mission: <span class="text-cyan-300">${v.status}</span><br/>
+              MMSI: <span class="text-slate-400">${v.mmsi}</span>
+            </div>
+          `);
         }
       });
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, showAircraft, showShelters, showEmergencyStations, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents, liveAircraft, liveShelters, liveStations]);
+    // 19. 🌊 Real Live UNESCO IOC Coastal Tide & Storm Surge Gauges
+    if (showTideGauges && liveTideData && state?.center_coords) {
+      const [lat, lng] = state.center_coords;
+      const tHtml = `
+        <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-cyan-950 border-2 shadow-2xl cursor-pointer transform hover:scale-125 transition-all" style="border-color: ${liveTideData.color || '#10b981'}">
+          <span class="text-[12px]">🌊</span>
+          <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-cyan-300 border border-cyan-700 font-bold whitespace-nowrap">
+            ${liveTideData.current_sea_level_m}m
+          </div>
+        </div>
+      `;
+      const tideMarker = L.marker([lat - 0.02, lng - 0.05], {
+        icon: L.divIcon({
+          className: 'custom-div-icon',
+          html: tHtml,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14]
+        })
+      }).addTo(layerGroup);
+
+      tideMarker.bindTooltip(`
+        <div class="text-xs font-mono p-1">
+          <strong class="text-cyan-300">🌊 ${liveTideData.station_name}</strong><br/>
+          Current Tide: <span class="text-white font-bold">${liveTideData.current_sea_level_m} m (MSL)</span><br/>
+          Surge Anomaly: <span class="font-bold ${liveTideData.surge_alert ? 'text-rose-400' : 'text-emerald-400'}">+${liveTideData.storm_surge_anomaly_m} m</span><br/>
+          Phase: <span class="text-amber-300">${liveTideData.tide_phase}</span><br/>
+          Authority: <span class="text-slate-400">UNESCO IOC Sea Level Network</span>
+        </div>
+      `);
+    }
+
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, showAircraft, showShelters, showEmergencyStations, showMaritime, showTideGauges, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents, liveAircraft, liveShelters, liveStations, liveMaritimeVessels, liveTideData]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
@@ -2048,6 +2133,32 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                 <span className="truncate">Fire & Police 112</span>
               </span>
               {showEmergencyStations ? <Eye className="w-3 h-3 text-red-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
+            </button>
+
+            <button
+              onClick={() => setShowMaritime(!showMaritime)}
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
+                showMaritime ? 'bg-blue-950/80 border-blue-400 text-blue-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+              }`}
+            >
+              <span className="flex items-center space-x-1 truncate pr-1">
+                <span>🚢</span>
+                <span className="truncate">Coastal AIS Vessels</span>
+              </span>
+              {showMaritime ? <Eye className="w-3 h-3 text-blue-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
+            </button>
+
+            <button
+              onClick={() => setShowTideGauges(!showTideGauges)}
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border transition-all ${
+                showTideGauges ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 font-bold shadow-md' : 'bg-slate-900/40 border-slate-800 text-slate-500'
+              }`}
+            >
+              <span className="flex items-center space-x-1 truncate pr-1">
+                <span>🌊</span>
+                <span className="truncate">Tide & Surge Gauges</span>
+              </span>
+              {showTideGauges ? <Eye className="w-3 h-3 text-cyan-400 flex-shrink-0" /> : <EyeOff className="w-3 h-3 flex-shrink-0" />}
             </button>
 
             {/* Spaceborne Satellite Earth Observation Feeds Section */}

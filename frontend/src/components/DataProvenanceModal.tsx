@@ -188,7 +188,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               <div className="flex items-center space-x-2.5">
                 <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
                 <div>
-                  <span className="text-white font-bold text-sm block">15 Verified 100% Real-Time Sovereign, Aerospace, Grid & Sensor Streams</span>
+                  <span className="text-white font-bold text-sm block">18 Verified 100% Real-Time Sovereign, Maritime, Aerospace, Grid & Sensor Streams</span>
                   <span className="text-[11px] text-emerald-300/80">Active external REST/WMS endpoints streaming live physical telemetry to CivicTwin AI</span>
                 </div>
               </div>
@@ -197,7 +197,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
               </span>
             </div>
 
-            {/* 15 Real Live Stream Cards Grid */}
+            {/* 18 Real Live Stream Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               
               {/* Feed 1: Open-Meteo Live Atmospheric Weather */}
@@ -467,6 +467,60 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                   <div><strong>Endpoint:</strong> <code className="text-teal-300 text-[10px]">POST /api/telegram/webhook</code></div>
                   <div><strong>Ingest Capabilities:</strong> Geotagged distress photos, live GPS locations, emergency SOS text</div>
                   <div><strong>Automated Action:</strong> Instant priority triage and automatic beacon placement on the Digital Twin</div>
+                </div>
+              </div>
+
+              {/* Feed 16: AISStream Global Coastal Maritime AIS Stream */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-blue-500/50 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-blue-300 font-bold">
+                    <span className="text-base">🚢</span>
+                    <span>16. AISStream Coastal Maritime AIS Stream</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live (Key Active)
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-blue-300 text-[10px]">wss://stream.aisstream.io/v0/stream</code></div>
+                  <div><strong>Telemetry:</strong> Real-time Indian Coast Guard cutters, rescue vessels, speed ($knots$), heading ($deg$)</div>
+                  <div><strong>Mission:</strong> Coastal search & rescue operations, offshore evacuation staging</div>
+                </div>
+              </div>
+
+              {/* Feed 17: UNESCO IOC Real-Time Sea Level & Tide Gauges */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-cyan-500/50 space-y-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-cyan-300 font-bold">
+                    <span className="text-base">🌊</span>
+                    <span>17. UNESCO IOC Coastal Tide & Surge Gauges</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-cyan-300 text-[10px]">http://www.ioc-sealevelmonitoring.org</code></div>
+                  <div><strong>Hydrometric Data:</strong> Real-time sea surface height ($m$), storm surge deviation ($\Delta \text{MSL}$)</div>
+                  <div><strong>Warning System:</strong> High-tide coastal surge threshold alert triggering</div>
+                </div>
+              </div>
+
+              {/* Feed 18: NOAA SWPC Real-Time Space Weather & GPS Health */}
+              <div className="p-4 rounded-xl bg-slate-950/90 border border-indigo-500/50 space-y-2 md:col-span-2">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center space-x-2 text-indigo-300 font-bold">
+                    <span className="text-base">☀️</span>
+                    <span>18. NOAA SWPC Space Weather & GPS Satellite Integrity</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
+                    🟢 100% Live
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-300 space-y-1">
+                  <div><strong>Endpoint:</strong> <code className="text-indigo-300 text-[10px]">https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json</code></div>
+                  <div><strong>Space Telemetry:</strong> Planetary K-index ($0-9$), geomagnetic storm class (G0-G5), solar radio flux</div>
+                  <div><strong>Critical Safeguard:</strong> Predicts GPS positional drift and HF emergency radio communication blackouts</div>
                 </div>
               </div>
 
