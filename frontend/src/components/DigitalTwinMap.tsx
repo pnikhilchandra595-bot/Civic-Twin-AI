@@ -1739,6 +1739,10 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               Hotline: <span class="font-bold text-amber-300">${st.hotline}</span>
             </div>
           `);
+        }
+      });
+    }
+
     // 18. 🚢 Real Live Maritime AIS Vessel Stream (AISStream Coast Guard & Rescue Cutters)
     if (showMaritime && Array.isArray(liveMaritimeVessels)) {
       liveMaritimeVessels.forEach(v => {
