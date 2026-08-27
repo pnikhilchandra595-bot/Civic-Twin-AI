@@ -6,7 +6,7 @@ import os
 from typing import Dict, Any, List, Optional
 from dotenv import load_dotenv
 
-load_dotenv()
+import certifi
 
 # ============================================================================
 # ISRO NRSC BHOONIDHI OPEN SATELLITE DATA ACCESS API SERVICE
@@ -89,9 +89,7 @@ class BhoonidhiNRSCService:
         self._cache: Dict[str, Any] = {}
         self._cache_ttl_sec = 300  # 5 minutes cache for STAC queries
 
-        self._ctx = ssl.create_default_context()
-        self._ctx.check_hostname = False
-        self._ctx.verify_mode = ssl.CERT_NONE
+        self._ctx = ssl.create_default_context(cafile=certifi.where())
 
     def _get_valid_token(self, force_refresh: bool = False) -> Optional[str]:
         """Authenticate with Bhoonidhi API and return a valid JWT Bearer access token."""
@@ -178,7 +176,19 @@ class BhoonidhiNRSCService:
 
         token = self._get_valid_token()
         if not token:
-            return self._build_offline_fallback(lat, lng, selected_collection, limit, reason="Authentication failed")
+            user_id = os.getenv("BHOONIDHI_USER_ID")
+            reason = "BHOONIDHI_USER_ID or BHOONIDHI_PASSWORD not configured in backend/.env" if not user_id else "Bhoonidhi authentication failed with provided credentials"
+            return {
+                "status": "unauthenticated",
+                "source": "ISRO National Remote Sensing Centre (Bhoonidhi STAC API)",
+                "authenticated_user": None,
+                "target_coords": [lat, lng],
+                "error": reason,
+                "note": f"⚠️ Authentication required: {reason}. Add BHOONIDHI_USER_ID and BHOONIDHI_PASSWORD to backend/.env to stream live ISRO satellite assets.",
+                "total_returned": 0,
+                "supported_collections": list(BHOONIDHI_COLLECTIONS_REGISTRY.keys()),
+                "assets": []
+            }
 
         search_url = f"{self.base_url}/data/search"
         payload = json.dumps({
@@ -187,6 +197,7 @@ class BhoonidhiNRSCService:
         }).encode("utf-8")
 
         # Attempt search with retry on 401
+        last_error = "Unknown error"
         for attempt in range(2):
             req = urllib.request.Request(search_url, data=payload, headers={
                 "Content-Type": "application/json",
@@ -251,113 +262,28 @@ class BhoonidhiNRSCService:
                     return result
 
             except urllib.error.HTTPError as he:
+                last_error = f"HTTP Error {he.code}"
                 if he.code == 401 and attempt == 0:
-                    # Token expired; force refresh token and retry
                     token = self._get_valid_token(force_refresh=True)
                     if not token:
                         break
                     continue
                 else:
-                    return self._build_offline_fallback(lat, lng, selected_collection, limit, reason=f"HTTP Error {he.code}")
+                    break
             except Exception as e:
-                return self._build_offline_fallback(lat, lng, selected_collection, limit, reason=str(e))
-
-        return self._build_offline_fallback(lat, lng, selected_collection, limit, reason="Bhoonidhi STAC query failed")
-
-    def _build_offline_fallback(self, lat: float, lng: float, selected_collection: Optional[str], limit: int, reason: str = "") -> Dict[str, Any]:
-        """Provides verified fallback ISRO STAC granules when external Bhoonidhi network is throttled or refreshing."""
-        now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
-        
-        candidates = [
-            {
-                "id": "NISAR_S2_PR_GCOV_029_026_A_011_2500_CRNA_A",
-                "collection": "NISAR_SSAR_GCOV",
-                "mission_name": "ISRO-NASA NISAR Synthetic Aperture Radar (Interferometry)",
-                "category": "Interferometric SAR Ground Deformation",
-                "resolution": "6m - 12m Dual-Pol (L+S Band)",
-                "physics_metric": "Ground Subsidence & Fault Displacement (mm/yr)",
-                "operational_role": "Earthquake Fault Rupture & Landslide Creep Telemetry",
-                "emoji": "📡",
-                "badge_color": "#a855f7",
-                "datetime": now_str,
-                "sun_elevation": 62.1,
-                "cloud_cover_pct": 0.0,
-                "online_status": "⚠️ OFFLINE — Reference Data (Live Query Failed)",
-                "download_url": "https://bhoonidhi-api.nrsc.gov.in/download?id=NISAR_S2_PR_GCOV_029_026_A_011_2500_CRNA_A&collection=NISAR_SSAR_GCOV",
-                "source": "ISRO National Remote Sensing Centre (NRSC / Bhoonidhi)"
-            },
-            {
-                "id": "E06SCTL3WW2025365_25km_v1.0.5",
-                "collection": "EOS-06_SCAT_3WW",
-                "mission_name": "ISRO EOS-06 Ku-Band Scatterometer (Ocean Surface Winds)",
-                "category": "Ocean Surface Wind Vectors & Cyclone Gales",
-                "resolution": "25km Grid Resolution",
-                "physics_metric": "Wind Speed (knots) & Direction (0-360°)",
-                "operational_role": "Cyclone Landfall Warning & Sea State Storm Surge",
-                "emoji": "🌀",
-                "badge_color": "#06b6d4",
-                "datetime": now_str,
-                "sun_elevation": 54.8,
-                "cloud_cover_pct": 0.0,
-                "online_status": "⚠️ OFFLINE — Reference Data (Live Query Failed)",
-                "download_url": "https://bhoonidhi-api.nrsc.gov.in/download?id=E06SCTL3WW2025365_25km_v1.0.5&collection=EOS-06_SCAT_3WW",
-                "source": "ISRO National Remote Sensing Centre (NRSC / Bhoonidhi)"
-            },
-            {
-                "id": "RAF27AUG2026050440011200058SSANSTUC00GTDD",
-                "collection": "ResourceSat-2A_LISS4-MX70_L2",
-                "mission_name": "ISRO ResourceSat-2A LISS-4 (Sub-Decameter Multispectral)",
-                "category": "Ultra-High Resolution Urban Infrastructure Damage",
-                "resolution": "5.8m Spatial Resolution",
-                "physics_metric": "Urban Inundation Boundary & Bridge Structural Damage",
-                "operational_role": "Municipal Ward-Level Structural Collapse Inspection",
-                "emoji": "🔬",
-                "badge_color": "#eab308",
-                "datetime": now_str,
-                "sun_elevation": 58.2,
-                "cloud_cover_pct": 4.2,
-                "online_status": "⚠️ OFFLINE — Reference Data (Live Query Failed)",
-                "download_url": "https://bhoonidhi-api.nrsc.gov.in/download?id=RAF27AUG2026050440011200058SSANSTUC00GTDD&collection=ResourceSat-2A_LISS4-MX70_L2",
-                "source": "ISRO National Remote Sensing Centre (NRSC / Bhoonidhi)"
-            },
-            {
-                "id": "SEN1A_SAR_IW_29JUN2026_065185_76FC_ESA_ST0C00NTD_DV",
-                "collection": "Sentinel-1A_SAR-IW_GRD",
-                "mission_name": "Sentinel-1A SAR IW GRD (ISRO NRSC Hosted Radar Granules)",
-                "category": "All-Weather Day/Night C-Band Radar Water Extraction",
-                "resolution": "10m SAR Backscatter",
-                "physics_metric": "Radar Backscatter σ° (< -16.0 dB Threshold)",
-                "operational_role": "Cloud-Penetrating Monsoon Flood Inundation Delineation",
-                "emoji": "🛰️",
-                "badge_color": "#3b82f6",
-                "datetime": now_str,
-                "sun_elevation": 61.4,
-                "cloud_cover_pct": 0.0,
-                "online_status": "⚠️ OFFLINE — Reference Data (Live Query Failed)",
-                "download_url": "https://bhoonidhi-api.nrsc.gov.in/download?id=SEN1A_SAR_IW_29JUN2026_065185_76FC_ESA_ST0C00NTD_DV&collection=Sentinel-1A_SAR-IW_GRD",
-                "source": "ISRO National Remote Sensing Centre (NRSC / Bhoonidhi)"
-            }
-        ]
-
-        if selected_collection:
-            filtered = [c for c in candidates if c["collection"] == selected_collection]
-            assets = filtered if filtered else candidates
-        else:
-            assets = candidates
-
-        # Use backend proxy URL for direct authenticated browser downloads
-        for a in assets:
-            a["download_url"] = f"http://127.0.0.1:8000/api/satellite/bhoonidhi/download?id={a['id']}&collection={a['collection']}"
+                last_error = str(e)
+                break
 
         return {
-            "status": "fallback",
+            "status": "query_failed",
             "source": "ISRO National Remote Sensing Centre (Bhoonidhi STAC API)",
-            "authenticated_user": os.getenv("BHOONIDHI_USER_ID", "AUTHORIZED_OFFICER"),
+            "authenticated_user": os.getenv("BHOONIDHI_USER_ID"),
             "target_coords": [lat, lng],
-            "note": f"⚠️ Live Bhoonidhi query failed: {reason}. Showing reference granule data." if reason else "⚠️ Live Bhoonidhi STAC query offline. Showing reference granule data.",
-            "total_returned": len(assets),
+            "error": last_error,
+            "note": f"⚠️ Live Bhoonidhi STAC query failed: {last_error}.",
+            "total_returned": 0,
             "supported_collections": list(BHOONIDHI_COLLECTIONS_REGISTRY.keys()),
-            "assets": assets
+            "assets": []
         }
 
     def download_granule_stream(self, granule_id: str, collection: str):

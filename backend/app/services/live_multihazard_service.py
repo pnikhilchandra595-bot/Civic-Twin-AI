@@ -3,11 +3,9 @@ import json
 import datetime
 import math
 import ssl
-from typing import Dict, Any, List, Optional
+import certifi
 
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+ctx = ssl.create_default_context(cafile=certifi.where())
 
 class LiveMultiHazardService:
     def __init__(self):

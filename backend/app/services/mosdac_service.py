@@ -60,7 +60,8 @@ class MOSDACIntegrationService:
         }
 
         try:
-            async with httpx.AsyncClient(timeout=10.0, verify=False) as client:
+            import certifi
+            async with httpx.AsyncClient(timeout=10.0, verify=certifi.where()) as client:
                 res = await client.get(MOSDAC_SEARCH_URL, params=params)
                 if res.status_code == 200:
                     data = res.json()
@@ -80,47 +81,18 @@ class MOSDACIntegrationService:
         except Exception as e:
             print(f"MOSDAC Search API error: {e}")
 
-        # Fallback calibrated payload
-        return self._fallback_catalog(dataset_id, start_time, end_time, bounding_box)
-
-    def _fallback_catalog(self, dataset_id: str, start_time: str, end_time: str, bbox: str) -> Dict[str, Any]:
-        """Provides verified baseline satellite products for INSAT-3DR / Oceansat-2"""
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
         return {
-            "status": "calibrated_baseline",
-            "source": "ISRO MOSDAC Satellite Repository (INSAT-3DR / SAC-ISRO)",
+            "status": "query_failed",
+            "source": "ISRO MOSDAC (Space Applications Centre / ISRO)",
             "dataset_id": dataset_id,
             "time_range": {"start": start_time, "end": end_time},
-            "bounding_box": bbox,
-            "total_results": 14,
-            "total_size_mb": 420.5,
-            "entries": [
-                {
-                    "identifier": f"3RIMG_{today.replace('-','')}_1200_L1B_STD.h5",
-                    "id": "15082194",
-                    "updated": f"{today}T12:00:00Z",
-                    "product": "INSAT-3DR Multispectral Optical/Thermal Imager",
-                    "channels": ["TIR-1 (10.8µm)", "TIR-2 (12.0µm)", "MIR (3.9µm)", "VIS (0.65µm)"],
-                    "resolution_km": 1.0,
-                    "coverage": "Indian Subcontinent & Bay of Bengal"
-                },
-                {
-                    "identifier": f"3RIMG_{today.replace('-','')}_0900_L2B_HEM.h5",
-                    "id": "15082188",
-                    "updated": f"{today}T09:00:00Z",
-                    "product": "Hydro-Estimator Rainfall Precipitation (HEM)",
-                    "resolution_km": 4.0,
-                    "coverage": "South Asia Monsoon Catchment"
-                },
-                {
-                    "identifier": f"3RIMG_{today.replace('-','')}_0600_L2B_SST.h5",
-                    "id": "15082170",
-                    "updated": f"{today}T06:00:00Z",
-                    "product": "Sea Surface Temperature (SST)",
-                    "resolution_km": 4.0,
-                    "coverage": "Arabian Sea & Bay of Bengal Cyclone Basin"
-                }
-            ]
+            "bounding_box": bounding_box,
+            "error": "Live MOSDAC search query offline or timed out",
+            "note": "⚠️ Live MOSDAC query offline.",
+            "total_results": 0,
+            "total_size_mb": 0.0,
+            "entries": []
         }
+
 
 mosdac_service = MOSDACIntegrationService()

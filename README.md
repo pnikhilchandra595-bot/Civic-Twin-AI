@@ -83,9 +83,27 @@ Open **`http://localhost:5173`** in your browser.
 
 ---
 
+## 📊 Data Provenance & Integration Reality Matrix
+
+CivicTwin AI maintains strict data truthfulness across all spatial and telemetry pipelines:
+
+| Data Feed / Source | Integration Method | Live / Calibrated Status | Error / Offline Behavior |
+| :--- | :--- | :--- | :--- |
+| **ISRO Bhoonidhi STAC** | Official JWT Bearer STAC Catalog API | 🟢 **LIVE** (NISAR, EOS-06 SCAT, LISS-4, Sentinel-1A) | Returns `status: "unauthenticated"` or `"query_failed"` with 0 fake records |
+| **IMD Doppler Radar** | Official `mausam.imd.gov.in` GIF Stream | 🟢 **LIVE** (Mumbai, Delhi, Hyderabad, Mosaic) | Fallback to latest archived radar scan |
+| **OpenSky ADS-B Tracking** | Live Mode-S Transponder Stream | 🟢 **LIVE** (DGCA India Registry Filter) | Recent sightings cached $\le 24\text{h}$, then purged |
+| **NDMA Sachet Alerts** | Government CAP XML/JSON Feed | 🟢 **LIVE** (Official Multi-Hazard Alerts) | Displays offline warning banner |
+| **ISRO Bhuvan Satellite** | NRSC Bhuvan WMS & Geo-APIs | 🟡 **LIVE WMS + SEEDED POIs** | Seamless fallback to Indian geodetic database |
+| **USGS / NDWC Earthquakes** | USGS GeoJSON Real-Time API | 🟢 **LIVE** (M2.5+ Global & India Focal Depth) | Displays offline telemetry warning |
+| **TomTom Traffic Flow** | Real-Time Vector/Raster Flow API | 🟢 **LIVE** (Speed Delta & Incident Congestion) | Reverts to baseline street topology |
+
+---
+
 ## 🏛️ Government Compliance & Standards
 - **NDMA CAP (Common Alerting Protocol)** Compliant
-- **ISRO Bhuvan / MOSDAC** Open Geospatial Web Service Standards
+- **ISRO Bhuvan / MOSDAC / Bhoonidhi** Open Geospatial Web Service Standards
 - **Copernicus Open Access Hub** GeoTIFF & SAR Polarimetry
 - **DGCA India Civil Aircraft Registry** & ICAO India allocation block compliant
+- **Strict SSL Certificate Verification** via Mozilla CA Trust Store (`certifi`)
 - **256-Bit AES / HMAC-SHA256 Encrypted** JWT Clearance & API Gateway Storage
+

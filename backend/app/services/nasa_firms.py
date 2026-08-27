@@ -29,7 +29,7 @@ class NASAFIRMSIngestionService:
             return self._cached_hotspots
 
         if not self.map_key:
-            return self._fallback_hotspots()
+            return []
 
         url = f"https://firms.modaps.eosdis.nasa.gov/api/area/csv/{self.map_key}/VIIRS_SNPP_NRT/{self.area_bbox}/{day_range}"
         try:
@@ -58,14 +58,7 @@ class NASAFIRMSIngestionService:
         except Exception as e:
             print(f"NASA FIRMS API error: {e}")
 
-        return self._fallback_hotspots()
+        return []
 
-    def _fallback_hotspots(self) -> List[Dict[str, Any]]:
-        """Calibrated fallback baseline of active industrial & thermal hotspots"""
-        return [
-            {"lat": 19.092, "lng": 72.896, "brightness_kelvin": 352.4, "frp_mw": 42.8, "confidence": "high", "acq_date": datetime.datetime.now().strftime("%Y-%m-%d"), "satellite": "VIIRS SNPP (NASA)"},
-            {"lat": 28.685, "lng": 77.279, "brightness_kelvin": 331.2, "frp_mw": 19.4, "confidence": "nominal", "acq_date": datetime.datetime.now().strftime("%Y-%m-%d"), "satellite": "MODIS Aqua (NASA)"},
-            {"lat": 22.588, "lng": 88.380, "brightness_kelvin": 340.1, "frp_mw": 28.6, "confidence": "high", "acq_date": datetime.datetime.now().strftime("%Y-%m-%d"), "satellite": "VIIRS SNPP (NASA)"}
-        ]
 
 nasa_firms_service = NASAFIRMSIngestionService()

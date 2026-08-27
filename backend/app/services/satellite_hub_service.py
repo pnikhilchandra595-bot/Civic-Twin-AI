@@ -167,20 +167,19 @@ class CopernicusSatelliteHubService:
             except Exception as e:
                 print(f"Copernicus Statistical API error: {e}")
 
-        return self._fallback_response(bbox)
-
-    def _fallback_response(self, bbox: List[float]) -> Dict[str, Any]:
-        """Calibrated baseline fallback response when API keys are unconfigured or offline"""
         return {
-            "status": "calibrated_baseline",
+            "status": "query_failed",
             "source": "Copernicus Data Space Ecosystem (CDSE)",
             "satellite": "Sentinel-2 MSI (10m Resolution)",
             "spectral_index": "NDWI (Normalized Difference Water Index)",
             "bbox": bbox,
-            "mean_ndwi": 0.28,
-            "max_ndwi": 0.62,
-            "inundation_confirmed": True,
+            "error": "Copernicus CDSE API unconfigured or offline",
+            "note": "⚠️ Live Copernicus Sentinel-2 query offline.",
+            "mean_ndwi": None,
+            "max_ndwi": None,
+            "inundation_confirmed": False,
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
         }
+
 
 satellite_hub_service = CopernicusSatelliteHubService()
