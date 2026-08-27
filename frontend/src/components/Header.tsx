@@ -153,36 +153,34 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="h-16 bg-[#0a1f1b]/95 border-b border-emerald-500/30 px-4 flex items-center justify-between text-emerald-100 z-40 backdrop-blur-xl font-sans relative shadow-lg">
+    <header className="w-full h-14 sm:h-16 bg-[#080e1b]/95 border-b border-cyan-500/25 px-2.5 sm:px-4 lg:px-6 flex items-center justify-between gap-2 text-slate-100 z-40 backdrop-blur-xl font-sans relative shadow-xl shrink-0">
       
-      {/* LEFT SECTION: Logo + Region Switcher + Role Pill */}
-      <div className="flex items-center space-x-3.5">
+      {/* LEFT SECTION: Logo + Region Switcher + 18 Feeds Badge + Theme Toggle */}
+      <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
         {/* Animated Brand Icon */}
-        <div className="relative flex items-center justify-center p-2 rounded-xl bg-emerald-950/90 border border-emerald-400/60 shadow-[0_0_20px_rgba(16,185,129,0.35)]">
-          <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
-          <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping" />
+        <div className="relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-[#0b162c] border border-cyan-400/60 shadow-[0_0_15px_rgba(56,189,248,0.3)]">
+          <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 animate-pulse" />
+          <div className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
         </div>
 
-        <div className="flex items-center space-x-3">
-          <div>
-            <span className="font-pixel text-lg sm:text-xl font-black tracking-wider bg-gradient-to-r from-amber-300 via-emerald-200 to-emerald-400 bg-clip-text text-transparent">
-              CIVICTWIN AI
-            </span>
-          </div>
+        <div className="flex items-center space-x-2 sm:space-x-2.5">
+          <span className="font-hud text-base sm:text-lg font-black tracking-wider bg-gradient-to-r from-amber-300 via-cyan-200 to-emerald-400 bg-clip-text text-transparent truncate">
+            CIVICTWIN AI
+          </span>
 
           {/* Region Dropdown */}
           <div className="flex items-center space-x-1.5">
             <select
               value={state?.city_id || 'mumbai_monsoon'}
               onChange={(e) => onSwitchCity(e.target.value)}
-              className={`text-xs font-mono px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer max-w-[210px] lg:max-w-xs truncate font-bold transition-all ${
+              className={`text-xs font-mono px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border focus:outline-none cursor-pointer max-w-[140px] sm:max-w-[190px] lg:max-w-[220px] truncate font-bold transition-all ${
                 isDistrictOfficer
                   ? 'bg-amber-950/90 border-amber-500 text-amber-200'
                   : isStateOfficer
                   ? 'bg-purple-950/90 border-purple-500 text-purple-200'
                   : isCitizen
                   ? 'bg-emerald-950/90 border-emerald-500 text-emerald-200'
-                  : 'bg-[#071b17] border-emerald-500/50 text-emerald-200 hover:border-emerald-400'
+                  : 'bg-[#091224] border-cyan-500/40 text-cyan-100 hover:border-cyan-400'
               }`}
             >
               <optgroup label={isDistrictOfficer ? `🏢 Assigned District (${authUser?.assignedDistrict || 'DDMA'})` : isStateOfficer ? `🔒 Assigned State (${authUser?.assignedState})` : isCitizen ? `📍 Citizen Safe Zones` : `🇮🇳 Pan-India Corridors (All 20 States)`}>
@@ -194,176 +192,104 @@ export const Header: React.FC<HeaderProps> = ({
               </optgroup>
             </select>
 
-            {isDistrictOfficer && (
-              <span title={`Locked to ${authUser?.assignedDistrict}`} className="px-2 py-1 rounded-lg bg-amber-950/90 border border-amber-500 text-amber-300 text-[10px] font-mono font-bold flex items-center space-x-1">
-                <Lock className="w-3 h-3" />
-                <span>District Only</span>
-              </span>
-            )}
-
-            {isStateOfficer && !isDistrictOfficer && (
-              <span title={`Locked to ${authUser?.assignedState} SDMA`} className="px-2 py-1 rounded-lg bg-purple-950/90 border border-purple-500 text-purple-300 text-[10px] font-mono font-bold flex items-center space-x-1">
-                <Lock className="w-3 h-3" />
-                <span>{authUser?.assignedState} Only</span>
-              </span>
-            )}
-
-            {/* Role-Specific Districts Atlas Button (Only for Authorized Officers, Hidden from Citizens) */}
-            {!isCitizen && onOpenDistrictAtlas && (
-              <button
-                onClick={onOpenDistrictAtlas}
-                className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-900/40 via-teal-900/40 to-emerald-900/40 hover:from-emerald-900/60 hover:to-teal-900/60 border border-emerald-500/50 text-emerald-200 text-xs font-mono font-bold flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
-                title={isDistrictOfficer ? `Browse ${authUser?.assignedDistrict} DDMA municipal triage nodes` : isStateOfficer ? `Browse ${authUser?.assignedState} SDMA districts` : "Browse & search all 780+ Indian Districts across 36 States & UTs"}
-              >
-                <Globe className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden sm:inline">
-                  {isDistrictOfficer
-                    ? `📍 ${authUser?.assignedDistrict || 'District'} DDMA Triage`
-                    : isStateOfficer
-                    ? `🏢 ${authUser?.assignedState || 'State'} SDMA Districts`
-                    : '🇮🇳 780+ Districts Atlas'}
-                </span>
-              </button>
-            )}
-
             {/* 18 Live Sovereign, Maritime, Aerospace, Grid & Traffic Feeds Inspector Button */}
             <button
               onClick={onOpenProvenance}
-              className="px-2.5 py-1.5 rounded-lg bg-emerald-950/90 border border-emerald-400/80 text-emerald-300 hover:bg-emerald-900 text-xs font-mono font-bold flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer animate-pulse"
+              className="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg bg-emerald-950/90 border border-emerald-400/80 text-emerald-300 hover:bg-emerald-900 text-[11px] sm:text-xs font-mono font-bold flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)] cursor-pointer shrink-0"
               title="Inspect 18 Real-Time Live Sovereign, Maritime, Aerospace, Grid, Traffic & Physical IoT Feeds"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span className="hidden sm:inline font-pixel">18 Live Feeds</span>
-              <span className="sm:hidden font-pixel">18 Feeds</span>
+              <span className="font-hud hidden md:inline">18 Live Feeds</span>
+              <span className="font-hud md:hidden">18 Feeds</span>
             </button>
 
             {/* Light / Dark Mode Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl bg-slate-900 dark:bg-slate-900 light:bg-slate-100 border border-slate-700 dark:border-slate-700 light:border-slate-300 text-amber-400 dark:text-amber-400 light:text-slate-700 hover:scale-105 transition-all shadow-md cursor-pointer"
+              className="p-1.5 rounded-xl bg-[#091224] border border-slate-700 hover:border-amber-400 text-amber-400 hover:scale-105 transition-all shadow-md cursor-pointer shrink-0"
               title={theme === 'dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
             >
               {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-amber-400 animate-spin-slow" />
+                <Sun className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />
               ) : (
-                <Moon className="w-4 h-4 text-indigo-600" />
+                <Moon className="w-3.5 h-3.5 text-indigo-400" />
               )}
             </button>
-          </div>
-
-          {/* Role Clearance Badge */}
-          <div className="hidden xl:flex items-center space-x-1">
-            {isNational && (
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-blue-950/90 border border-blue-500 text-blue-300 font-mono font-bold flex items-center space-x-1.5">
-                <Building2 className="w-3.5 h-3.5" />
-                <span>Level 5 • National Command</span>
-              </span>
-            )}
-            {isStateOfficer && !isDistrictOfficer && (
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-purple-950/90 border border-purple-500 text-purple-300 font-mono font-bold flex items-center space-x-1.5">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Level 3 • State SDMA</span>
-              </span>
-            )}
-            {isDistrictOfficer && (
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-amber-950/90 border border-amber-500 text-amber-300 font-mono font-bold flex items-center space-x-1.5">
-                <Activity className="w-3.5 h-3.5" />
-                <span>Level 2 • District DDMA</span>
-              </span>
-            )}
-            {isCitizen && (
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-emerald-950/90 border border-emerald-500 text-emerald-300 font-mono font-bold flex items-center space-x-1.5">
-                <User className="w-3.5 h-3.5" />
-                <span>Level 1 • Citizen Safe Hub</span>
-              </span>
-            )}
           </div>
         </div>
       </div>
 
       {/* CENTER SECTION: Live Telemetry Pill */}
-      <div className="hidden md:flex items-center space-x-2.5 px-3 py-1.5 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs font-mono">
+      <div className="hidden 2xl:flex items-center space-x-2 px-3 py-1 rounded-xl bg-[#091224]/90 border border-cyan-500/30 text-xs font-mono shrink-0">
         <span className="text-cyan-400 font-bold">T+{state?.timeline_hour.toFixed(1) || '0.0'}h</span>
         <span className="text-slate-600">•</span>
         <span className="text-slate-300">IMD: <strong className="text-cyan-300">{state?.rain_intensity_mmhr.toFixed(0) || 0} mm/h</strong></span>
         <span className="text-slate-600">•</span>
-        <span className={`px-2 py-0.2 rounded text-[10px] font-bold ${
+        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
           state?.iap?.overall_threat_level === 'CRITICAL' || state?.iap?.overall_threat_level === 'CATASTROPHIC'
             ? 'bg-red-500/20 text-red-400 border border-red-500/40'
             : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
         }`}>
           {state?.iap?.overall_threat_level || 'ELEVATED'}
         </span>
-        <span className="text-slate-600">•</span>
-        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-cyan-950/90 border border-cyan-500/60 text-cyan-300 flex items-center space-x-1" title="Multi-Hazard Sensor Agreement: Evaluated across Flood, Fire, and Cyclone Risk Indexes">
-          <span>🎯 {(state as any)?.confidence_pct ? `${(state as any).confidence_pct.toFixed(1)}%` : (state?.iap?.overall_threat_level === 'CRITICAL' ? '100.0%' : '66.7%')} Confidence</span>
-        </span>
       </div>
 
       {/* RIGHT SECTION: Quick Action Buttons + Categorized Command Tools Dropdown */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
         
         {/* 1. Citizen SOS Distress Queue Button */}
         {!isCitizen && (
           <button
             onClick={onOpenCitizenSOS}
             title="Citizen SOS Distress Queue"
-            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-rose-950/90 hover:bg-rose-900 border border-rose-600/70 text-rose-200 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
+            className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-rose-950/90 hover:bg-rose-900 border border-rose-600/70 text-rose-200 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
           >
-            <AlertOctagon className="w-4 h-4 text-rose-400 animate-pulse" />
-            <span>Citizen SOS</span>
+            <AlertOctagon className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+            <span className="hidden sm:inline">Citizen SOS</span>
+            <span className="sm:hidden">SOS</span>
           </button>
         )}
 
-        {/* 2. Direct Citizen QR Beacon Button */}
-        <button
-          onClick={onOpenQRCode}
-          title="Shareable Citizen Emergency Mobile QR Beacon"
-          className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-rose-950/60 border border-rose-500/50 text-rose-300 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
-        >
-          <QrCode className="w-4 h-4 text-rose-400" />
-          <span className="hidden md:inline">Citizen QR</span>
-        </button>
-
-        {/* 3. Direct 3D Elevation Slicing Button */}
+        {/* 2. Direct 3D Elevation Slicing Button (Widescreen only) */}
         <button
           onClick={onOpenElevation}
           title="3D Topographic Elevation & Levee Spillover Slicing"
-          className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-cyan-950/60 border border-cyan-500/50 text-cyan-300 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
+          className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-[#091224] hover:bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
         >
-          <TrendingUp className="w-4 h-4 text-cyan-400" />
-          <span className="hidden md:inline">3D Elevation</span>
+          <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
+          <span>3D Elevation</span>
         </button>
 
-        {/* 4. Signature Google Gemini AI Button */}
+        {/* 3. Signature Google Gemini AI Button */}
         <button
           onClick={onOpenAICopilot}
           title="Google Gemini AI Incident Commander"
-          className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-xs font-mono font-black transition-all shadow-[0_0_25px_rgba(59,130,246,0.4)] animate-pulse border border-cyan-300/40 cursor-pointer"
+          className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-xs font-hud font-black transition-all shadow-[0_0_20px_rgba(59,130,246,0.35)] animate-pulse border border-cyan-300/40 cursor-pointer shrink-0"
         >
-          <Sparkles className="w-4 h-4 text-cyan-200" />
-          <span>✨ Gemini AI</span>
+          <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
+          <span>Gemini AI</span>
         </button>
 
-        {/* 3. Real Alert / Helpline Button */}
+        {/* 4. Real Alert / Helpline Button */}
         <button
           onClick={onOpenBroadcast}
           title={isCitizen ? "National Emergency Helpline Directory" : "Send Real Mobile SMS / Siren Warning"}
-          className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white text-xs font-bold font-mono shadow-md transition-all cursor-pointer"
+          className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white text-xs font-bold font-hud shadow-md transition-all cursor-pointer shrink-0"
         >
           <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
           <span className="hidden sm:inline">{isCitizen ? "Helplines" : "Real Alert"}</span>
+          <span className="sm:hidden">Alert</span>
         </button>
 
-        {/* 4. CATEGORIZED COMMAND DECK TOOLS DROPDOWN (Hidden from Citizens) */}
+        {/* 5. CATEGORIZED COMMAND DECK TOOLS DROPDOWN (Hidden from Citizens) */}
         {!isCitizen && (
-          <div className="relative" ref={toolsMenuRef}>
+          <div className="relative shrink-0" ref={toolsMenuRef}>
             <button
               onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
               title="Command Deck: Surveillance, Hydrology, Physics, Hospital, and Operations Tools"
-              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 hover:border-cyan-400 text-slate-200 text-xs font-mono font-bold transition-all shadow-md cursor-pointer"
+              className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#091224] hover:bg-[#0f1d38] border border-cyan-500/40 hover:border-cyan-400 text-cyan-200 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
             >
-            <Grid className="w-4 h-4 text-cyan-400" />
+            <Grid className="w-3.5 h-3.5 text-cyan-400" />
             <span className="hidden sm:inline">Tools</span>
             <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
           </button>

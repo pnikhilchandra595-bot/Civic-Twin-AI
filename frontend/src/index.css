@@ -21,9 +21,9 @@ html {
 }
 
 body {
-  background: radial-gradient(ellipse at 50% 0%, #173d33 0%, #0d2620 45%, #071512 85%, #040c0a 100%);
+  background: radial-gradient(ellipse at 50% 0%, #0e1726 0%, #090e18 45%, #05080f 85%, #020408 100%);
   background-attachment: fixed;
-  color: #e6f7f2;
+  color: #f1f5f9;
 }
 
 .font-pixel, .font-hud, .font-arcade {
@@ -42,41 +42,41 @@ code, kbd, samp, pre {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Dark Forest & Neon Emerald Glassmorphism Panels */
+/* Sleek Midnight Titanium & Cyber Glassmorphism Panels */
 .hud-panel {
-  background: rgba(11, 33, 27, 0.85);
+  background: rgba(13, 20, 36, 0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(52, 211, 153, 0.35);
-  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.6), 0 0 15px rgba(16, 185, 129, 0.08);
-  color: #e6f7f2;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.7), 0 0 15px rgba(56, 189, 248, 0.06);
+  color: #f1f5f9;
 }
 
 .hud-panel-glow {
-  background: rgba(13, 38, 31, 0.92);
+  background: rgba(15, 23, 42, 0.92);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(16, 185, 129, 0.65);
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.25), inset 0 0 15px rgba(16, 185, 129, 0.08);
-  color: #ecfdf5;
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.2), inset 0 0 15px rgba(56, 189, 248, 0.08);
+  color: #f8fafc;
 }
 
-/* Custom Tactical Forest Scrollbars */
+/* Custom Tactical Sleek Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #071512;
+  background: #05080f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #164e3f;
+  background: #1e293b;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+  background: #38bdf8;
 }
 
 html.light ::-webkit-scrollbar-track {

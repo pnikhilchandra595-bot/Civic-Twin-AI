@@ -449,40 +449,40 @@ export const App: React.FC = () => {
         /* Main Scrollable Executive Dashboard Content (For National & State Officers) */
         <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-5 space-y-6">
         
-        {/* RETRO PIXEL OVERVIEW BANNER (Styled like reference screenshot) */}
-        <section className="p-5 sm:p-6 rounded-3xl bg-[#0b221c]/90 border border-emerald-500/35 shadow-[0_0_40px_rgba(16,185,129,0.15)] backdrop-blur-md space-y-3">
+        {/* RETRO HUD OVERVIEW BANNER */}
+        <section className="p-5 sm:p-6 rounded-3xl bg-[#091224]/90 border border-cyan-500/35 shadow-[0_0_40px_rgba(56,189,248,0.12)] backdrop-blur-md space-y-3">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <span className="font-pixel text-[11px] font-bold text-emerald-300 uppercase tracking-widest bg-emerald-950/90 px-3 py-1 rounded-full border border-emerald-500/50 shadow-sm">
+                <span className="font-hud text-[11px] font-bold text-cyan-300 uppercase tracking-widest bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-500/50 shadow-sm">
                   ⚡ AUTONOMOUS DISASTER COMMAND ENGINE
                 </span>
                 <span className="text-[10px] font-mono text-emerald-400 font-bold">🟢 18 LIVE FEEDS ACTIVE</span>
               </div>
-              <h2 className="font-pixel text-2xl sm:text-3xl lg:text-4xl font-black text-emerald-100 tracking-wider uppercase leading-tight">
+              <h2 className="font-hud text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-wider uppercase leading-tight">
                 DEFEND CITIES. PREDICT DISASTERS.
               </h2>
-              <p className="text-xs sm:text-sm text-emerald-200/80 max-w-3xl font-sans">
-                Real-time physics digital twin synthesizing satellite radar, flood hydrographs, IoT sensors, and NDRF rescue routing for <strong className="text-emerald-300 font-bold">{state?.city_name || 'Active Region'}</strong>.
+              <p className="text-xs sm:text-sm text-slate-300 max-w-3xl font-sans">
+                Real-time physics digital twin synthesizing satellite radar, flood hydrographs, IoT sensors, and NDRF rescue routing for <strong className="text-cyan-300 font-bold">{state?.city_name || 'Active Region'}</strong>.
               </p>
             </div>
             
             <div className="flex flex-wrap items-center gap-2.5">
               <button
                 onClick={() => setIsLiveWeatherOpen(true)}
-                className="font-pixel px-4 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 text-xs font-black transition-all shadow-[0_0_20px_rgba(52,211,153,0.4)] cursor-pointer transform hover:scale-105 flex items-center space-x-1.5"
+                className="font-hud px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 text-xs font-black transition-all shadow-[0_0_20px_rgba(52,211,153,0.35)] cursor-pointer transform hover:scale-105 flex items-center space-x-1.5"
               >
                 <span>SYNC WEATHER 🌧️</span>
               </button>
               <button
                 onClick={() => setIsProvenanceOpen(true)}
-                className="font-pixel px-4 py-2.5 rounded-xl bg-[#0d2822] hover:bg-[#133d34] border border-emerald-500/50 text-emerald-200 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center space-x-1.5"
+                className="font-hud px-4 py-2.5 rounded-xl bg-[#0e1b36] hover:bg-[#14264c] border border-cyan-500/40 text-cyan-200 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center space-x-1.5"
               >
                 <span>DATA FEEDS 📊</span>
               </button>
               <button
                 onClick={() => setIsICS201Open(true)}
-                className="font-pixel px-4 py-2.5 rounded-xl bg-[#0d2822] hover:bg-[#133d34] border border-emerald-500/50 text-emerald-200 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center space-x-1.5"
+                className="font-hud px-4 py-2.5 rounded-xl bg-[#0e1b36] hover:bg-[#14264c] border border-cyan-500/40 text-cyan-200 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center space-x-1.5"
               >
                 <span>ICS-201 PLAN 📋</span>
               </button>
@@ -495,13 +495,13 @@ export const App: React.FC = () => {
         {/* ========================================================================= */}
         <section className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm font-mono font-bold text-emerald-100 uppercase tracking-wider">
-              <Compass className="w-4 h-4 text-emerald-400" />
+            <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
+              <Compass className="w-4 h-4 text-cyan-400" />
               <span>1. Geographic Digital Twin Simulation Map</span>
             </div>
 
             <div className="flex items-center space-x-2 text-xs font-mono">
-              <span className="text-emerald-400/70">Threat Level:</span>
+              <span className="text-slate-400">Threat Level:</span>
               <span className={`px-2 py-0.5 rounded font-bold ${
                 state?.iap?.overall_threat_level === 'CRITICAL' ? 'bg-red-500/20 text-red-400 border border-red-500/50' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50'
               }`}>
@@ -526,12 +526,12 @@ export const App: React.FC = () => {
         {/* SECTION 2: "WHAT-IF" CRISIS SIMULATION SANDBOX & TIMELINE CONTROLLER       */}
         {/* ========================================================================= */}
         <section className="space-y-2">
-          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-emerald-100 uppercase tracking-wider">
+          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
             <Activity className="w-4 h-4 text-amber-400" />
             <span>2. "What-If" Crisis Sandbox & Timeline Simulation Controls</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#0b221c]/85 border border-emerald-500/30 shadow-xl text-emerald-100">
+          <div className="p-4 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 shadow-xl text-slate-100">
             <ScenarioSandbox
               state={state}
               isPlaying={isPlaying}
@@ -546,7 +546,7 @@ export const App: React.FC = () => {
         {/* SECTION 3: REAL-TIME OPERATIONAL INTELLIGENCE GRID (3 SPACIOUS COLUMNS)    */}
         {/* ========================================================================= */}
         <section className="space-y-3">
-          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-emerald-100 uppercase tracking-wider">
+          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
             <ShieldAlert className="w-4 h-4 text-rose-400" />
             <span>3. Real-Time Operations & Inter-Agency Tactical Intelligence</span>
           </div>
@@ -554,14 +554,14 @@ export const App: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
             
             {/* Card 1: Citizen SOS Live Feed Card */}
-            <div className="p-3.5 rounded-2xl bg-[#0b221c]/85 border border-emerald-500/30 flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-emerald-900/60">
+            <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <div className="flex items-center space-x-1.5">
                   <AlertOctagon className="w-4 h-4 text-rose-400" />
-                  <span className="text-xs font-bold font-mono text-emerald-100">Citizen SOS Queue</span>
+                  <span className="text-xs font-bold font-mono text-slate-100">Citizen SOS Queue</span>
                 </div>
               </div>
-              <p className="text-[11px] text-emerald-200/80 font-sans leading-snug">
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
                 Crowdsourced WhatsApp & Telegram distress signals with AI confidence triage scoring.
               </p>
               <button
@@ -574,19 +574,19 @@ export const App: React.FC = () => {
             </div>
 
             {/* Card 2: Citizen Smartphone QR Beacon Card (NEW!) */}
-            <div className="p-3.5 rounded-2xl bg-[#0b221c]/85 border border-emerald-500/30 flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-emerald-900/60">
+            <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <div className="flex items-center space-x-1.5">
-                  <QrCode className="w-4 h-4 text-emerald-400 animate-pulse" />
-                  <span className="text-xs font-bold font-mono text-emerald-200">Citizen QR Beacon</span>
+                  <QrCode className="w-4 h-4 text-rose-400 animate-pulse" />
+                  <span className="text-xs font-bold font-mono text-rose-300">Citizen QR Beacon</span>
                 </div>
               </div>
-              <p className="text-[11px] text-emerald-200/80 font-sans leading-snug">
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
                 Shareable mobile QR code for instant zero-download hardware GPS locking and 112 SMS dispatch.
               </p>
               <button
                 onClick={() => setIsQRCodeOpen(true)}
-                className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
                 <QrCode className="w-3.5 h-3.5" />
                 <span>Open QR Beacon</span>
@@ -594,19 +594,19 @@ export const App: React.FC = () => {
             </div>
 
             {/* Card 3: 3D Topographic Elevation Slicing Card (NEW!) */}
-            <div className="p-3.5 rounded-2xl bg-[#0b221c]/85 border border-emerald-500/30 flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-emerald-900/60">
+            <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <div className="flex items-center space-x-1.5">
                   <TrendingUp className="w-4 h-4 text-cyan-400 animate-pulse" />
                   <span className="text-xs font-bold font-mono text-cyan-300">3D Elevation Cut</span>
                 </div>
               </div>
-              <p className="text-[11px] text-emerald-200/80 font-sans leading-snug">
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
                 2D/3D cutaway terrain bathymetry analyzing riverbed, levee crest, and flood spillover points.
               </p>
               <button
                 onClick={() => setIsElevationOpen(true)}
-                className="w-full py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="w-full py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
                 <TrendingUp className="w-3.5 h-3.5" />
                 <span>Open Elevation Cut</span>
@@ -614,19 +614,19 @@ export const App: React.FC = () => {
             </div>
 
             {/* Card 4: CCTV & Drone Video Recon Card */}
-            <div className="p-3.5 rounded-2xl bg-[#0b221c]/85 border border-emerald-500/30 flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-emerald-900/60">
+            <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <div className="flex items-center space-x-1.5">
-                  <Video className="w-4 h-4 text-emerald-400" />
-                  <span className="text-xs font-bold font-mono text-emerald-100">CCTV & Drone Matrix</span>
+                  <Video className="w-4 h-4 text-cyan-400" />
+                  <span className="text-xs font-bold font-mono text-slate-100">CCTV & Drone Matrix</span>
                 </div>
               </div>
-              <p className="text-[11px] text-emerald-200/80 font-sans leading-snug">
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
                 Municipal subway cameras and UAV survey drone feeds with real-time YOLOv8 vehicle detection.
               </p>
               <button
                 onClick={() => setIsDroneCCTVOpen(true)}
-                className="w-full py-2 bg-[#0d2822] hover:bg-[#133d34] border border-emerald-500/50 text-emerald-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="w-full py-2 bg-[#0e1b36] hover:bg-[#14264c] border border-cyan-500/40 text-cyan-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
                 <Video className="w-3.5 h-3.5" />
                 <span>Launch CCTV Matrix</span>
@@ -634,14 +634,14 @@ export const App: React.FC = () => {
             </div>
 
             {/* Card 5: Push-to-Talk Voice AI Radio Card */}
-            <div className="p-3.5 rounded-2xl bg-[#0b221c]/85 border border-emerald-500/30 flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-emerald-900/60">
+            <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <div className="flex items-center space-x-1.5">
                   <MessageSquare className="w-4 h-4 text-purple-400" />
-                  <span className="text-xs font-bold font-mono text-emerald-100">Voice Radio Co-Pilot</span>
+                  <span className="text-xs font-bold font-mono text-slate-100">Voice Radio Co-Pilot</span>
                 </div>
               </div>
-              <p className="text-[11px] text-emerald-200/80 font-sans leading-snug">
+              <p className="text-[11px] text-slate-300 font-sans leading-snug">
                 Tactical walkie-talkie voice radio with authentic squelch static SFX and AI SITREP responses.
               </p>
               <button
@@ -711,7 +711,7 @@ export const App: React.FC = () => {
           </div>
 
           {/* Render Active Deep Analysis Component */}
-          <div className="p-4 rounded-2xl bg-[#0b221c]/85 border border-emerald-500/30 shadow-xl text-emerald-100 min-h-[480px]">
+          <div className="p-4 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 shadow-xl text-slate-100 min-h-[480px]">
             {analysisTab === 'cascade' && (
               <CascadeFailureGraph
                 state={state}
@@ -751,12 +751,12 @@ export const App: React.FC = () => {
         {/* SECTION 5: NDRF TACTICAL RADIO CHATTER STREAM                              */}
         {/* ========================================================================= */}
         <section className="space-y-2 pt-2 pb-8">
-          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-emerald-100 uppercase tracking-wider">
+          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
             <RadioIcon className="w-4 h-4 text-emerald-400" />
             <span>5. Live NDRF Inter-Agency Tactical Radio Chatter (All 12 Battalions)</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#0b221c]/85 border border-emerald-500/30 shadow-xl text-emerald-100 h-[420px]">
+          <div className="p-4 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 shadow-xl text-slate-100 h-[420px]">
             <TacticalRadioFeed
               messages={radioMessages}
               onSendMessage={handleSendRadio}
