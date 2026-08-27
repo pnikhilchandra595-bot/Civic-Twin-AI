@@ -90,12 +90,52 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
   const [customCameraInput, setCustomCameraInput] = useState<string>('http://nikhils-iphone.local:8081/video');
   const [useCustomUrl, setUseCustomUrl] = useState<boolean>(false);
   const [videoError, setVideoError] = useState<boolean>(false);
+  const [isWebcamActive, setIsWebcamActive] = useState<boolean>(false);
+  const webcamStreamRef = useRef<MediaStream | null>(null);
+
+  const startWebcam = async () => {
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+        webcamStreamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play().catch(() => {});
+        }
+        setIsWebcamActive(true);
+        setVideoError(false);
+      }
+    } catch (e) {
+      console.warn('Webcam permission denied or unavailable:', e);
+      alert('Webcam access was denied or is unavailable on this device.');
+    }
+  };
+
+  const stopWebcam = () => {
+    if (webcamStreamRef.current) {
+      webcamStreamRef.current.getTracks().forEach(track => track.stop());
+      webcamStreamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setIsWebcamActive(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (webcamStreamRef.current) {
+        webcamStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   const currentStreamUrl = useCustomUrl ? customCameraInput : (activeFeed?.video_url || '/videos/mumbai_mithi.mp4');
-  const isMjpegStream = currentStreamUrl.includes(':8081') || currentStreamUrl.includes('/video') || currentStreamUrl.includes('.mjpg');
+  const isMjpegStream = !isWebcamActive && (currentStreamUrl.includes(':8081') || currentStreamUrl.includes('/video') || currentStreamUrl.includes('.mjpg'));
 
   const handleApplyCustomStream = () => {
     if (customCameraInput.trim()) {
+      if (isWebcamActive) stopWebcam();
       setUseCustomUrl(true);
       setVideoError(false);
     }
@@ -586,24 +626,24 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                 </div>
               )}
 
-              {/* Live Custom IP Camera / Mobile Stream Ingestion Card */}
+              {/* Live Indian & Field Tactical Camera Ingestion Card */}
               <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 space-y-2.5 font-mono text-xs">
                 <div className="flex items-center justify-between text-[11px] font-bold text-cyan-300">
                   <span className="flex items-center space-x-1.5">
-                    <span>📱</span>
-                    <span>Live IP Camera Stream:</span>
+                    <span>🇮🇳</span>
+                    <span>Live Indian / Tactical Camera Stream:</span>
                   </span>
                   <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-700">
-                    HTTP / MJPEG
+                    WEBCAM / IP / MJPEG
                   </span>
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <input
                     type="text"
                     value={customCameraInput}
                     onChange={(e) => setCustomCameraInput(e.target.value)}
-                    placeholder="http://nikhils-iphone.local:8081/video"
+                    placeholder="http://nikhils-iphone.local:8081/video or /videos/..."
                     className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-[11px] font-mono text-white focus:outline-none placeholder-slate-600"
                   />
                   <div className="flex items-center space-x-2">
@@ -611,14 +651,29 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                       onClick={handleApplyCustomStream}
                       className="flex-1 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] transition-all cursor-pointer shadow-md"
                     >
-                      Connect Live Camera
+                      Connect Stream
                     </button>
+                    {isWebcamActive ? (
+                      <button
+                        onClick={stopWebcam}
+                        className="px-2.5 py-1.5 rounded-lg bg-red-950/90 hover:bg-red-900 border border-red-500 text-red-300 text-[10px] font-bold animate-pulse"
+                      >
+                        ⏹️ Stop Webcam
+                      </button>
+                    ) : (
+                      <button
+                        onClick={startWebcam}
+                        className="px-2.5 py-1.5 rounded-lg bg-emerald-950/90 hover:bg-emerald-900 border border-emerald-500 text-emerald-300 text-[10px] font-bold cursor-pointer shadow"
+                      >
+                        📷 Laptop Webcam
+                      </button>
+                    )}
                     <button
                       onClick={() => { setCustomCameraInput('http://nikhils-iphone.local:8081/video'); setUseCustomUrl(true); setVideoError(false); }}
-                      className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px]"
+                      className="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px]"
                       title="Nikhil's iPhone Live Feed"
                     >
-                      📱 iPhone Reset
+                      📱 iPhone
                     </button>
                   </div>
                 </div>
