@@ -84,6 +84,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [liveStations, setLiveStations] = useState<any[]>([]);
   const [liveMaritimeVessels, setLiveMaritimeVessels] = useState<any[]>([]);
   const [liveTideData, setLiveTideData] = useState<any>(null);
+  const [liveBhoonidhiAssets, setLiveBhoonidhiAssets] = useState<any[]>([]);
 
   // 🚁 Dynamic Real-Time Moving NDRF Sortie Simulator State
   const [isSortieSimulating, setIsSortieSimulating] = useState<boolean>(false);
@@ -229,6 +230,19 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     };
 
+    const fetchBhoonidhi = async () => {
+      if (!state?.center_coords) return;
+      const [lat, lng] = state.center_coords;
+      try {
+        const res = await apiService.getBhoonidhiLiveAssets(lat, lng);
+        if (res && Array.isArray(res.assets)) {
+          setLiveBhoonidhiAssets(res.assets);
+        }
+      } catch (e) {
+        console.warn('Failed to load Bhoonidhi STAC assets:', e);
+      }
+    };
+
     fetchHospitalsForRegion();
     fetchAirSensors();
     fetchSeismicAndEonet();
@@ -236,6 +250,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     fetchAviation();
     fetchSheltersAndStations();
     fetchMaritimeAndTides();
+    fetchBhoonidhi();
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1], state?.city_name]);
 
   // Pan-India disaster state summaries for all 20 major states & regions
@@ -1759,6 +1774,59 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
+    // 13b. 🛰️ Real Live ISRO Bhoonidhi STAC Passes (NISAR, EOS-06 SCAT, ResourceSat-2A LISS-4, Sentinel-1A)
+    if ((showBhuvanDisaster || showBhuvanWMS) && Array.isArray(liveBhoonidhiAssets) && state?.center_coords) {
+      const [cLat, cLng] = state.center_coords;
+      liveBhoonidhiAssets.forEach((asset, idx) => {
+        const angle = (idx * (2 * Math.PI / Math.max(liveBhoonidhiAssets.length, 1))) + 0.4;
+        const offsetLat = cLat + 0.048 * Math.cos(angle);
+        const offsetLng = cLng + 0.058 * Math.sin(angle);
+        const assetColor = asset.badge_color || '#38bdf8';
+
+        const stacHtml = `
+          <div class="relative flex items-center justify-center w-9 h-9 rounded-full bg-slate-950 border-2 shadow-2xl cursor-pointer transform hover:scale-125 transition-all" style="border-color: ${assetColor}; box-shadow: 0 0 16px ${assetColor}">
+            <span class="text-sm animate-pulse">${asset.emoji || '🛰️'}</span>
+            <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-white border font-bold whitespace-nowrap" style="border-color: ${assetColor}">
+              ${asset.collection ? asset.collection.split('_')[0] : 'ISRO'}
+            </div>
+          </div>
+        `;
+
+        const stacMarker = L.marker([offsetLat, offsetLng], {
+          icon: L.divIcon({
+            className: 'custom-div-icon',
+            html: stacHtml,
+            iconSize: [36, 36],
+            iconAnchor: [18, 18]
+          }),
+          zIndexOffset: 12500
+        }).addTo(layerGroup);
+
+        stacMarker.bindPopup(`
+          <div class="text-xs font-mono p-2 bg-slate-950 text-slate-100 rounded-xl border max-w-xs shadow-2xl" style="border-color: ${assetColor}">
+            <div class="flex items-center space-x-1.5 font-bold mb-1" style="color: ${assetColor}">
+              <span>${asset.emoji} ${asset.mission_name}</span>
+            </div>
+            <div class="space-y-1 text-[11px]">
+              <div><strong>Collection:</strong> <code class="text-cyan-300">${asset.collection}</code></div>
+              <div><strong>Granule ID:</strong> <code class="text-amber-300 text-[10px] break-all">${asset.id}</code></div>
+              <div><strong>Category:</strong> <span class="text-slate-200">${asset.category || 'Earth Observation'}</span></div>
+              <div><strong>Resolution:</strong> <span class="text-emerald-300 font-bold">${asset.resolution || 'Standard'}</span></div>
+              <div><strong>Physics Metric:</strong> <span class="text-purple-300 font-bold">${asset.physics_metric || 'Reflectance'}</span></div>
+              <div><strong>Role:</strong> <span class="text-amber-200">${asset.operational_role || 'Disaster Telemetry'}</span></div>
+              <div><strong>Status:</strong> <span class="text-emerald-400 font-bold">${asset.online_status}</span></div>
+              <div class="pt-1 mt-1 border-t border-slate-800 flex justify-between items-center">
+                <span class="text-[9px] text-slate-400">ISRO NRSC Bhoonidhi STAC</span>
+                <a href="${asset.download_url}" target="_blank" rel="noreferrer" class="text-[10px] px-2 py-0.5 rounded bg-cyan-600 hover:bg-cyan-500 text-white font-bold no-underline cursor-pointer">
+                  Download Granule ↗
+                </a>
+              </div>
+            </div>
+          </div>
+        `);
+      });
+    }
+
     // 14. 🚦 Real Live TomTom Traffic Flow Raster Tiles & Live Incidents
     if (showTomTomTraffic) {
       try {
@@ -2049,7 +2117,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       `);
     }
 
-  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, showAircraft, showShelters, showEmergencyStations, showMaritime, showTideGauges, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents, liveAircraft, liveShelters, liveStations, liveMaritimeVessels, liveTideData]);
+  }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, showAircraft, showShelters, showEmergencyStations, showMaritime, showTideGauges, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents, liveAircraft, liveShelters, liveStations, liveMaritimeVessels, liveTideData, liveBhoonidhiAssets]);
 
   return (
     <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
