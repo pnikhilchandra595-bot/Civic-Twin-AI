@@ -8,8 +8,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        pixel: ['"Pixelify Sans"', '"Silkscreen"', '"Press Start 2P"', 'monospace'],
-        arcade: ['"Silkscreen"', '"Press Start 2P"', 'monospace'],
+        hud: ['"Chakra Petch"', 'sans-serif'],
+        tactical: ['"Rajdhani"', 'sans-serif'],
+        pixel: ['"Chakra Petch"', '"Rajdhani"', 'sans-serif'],
+        arcade: ['"Chakra Petch"', '"Rajdhani"', 'sans-serif'],
       },
       colors: {
         twin: {

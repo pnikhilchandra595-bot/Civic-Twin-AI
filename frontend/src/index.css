@@ -16,7 +16,7 @@ html {
 }
 
 :root {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Rajdhani', 'Outfit', sans-serif;
   color-scheme: dark;
 }
 
@@ -26,14 +26,16 @@ body {
   color: #e6f7f2;
 }
 
-.font-pixel {
-  font-family: 'Pixelify Sans', 'Silkscreen', 'Press Start 2P', monospace !important;
-  letter-spacing: 0.04em;
+.font-pixel, .font-hud, .font-arcade {
+  font-family: 'Chakra Petch', 'Rajdhani', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: 0.05em;
 }
 
-.font-arcade {
-  font-family: 'Silkscreen', 'Press Start 2P', monospace !important;
-  letter-spacing: 0.08em;
+.font-tactical {
+  font-family: 'Rajdhani', sans-serif !important;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 code, kbd, samp, pre {
