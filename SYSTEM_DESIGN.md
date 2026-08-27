@@ -14,9 +14,10 @@ India faces catastrophic seasonal monsoon floods, cyclonic storm surges, wildfir
 ### 1.2 The CivicTwin AI Solution
 CivicTwin AI is a **Cyber-Physical Digital Twin** that unifies:
 - **Spaceborne Remote Sensing**: Cloud-penetrating C-Band Radar (Sentinel-1 SAR), Multispectral Damage Indices (Sentinel-2), Thermal Hotspots (NASA FIRMS), and Cyclone tracking (ISRO MOSDAC & Bhuvan).
-- **Physics-Informed Cascade Prediction**: A single hazard-agnostic risk engine driving flood, fire, and cyclone prediction, plus infrastructure cascade failure modeling (power grid, road network, medical facilities).
-- **Explainable Source Confidence**: Calculates empirical confidence metrics based on multi-satellite and ground gauge agreement percentage.
-- **Role-Based Command & Control**: A 4-tier clearance model separating National Command from State SDMAs, District DDMAs, and Citizens.
+- **Official Meteorological Radars**: Direct live Doppler weather radar animation loops from IMD Mausam (`mausam.imd.gov.in`).
+- **Disaster Response Aviation Tracking**: OpenSky Network ADS-B transponder stream filtered against a verified Two-Tier Indian disaster response fleet registry (Pawan Hans, State Government helicopters, IAF airlift) with a 24-hour cache cutoff rule and real-time dynamic flight sortie simulation.
+- **Physics-Informed Cascade Prediction**: A single hazard-agnostic risk engine driving flood, fire, and cyclone prediction, plus infrastructure cascade failure modeling.
+- **Strict Sovereign Geographic & Role Boundaries**: Hard-locked Indian national boundary limits and 4-tier operational access permissions.
 - **Telecom & AI Delivery**: Live SMS alerts via Twilio/Fast2SMS, GPS-triggered emergency broadcasts, and Google Gemini AI multilingual safety advice.
 
 ---
@@ -31,14 +32,16 @@ graph TD
         FIRMS["🔥 NASA FIRMS (VIIRS 375m)"]
         MOSDAC["🌀 ISRO MOSDAC / INSAT-3D"]
         BHUVAN["🇮🇳 ISRO Bhuvan NRSC"]
+        IMD_RADAR["🌧️ IMD Doppler Weather Radar Loops"]
+        OPENSKY["✈️ OpenSky ADS-B & 2-Tier Disaster Fleet Filter"]
         GLOFAS["🌊 Copernicus GloFAS River Flow"]
         CWC["📏 CWC River Gauges (Scraped)"]
-        IMD["⛈️ IMD Weather Warning Bulletins"]
     end
 
     subgraph PROCESSING_LAYER ["2. Processing & Feature Store Layer"]
         PREPROC["Spatial Clipping & EPSG:4326 Reprojection"]
         FSTORE["Geospatial Feature Store (feature_store.py)"]
+        CACHE_CUTOFF["24-Hour Sighting Cache Lifespan Enforcer"]
     end
 
     subgraph PREDICTION_ENGINE ["3. Multi-Hazard Prediction & Cascade Engine"]
@@ -47,7 +50,7 @@ graph TD
         CYCLONE_ENGINE["Cyclone: 0.40 Wind + 0.30 Track Dist + 0.20 Surge + 0.10 ETA"]
         CONF["Confidence Score (Source Agreement %)"]
         CASCADE["Vulnerability Cascade (Substation Trip, Road Closures)"]
-        IAP["Incident Action Plan (IAP) Generator"]
+        SORTIE_SIM["Dynamic Real-Time Moving Sortie Simulator"]
     end
 
     subgraph PERSISTENCE_LAYER ["4. Persistent Relational Storage (database.py)"]
@@ -58,18 +61,18 @@ graph TD
         WS["WebSocket Event Stream (/ws/stream)"]
         TWILIO["Twilio & Fast2SMS Telecom Carrier Gateway"]
         GEMINI["Google Gemini AI Safety Advisor"]
-        SSO["MeriPehchaan / DigiLocker Govt SSO"]
-        BEACON["MQTT / Traccar GPS Beacon Engine"]
+        WEBCAM["1-Click Laptop Webcam & Mobile RTSP/MJPEG Video Engine"]
     end
 
-    subgraph CLIENT_TIERS ["6. Multi-Tier User Experience"]
+    subgraph CLIENT_TIERS ["6. 4-Tier User Experience & Boundary Enforcer"]
         HQ["🏛️ Level 5: National Command (NDMA) - 780+ Districts & All-India Grid"]
-        SDMA["🏢 Level 3: State SDMA - State-Scoped Grid Only"]
-        DDMA["📍 Level 2: District DDMA - Municipal Ward Triage"]
-        CITIZEN["📱 Level 1: Public Citizen Portal - Weather, SOS & Gemini AI"]
+        SDMA["🏢 Level 3: State SDMA - State-Locked Boundary (minZoom: 6)"]
+        DDMA["📍 Level 2: District DDMA - District Centroid Lock (minZoom: 10)"]
+        CITIZEN["📱 Level 1: Citizen Safety Portal - Helplines, SOS Beacon & Gemini AI"]
     end
 
     SATELLITE_AND_WEATHER --> PREPROC
+    OPENSKY --> CACHE_CUTOFF
     PREPROC --> FSTORE
     FSTORE --> HYBRID
     FSTORE --> FIRE_ENGINE
@@ -78,257 +81,46 @@ graph TD
     FIRE_ENGINE --> CONF
     CYCLONE_ENGINE --> CONF
     CONF --> CASCADE
-    CASCADE --> IAP
-    IAP --> DB
+    CASCADE --> DB
+    CACHE_CUTOFF --> SORTIE_SIM
     DB --> SERVING_LAYER
     SERVING_LAYER --> CLIENT_TIERS
 ```
 
 ---
 
-## 3. The 5-Layer End-to-End Engineering Pipeline
+## 3. Disaster Response Aviation Architecture & Cache Policy
 
-### Layer 1: Data Ingestion Layer
-Ingests spaceborne remote sensing and ground telemetry:
-1. **Copernicus Sentinel-1 (C-Band SAR)**: $5.405\text{ GHz}$ synthetic aperture radar backscatter ($\sigma^0 < -15\text{ dB}$) for all-weather, day/night cloud-penetrating water detection. *(Revisit cycle ~6–12 days; static overlay of latest available pass)*.
-2. **Copernicus Sentinel-2**: $10\text{m}$ resolution multispectral imagery calculating $\text{NDVI}$ and $\text{NDWI}$ for infrastructure damage grading.
-3. **NASA FIRMS**: VIIRS $375\text{m}$ and MODIS active fire hotspots and Fire Radiative Power ($\text{MW}$) — near real-time (~3hr satellite latency).
-4. **ISRO MOSDAC INSAT-3D/3DR**: Thermal infrared cloud-top brightness temperature tracking convective storm cores, updated every ~30 min.
-5. **ISRO Bhuvan NRSC**: OGC WMS vector overlays for Flood Hazard Zonation and Landslide Susceptibility.
-6. **Central Water Commission (CWC)**: Scraper parsing river water levels and danger marks across major Indian river basins.
-7. **India Meteorological Department (IMD)**: Scraper ingesting official Color-Coded District Warning Bulletins (**Red**/**Orange**/**Yellow**) and cyclone advisories.
+### 3.1 Two-Tier Verified Fleet Registry
+The aviation subsystem in `live_aviation_service.py` filters live OpenSky ADS-B transponder packets against a sourced Indian registry:
+- **Tier 1 (Civil Disaster Assets)**: Verified DGCA India civil aircraft hex codes (allocation block `800000`–`803FFF`):
+  - `80026e` (`VT-PHA`) — Pawan Hans Dauphin AS365 N3 Air Ambulance
+  - `8004f2` (`VT-PHD`) — Pawan Hans Coastal & Flood SAR
+  - `8003a9` (`VT-EHL`) — State Relief Wing Eurocopter AS350 B3
+  - `8006b1` (`VT-GVT`) — Government of Gujarat Bell 412EP
+  - `800794` (`VT-MHA`) — Government of Maharashtra S-76
+  - `80027f` (`VT-TSG`) — Government of Telangana AW139
+- **Tier 2 (Military Tactical Airlift)**:
+  - `80018a` / `80018b` (`KC-3801` / `KC-3802`) — IAF C-130J Super Hercules
+  - `800041` (`CB-8001`) — IAF C-17 Globemaster III
+  - `800531` (`Z-3431`) — IAF Mi-17V-5 Tactical Rescue & Winch
 
-### Layer 2: Data Processing & Feature Store Layer
-- **Reprojection**: Standardizes all external GeoTIFFs, WMS tiles, and vectors to **EPSG:4326** (WGS84).
-- **Feature Store Vector Table**: `rainfall_24h_mm`, `rainfall_48h_mm`, `river_discharge_m3s`, `river_rise_rate_m_hr`, `elevation_m`, `slope_deg`, `soil_saturation_pct`, `distance_to_waterway_km`, `historical_flood_freq_per_decade`, `hotspot_density`, `fire_radiative_power_mw`, `wind_speed_kmh`, `distance_to_cyclone_track_km`.
+### 3.2 24-Hour Cache Cutoff Rule
+- Transponder sightings are stored in an in-memory sighting ledger.
+- If an aircraft goes out of range or turns off its transponder, it is marked as `🟡 LAST RECORDED (At HH:MM IST)`.
+- **Hard Cutoff**: Sightings older than 24.0 hours are automatically purged and discarded to prevent stale or fake-live indicators.
 
-### Layer 3: Multi-Hazard Prediction & Cascading Failure Engine
-
-#### Hazard Formulas:
-- **🌊 Flood Risk Index**:
-  $$\text{Flood Risk} = 0.40 \times \text{Rain}_{\text{norm}} + 0.30 \times \text{River}_{\text{norm}} + 0.20 \times \text{Topo}_{\text{factor}} + 0.10 \times \text{Soil}_{\text{norm}}$$
-
-- **🔥 Fire Risk Index**:
-  $$\text{Fire Risk} = 0.50 \times \text{HotspotDensity} + 0.30 \times \text{FRP}_{\text{norm}} + 0.20 \times \text{Proximity}_{\text{inverse}}$$
-
-- **🌀 Cyclone Risk Index**:
-  $$\text{Cyclone Risk} = 0.40 \times \text{Wind}_{\text{norm}} + 0.30 \times \text{TrackDist}_{\text{inverse}} + 0.20 \times \text{SurgeRisk}_{\text{elevation}} + 0.10 \times \text{ETA}_{\text{inverse}}$$
-
-- **🎯 Source Confidence Score %** (applies to all hazards):
-  $$\text{Confidence \%} = \frac{\text{Sources Agreeing on Elevated Risk}}{\text{Total Available Independent Sources}} \times 100$$
-
-All three formulas write to the same `risk_assessments` table via a shared `hazard_type` field — one engine, three inputs.
-
-#### Cascading Trigger Matrix:
-- $\text{Water Depth} \ge 0.30\text{m}$ at electrical substation $\rightarrow$ status trips to `offline`.
-- $\text{Water Depth} \ge 0.25\text{m}$ on road corridor $\rightarrow$ status changes to `impassable`.
-- Submerged hospital $\rightarrow$ switches to `degraded (diesel backup)` then `offline`, dispatches backup pumps, and reroutes ambulances.
-- $\text{Fire Risk} \ge \text{CRITICAL}$ AND $\text{asset} < 2\text{km}$ $\rightarrow$ asset flagged `at_risk`, nearest fire unit suggested.
-- $\text{Cyclone Risk} \ge \text{HIGH}$ AND $\text{asset\_type} = \text{coastal}$ $\rightarrow$ zone flagged for evacuation, nearest shelter activation suggested.
-- Any $\text{Risk} \ge \text{CRITICAL}$ with no active incident $\rightarrow$ auto-creates incident (`reported_by = 'ai_prediction'`).
-
-### Layer 4: Alerting & Telecom Serving Layer
-- **Twilio Carrier API**: Live cellular SMS dispatch for verified phone numbers.
-- **Fast2SMS Indian Gateway**: Direct Indian telecom tower delivery.
-- **ntfy.sh & Web Push**: Free zero-latency instant smartphone sirens.
-- **WebSocket Stream**: Real-time event broadcasting (`/ws/stream`) updating map coordinates with zero polling lag.
-
-### Layer 5: AI Explanation Layer (Google Gemini)
-- Parses multi-hazard parameters and generates structured, conversational disaster advice. **Live in English and Hindi**; Marathi, Kannada, and Tamil are available on the language roadmap.
+### 3.3 Dynamic Real-Time Sortie Flight Simulator
+- Clicking **`🚁 Launch Demo NDRF Sortie`** executes a real-time moving flight loop across 12 distinct mission waypoints (Takeoff $\rightarrow$ River Basin Scanning $\rightarrow$ Airdrop 400 ration packs $\rightarrow$ Winch rescue $\rightarrow$ Return base).
+- Displays animated position, heading, altitude, ground speed, and prominent `[SIMULATED]` labeling.
 
 ---
 
-## 4. Unified Entity-Relationship (ER) Database Schema
+## 4. Sovereign Indian Map Boundary & 4-Tier Access Control
 
-```mermaid
-erDiagram
-    ZONES ||--o{ RISK_ASSESSMENTS : receives
-    ZONES ||--o{ INFRASTRUCTURE_ASSETS : contains
-    ZONES ||--o{ INCIDENTS : experiences
-    ZONES ||--o{ SHELTERS : hosts
-    ZONES ||--o{ USERS : resides_in
-    ZONES ||--o{ ALERTS : targets
-
-    INCIDENTS ||--o{ INCIDENT_RESOURCES : assigns
-    RESOURCES ||--o{ INCIDENT_RESOURCES : allocated_to
-    INCIDENTS ||--o{ ALERTS : triggers
-    RISK_ASSESSMENTS ||--o{ ALERTS : triggers
-    USERS ||--o{ INCIDENTS : reports
-
-    ZONES {
-        string zone_id PK
-        string name
-        string district
-        string state
-        float lat
-        float lng
-        int population
-        string boundary_geojson
-    }
-
-    RISK_ASSESSMENTS {
-        string assessment_id PK
-        string zone_id FK
-        string hazard_type
-        float risk_score
-        string risk_level
-        float confidence_pct
-        json data_sources
-        timestamp predicted_at
-        timestamp valid_until
-    }
-
-    INFRASTRUCTURE_ASSETS {
-        string asset_id PK
-        string zone_id FK
-        string asset_type
-        string name
-        float lat
-        float lng
-        float flood_depth_m
-        string operational_status
-        float vulnerability_score
-    }
-
-    INCIDENTS {
-        string incident_id PK
-        string zone_id FK
-        string incident_type
-        string severity
-        float lat
-        float lng
-        string reported_by
-        int victim_count
-        string status
-        string media_url
-    }
-
-    RESOURCES {
-        string resource_id PK
-        string resource_type
-        string callsign
-        string agency
-        float lat
-        float lng
-        string status
-    }
-
-    INCIDENT_RESOURCES {
-        string incident_id FK
-        string resource_id FK
-        timestamp dispatched_at
-        timestamp arrived_at
-        int eta_minutes
-    }
-
-    ALERTS {
-        string alert_id PK
-        string zone_id FK
-        string source_type
-        string message
-        string message_hindi
-        string severity
-        string channel
-    }
-
-    SHELTERS {
-        string shelter_id PK
-        string zone_id FK
-        string name
-        float lat
-        float lng
-        int total_capacity
-        int current_occupancy
-        string status
-    }
-
-    USERS {
-        string user_id PK
-        string phone
-        string name
-        string role
-        string badge_id
-        string assigned_state
-        string assigned_district
-        int clearance_level
-    }
-```
-
----
-
-## 5. Role-Based Access Control (RBAC) Security Matrix
-
-| Metric / Clearance | 👑 Level 5: National HQ | 🏢 Level 3: State SDMA | 📍 Level 2: District DDMA | 📱 Level 1: Public Citizen |
-| :--- | :---: | :---: | :---: | :---: |
-| **Geographic Scope** | All 36 States & UTs (786+ Districts) | Assigned State Only (e.g. MH) | Assigned District Only (e.g. Mumbai) | Local GPS Geofence |
-| **Map Grid Views** | `City Twin` & `🇮🇳 All-India Grid` | `Local Twin` & `🏢 State Grid` | `Ward Triage` & `📍 District Grid` | Public Citizen Map |
-| **District Atlas** | `🇮🇳 780+ Districts Atlas` | `🏢 State SDMA Districts` | `📍 District DDMA Triage` | **Hidden / Blocked** |
-| **Satellite Radar** | Priority SAR Pass Retrieval | Read-Only SAR Maps | Read-Only SAR Maps | **Hidden / Blocked** |
-| **Crisis Sandbox** | Full Timeline Simulation | Local Scenario Playback | Local Scenario Playback | **Hidden / Blocked** |
-| **Dispatch Control** | NDRF All Battalions & Army | State Police & SDMA EMS | Municipal Pumps & Local EMS | 1-Click SOS Trigger |
-| **Auth Mechanism** | Officer Password + MeriPehchaan | Officer Password + SDMA Badge | Officer Password + DDMA Badge | Mobile SMS OTP |
-
----
-
-## 6. Hardware, IoT & Government Integrations
-
-1. **Physical GPS Beacons (Traccar / LoRaWAN / OBD-II)** — *Demo-Simulated*:
-   - Endpoint: `POST /api/iot/gps-beacon-update`
-   - Real endpoint and WebSocket broadcast logic; for demo purposes, coordinates are pushed to this real endpoint.
-2. **Citizen SOS Damage Media Upload** — *Live*:
-   - Endpoint: `POST /api/citizen-sos/upload-media`
-   - Accepts base64 encoded photo/video evidence and attaches it to the incident record for first-responder verification.
-3. **Government Single Sign-On (MeriPehchaan / DigiLocker)** — *Roadmap*:
-   - Endpoint: `POST /api/auth/meripehchaan-verify`
-   - Requires formal registration with National e-Governance Division; mock verification UI provided for hackathon demonstration.
-
----
-
-## 7. Technology Stack Summary
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            CIVICTWIN AI TECH STACK                          │
-├───────────────────┬─────────────────────────────────────────────────────────┤
-│ Frontend          │ React 18, TypeScript, Tailwind CSS, Vite, Lucide Icons  │
-│ Geospatial Maps   │ Leaflet.js, OpenStreetMap, CartoDB Voyager, Esri World  │
-│ Backend Server    │ Python 3.11+, FastAPI (Async), Uvicorn, WebSockets      │
-│ Database Layer    │ SQLite / PostgreSQL, PostGIS-Compatible GeoJSON Schema │
-│ AI Engine         │ Google Gemini via official SDK (English + Hindi Live)   │
-│ Telecom Gateway   │ Twilio (Live Trial) · Fast2SMS Gateway (Live)           │
-│ Remote Sensing    │ Sentinel-1 SAR, Sentinel-2 MSI, NASA FIRMS, ISRO Bhuvan │
-│ Hosting & CI/CD   │ Vercel (Edge Frontend), Python Backend Server, GitHub   │
-└───────────────────┴─────────────────────────────────────────────────────────┘
-```
-
----
-
-## 8. Build Status — What's Live vs Simulated vs Roadmap
-
-| Component | Status | Details |
-|---|:---:|---|
-| **Flood Risk Formula (Option A)** | **Live** | Formula-driven ($0.40\text{ Rain} + 0.30\text{ River} + 0.20\text{ Topo} + 0.10\text{ Soil}$) in `feature_store.py` |
-| **Fire Risk Formula** | **Live** | Formula-driven ($0.50\text{ HotspotDensity} + 0.30\text{ FRP} + 0.20\text{ Proximity}^{-1}$) in `feature_store.py` |
-| **Cyclone Risk Formula** | **Live** | Formula-driven ($0.40\text{ Wind} + 0.30\text{ HaversineTrackDist}^{-1} + 0.20\text{ Surge} + 0.10\text{ ETA}^{-1}$) in `feature_store.py` |
-| **Multi-Hazard Sandbox Engine** | **Live** | Real-time simulation of HAZMAT leaks, earthquakes, and urban fires in `hazard_models.py` |
-| **Cascade Trigger Logic** | **Live** | Real multi-level cascade logic in `state_manager.py` (substation → hospital diesel backup → road impassability) |
-| **Open-Meteo GloFAS River Flow** | **Live** | Real live API call to ECMWF GloFAS model with local caching |
-| **NASA FIRMS Fire Hotspots** | **Live** | Real-time NASA VIIRS/MODIS thermal anomaly WMS/GeoJSON |
-| **Rainfall Data (Open-Meteo)** | **Live** | Real-time global precipitation and Doppler radar grid |
-| **Confidence Scoring %** | **Live** | Real-time calculation from 5 independent multi-sensor signals in `feature_store.py` |
-| **Citizen SOS + Media Upload** | **Live** | Base64 smartphone photo/video proof uploaded and linked to incident |
-| **Twilio & Fast2SMS Gateways** | **Live** | Genuinely dispatches carrier SMS when credentials configured; honest delivery receipts logged |
-| **CWC River Gauge Telemetry** | **Seeded Realistic Dataset** | Pre-calibrated baseline of 8 major Indian gauge thresholds ($H_{\text{current}} \text{ vs } H_{\text{danger}}$); live scraper in roadmap |
-| **IMD Warning Bulletins** | **Seeded Realistic Dataset** | Calibrated district-wise Red/Orange/Yellow weather warnings |
-| **Cyclone Data** | **Historical Replay** | Replay of real Bay of Bengal cyclonic wind & storm surge tracks |
-| **Sentinel-1 SAR Radar** | **Synthetic Radar Model** | Calibrated to ESA C-band SAR $\sigma^0 < -15\text{ dB}$ surface water physics |
-| **Sentinel-2 MSI (NDWI Index)** | **Live** | Real-time Copernicus Data Space Ecosystem Statistical API (`sh.dataspace.copernicus.eu`) |
-| **ISRO Bhuvan Disaster Overlay** | **Illustrative Overlay** | Live GetMap integration attempted; public OWS `GetCapabilities` times out under testing (consistent with Bhuvan server capacity limitations); designed to connect once valid layer names or NDEM credentials are available |
-| **GPS Beacon Tracking** | **Demo-Simulated** | Real FastAPI endpoint + simulated kinematic vehicle stream |
-| **MeriPehchaan / DigiLocker SSO** | **Roadmap** | Simulated verification UI pending formal e-Governance partnership |
-| **Gemini AI (English, Hindi)** | **Live** | Live Google Gemini 1.5 prompt generation |
-| **National / State / District RBAC** | **Live on Frontend** | Geographically scopes atlas and grid toolbars by officer clearance |
-
----
-
-*Authored by the CivicTwin AI Engineering Team.*
+1. **National Hard Boundary**: Map bounds clamped to `[[6.5, 68.0], [37.5, 97.5]]` with `maxBoundsViscosity: 1.0`.
+2. **Role Boundaries**:
+   - **National Authority**: Unlimited access across Indian borders.
+   - **State Officer**: Camera locked to state bounding box (`minZoom: 6`). Panning/clicking outside state displays operational restriction warning.
+   - **District Officer**: Camera locked to district centroid ($\pm 0.45^\circ$, `minZoom: 10`). Panning/clicking outside district displays operational restriction warning.
+   - **Citizen**: Dedicated Citizen Safety Portal with local helplines (112, 1070, 1077, 108), 1-Click SOS GPS Beacon, Gemini AI guide, and local inundated roads.

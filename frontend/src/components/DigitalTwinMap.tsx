@@ -85,6 +85,19 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [liveMaritimeVessels, setLiveMaritimeVessels] = useState<any[]>([]);
   const [liveTideData, setLiveTideData] = useState<any>(null);
 
+  // 🚁 Dynamic Real-Time Moving NDRF Sortie Simulator State
+  const [isSortieSimulating, setIsSortieSimulating] = useState<boolean>(false);
+  const [sortieStep, setSortieStep] = useState<number>(0);
+
+  // Animated flight path ticker for demo sortie
+  useEffect(() => {
+    if (!isSortieSimulating) return;
+    const interval = setInterval(() => {
+      setSortieStep(prev => (prev + 1) % 12);
+    }, 1400);
+    return () => clearInterval(interval);
+  }, [isSortieSimulating]);
+
   // Stream Live Multi-State Satellite GPS Vehicles (Delhi, Mumbai, Bengaluru, Chennai, Kochi)
   useEffect(() => {
     if (!state?.center_coords) return;
@@ -1790,15 +1803,21 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       }
     }
 
-    // 15. ✈️ Real Live OpenSky Network Aircraft & Air Ambulance ADS-B Telemetry
+    // 15. ✈️ Real Live OpenSky Network Aircraft & Two-Tier Disaster Response Fleet
     if (showAircraft && Array.isArray(liveAircraft)) {
       liveAircraft.forEach(ac => {
         if (ac.lat && ac.lng) {
+          const isDisaster = ac.is_disaster_response;
+          const isCache = ac.telemetry_status === 'LAST_RECORDED_CACHE';
+          const borderColor = isDisaster ? (isCache ? '#f59e0b' : '#f97316') : '#38bdf8';
+          const bgColor = isDisaster ? (isCache ? 'bg-amber-950' : 'bg-orange-950') : 'bg-sky-950';
+
           const acHtml = `
-            <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-sky-950 border-2 border-sky-400 shadow-2xl cursor-pointer transform hover:scale-125 transition-all">
-              <span class="text-[11px]">${ac.emoji || '✈️'}</span>
-              <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-sky-200 border border-sky-700 font-bold whitespace-nowrap">
-                ${ac.callsign || 'FLIGHT'}
+            <div class="relative flex items-center justify-center w-8 h-8 rounded-full ${bgColor} border-2 shadow-2xl cursor-pointer transform hover:scale-125 transition-all" style="border-color: ${borderColor}">
+              ${isDisaster ? `<span class="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-orange-400 animate-ping"></span>` : ''}
+              <span class="text-[12px]">${ac.emoji || '✈️'}</span>
+              <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-white border font-bold whitespace-nowrap" style="border-color: ${borderColor}">
+                ${ac.tail_number || ac.callsign || 'FLIGHT'}
               </div>
             </div>
           `;
@@ -1806,22 +1825,94 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             icon: L.divIcon({
               className: 'custom-div-icon',
               html: acHtml,
-              iconSize: [28, 28],
-              iconAnchor: [14, 14]
+              iconSize: [32, 32],
+              iconAnchor: [16, 16]
             })
           }).addTo(layerGroup);
 
           aMarker.bindTooltip(`
             <div class="text-xs font-mono p-1">
-              <strong class="text-sky-300">${ac.emoji} ${ac.callsign} (${ac.aircraft_type})</strong><br/>
-              Altitude: <span class="text-white font-bold">${ac.altitude_m} m</span><br/>
-              Ground Speed: <span class="text-emerald-300">${ac.velocity_kmh} km/h</span><br/>
-              Transponder: <span class="text-slate-400">ICAO24: ${ac.icao24}</span><br/>
-              Source: <span class="text-sky-400">OpenSky Network ADS-B Stream</span>
+              <strong style="color: ${borderColor}">${ac.emoji} ${ac.tail_number || ac.callsign} — ${ac.operator || 'Aviation'}</strong><br/>
+              Type: <span class="text-white">${ac.aircraft_type}</span><br/>
+              Role: <span class="text-amber-300">${ac.role}</span><br/>
+              Status: <span class="font-bold ${isCache ? 'text-amber-400' : 'text-emerald-400'}">${ac.status_label || 'Active'}</span><br/>
+              Altitude: <span class="text-white font-bold">${ac.altitude_m} m</span> • Speed: <span class="text-cyan-300 font-bold">${ac.velocity_kmh} km/h</span><br/>
+              Transponder: <span class="text-slate-400">ICAO24: <code>${ac.icao24}</code></span>
             </div>
           `);
         }
       });
+    }
+
+    // 15b. 🚁 DYNAMIC REAL-TIME MOVING NDRF SORTIE SIMULATOR
+    if (isSortieSimulating && state?.center_coords) {
+      const [cLat, cLng] = state.center_coords;
+      const waypoints: Array<{ lat: number; lng: number; alt: number; spd: number; phase: string }> = [
+        { lat: cLat - 0.05, lng: cLng - 0.06, alt: 400, spd: 140, phase: "Takeoff from Coastal Airbase (Climbing)" },
+        { lat: cLat - 0.03, lng: cLng - 0.04, alt: 850, spd: 195, phase: "Transit Corridor to Inundation Sector" },
+        { lat: cLat - 0.01, lng: cLng - 0.02, alt: 1100, spd: 210, phase: "Ingress to River Basin (Scanning Radar)" },
+        { lat: cLat + 0.01, lng: cLng - 0.01, alt: 750, spd: 160, phase: "Descending over Inundated Settlement" },
+        { lat: cLat + 0.025, lng: cLng + 0.01, alt: 220, spd: 60, phase: "Airdropping 400 Emergency Ration Pallets & Rafts" },
+        { lat: cLat + 0.03, lng: cLng + 0.025, alt: 120, spd: 25, phase: "Hovering: Winch Cable Extraction of 6 Trapped Civilians" },
+        { lat: cLat + 0.02, lng: cLng + 0.04, alt: 450, spd: 130, phase: "Medical Triage En-Route to Field Hospital" },
+        { lat: cLat, lng: cLng + 0.05, alt: 900, spd: 200, phase: "Airlifting Critical Evacuees to High-Ground Camp" },
+        { lat: cLat - 0.02, lng: cLng + 0.03, alt: 1050, spd: 215, phase: "Returning via Safe Air Corridor" },
+        { lat: cLat - 0.04, lng: cLng + 0.01, alt: 700, spd: 170, phase: "Final Descent to Base" },
+        { lat: cLat - 0.05, lng: cLng - 0.03, alt: 350, spd: 110, phase: "Approach to Helipad" },
+        { lat: cLat - 0.05, lng: cLng - 0.06, alt: 50, spd: 30, phase: "Touchdown & Refueling for Next Sortie" },
+      ];
+
+      const currentWp = waypoints[sortieStep % waypoints.length];
+      const flightCoords: [number, number][] = waypoints.map(w => [w.lat, w.lng]);
+
+      // Glowing dashed flight path polyline
+      L.polyline(flightCoords, {
+        color: '#f97316',
+        weight: 3,
+        dashArray: '6, 8',
+        opacity: 0.85
+      }).addTo(layerGroup);
+
+      // Moving Helicopter Marker
+      const heliHtml = `
+        <div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-orange-950 border-2 border-orange-400 shadow-[0_0_25px_rgba(249,115,22,0.8)] cursor-pointer transform hover:scale-125 transition-all">
+          <span class="absolute -top-1.5 -right-1.5 px-1 py-0.2 rounded bg-red-600 text-white font-mono text-[7px] font-black uppercase tracking-wider animate-pulse">
+            SIMULATED
+          </span>
+          <span class="text-base animate-bounce">🚁</span>
+          <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1.5 py-0.5 rounded bg-slate-950 text-orange-300 border border-orange-500 font-bold whitespace-nowrap shadow-lg">
+            IAF Mi-17V5 Sortie (${currentWp.alt}m)
+          </div>
+        </div>
+      `;
+
+      const simMarker = L.marker([currentWp.lat, currentWp.lng], {
+        icon: L.divIcon({
+          className: 'custom-div-icon',
+          html: heliHtml,
+          iconSize: [40, 40],
+          iconAnchor: [20, 20]
+        }),
+        zIndexOffset: 15000
+      }).addTo(layerGroup);
+
+      simMarker.bindPopup(`
+        <div class="text-xs font-mono p-2 bg-slate-950 text-slate-100 rounded-xl border border-orange-500 shadow-2xl">
+          <div class="flex items-center space-x-1.5 text-orange-400 font-bold mb-1">
+            <span>🚁 IAF Mi-17V5 Tactical Disaster Response Sortie</span>
+            <span class="px-1.5 py-0.2 rounded bg-red-900 border border-red-500 text-white text-[9px]">SIMULATED</span>
+          </div>
+          <div class="space-y-1 text-[11px]">
+            <div><strong>Tail / Registration:</strong> <code>Z-3431</code> (Tactical SAR Wing)</div>
+            <div><strong>Current Mission Phase:</strong> <span class="text-emerald-300 font-bold">${currentWp.phase}</span></div>
+            <div><strong>Telemetry:</strong> Altitude: <span class="text-white font-bold">${currentWp.alt} m</span> • Speed: <span class="text-cyan-300 font-bold">${currentWp.spd} km/h</span></div>
+            <div><strong>Payload:</strong> 400 Inundation Food Pallets • Inflatable Life Rafts • Winch Hoist</div>
+            <div class="text-[10px] text-slate-400 mt-1 pt-1 border-t border-slate-800">
+              ⚠️ Clearly labeled simulation flight path for training and live operational demos.
+            </div>
+          </div>
+        </div>
+      `);
     }
 
     // 16. ⛺ Real Live Relief Shelters & Evacuation Camps (OSM + DDMA)
@@ -2128,6 +2219,32 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             Locate
           </button>
         </form>
+
+        {/* Real-Time NDRF Sortie Simulation Trigger */}
+        <div className="hud-panel p-1 rounded-xl border border-orange-500/50 bg-slate-950/95 flex items-center space-x-1.5 shadow-2xl">
+          <button
+            type="button"
+            onClick={() => {
+              setIsSortieSimulating(prev => !prev);
+              setClickCoordFeedback(
+                !isSortieSimulating
+                  ? "🚁 DEMO SORTIE INJECTED: IAF Mi-17V5 moving across active flood sector (SIMULATED)"
+                  : "⏹️ Demo Sortie Stopped"
+              );
+              setTimeout(() => setClickCoordFeedback(null), 4000);
+            }}
+            className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold flex items-center space-x-1.5 cursor-pointer transition-all ${
+              isSortieSimulating
+                ? 'bg-orange-600 hover:bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.5)] animate-pulse'
+                : 'bg-orange-950/80 hover:bg-orange-900 border border-orange-600/70 text-orange-200'
+            }`}
+          >
+            <span>{isSortieSimulating ? '⏹️ Stop Demo Sortie' : '🚁 Launch Demo NDRF Sortie'}</span>
+            <span className="text-[9px] px-1 py-0.2 rounded bg-black/60 font-mono text-orange-300">
+              {isSortieSimulating ? 'LIVE FLIGHT' : 'SIMULATED'}
+            </span>
+          </button>
+        </div>
 
         {/* Live Coordinate Resolution Status Feedback */}
         {clickCoordFeedback ? (
