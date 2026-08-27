@@ -141,19 +141,6 @@ export const CitizenPortalModal: React.FC<CitizenPortalModalProps> = ({
       setIsAiThinking(false);
     }, 700);
   };
-        setChatMessages(prev => [
-          ...prev,
-          {
-            sender: 'gemini',
-            text: `⚠️ Safety Notice for ${districtName}: Heavy precipitation detected. Avoid underpasses and stay on elevated ground. For urgent water rescue, call the District Disaster Cell at 1077 or National Emergency at 112.`,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }
-        ]);
-      }, 700);
-    } finally {
-      setIsAiThinking(false);
-    }
-  };
 
   // Local District Helplines
   const helplines = [
