@@ -76,7 +76,6 @@ code, kbd, samp, pre {
 ::-webkit-scrollbar-thumb:hover {
   background: #10b981;
 }
-}
 
 html.light ::-webkit-scrollbar-track {
   background: #e2e8f0;
