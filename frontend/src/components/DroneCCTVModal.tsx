@@ -133,6 +133,15 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
   const currentStreamUrl = useCustomUrl ? customCameraInput : (activeFeed?.video_url || '/videos/mumbai_mithi.mp4');
   const isMjpegStream = !isWebcamActive && (currentStreamUrl.includes(':8081') || currentStreamUrl.includes('/video') || currentStreamUrl.includes('.mjpg'));
 
+  const isImageOrGif = !isWebcamActive && (
+    currentStreamUrl.endsWith('.gif') ||
+    currentStreamUrl.endsWith('.jpg') ||
+    currentStreamUrl.endsWith('.jpeg') ||
+    currentStreamUrl.endsWith('.png') ||
+    currentStreamUrl.includes('Radar') ||
+    currentStreamUrl.includes('Satellite')
+  );
+
   const handleApplyCustomStream = () => {
     if (customCameraInput.trim()) {
       if (isWebcamActive) stopWebcam();
@@ -239,13 +248,13 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
             {viewMode === 'SINGLE_FOCUS' && activeFeed && (
               <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-black aspect-video flex items-center justify-center shadow-2xl group">
                 
-                {/* Real Direct Video or MJPEG IP Camera Stream Element */}
-                {isMjpegStream ? (
+                {/* Real Direct Video / IMD Doppler Radar Live GIF / MJPEG IP Camera Stream Element */}
+                {isImageOrGif || isMjpegStream ? (
                   <img
                     src={currentStreamUrl}
-                    alt="Live IP Camera Stream"
+                    alt="Live IMD Doppler Radar / CCTV Stream"
                     style={getVideoFilterStyle()}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-slate-950"
                     onError={() => setVideoError(true)}
                   />
                 ) : (
@@ -525,28 +534,39 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
             {/* Matrix (4x4 Grid) View */}
             {viewMode === 'MATRIX_4X4' && (
               <div className="grid grid-cols-2 gap-3 flex-1">
-                {feeds.slice(0, 4).map((feed) => (
-                  <div
-                    key={feed.camera_id}
-                    onClick={() => { setActiveFeedId(feed.camera_id); setViewMode('SINGLE_FOCUS'); }}
-                    className="relative rounded-2xl overflow-hidden border border-slate-800 bg-black aspect-video cursor-pointer group hover:border-cyan-500 transition-all"
-                  >
-                    <video
-                      src={feed.video_url}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100"
-                    />
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-cyan-300 font-bold">
-                      {feed.camera_id}: {feed.feed_name.slice(0, 25)}...
+                {feeds.slice(0, 4).map((feed) => {
+                  const feedIsImg = feed.video_url.endsWith('.gif') || feed.video_url.endsWith('.jpg') || feed.video_url.includes('Radar') || feed.video_url.includes('Satellite');
+                  return (
+                    <div
+                      key={feed.camera_id}
+                      onClick={() => { setActiveFeedId(feed.camera_id); setViewMode('SINGLE_FOCUS'); }}
+                      className="relative rounded-2xl overflow-hidden border border-slate-800 bg-black aspect-video cursor-pointer group hover:border-cyan-500 transition-all"
+                    >
+                      {feedIsImg ? (
+                        <img
+                          src={feed.video_url}
+                          alt={feed.feed_name}
+                          className="w-full h-full object-contain bg-slate-950 opacity-90 group-hover:opacity-100"
+                        />
+                      ) : (
+                        <video
+                          src={feed.video_url}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100"
+                        />
+                      )}
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-cyan-300 font-bold">
+                        {feed.camera_id}: {feed.feed_name.slice(0, 25)}...
+                      </div>
+                      <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-red-950 border border-red-600 text-[10px] font-mono text-red-300 font-bold">
+                        🌊 {feed.flood_depth_detected_m}m Depth
+                      </div>
                     </div>
-                    <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-red-950 border border-red-600 text-[10px] font-mono text-red-300 font-bold">
-                      🌊 {feed.flood_depth_detected_m}m Depth
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
