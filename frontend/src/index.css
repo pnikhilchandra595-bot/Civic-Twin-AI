@@ -17,11 +17,43 @@ html {
 
 :root {
   font-family: 'Outfit', sans-serif;
-  color-scheme: dark;
+  color-scheme: dark light;
+}
+
+.font-pixel {
+  font-family: 'Pixelify Sans', 'Silkscreen', 'Press Start 2P', monospace !important;
+  letter-spacing: 0.04em;
+}
+
+.font-arcade {
+  font-family: 'Silkscreen', 'Press Start 2P', monospace !important;
+  letter-spacing: 0.08em;
 }
 
 code, kbd, samp, pre {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* Light Mode Global Theme Styles */
+html.light body {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+html.light .hud-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  box-shadow: 0 8px 24px 0 rgba(148, 163, 184, 0.2);
+  color: #0f172a;
+}
+
+html.light .hud-panel-glow {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(14, 165, 233, 0.5);
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.15), inset 0 0 15px rgba(14, 165, 233, 0.05);
 }
 
 /* Custom Tactical Scrollbars */
@@ -34,9 +66,17 @@ code, kbd, samp, pre {
   background: #080c14;
 }
 
+html.light ::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #1f2c44;
   border-radius: 3px;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #94a3b8;
 }
 
 ::-webkit-scrollbar-thumb:hover {

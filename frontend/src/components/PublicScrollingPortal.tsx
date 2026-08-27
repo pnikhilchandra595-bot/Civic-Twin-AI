@@ -168,17 +168,72 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
           </span>
         </div>
 
-        {/* Main Title */}
-        <div className="text-center space-y-3 max-w-3xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
-            Live Public Disaster Safety &{' '}
-            <span className="bg-gradient-to-r from-orange-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
-              Emergency Assistance Hub
+        {/* Main Title Styled with Pixel/Arcade Font like the reference image */}
+        <div className="text-center space-y-4 max-w-4xl mx-auto">
+          <h1 className="font-pixel text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-white dark:text-white light:text-slate-900 leading-tight uppercase">
+            SKILLS BUILD RESILIENCE.<br/>
+            <span className="bg-gradient-to-r from-cyan-400 via-emerald-300 to-teal-400 bg-clip-text text-transparent">
+              WE HELP YOU DEFEND CITIES.
             </span>
           </h1>
-          <p className="text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed font-sans">
-            Real-time flood alerts, emergency GPS evacuation triggers, 24/7 disaster helplines, and Google Gemini AI public safety advice.
+          <p className="text-sm sm:text-base text-slate-300 dark:text-slate-300 light:text-slate-600 max-w-2xl mx-auto leading-relaxed font-sans font-medium">
+            CivicTwin AI fusions real-time satellite radar, sovereign IoT sensor meshes, and Google Gemini AI to protect citizens and critical infrastructure.
           </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button
+              onClick={onOpenGPSLocationSOS || onOpenCitizenSOS}
+              className="font-pixel px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-all shadow-[0_0_25px_rgba(16,185,129,0.4)] flex items-center space-x-2 cursor-pointer transform hover:scale-105"
+            >
+              <span>GET STARTED 🚀</span>
+            </button>
+            <button
+              onClick={onLaunchFullCockpit}
+              className="font-pixel px-5 py-3 rounded-xl bg-slate-900/90 dark:bg-slate-900/90 light:bg-white hover:bg-slate-800 dark:hover:bg-slate-800 light:hover:bg-slate-100 border border-slate-700 dark:border-slate-700 light:border-slate-300 text-white dark:text-white light:text-slate-900 text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shadow-md"
+            >
+              <span>ACCESS DASHBOARD 🎛️</span>
+            </button>
+            <button
+              onClick={onOpenWeather}
+              className="font-pixel px-5 py-3 rounded-xl bg-slate-900/90 dark:bg-slate-900/90 light:bg-white hover:bg-slate-800 dark:hover:bg-slate-800 light:hover:bg-slate-100 border border-slate-700 dark:border-slate-700 light:border-slate-300 text-white dark:text-white light:text-slate-900 text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shadow-md"
+            >
+              <span>LIVE WEATHER 🌧️</span>
+            </button>
+          </div>
+
+          <div className="pt-2">
+            <span className="font-pixel text-[11px] text-slate-400 dark:text-slate-400 light:text-slate-500 uppercase tracking-widest">
+              JOIN 780+ DISTRICT AUTHORITIES LEVELING UP DISASTER READINESS
+            </span>
+          </div>
+
+          {/* Integrated Agencies Showcase Cards (Styled like reference screenshot) */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 pt-3">
+            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-cyan-500/50 transition-all">
+              <span className="font-pixel text-xs font-bold text-cyan-300">ISRO</span>
+              <span className="text-[9px] font-mono text-slate-400">Bhuvan GIS</span>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-orange-500/50 transition-all">
+              <span className="font-pixel text-xs font-bold text-orange-400">NDMA</span>
+              <span className="text-[9px] font-mono text-slate-400">SACHET CAP</span>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-sky-500/50 transition-all">
+              <span className="font-pixel text-xs font-bold text-sky-400">IMD</span>
+              <span className="text-[9px] font-mono text-slate-400">Doppler Radar</span>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-emerald-500/50 transition-all">
+              <span className="font-pixel text-xs font-bold text-emerald-400">NDRF</span>
+              <span className="text-[9px] font-mono text-slate-400">Tactical Units</span>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-blue-500/50 transition-all">
+              <span className="font-pixel text-xs font-bold text-blue-400">CWC</span>
+              <span className="text-[9px] font-mono text-slate-400">River Basin</span>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-teal-500/50 transition-all">
+              <span className="font-pixel text-xs font-bold text-teal-400">UNESCO</span>
+              <span className="text-[9px] font-mono text-slate-400">IOC Sea Level</span>
+            </div>
+          </div>
         </div>
 
         {/* 1-CLICK EMERGENCY GPS SOS TRIGGER */}
@@ -189,7 +244,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-black text-white uppercase tracking-wider">
+                <span className="text-sm font-black text-white uppercase tracking-wider font-pixel">
                   Citizen Emergency GPS SOS Trigger
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-900 border border-red-500 text-red-200 font-bold">
@@ -204,7 +259,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
 
           <button
             onClick={onOpenGPSLocationSOS || onOpenCitizenSOS}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-mono text-xs font-black uppercase tracking-wider shadow-xl shadow-red-600/50 flex items-center justify-center space-x-2 shrink-0 transition-all cursor-pointer transform hover:scale-105"
+            className="font-pixel w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-black uppercase tracking-wider shadow-xl shadow-red-600/50 flex items-center justify-center space-x-2 shrink-0 transition-all cursor-pointer transform hover:scale-105"
           >
             <MapPin className="w-4 h-4 animate-bounce" />
             <span>🚨 SEND LIVE GPS SOS BEACON</span>

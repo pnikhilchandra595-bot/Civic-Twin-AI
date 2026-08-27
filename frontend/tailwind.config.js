@@ -7,6 +7,10 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        pixel: ['"Pixelify Sans"', '"Silkscreen"', '"Press Start 2P"', 'monospace'],
+        arcade: ['"Silkscreen"', '"Press Start 2P"', 'monospace'],
+      },
       colors: {
         twin: {
           bg: "#080c14",

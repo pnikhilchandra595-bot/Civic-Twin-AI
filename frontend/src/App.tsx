@@ -449,12 +449,53 @@ export const App: React.FC = () => {
         /* Main Scrollable Executive Dashboard Content (For National & State Officers) */
         <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-5 space-y-6">
         
+        {/* RETRO PIXEL OVERVIEW BANNER (Styled like reference screenshot) */}
+        <section className="p-5 sm:p-6 rounded-3xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-white/90 border border-slate-800 dark:border-slate-800 light:border-slate-200 shadow-xl backdrop-blur-md space-y-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <span className="font-pixel text-[11px] font-bold text-cyan-400 dark:text-cyan-400 light:text-cyan-700 uppercase tracking-widest bg-cyan-950/60 dark:bg-cyan-950/60 light:bg-cyan-100 px-3 py-1 rounded-full border border-cyan-500/40 light:border-cyan-300">
+                  ⚡ AUTONOMOUS DISASTER COMMAND ENGINE
+                </span>
+                <span className="text-[10px] font-mono text-emerald-400 font-bold">🟢 18 LIVE FEEDS ACTIVE</span>
+              </div>
+              <h2 className="font-pixel text-2xl sm:text-3xl lg:text-4xl font-black text-white dark:text-white light:text-slate-900 tracking-wider uppercase leading-tight">
+                DEFEND CITIES. PREDICT DISASTERS.
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 dark:text-slate-300 light:text-slate-600 max-w-3xl font-sans">
+                Real-time physics digital twin synthesizing satellite radar, flood hydrographs, IoT sensors, and NDRF rescue routing for <strong className="text-cyan-300 dark:text-cyan-300 light:text-cyan-700 font-bold">{state?.city_name || 'Active Region'}</strong>.
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={() => setIsLiveWeatherOpen(true)}
+                className="font-pixel px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-all shadow-md cursor-pointer transform hover:scale-105 flex items-center space-x-1.5"
+              >
+                <span>SYNC WEATHER 🌧️</span>
+              </button>
+              <button
+                onClick={() => setIsProvenanceOpen(true)}
+                className="font-pixel px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-900 light:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-800 light:hover:bg-slate-200 border border-slate-700 dark:border-slate-700 light:border-slate-300 text-white dark:text-white light:text-slate-800 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center space-x-1.5"
+              >
+                <span>DATA FEEDS 📊</span>
+              </button>
+              <button
+                onClick={() => setIsICS201Open(true)}
+                className="font-pixel px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-900 light:bg-slate-100 hover:bg-slate-800 dark:hover:bg-slate-800 light:hover:bg-slate-200 border border-slate-700 dark:border-slate-700 light:border-slate-300 text-white dark:text-white light:text-slate-800 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center space-x-1.5"
+              >
+                <span>ICS-201 PLAN 📋</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* ========================================================================= */}
         {/* SECTION 1: INTERACTIVE GEOGRAPHIC DIGITAL TWIN MAP                         */}
         {/* ========================================================================= */}
         <section className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm font-mono font-bold text-white uppercase tracking-wider">
+            <div className="flex items-center space-x-2 text-sm font-mono font-bold text-white dark:text-white light:text-slate-900 uppercase tracking-wider">
               <Compass className="w-4 h-4 text-cyan-400" />
               <span>1. Geographic Digital Twin Simulation Map</span>
             </div>

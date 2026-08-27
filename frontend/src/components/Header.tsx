@@ -7,7 +7,7 @@ import {
   CloudRain, Radar, BookOpen, MessageSquare, PhoneCall, 
   FileText, LogOut, UserCheck, Globe, Video, Mic, Skull, AlertOctagon, Settings, Database,
   TrendingUp, Waves, HeartPulse, WifiOff, Smartphone, QrCode, Bot, Sparkles, Building2, Lock, User,
-  ChevronDown, Grid, Shield, Flame
+  ChevronDown, Grid, Shield, Flame, Sun, Moon
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -72,6 +72,25 @@ export const Header: React.FC<HeaderProps> = ({
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
 
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('civictwin_theme') as 'dark' | 'light') || 'dark';
+  });
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
+    }
+    localStorage.setItem('civictwin_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
   const isCitizen = authUser?.userType === 'citizen';
   const isDistrictOfficer = authUser?.userType === 'district_officer';
   const isStateOfficer = authUser?.userType === 'state_officer';
@@ -134,19 +153,19 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="h-16 bg-[#060a14]/95 border-b border-cyan-500/30 px-4 flex items-center justify-between text-slate-100 z-40 backdrop-blur-xl font-sans relative">
+    <header className="h-16 bg-[#060a14]/95 dark:bg-[#060a14]/95 light:bg-white/95 border-b border-cyan-500/30 dark:border-cyan-500/30 light:border-slate-200 px-4 flex items-center justify-between text-slate-100 dark:text-slate-100 light:text-slate-900 z-40 backdrop-blur-xl font-sans relative shadow-sm">
       
       {/* LEFT SECTION: Logo + Region Switcher + Role Pill */}
       <div className="flex items-center space-x-3.5">
         {/* Animated Brand Icon */}
-        <div className="relative flex items-center justify-center p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 shadow-[0_0_15px_rgba(0,210,255,0.25)]">
-          <Activity className="w-5 h-5 text-cyan-400 animate-pulse" />
+        <div className="relative flex items-center justify-center p-2 rounded-xl bg-cyan-950/80 dark:bg-cyan-950/80 light:bg-cyan-100 border border-cyan-500/40 dark:border-cyan-500/40 light:border-cyan-400 shadow-[0_0_15px_rgba(0,210,255,0.25)]">
+          <Activity className="w-5 h-5 text-cyan-400 dark:text-cyan-400 light:text-cyan-600 animate-pulse" />
           <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-400 rounded-full animate-ping" />
         </div>
 
         <div className="flex items-center space-x-3">
           <div>
-            <span className="text-base font-black tracking-wider bg-gradient-to-r from-orange-400 via-white to-emerald-400 bg-clip-text text-transparent">
+            <span className="font-pixel text-lg sm:text-xl font-black tracking-wider bg-gradient-to-r from-orange-400 via-white dark:via-white light:via-cyan-600 to-emerald-400 bg-clip-text text-transparent">
               CIVICTWIN AI
             </span>
           </div>
@@ -163,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
                   ? 'bg-purple-950/90 border-purple-500 text-purple-200'
                   : isCitizen
                   ? 'bg-emerald-950/90 border-emerald-500 text-emerald-200'
-                  : 'bg-slate-900 border-cyan-500/50 text-cyan-200 hover:border-cyan-400'
+                  : 'bg-slate-900 dark:bg-slate-900 light:bg-slate-100 border-cyan-500/50 dark:border-cyan-500/50 light:border-slate-300 text-cyan-200 dark:text-cyan-200 light:text-slate-800 hover:border-cyan-400'
               }`}
             >
               <optgroup label={isDistrictOfficer ? `🏢 Assigned District (${authUser?.assignedDistrict || 'DDMA'})` : isStateOfficer ? `🔒 Assigned State (${authUser?.assignedState})` : isCitizen ? `📍 Citizen Safe Zones` : `🇮🇳 Pan-India Corridors (All 20 States)`}>
@@ -193,7 +212,7 @@ export const Header: React.FC<HeaderProps> = ({
             {!isCitizen && onOpenDistrictAtlas && (
               <button
                 onClick={onOpenDistrictAtlas}
-                className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-600/30 via-cyan-600/30 to-emerald-600/30 hover:from-orange-600/50 hover:to-emerald-600/50 border border-cyan-500/50 text-cyan-200 text-xs font-mono font-bold flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
+                className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-600/30 via-cyan-600/30 to-emerald-600/30 hover:from-orange-600/50 hover:to-emerald-600/50 border border-cyan-500/50 text-cyan-200 dark:text-cyan-200 light:text-slate-800 text-xs font-mono font-bold flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
                 title={isDistrictOfficer ? `Browse ${authUser?.assignedDistrict} DDMA municipal triage nodes` : isStateOfficer ? `Browse ${authUser?.assignedState} SDMA districts` : "Browse & search all 780+ Indian Districts across 36 States & UTs"}
               >
                 <Globe className="w-3.5 h-3.5 text-orange-400" />
@@ -210,12 +229,25 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 18 Live Sovereign, Maritime, Aerospace, Grid & Traffic Feeds Inspector Button */}
             <button
               onClick={onOpenProvenance}
-              className="px-2.5 py-1.5 rounded-lg bg-emerald-950/80 border border-emerald-500/80 text-emerald-300 hover:bg-emerald-900/90 text-xs font-mono font-bold flex items-center space-x-1.5 transition-all shadow-lg hover:shadow-emerald-900/30 cursor-pointer animate-pulse"
+              className="px-2.5 py-1.5 rounded-lg bg-emerald-950/80 dark:bg-emerald-950/80 light:bg-emerald-100 border border-emerald-500/80 dark:border-emerald-500/80 light:border-emerald-400 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 hover:bg-emerald-900/90 text-xs font-mono font-bold flex items-center space-x-1.5 transition-all shadow-lg hover:shadow-emerald-900/30 cursor-pointer animate-pulse"
               title="Inspect 18 Real-Time Live Sovereign, Maritime, Aerospace, Grid, Traffic & Physical IoT Feeds"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span className="hidden sm:inline">🟢 18 Live Feeds</span>
-              <span className="sm:hidden">18 Feeds</span>
+              <span className="hidden sm:inline font-pixel">18 Live Feeds</span>
+              <span className="sm:hidden font-pixel">18 Feeds</span>
+            </button>
+
+            {/* Light / Dark Mode Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-slate-900 dark:bg-slate-900 light:bg-slate-100 border border-slate-700 dark:border-slate-700 light:border-slate-300 text-amber-400 dark:text-amber-400 light:text-slate-700 hover:scale-105 transition-all shadow-md cursor-pointer"
+              title={theme === 'dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400 animate-spin-slow" />
+              ) : (
+                <Moon className="w-4 h-4 text-indigo-600" />
+              )}
             </button>
           </div>
 
