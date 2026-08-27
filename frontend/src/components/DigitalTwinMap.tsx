@@ -44,7 +44,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   // Map settings & search
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [baseMap, setBaseMap] = useState<'dark' | 'satellite' | 'street' | 'bhuvan'>('dark');
+  const [baseMap, setBaseMap] = useState<'google_hybrid' | 'google_streets' | 'google_terrain' | 'dark' | 'esri_sat' | 'bhuvan'>('google_hybrid');
   const [viewScope, setViewScope] = useState<'city' | 'india' | 'state_grid' | 'district_grid'>('city');
   const [isLayersOpen, setIsLayersOpen] = useState(false);
   const [clickCoordFeedback, setClickCoordFeedback] = useState<string | null>(null);
@@ -654,12 +654,14 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     'Uttarakhand': 'nuis:AND_PB_UL10K,nuis:AP_DH_UL10K'
   };
 
-  // Tile URL Map (High-Resolution Providers)
-  const tileUrls = {
+  // Tile URL Map (High-Resolution Google Maps, ESRI, CartoDB & ISRO Providers)
+  const tileUrls: Record<string, string> = {
+    google_hybrid: 'https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+    google_streets: 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    google_terrain: 'https://mt{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
     dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    topo: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
+    esri_sat: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
   };
 
   // Sovereign Indian Territorial Boundary Check (Survey of India & NDMA Sovereign Guidelines)
@@ -680,7 +682,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         center: initialCoords,
         zoom: 13,
         minZoom: 5,
-        maxZoom: 19,
+        maxZoom: 20,
         maxBounds: INDIA_BOUNDS,
         maxBoundsViscosity: 1.0,
         zoomControl: false,
@@ -689,7 +691,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
       L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-      const createBaseTileLayer = (style: 'dark' | 'satellite' | 'street' | 'bhuvan') => {
+      const createBaseTileLayer = (style: typeof baseMap) => {
         if (style === 'bhuvan') {
           return (L.tileLayer as any).wms('https://bhuvan-ras2.nrsc.gov.in/mapcache', {
             layers: 'bhuvan_l4_rs2a_2017',
@@ -702,7 +704,15 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             attribution: '© ISRO / NRSC Bhuvan High-Resolution Satellite'
           });
         }
-        return L.tileLayer(tileUrls[style], {
+        if (style.startsWith('google_')) {
+          return L.tileLayer(tileUrls[style], {
+            minZoom: 5,
+            maxZoom: 20,
+            bounds: INDIA_BOUNDS,
+            subdomains: ['0', '1', '2', '3']
+          });
+        }
+        return L.tileLayer(tileUrls[style] || tileUrls.google_hybrid, {
           minZoom: 5,
           maxZoom: 19,
           bounds: INDIA_BOUNDS,
@@ -758,8 +768,15 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           bounds: INDIA_BOUNDS,
           attribution: '© ISRO / NRSC Bhuvan High-Resolution Satellite'
         }).addTo(mapInstanceRef.current);
-      } else {
+      } else if (baseMap.startsWith('google_')) {
         newLayer = L.tileLayer(tileUrls[baseMap], {
+          minZoom: 5,
+          maxZoom: 20,
+          bounds: INDIA_BOUNDS,
+          subdomains: ['0', '1', '2', '3']
+        }).addTo(mapInstanceRef.current);
+      } else {
+        newLayer = L.tileLayer(tileUrls[baseMap] || tileUrls.google_hybrid, {
           minZoom: 5,
           maxZoom: 19,
           bounds: INDIA_BOUNDS,
@@ -1928,17 +1945,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
         {/* Base Map Style Selector */}
         <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-[11px] font-mono border border-slate-800 bg-slate-950/90 shadow-lg">
-          {(['satellite', 'dark', 'street', 'bhuvan'] as const).map(style => (
+          {([
+            { id: 'google_hybrid', label: '🌍 Google Satellite' },
+            { id: 'google_streets', label: '🗺️ Google Roads' },
+            { id: 'google_terrain', label: '🏔️ Terrain' },
+            { id: 'dark', label: '🌃 Dark HUD' },
+            { id: 'bhuvan', label: '🇮🇳 ISRO Bhuvan' }
+          ] as const).map(style => (
             <button
-              key={style}
-              onClick={() => setBaseMap(style)}
+              key={style.id}
+              onClick={() => setBaseMap(style.id)}
               className={`px-2 py-0.5 rounded-lg capitalize transition-all cursor-pointer ${
-                baseMap === style
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold shadow-sm'
+                baseMap === style.id
+                  ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-500/50 font-bold shadow-[0_0_10px_rgba(56,189,248,0.3)]'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              {style === 'satellite' ? '🛰️ Satellite' : style === 'dark' ? '🌃 Dark' : style === 'street' ? '🗺️ Street' : '🇮🇳 ISRO Bhuvan'}
+              {style.label}
             </button>
           ))}
         </div>
