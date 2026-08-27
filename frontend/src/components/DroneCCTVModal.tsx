@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Hls from 'hls.js';
 import { 
   Video, Eye, EyeOff, AlertTriangle, ShieldCheck, 
   Maximize2, X, RefreshCw, Layers, Crosshair, Navigation, 
@@ -92,58 +91,8 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
   const [useCustomUrl, setUseCustomUrl] = useState<boolean>(false);
   const [videoError, setVideoError] = useState<boolean>(false);
 
-  const currentStreamUrl = useCustomUrl ? customCameraInput : (activeFeed?.video_url || 'http://nikhils-iphone.local:8081/video');
+  const currentStreamUrl = useCustomUrl ? customCameraInput : (activeFeed?.video_url || '/videos/mumbai_mithi.mp4');
   const isMjpegStream = currentStreamUrl.includes(':8081') || currentStreamUrl.includes('/video') || currentStreamUrl.includes('.mjpg');
-
-  const getParsedVideoUrl = (url: string) => {
-    if (!url) return '';
-    if (url.includes('youtube.com/watch?v=')) {
-      const vid = url.split('watch?v=')[1].split('&')[0];
-      return `https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&enablejsapi=1`;
-    }
-    if (url.includes('youtu.be/')) {
-      const vid = url.split('youtu.be/')[1].split('?')[0];
-      return `https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&enablejsapi=1`;
-    }
-    return url;
-  };
-
-  const isHlsStream = currentStreamUrl.includes('.m3u8') || currentStreamUrl.includes('m3u8');
-  const isYouTubeStream = currentStreamUrl.includes('youtube.com') || currentStreamUrl.includes('youtu.be');
-
-  // Attach Hls.js for municipal Smart City HLS / RTSP-over-HLS .m3u8 streams
-  useEffect(() => {
-    let hls: Hls | null = null;
-    if (isHlsStream && videoRef.current) {
-      if (Hls.isSupported()) {
-        hls = new Hls({
-          enableWorker: true,
-          lowLatencyMode: true,
-          backBufferLength: 90
-        });
-        hls.loadSource(currentStreamUrl);
-        hls.attachMedia(videoRef.current);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          videoRef.current?.play().catch(() => {});
-        });
-        hls.on(Hls.Events.ERROR, (_event, data) => {
-          if (data.fatal) {
-            console.warn('HLS stream fatal error:', data);
-            setVideoError(true);
-          }
-        });
-      } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-        videoRef.current.src = currentStreamUrl;
-        videoRef.current.play().catch(() => {});
-      }
-    }
-
-    return () => {
-      if (hls) {
-        hls.destroy();
-      }
-    };
-  }, [currentStreamUrl, isHlsStream]);
 
   const handleApplyCustomStream = () => {
     if (customCameraInput.trim()) {
@@ -250,17 +199,8 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
             {viewMode === 'SINGLE_FOCUS' && activeFeed && (
               <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-black aspect-video flex items-center justify-center shadow-2xl group">
                 
-                {/* Real Video / YouTube Live / MJPEG IP Camera Stream Element */}
-                {isYouTubeStream ? (
-                  <iframe
-                    src={getParsedVideoUrl(currentStreamUrl)}
-                    title="Live Surveillance Feed"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    style={getVideoFilterStyle()}
-                    className="w-full h-full border-0 pointer-events-auto"
-                  />
-                ) : isMjpegStream ? (
+                {/* Real Direct Video or MJPEG IP Camera Stream Element */}
+                {isMjpegStream ? (
                   <img
                     src={currentStreamUrl}
                     alt="Live IP Camera Stream"
@@ -271,6 +211,7 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                 ) : (
                   <video
                     ref={videoRef}
+                    key={currentStreamUrl}
                     src={currentStreamUrl}
                     autoPlay
                     loop
@@ -645,15 +586,15 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                 </div>
               )}
 
-              {/* Live Custom YouTube / Windy / IP Camera Stream Ingestion Card */}
+              {/* Live Custom IP Camera / Mobile Stream Ingestion Card */}
               <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 space-y-2.5 font-mono text-xs">
                 <div className="flex items-center justify-between text-[11px] font-bold text-cyan-300">
                   <span className="flex items-center space-x-1.5">
-                    <span>🌐</span>
-                    <span>Live YouTube / Windy / IP Cam:</span>
+                    <span>📱</span>
+                    <span>Live IP Camera Stream:</span>
                   </span>
                   <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-700">
-                    YouTube / HTTP / MJPEG
+                    HTTP / MJPEG
                   </span>
                 </div>
 
@@ -662,7 +603,7 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                     type="text"
                     value={customCameraInput}
                     onChange={(e) => setCustomCameraInput(e.target.value)}
-                    placeholder="Paste YouTube Live URL, Windy webcam, or http://..."
+                    placeholder="http://nikhils-iphone.local:8081/video"
                     className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-[11px] font-mono text-white focus:outline-none placeholder-slate-600"
                   />
                   <div className="flex items-center space-x-2">
@@ -670,21 +611,14 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                       onClick={handleApplyCustomStream}
                       className="flex-1 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] transition-all cursor-pointer shadow-md"
                     >
-                      Connect Live Stream
-                    </button>
-                    <button
-                      onClick={() => { setCustomCameraInput('https://www.youtube.com/watch?v=21X5lGlDOfg'); setUseCustomUrl(true); setVideoError(false); }}
-                      className="px-2 py-1.5 rounded-lg bg-purple-950/80 hover:bg-purple-900 border border-purple-600/50 text-purple-300 text-[10px]"
-                      title="NASA 24/7 Earth Cyclone Cam"
-                    >
-                      🛰️ NASA Live
+                      Connect Live Camera
                     </button>
                     <button
                       onClick={() => { setCustomCameraInput('http://nikhils-iphone.local:8081/video'); setUseCustomUrl(true); setVideoError(false); }}
-                      className="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px]"
+                      className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px]"
                       title="Nikhil's iPhone Live Feed"
                     >
-                      📱 iPhone
+                      📱 iPhone Reset
                     </button>
                   </div>
                 </div>
