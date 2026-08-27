@@ -1,129 +1,148 @@
-# 📐 CIVICTWIN AI — SYSTEM DESIGN DOCUMENT (SDD)
-**Architecture, Mathematical Formulations, Data Schemas & Engineering Specifications**
+# 📐 CIVICTWIN AI — SYSTEM DESIGN DOCUMENT
+**Technical Architecture, Micro-Services & Component Design Specification**
 
 ---
 
-## 1. System Architecture Overview
+## 1. System Architecture & Topology
 
-CivicTwin AI is architected as a modular, high-throughput cyber-physical twin following the **Micro-Catchment Event-Driven Architecture (EDA)** pattern.
+```mermaid
+graph TD
+    subgraph INGESTION ["1. Multi-Source Ingestion Layer"]
+        MOSDAC["ISRO MOSDAC / INSAT-3DR (SAC)"]
+        BHUVAN["ISRO Bhuvan NRSC WMS / CartoDEM"]
+        IMD["IMD Doppler Radar Animation Loops"]
+        OPENSKY["OpenSky ADS-B Transponders"]
+        SAR["Sentinel-1 C-Band SAR & Sentinel-2 Optical"]
+        FIRMS["NASA FIRMS VIIRS 375m"]
+        GLOFAS["Copernicus GloFAS River Flow"]
+        WEBCAM["Webcam & RTSP/MJPEG Feeds"]
+    end
 
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                   PRESENTATION LAYER                                   │
-│  React 18 + TypeScript + Vite + Tailwind CSS + Lucide Icons + Leaflet (0.5m Esri Base) │
-└───────────────────────────────────────────▲────────────────────────────────────────────┘
-                                            │ HTTP / WebSocket (Port 8000 / 5173)
-┌───────────────────────────────────────────▼────────────────────────────────────────────┐
-│                               FASTAPI APPLICATION LAYER                                │
-│  • Routing & Serialization (Pydantic v2)        • WebSocket Broadcasting Manager       │
-│  • RBAC & JWT Middleware (HMAC-SHA256)          • Media Magic-Byte Sanitizer           │
-└───────┬─────────────────┬───────────────────┬───────────────────┬──────────────────────┘
-        │                 │                   │                   │
-        ▼                 ▼                   ▼                   ▼
-┌───────────────┐ ┌───────────────┐ ┌───────────────────┐ ┌──────────────────────────────┐
-│  SIMULATION   │ │   AI AGENT    │ │ SATELLITE HUB &   │ │   RELATIONAL PERSISTENCE     │
-│    ENGINE     │ │    COPILOT    │ │ INGESTION DRIVERS │ │        (SQLite WAL)          │
-│ • Hydrology   │ │ • Google      │ │ • Copernicus NDWI │ │ • Zones, Risk Assessments    │
-│ • Cascades    │ │   Gemini      │ │ • NASA FIRMS 375m │ │ • Assets, Incidents, Media   │
-│ • Routing     │ │ • ICS-201 IAP │ │ • Open-Meteo IMD  │ │ • State Snapshots & GPS Logs │
-└───────────────┘ └───────────────┘ └───────────────────┘ └──────────────────────────────┘
-```
+    subgraph BACKEND_SERVICES ["2. FastAPI Backend & Micro-Services"]
+        ROUTER["API Gateway & CORS Controller"]
+        STATE_MGR["Digital Twin State Manager (state_manager.py)"]
+        AVIATION_SVC["Two-Tier Aviation & 24h Cache Filter"]
+        CASCADE_ENGINE["Physics & Infrastructure Cascade Engine"]
+        GEMINI_AI["Google Gemini AI Incident Commander"]
+        CAP_BROADCAST["NDMA CAP / SMS Dispatch Engine"]
+        WS_HUB["WebSocket Event Stream (/ws/stream)"]
+    end
 
----
+    subgraph DATABASE ["3. Relational & Cache Layer"]
+        SQLITE_DB[(SQLite / PostgreSQL Relational DB)]
+        SIGHTING_CACHE[(24-Hour Aircraft Sighting Cache)]
+    end
 
-## 2. Mathematical Modeling & Physics Formulations
+    subgraph CLIENT_INTERFACE ["4. Frontend HUD & 4-Tier RBAC Portal"]
+        MAP_ENGINE["Leaflet GIS Map Canvas (Boundary Clamped)"]
+        HUD_BAR["Floating Telemetry & Tactical Controls"]
+        SORTIE_SIM["Dynamic Real-Time Moving Sortie Simulator"]
+        CCTV_MATRIX["Tactical CCTV Matrix & YOLO Telemetry"]
+        CITIZEN_PORTAL["Citizen Safety & SOS Assistant Modal"]
+    end
 
-### 2.1 Hydrology & Inundation Propagation
-Water depth at any micro-catchment cell $i$ at timeline hour $t$ is calculated by integrating precipitation intensity, tidal storm surge, and topographical slope based on a modified 1D/2D **Manning's Open Channel Flow Formula**:
-
-$$h_i(t) = h_{base} + \left( \frac{I_{rain} \cdot C_{runoff} \cdot A_{catchment}}{3600 \cdot W_{channel}} \right) \cdot \left( \frac{n}{S_0^{1/2}} \right)^{3/5} + S_{surge} \cdot e^{-\lambda \cdot d_{coast}}$$
-
-Where:
-- $h_i(t)$: Water depth at node $i$ in meters.
-- $I_{rain}$: Precipitation rate in $\text{mm/hr}$ (from live IMD Doppler or simulation slider).
-- $C_{runoff}$: Catchment impermeability coefficient ($0.85$ for urban concrete, $0.35$ for green vegetative cover).
-- $n$: Manning's roughness coefficient ($0.035$ for urban drainage canals).
-- $S_0$: Hydraulic slope gradient $(\Delta z / \Delta x)$.
-- $S_{surge}$: Coastal storm surge height in meters.
-- $d_{coast}$: Distance from shoreline in kilometers.
-
----
-
-### 2.2 Gaussian Plume Toxic Gas Dispersion
-For industrial chemical leaks (e.g., Ammonia $\text{NH}_3$, Chlorine $\text{Cl}_2$), atmospheric concentration $C(x,y,z)$ downwind from source $(x=0, y=0, z=H)$ is calculated via the **Pasquill-Gifford Gaussian Plume Equation**:
-
-$$C(x,y,z) = \frac{Q}{2\pi u \sigma_y \sigma_z} \exp\left( -\frac{y^2}{2\sigma_y^2} \right) \left[ \exp\left( -\frac{(z-H)^2}{2\sigma_z^2} \right) + \exp\left( -\frac{(z+H)^2}{2\sigma_z^2} \right) \right]$$
-
-Where:
-- $Q$: Chemical emission release rate $(\text{kg/s})$.
-- $u$: Ambient wind velocity $(\text{m/s})$ at release height.
-- $\sigma_y, \sigma_z$: Atmospheric dispersion standard deviations as functions of downwind distance $x$ and atmospheric stability class.
-
----
-
-### 2.3 Dynamic Evacuation Routing (NetworkX Dijkstra with Flood Impedance)
-Evacuation path cost $W(e)$ for road segment $e = (u,v)$ is dynamically reweighted based on flood depth:
-
-$$W(e) = L(e) \cdot \left[ 1 + \alpha \cdot \left( \frac{h(e)}{h_{critical}} \right)^\beta \right] \quad \text{for } h(e) < h_{critical}$$
-
-$$W(e) = \infty \quad \text{for } h(e) \ge h_{critical} \text{ (Road Inundated / Blocked)}$$
-
-Where $h_{critical} = 0.45\text{ m}$ (safe for light rescue vehicles), $\alpha = 4.0$, $\beta = 2.0$.
-
----
-
-## 3. Database Schema (Relational ER Model)
-
-The persistence engine implements **SQLite WAL Mode** (Write-Ahead Logging) structured into 9 core tables:
-
-```
-┌─────────────────┐       ┌──────────────────────┐       ┌────────────────────────┐
-│      ZONES      │1     *│   RISK_ASSESSMENTS   │       │ INFRASTRUCTURE_ASSETS  │
-├─────────────────┤───────├──────────────────────┤       ├────────────────────────┤
-│ zone_id (PK)    │       │ assessment_id (PK)   │       │ asset_id (PK)          │
-│ name            │       │ zone_id (FK)         │       │ name, asset_type       │
-│ district, state │       │ hazard_type          │       │ lat, lng, capacity     │
-│ lat, lng        │       │ risk_score, level    │       │ flood_threshold_m      │
-│ population      │       │ predicted_at         │       │ is_operational         │
-└─────────────────┘       └──────────────────────┘       └────────────────────────┘
-        │1
-        │*
-┌─────────────────┐       ┌──────────────────────┐       ┌────────────────────────┐
-│    INCIDENTS    │1     *│  INCIDENT_RESOURCES  │*     1│       RESOURCES        │
-├─────────────────┤───────├──────────────────────┤───────├────────────────────────┤
-│ incident_id (PK)│       │ mapping_id (PK)      │       │ resource_id (PK)       │
-│ zone_id (FK)    │       │ incident_id (FK)     │       │ name, resource_type    │
-│ severity, status│       │ resource_id (FK)     │       │ lat, lng, status       │
-│ victim_count    │       │ assigned_at          │       │ battery_pct            │
-└─────────────────┘       └──────────────────────┘       └────────────────────────┘
+    INGESTION --> ROUTER
+    ROUTER --> STATE_MGR
+    ROUTER --> AVIATION_SVC
+    ROUTER --> CASCADE_ENGINE
+    ROUTER --> GEMINI_AI
+    ROUTER --> CAP_BROADCAST
+    AVIATION_SVC --> SIGHTING_CACHE
+    CASCADE_ENGINE --> SQLITE_DB
+    STATE_MGR --> WS_HUB
+    WS_HUB --> CLIENT_INTERFACE
+    ROUTER --> CLIENT_INTERFACE
+    MAP_ENGINE --> SORTIE_SIM
 ```
 
 ---
 
-## 4. API Endpoints Specification
+## 2. Component Design & Subsystems
 
-### Core Digital Twin & State Endpoints
-- `GET /api/state`: Returns full digital twin state (nodes, roads, sensors, metrics, routes, IAP).
-- `POST /api/location/resolve`: Dynamically synthesizes digital twin for ANY district or GPS coordinate in India.
-- `POST /api/control`: Applies simulation control parameter overrides (rain intensity, storm surge, dam breaches).
-- `POST /api/what-if/inject`: Simulates extreme crisis scenarios (`100_year_storm`, `dam_breach`, `substation_failure`).
-
-### Satellite & Remote Sensing Endpoints
-- `GET /api/real-data/firms-hotspots`: Fetches live VIIRS 375m thermal anomaly hotspots for India (NASA FIRMS).
-- `GET /api/real-data/copernicus-ndwi`: Evaluates live Sentinel-2 MSI 10m Normalized Difference Water Index.
-- `GET /api/satellite/sar-report`: Generates synthetic aperture radar (SAR) flood extent report.
-
-### AI Incident Commander & Telecom Endpoints
-- `POST /api/ai/chat`: Interactive natural language tactical advisory with Google Gemini.
-- `POST /api/alerts/send-live-sms`: Dispatches real emergency SMS alerts via Twilio/Fast2SMS.
-- `POST /api/citizen-sos/upload-media`: Uploads and validates citizen damage photos with magic-byte checking.
-- `WS /ws/stream`: Full duplex WebSocket event stream broadcasting live digital twin updates.
+### 2.1 Aviation Filter & Two-Tier Aircraft Registry (`live_aviation_service.py`)
+- **Ingestion**: Polls OpenSky Network `/api/states/all` over the city's bounding box ($1.2^\circ$ radius).
+- **Matching Algorithm**:
+  ```python
+  def filter_aircraft(raw_states, registry, cache):
+      for state in raw_states:
+          icao = state[0].lower().strip()
+          if icao in registry:
+              tag_disaster_response(state, registry[icao], status="LIVE_ADSB")
+              cache.update(icao, timestamp=now)
+          elif matches_callsign_prefix(state[1], ["IAF", "NDRF", "SDRF", "PAWAN"]):
+              tag_disaster_response(state, generic_profile, status="LIVE_ADSB")
+  ```
+- **24-Hour Cache Lifecycle**:
+  Sightings are stored with UTC timestamp. Any record where $(\text{now} - \text{recorded\_at}) > 86,400\,\text{s}$ is automatically purged.
 
 ---
 
-## 5. Security & Data Integrity
+### 2.2 Sovereign Indian Map Boundary Enforcer (`DigitalTwinMap.tsx`)
+- Hard constraints applied during Leaflet map initialization:
+  ```typescript
+  const INDIA_BOUNDS = L.latLngBounds(L.latLng(6.5, 68.0), L.latLng(37.5, 97.5));
 
-1. **Authentication**: Cryptographic **HMAC-SHA256 JWT tokens** with 24-hour expiration and clearance-level claims (`national_authority`, `state_officer`, `district_officer`).
-2. **File Sanitization**: Citizen damage uploads undergo strict magic-byte verification (JPEG, PNG, WebP header checks), a 5MB size limit, and path-traversal filename sanitization.
-3. **Database Concurrency**: Configured with `PRAGMA journal_mode=WAL` and `PRAGMA busy_timeout=5000` to prevent database locks during real-time multi-client updates.
-4. **Resilient Caching**: 10-minute in-memory TTL caching on external satellite calls (NASA, Copernicus) prevents rate-limit exhaustion and ensures rapid sub-50ms UI response times.
+  const map = L.map(container, {
+    maxBounds: INDIA_BOUNDS,
+    maxBoundsViscosity: 1.0,
+    minZoom: 4,
+    maxZoom: 20
+  });
+  ```
+- Dynamic role-based clamping:
+  - **State Officer**: `map.setMaxBounds(stateBounds); map.setMinZoom(6);`
+  - **District Officer**: `map.setMaxBounds(districtBounds); map.setMinZoom(10);`
+
+---
+
+### 2.3 Physics-Informed 2D Inundation & Cascade Engine
+- **Peak Discharge**:
+  $$Q_{\text{peak}} = \frac{1}{360} \cdot C \cdot I \cdot A$$
+  where $C$ is the composite runoff coefficient ($0.78$ for dense urban areas), $I$ is precipitation intensity in $\text{mm/h}$, and $A$ is catchment area in hectares.
+- **Inundation Depth**:
+  $$h(x, y, t) = h_0 + \int (R - I_{\text{infil}} - Q_{\text{drain}}) \, dt$$
+- **Infrastructure Cascade Matrix**:
+  - Substation trip occurs when $h > 0.45\,\text{m}$.
+  - Secondary water pump failure triggered upon substation de-energization.
+  - Hospital ICU emergency generator runtime evaluated against fuel tank depletion curve.
+
+---
+
+### 2.4 Dynamic Moving Sortie Flight Simulator
+- Waypoint interpolation equation:
+  $$P(t) = (1 - \alpha) \cdot W_k + \alpha \cdot W_{k+1}, \quad \alpha = \frac{t \bmod \Delta t}{\Delta t}$$
+- Smoothly advances heading angle $\theta$, altitude $z(t)$, and airspeed $v(t)$ across 12 distinct mission phases with real-time popup telemetry.
+
+---
+
+## 3. Data Schema & Persistence
+
+### 3.1 Digital Twin State Schema (`schemas.py`)
+```json
+{
+  "city_id": "mumbai_monsoon",
+  "city_name": "Mumbai",
+  "center_coords": [19.076, 72.877],
+  "timeline_hour": 3.5,
+  "rain_intensity_mmhr": 48.5,
+  "storm_surge_m": 0.85,
+  "flood_depth_avg_m": 0.62,
+  "inundated_area_km2": 14.8,
+  "nodes": [...],
+  "sensors": [...],
+  "roads": [...],
+  "evacuation_routes": [...],
+  "dispatch_units": [...],
+  "iap": {
+    "overall_threat_level": "CRITICAL",
+    "priority_actions": [...]
+  }
+}
+```
+
+---
+
+## 4. Security & Compliance
+- **Authentication**: JWT clearance tokens with role scopes (`national_authority`, `state_officer`, `district_officer`, `citizen`).
+- **Standardization**: Full adherence to NDMA Common Alerting Protocol (CAP v1.2) and WMS/WFS open geospatial standards.
+- **Encryption**: TLS 1.3 / HTTPS for API traffic and AES-256 for database storage.

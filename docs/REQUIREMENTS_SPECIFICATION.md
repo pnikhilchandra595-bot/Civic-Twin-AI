@@ -1,71 +1,91 @@
-# 📋 CIVICTWIN AI — REQUIREMENTS SPECIFICATION (SRS)
-**Functional Requirements, Non-Functional Requirements, User Stories & Acceptance Criteria**
+# 📋 CIVICTWIN AI — REQUIREMENTS SPECIFICATION DOCUMENT
+**Software Requirements Specification (SRS) for National Disaster Digital Twin**
 
 ---
 
-## 1. System Purpose & Target Stakeholders
+## 1. Introduction
 
 ### 1.1 Purpose
-This document specifies the software, hardware, and operational requirements for **CivicTwin AI**, an intelligent cyber-physical digital twin designed for urban disaster management and climate resilience across India.
+This document specifies the functional, non-functional, and interface requirements for the **CivicTwin AI** platform, defining the system capabilities across sovereign geospatial boundary locking, 4-tier role-based access control, multi-source sensor and satellite ingestion, aviation tracking, hydrodynamic cascade modeling, and citizen safety assistance.
 
-### 1.2 Target User Personas
-1. **National Emergency Director (NDMA / MHA)**: Needs high-level sovereign situational awareness across all 28 states and 8 union territories, strategic resource deployment, and national hazard alerts.
-2. **State Disaster Management Officer (SDMA)**: Needs regional flood monitoring, river basin telemetry, and multi-district evacuation coordination.
-3. **District Collector / Municipal Commissioner (DDMA)**: Needs micro-ward level inundation maps, emergency shelter bed capacity, dam gate control simulations, and local SMS broadcasts.
-4. **First Responder (NDRF / SDRF / 108 EMS)**: Needs dynamic turn-by-turn routing around flooded roads, live GPS vehicle tracking, and SOS distress triage.
-5. **Urban Citizen**: Needs accessible, multilingual flood risk information, turn-by-turn evacuation navigation, emergency shelter locators, and a one-click SOS assistance beacon.
+### 1.2 Scope
+CivicTwin AI serves disaster management authorities across India, including:
+- **National Level**: National Disaster Management Authority (NDMA), National Disaster Response Force (NDRF), Prime Minister's Office (PMO).
+- **State Level**: State Disaster Management Authorities (SDMA), State Disaster Response Forces (SDRF).
+- **District Level**: District Disaster Management Authorities (DDMA), Municipal Corporations, District Magistrates.
+- **Civilians**: Indian citizens residing in or traveling through disaster-affected corridors.
 
 ---
 
 ## 2. Functional Requirements (FR)
 
-### Module 1: Pan-India Geospatial Digital Twin
-- **FR-01 (Instant District Resolution)**: The system shall dynamically generate micro-catchment terrain elevation, critical lifeline nodes, road networks, and flood zones for all 780+ Indian districts within 2.0 seconds of user selection or search.
-- **FR-02 (Multi-Layer GIS Map Visualizer)**: The system shall render interactive map layers including Esri High-Resolution Satellite Base (0.5m), NOAA Doppler radar overlays, Sentinel-2 NDWI water extents, NASA FIRMS active fire hotspots, and live sensor networks.
-- **FR-03 (Camera Smooth Flying)**: The map canvas shall smoothly fly (`map.flyTo`) to the precise GPS coordinates of any searched district or clicked location.
+### FR-1: Sovereign Geographic & Map Boundary Restrictions
+- **FR-1.1**: The interactive Leaflet GIS canvas **MUST** enforce hard boundary limits locked to the Republic of India: `[[6.5°N, 68.0°E], [37.5°N, 97.5°E]]` with `maxBoundsViscosity: 1.0`.
+- **FR-1.2**: Camera movement, panning, and zooming outside sovereign Indian borders **MUST** be physically prevented by the viewport controller.
+- **FR-1.3**: For State Officers, the camera boundary **MUST** dynamically lock to the assigned state bounding box (`minZoom: 6`). Any click outside triggers an access violation banner.
+- **FR-1.4**: For District Officers, the camera boundary **MUST** lock to the assigned district centroid ($\pm 0.45^\circ$, `minZoom: 10`).
 
-### Module 2: Multi-Hazard Physics & Cascades
-- **FR-04 (Inundation Propagation Engine)**: The system shall calculate flood water depth at every node and road segment using Manning's open channel flow formula, taking into account rainfall intensity (0–120 mm/hr) and storm surge (0–5 m).
-- **FR-05 (Infrastructure Cascade Evaluation)**: The system shall automatically evaluate failure propagation across graph dependencies, identifying when flooded substations or levees trip dependent hospitals, water pumping stations, and telecommunications towers.
-- **FR-06 (Multi-Hazard Simulation Models)**: The system shall simulate Gaussian toxic gas plume dispersion, earthquake ShakeMaps (Modified Mercalli Intensity), and slum fire propagation upon command.
-- **FR-07 (What-If Crisis Sandbox)**: The system shall support one-click injection of extreme scenario presets including *100-Year Cloudburst Storm*, *Dam Sluice Gate Breach*, and *Regional Substation Failure*.
+---
 
-### Module 3: Generative AI Incident Commander & IAP
-- **FR-08 (Natural Language AI Copilot)**: The system shall provide an interactive conversational AI Incident Commander (powered by Google Gemini) that parses live telemetry, answers tactical queries, and suggests NDRF asset deployments.
-- **FR-09 (Automated ICS-201 Incident Action Plan)**: The system shall automatically synthesize a standardized Incident Action Plan containing operational objectives, safety messages, and resource assignments.
+### FR-2: 4-Tier Hierarchical Access Control (RBAC)
+- **FR-2.1 (Level 5 — National Authority)**:
+  - Full read/write access to all 780+ Indian districts across all 36 States and Union Territories.
+  - Pan-India radar mosaic grid, inter-state NDRF battalion dispatch, and national CAP emergency alert broadcasting.
+- **FR-2.2 (Level 3 — State SDMA Officer)**:
+  - Filtered access strictly scoped to the assigned State (e.g. Telangana, Maharashtra, Gujarat).
+  - Ability to inspect and drill down into all districts within their state jurisdiction; tools and metrics scope automatically.
+- **FR-2.3 (Level 2 — District DDMA Officer)**:
+  - Access restricted strictly to their assigned municipal district (e.g. Mumbai Suburban, Hyderabad, Surat).
+  - Localized ward-level inundation tracking, municipal relief shelters, local CCTV feeds, and dewatering pump deployments.
+- **FR-2.4 (Level 1 — Public Citizen)**:
+  - Simplified, responsive civilian portal with 1-Click SOS GPS Beacon broadcast, localized emergency helpline directory (112, 1070, 1077, 108), Gemini AI conversational safety advice, and active flooded road warnings.
 
-### Module 4: Real-World Ingestion & Citizen SOS
-- **FR-10 (Live Remote Sensing Ingestion)**: The system shall ingest live NASA FIRMS thermal anomaly CSV data and Copernicus Sentinel-2 NDWI statistical calculations with in-memory TTL caching.
-- **FR-11 (Citizen SOS Media Upload & Triage)**: The system shall enable citizens to submit geotagged SOS assistance requests with photo evidence, validating file headers using magic-byte inspection (JPEG, PNG, WebP) and capping sizes at 5MB.
-- **FR-12 (Multi-Carrier Telecom Alerts)**: The system shall dispatch real-time emergency SMS and WhatsApp notifications formatted in compliance with the NDMA Common Alerting Protocol (CAP-CP).
+---
+
+### FR-3: Multi-Source Spaceborne & Meteorological Ingestion
+- **FR-3.1 (ISRO MOSDAC)**: Continuous polling of INSAT-3D/3DR TIR-1 cloud-top temperatures ($209\,\text{K}$) and Hydro-Estimator precipitation rates (`3SIMG_L2B_HEM`).
+- **FR-3.2 (IMD Doppler Weather Radars)**: Real-time ingestion and display of animated Doppler reflectivity loops (`MUM_MAXZ.gif`, `DLH_MAXZ.gif`, `HYD_MAXZ.gif`, `mosaic.gif`) in native resolution.
+- **FR-3.3 (Copernicus Sentinel-1/2)**: C-Band Synthetic Aperture Radar (SAR) backscatter ($\sigma^0 < -16\,\text{dB}$) water extraction and Sentinel-2 multispectral NDWI damage grading.
+- **FR-3.4 (NASA FIRMS)**: Near real-time VIIRS 375m and MODIS thermal anomaly and active fire hotspots.
+
+---
+
+### FR-4: Two-Tier Disaster Aircraft Tracking & Sortie Simulation
+- **FR-4.1 (OpenSky ADS-B Ingestion)**: Live transponder streaming across Indian airspace bounding boxes.
+- **FR-4.2 (Two-Tier Sourced Registry Matching)**:
+  - **Tier 1 (Civil State & Pawan Hans Fleets)**: Matching against verified DGCA hex codes (`80026e`, `8004f2`, `8003a9`, `8006b1`, `800794`, `80027f`).
+  - **Tier 2 (Military Tactical Airlift)**: Matching against IAF asset codes (`80018a`, `80018b`, `800041`, `800531`).
+- **FR-4.3 (24-Hour Cache Lifecycle)**: Cached sightings **MUST** be timestamped with UTC/IST time and automatically purged after **24.0 hours**.
+- **FR-4.4 (Dynamic Moving Sortie Simulator)**: Real-time animated helicopter flight path executing a 12-waypoint loop with transparent `[SIMULATED]` badges.
+
+---
+
+### FR-5: Tactical Computer Vision & Video Ingestion
+- **FR-5.1 (1-Click Laptop Webcam)**: Zero-latency hardware camera capture via `navigator.mediaDevices.getUserMedia()` with real-time YOLO bounding box telemetry.
+- **FR-5.2 (Direct IP Video)**: Streaming of smartphone MJPEG/RTSP feeds (`http://<PHONE_IP>:8080/video`) for rapid field sensor deployment.
+- **FR-5.3 (Multispectral Shader Simulation)**: Real-time toggling between Normal RGB, FLIR Thermal Ironbow, and Night Vision matrices.
+
+---
+
+### FR-6: Physics-Informed Cascade & "What-If" Simulation
+- **FR-6.1 (2D Saint-Venant Shallow Water Model)**: Computes water depth $h$, flow velocity $v$, and Froude number $Fr$ based on rainfall intensity and digital elevation models.
+- **FR-6.2 (Infrastructure Cascade Propagation)**: Models power substation trips, secondary pump failures, hospital ICU generator fuel exhaustion, and road cutoffs.
+- **FR-6.3 (Scenario Sandbox)**: Interactive sliders for rainfall intensity ($0\text{--}150\,\text{mm/h}$), storm surge ($0\text{--}4\,\text{m}$), and levee breaches with timeline playback ($1\times, 2\times, 5\times, 10\times$).
 
 ---
 
 ## 3. Non-Functional Requirements (NFR)
 
-### 3.1 Performance & Scalability
-- **NFR-01 (Sub-Second Simulation Response)**: Hydrodynamic and cascade recomputations shall execute in under 150 milliseconds for up to 50 nodes and 100 road segments.
-- **NFR-02 (Low Latency WebSocket Broadcasting)**: Simulation state changes shall broadcast to all connected WebSocket clients within 50 milliseconds.
-- **NFR-03 (Frontend Bundle Optimization)**: The production frontend bundle shall use Rollup chunk-splitting to keep initial JavaScript download size under 1.0 MB for fast loading on 4G/5G mobile devices.
+### NFR-1: Performance & Latency
+- **NFR-1.1**: Map interaction and layer toggle rendering latency **MUST** remain below $16.6\,\text{ms}$ ($60\,\text{FPS}$).
+- **NFR-1.2**: Backend REST API response times for district telemetry **MUST** be $< 200\,\text{ms}$ under normal load.
+- **NFR-1.3**: WebSocket state broadcast latency **MUST** be $< 50\,\text{ms}$.
 
-### 3.2 Security & Data Protection
-- **NFR-04 (Cryptographic JWT & RBAC)**: Administrative and state-altering endpoints shall enforce HMAC-SHA256 JWT authorization tokens.
-- **NFR-05 (Input Sanitization & Upload Safety)**: All uploaded citizen media files shall undergo magic-byte header validation, 5MB file-size limits, and path-traversal filename sanitization.
-- **NFR-06 (Database Concurrency & WAL Mode)**: The relational database shall operate in SQLite Write-Ahead Logging (`WAL`) mode with a busy timeout of 5000ms to guarantee zero lock contention during concurrent reads and writes.
+### NFR-2: Reliability & Availability
+- **NFR-2.1**: The backend services **MUST** provide automated fallbacks for external APIs (e.g., cached IMD radar maps, fallback GloFAS hydrographs).
+- **NFR-2.2**: 99.9% uptime target during active monsoon and cyclone operational windows.
 
-### 3.3 Availability & Fault Tolerance
-- **NFR-07 (Zero-Backend Standalone Fallback)**: If the backend service is temporarily unreachable, the frontend shall seamlessly fall back to client-side synthetic state generation without crashing.
-- **NFR-08 (External API Resiliency)**: Third-party satellite and weather calls shall implement a 10-minute in-memory TTL cache and fallback baseline responses in case of upstream network outages.
-
----
-
-## 4. Hardware & Software Requirements
-
-| Category | Component | Minimum Specification | Recommended Specification |
-| :--- | :--- | :--- | :--- |
-| **Server Hardware** | CPU / RAM | 2 vCPU, 2 GB RAM | 4 vCPU, 8 GB RAM |
-| **Server Runtime** | Python Runtime | Python 3.10+ (FastAPI 0.110+, Uvicorn) | Python 3.11+ |
-| **Client Device** | Web Browser | Modern Evergreen Browser (Chrome 90+, Edge, Firefox, Safari) | Chromium-based browser with WebGL enabled |
-| **Client Device** | Mobile Device | Android 10+ / iOS 14+ (4G LTE / 5G) | Android 12+ / iOS 16+ |
-| **Database** | Persistence Storage | SQLite 3.35+ (with WAL mode enabled) | PostgreSQL 15+ with PostGIS extension |
-| **Cloud Hosting** | Deployment Platform | Render / Railway (Backend), Vercel (Frontend) | AWS ECS / EKS + CloudFront CDN |
+### NFR-3: Security & Governance
+- **NFR-3.1**: Authentication via 256-bit AES encrypted tokens; passkeys and badges stored securely.
+- **NFR-3.2**: Full compliance with NDMA Common Alerting Protocol (CAP v1.2) standards.
+- **NFR-3.3**: Zero external data leakage of sensitive user GPS coordinates; citizen SOS packets encrypted in transit.
