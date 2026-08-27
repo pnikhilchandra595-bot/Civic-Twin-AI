@@ -94,6 +94,21 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
   const currentStreamUrl = useCustomUrl ? customCameraInput : (activeFeed?.video_url || 'http://nikhils-iphone.local:8081/video');
   const isMjpegStream = currentStreamUrl.includes(':8081') || currentStreamUrl.includes('/video') || currentStreamUrl.includes('.mjpg');
 
+  const getParsedVideoUrl = (url: string) => {
+    if (!url) return '';
+    if (url.includes('youtube.com/watch?v=')) {
+      const vid = url.split('watch?v=')[1].split('&')[0];
+      return `https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&enablejsapi=1`;
+    }
+    if (url.includes('youtu.be/')) {
+      const vid = url.split('youtu.be/')[1].split('?')[0];
+      return `https://www.youtube.com/embed/${vid}?autoplay=1&mute=1&enablejsapi=1`;
+    }
+    return url;
+  };
+
+  const isYouTubeStream = currentStreamUrl.includes('youtube.com') || currentStreamUrl.includes('youtu.be');
+
   const handleApplyCustomStream = () => {
     if (customCameraInput.trim()) {
       setUseCustomUrl(true);
@@ -199,9 +214,17 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
             {viewMode === 'SINGLE_FOCUS' && activeFeed && (
               <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-black aspect-video flex items-center justify-center shadow-2xl group">
                 
-                {/* Real Direct Video Element */}
-                {/* Real Video or MJPEG IP Camera Stream Element */}
-                {isMjpegStream ? (
+                {/* Real Video / YouTube Live / MJPEG IP Camera Stream Element */}
+                {isYouTubeStream ? (
+                  <iframe
+                    src={getParsedVideoUrl(currentStreamUrl)}
+                    title="Live Surveillance Feed"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    style={getVideoFilterStyle()}
+                    className="w-full h-full border-0 pointer-events-auto"
+                  />
+                ) : isMjpegStream ? (
                   <img
                     src={currentStreamUrl}
                     alt="Live IP Camera Stream"
@@ -586,15 +609,15 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                 </div>
               )}
 
-              {/* Live Custom IP Camera Stream Ingestion Card */}
+              {/* Live Custom YouTube / Windy / IP Camera Stream Ingestion Card */}
               <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 space-y-2.5 font-mono text-xs">
                 <div className="flex items-center justify-between text-[11px] font-bold text-cyan-300">
                   <span className="flex items-center space-x-1.5">
-                    <span>📱</span>
-                    <span>Live IP Camera Stream:</span>
+                    <span>🌐</span>
+                    <span>Live YouTube / Windy / IP Cam:</span>
                   </span>
                   <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-700">
-                    HTTP / MJPEG
+                    YouTube / HTTP / MJPEG
                   </span>
                 </div>
 
@@ -603,21 +626,29 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
                     type="text"
                     value={customCameraInput}
                     onChange={(e) => setCustomCameraInput(e.target.value)}
-                    placeholder="http://nikhils-iphone.local:8081/video"
-                    className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-[11px] font-mono text-white focus:outline-none"
+                    placeholder="Paste YouTube Live URL, Windy webcam, or http://..."
+                    className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-[11px] font-mono text-white focus:outline-none placeholder-slate-600"
                   />
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={handleApplyCustomStream}
                       className="flex-1 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] transition-all cursor-pointer shadow-md"
                     >
-                      Connect Live Camera
+                      Connect Live Stream
+                    </button>
+                    <button
+                      onClick={() => { setCustomCameraInput('https://www.youtube.com/watch?v=21X5lGlDOfg'); setUseCustomUrl(true); setVideoError(false); }}
+                      className="px-2 py-1.5 rounded-lg bg-purple-950/80 hover:bg-purple-900 border border-purple-600/50 text-purple-300 text-[10px]"
+                      title="NASA 24/7 Earth Cyclone Cam"
+                    >
+                      🛰️ NASA Live
                     </button>
                     <button
                       onClick={() => { setCustomCameraInput('http://nikhils-iphone.local:8081/video'); setUseCustomUrl(true); setVideoError(false); }}
-                      className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px]"
+                      className="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-[10px]"
+                      title="Nikhil's iPhone Live Feed"
                     >
-                      iPhone Reset
+                      📱 iPhone
                     </button>
                   </div>
                 </div>
