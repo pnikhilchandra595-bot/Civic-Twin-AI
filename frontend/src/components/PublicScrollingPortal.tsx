@@ -85,20 +85,20 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#eef7f2] dark:bg-[#030712] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500 selection:text-black">
+    <div className="w-full min-h-screen bg-[#334155] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black">
       
       {/* 1. PUBLIC TOP NAVIGATION BAR */}
-      <nav className="sticky top-0 z-50 bg-[#f4faf7]/90 dark:bg-[#060a14]/95 backdrop-blur-xl border-b border-emerald-200/80 dark:border-cyan-500/30 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-sm">
+      <nav className="sticky top-0 z-50 bg-[#1e293b]/95 backdrop-blur-xl border-b border-slate-700/80 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-lg">
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-cyan-100 dark:bg-cyan-950/90 border border-cyan-400/50 text-cyan-600 dark:text-cyan-400 shadow-sm">
+            <div className="p-2 rounded-xl bg-slate-800 border border-cyan-500/50 text-cyan-400 shadow-md">
               <Activity className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <span className="font-pixel text-lg font-black tracking-wider bg-gradient-to-r from-orange-500 via-cyan-600 dark:via-white to-emerald-500 bg-clip-text text-transparent">
+              <span className="font-pixel text-lg font-black tracking-wider bg-gradient-to-r from-orange-400 via-white to-emerald-400 bg-clip-text text-transparent">
                 CIVICTWIN AI
               </span>
-              <span className="hidden sm:inline-block ml-2 text-[9px] font-mono px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-600 font-bold">
+              <span className="hidden sm:inline-block ml-2 text-[9px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-cyan-300 border border-slate-600 font-bold">
                 PUBLIC SAFETY PORTAL
               </span>
             </div>
@@ -106,10 +106,10 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* Center Navigation Links */}
-        <div className="hidden md:flex items-center space-x-6 text-xs font-mono font-bold text-slate-600 dark:text-slate-300">
-          <a href="#weather" className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Live Weather & Safety</a>
-          <a href="#gemini" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Gemini Safety AI</a>
-          <a href="#helplines" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">24/7 Helplines</a>
+        <div className="hidden md:flex items-center space-x-6 text-xs font-mono font-bold text-slate-300">
+          <a href="#weather" className="hover:text-cyan-400 transition-colors">Live Weather & Safety</a>
+          <a href="#gemini" className="hover:text-blue-400 transition-colors">Gemini Safety AI</a>
+          <a href="#helplines" className="hover:text-emerald-400 transition-colors">24/7 Helplines</a>
         </div>
 
         {/* Right Action Buttons */}

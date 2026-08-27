@@ -17,13 +17,13 @@ html {
 
 :root {
   font-family: 'Outfit', sans-serif;
-  color-scheme: light dark;
+  color-scheme: dark;
 }
 
 body {
-  background: linear-gradient(135deg, #e8f5e9 0%, #e0f2fe 40%, #edf7f6 75%, #f1f8f5 100%);
+  background: linear-gradient(135deg, #475569 0%, #334155 40%, #1e293b 80%, #0f172a 100%);
   background-attachment: fixed;
-  color: #0f2922;
+  color: #f1f5f9;
 }
 
 .font-pixel {
@@ -40,21 +40,22 @@ code, kbd, samp, pre {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Global Soft Pastel Glassmorphism Panels */
+/* Metallic Steel Industrial Glassmorphism Panels */
 .hud-panel {
-  background: rgba(246, 252, 249, 0.88);
+  background: rgba(30, 41, 59, 0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(167, 243, 208, 0.7);
-  box-shadow: 0 8px 30px -4px rgba(6, 78, 59, 0.07);
-  color: #0f2922;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.35);
+  color: #f1f5f9;
 }
 
 .hud-panel-glow {
-  background: rgba(240, 253, 250, 0.92);
+  background: rgba(30, 41, 59, 0.92);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(16, 185, 129, 0.5);
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.15), inset 0 0 15px rgba(16, 185, 129, 0.04);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.2), inset 0 0 15px rgba(56, 189, 248, 0.06);
+  color: #f1f5f9;
 }
 
 /* Dark Mode Overrides */
