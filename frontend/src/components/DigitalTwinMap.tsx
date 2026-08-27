@@ -773,6 +773,37 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       const layersGroup = L.layerGroup().addTo(map);
       layersGroupRef.current = layersGroup;
 
+      // Role-Based Boundary Locking Enforcer
+      if (isStateOfficer && authUser?.assignedState) {
+        const stateDstList = stateDistrictsMap[authUser.assignedState] || [];
+        if (stateDstList.length > 0) {
+          const lats = stateDstList.map(d => d.coords[0]);
+          const lngs = stateDstList.map(d => d.coords[1]);
+          const minLat = Math.min(...lats) - 0.8;
+          const maxLat = Math.max(...lats) + 0.8;
+          const minLng = Math.min(...lngs) - 0.8;
+          const maxLng = Math.max(...lngs) + 0.8;
+          const stateBounds = L.latLngBounds(L.latLng(minLat, minLng), L.latLng(maxLat, maxLng));
+          map.setMaxBounds(stateBounds);
+          map.setMinZoom(6);
+          map.fitBounds(stateBounds);
+        }
+      } else if (isDistrictOfficer && authUser?.assignedDistrict) {
+        const stateName = authUser.assignedState || 'Maharashtra';
+        const stateDstList = stateDistrictsMap[stateName] || [];
+        const dstMatch = stateDstList.find(d => d.name.toLowerCase().includes(authUser.assignedDistrict!.toLowerCase())) || stateDstList[0];
+        if (dstMatch) {
+          const [cLat, cLng] = dstMatch.coords;
+          const distBounds = L.latLngBounds(L.latLng(cLat - 0.45, cLng - 0.45), L.latLng(cLat + 0.45, cLng + 0.45));
+          map.setMaxBounds(distBounds);
+          map.setMinZoom(10);
+          map.setView(dstMatch.coords, 12);
+        }
+      } else {
+        map.setMaxBounds(INDIA_BOUNDS);
+        map.setMinZoom(4);
+      }
+
       map.on('click', (e: L.LeafletMouseEvent) => {
         const { lat, lng } = e.latlng;
         if (!isInsideIndia(lat, lng)) {
@@ -780,6 +811,35 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           setTimeout(() => setClickCoordFeedback(null), 3500);
           return;
         }
+
+        // Role-Based Geographic Access Restrictions
+        if (isStateOfficer && authUser?.assignedState) {
+          const stateDstList = stateDistrictsMap[authUser.assignedState] || [];
+          if (stateDstList.length > 0) {
+            const lats = stateDstList.map(d => d.coords[0]);
+            const lngs = stateDstList.map(d => d.coords[1]);
+            if (lat < Math.min(...lats) - 0.8 || lat > Math.max(...lats) + 0.8 || lng < Math.min(...lngs) - 0.8 || lng > Math.max(...lngs) + 0.8) {
+              setClickCoordFeedback(`⚠️ Access Restricted: Operational clearance limited to ${authUser.assignedState} SDMA.`);
+              setTimeout(() => setClickCoordFeedback(null), 4000);
+              return;
+            }
+          }
+        }
+
+        if (isDistrictOfficer && authUser?.assignedDistrict) {
+          const stateName = authUser.assignedState || 'Maharashtra';
+          const stateDstList = stateDistrictsMap[stateName] || [];
+          const dstMatch = stateDstList.find(d => d.name.toLowerCase().includes(authUser.assignedDistrict!.toLowerCase()));
+          if (dstMatch) {
+            const [cLat, cLng] = dstMatch.coords;
+            if (Math.abs(lat - cLat) > 0.5 || Math.abs(lng - cLng) > 0.5) {
+              setClickCoordFeedback(`⚠️ Access Restricted: Operational clearance limited to ${authUser.assignedDistrict} DDMA.`);
+              setTimeout(() => setClickCoordFeedback(null), 4000);
+              return;
+            }
+          }
+        }
+
         setClickCoordFeedback(`📍 Point & Navigate: Focused on [${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E]`);
         setTimeout(() => setClickCoordFeedback(null), 4000);
         map.flyTo([lat, lng], Math.max(map.getZoom(), 13), { duration: 1.2 });

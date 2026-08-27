@@ -34,6 +34,7 @@ interface HeaderProps {
   onOpenMultiHazard: () => void;
   onOpenDistrictAtlas?: () => void;
   onOpenQRCode?: () => void;
+  onOpenCitizenPortal?: () => void;
   onSyncLiveWeather: () => void;
   isSyncingWeather: boolean;
   onSwitchCity: (cityId: string) => void;
@@ -280,6 +281,18 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="hidden sm:inline">{isCitizen ? "Helplines" : "Real Alert"}</span>
           <span className="sm:hidden">Alert</span>
         </button>
+
+        {/* 4b. Citizen Safety & Disaster Assistant Portal Button */}
+        {isCitizen && onOpenCitizenPortal && (
+          <button
+            onClick={onOpenCitizenPortal}
+            title="Open Citizen Safety & Disaster Assistant Portal"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-hud font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)] animate-pulse border border-emerald-300/50 cursor-pointer shrink-0"
+          >
+            <ShieldCheck className="w-4 h-4 text-emerald-200" />
+            <span>Citizen Safety Portal</span>
+          </button>
+        )}
 
         {/* 5. CATEGORIZED COMMAND DECK TOOLS DROPDOWN (Hidden from Citizens) */}
         {!isCitizen && (

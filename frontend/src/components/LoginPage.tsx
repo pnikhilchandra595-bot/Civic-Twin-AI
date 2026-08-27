@@ -133,14 +133,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onClose }) => {
             clearanceLevel: 2
           });
         } else {
+          const mapping = stateCityMap[stateName] || stateCityMap['Maharashtra'];
           onLogin({
             name: 'Citizen (4321)',
             role: 'Resident Civilian (Verified Mobile)',
             agency: 'Civic Citizen Emergency Network',
             phone: '+91 98765 43210',
             userType: 'citizen',
-            assignedCityId: 'mumbai_monsoon',
-            allowedStates: ['ALL'],
+            assignedState: stateName,
+            assignedDistrict: assignedDistrict || mapping.district,
+            assignedCityId: mapping.cityId,
+            allowedStates: [stateName],
             clearanceLevel: 1
           });
         }
@@ -469,6 +472,33 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onClose }) => {
                 <p className="text-xs text-slate-400 mt-0.5 font-sans">
                   Enter mobile number to receive 6-digit OTP or tap 1-Tap Login above.
                 </p>
+              </div>
+
+              {/* Citizen State & District Area Selection */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-slate-300 font-semibold">Your State:</label>
+                  <select
+                    value={assignedState}
+                    onChange={(e) => handleStateChange(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-emerald-500 cursor-pointer"
+                  >
+                    {Object.keys(stateCityMap).map((st) => (
+                      <option key={st} value={st}>{st}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-mono text-slate-300 font-semibold">Your Area / District:</label>
+                  <input
+                    type="text"
+                    value={assignedDistrict}
+                    onChange={(e) => setAssignedDistrict(e.target.value)}
+                    placeholder="e.g. Hyderabad / Dadar"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
               </div>
 
               {/* Mobile Number Input */}

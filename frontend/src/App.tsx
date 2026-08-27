@@ -37,6 +37,7 @@ import { PublicGPSLocationSOSModal } from './components/PublicGPSLocationSOSModa
 import { MobileHeadAppModal } from './components/MobileHeadAppModal';
 import { DistrictSelectionModal } from './components/DistrictSelectionModal';
 import { CitizenQRCodeModal } from './components/CitizenQRCodeModal';
+import { CitizenPortalModal } from './components/CitizenPortalModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon,
@@ -106,6 +107,7 @@ export const App: React.FC = () => {
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState<boolean>(false);
   const [isDistrictAtlasOpen, setIsDistrictAtlasOpen] = useState<boolean>(false);
   const [isQRCodeOpen, setIsQRCodeOpen] = useState<boolean>(false);
+  const [isCitizenPortalOpen, setIsCitizenPortalOpen] = useState<boolean>(false);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
@@ -420,6 +422,7 @@ export const App: React.FC = () => {
         onOpenMultiHazard={() => setIsMultiHazardOpen(true)}
         onOpenDistrictAtlas={() => setIsDistrictAtlasOpen(true)}
         onOpenQRCode={() => setIsQRCodeOpen(true)}
+        onOpenCitizenPortal={() => setIsCitizenPortalOpen(true)}
         onSyncLiveWeather={() => setIsLiveWeatherOpen(true)}
         isSyncingWeather={isSyncingWeather}
         onSwitchCity={handleSwitchCity}
@@ -955,6 +958,16 @@ export const App: React.FC = () => {
           authUser={authUser}
           onSelectDistrict={(districtName, lat, lng) => handleResolveLocation(districtName, lat, lng)}
           onClose={() => setIsDistrictAtlasOpen(false)}
+        />
+      )}
+
+      {/* Citizen Safety & Disaster Assistant Portal Modal */}
+      {isCitizenPortalOpen && (
+        <CitizenPortalModal
+          authUser={authUser}
+          cityName={state?.city_name || 'Mumbai'}
+          onClose={() => setIsCitizenPortalOpen(false)}
+          onNavigateToLocation={(lat, lng, label) => handleResolveLocation(label, lat, lng)}
         />
       )}
     </div>
