@@ -526,12 +526,12 @@ export const App: React.FC = () => {
         {/* SECTION 2: "WHAT-IF" CRISIS SIMULATION SANDBOX & TIMELINE CONTROLLER       */}
         {/* ========================================================================= */}
         <section className="space-y-2">
-          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-white uppercase tracking-wider">
-            <Activity className="w-4 h-4 text-amber-400" />
+          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+            <Activity className="w-4 h-4 text-amber-500 dark:text-amber-400" />
             <span>2. "What-If" Crisis Sandbox & Timeline Simulation Controls</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] shadow-xl">
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0a0f1d] border border-slate-200 dark:border-[#1f2c44] shadow-md text-slate-900 dark:text-white">
             <ScenarioSandbox
               state={state}
               isPlaying={isPlaying}
@@ -545,112 +545,110 @@ export const App: React.FC = () => {
         {/* ========================================================================= */}
         {/* SECTION 3: REAL-TIME OPERATIONAL INTELLIGENCE GRID (3 SPACIOUS COLUMNS)    */}
         {/* ========================================================================= */}
-        {/* SECTION 3: REAL-TIME OPERATIONAL INTELLIGENCE GRID                         */}
-        {/* ========================================================================= */}
         <section className="space-y-3">
-          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-white uppercase tracking-wider">
-            <ShieldAlert className="w-4 h-4 text-rose-400" />
+          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+            <ShieldAlert className="w-4 h-4 text-rose-500 dark:text-rose-400" />
             <span>3. Real-Time Operations & Inter-Agency Tactical Intelligence</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
             
             {/* Card 1: Citizen SOS Live Feed Card */}
-            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0a0f1d] border border-slate-200 dark:border-[#1f2c44] flex flex-col justify-between space-y-2.5 shadow-sm">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center space-x-1.5">
-                  <AlertOctagon className="w-4 h-4 text-rose-400" />
-                  <span className="text-xs font-bold font-mono text-white">Citizen SOS Queue</span>
+                  <AlertOctagon className="w-4 h-4 text-rose-500 dark:text-rose-400" />
+                  <span className="text-xs font-bold font-mono text-slate-900 dark:text-white">Citizen SOS Queue</span>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+              <p className="text-[11px] text-slate-600 dark:text-slate-300 font-sans leading-snug">
                 Crowdsourced WhatsApp & Telegram distress signals with AI confidence triage scoring.
               </p>
               <button
                 onClick={() => setIsCitizenSOSOpen(true)}
-                className="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-600/60 text-rose-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="w-full py-2 bg-rose-600 dark:bg-rose-950/80 hover:bg-rose-500 dark:hover:bg-rose-900 border border-rose-600 text-white dark:text-rose-200 font-bold font-mono text-xs rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
-                <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
+                <AlertOctagon className="w-3.5 h-3.5" />
                 <span>Open SOS Triage</span>
               </button>
             </div>
 
             {/* Card 2: Citizen Smartphone QR Beacon Card (NEW!) */}
-            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-rose-500/30 flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0a0f1d] border border-rose-300 dark:border-rose-500/30 flex flex-col justify-between space-y-2.5 shadow-sm">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center space-x-1.5">
-                  <QrCode className="w-4 h-4 text-rose-400 animate-pulse" />
-                  <span className="text-xs font-bold font-mono text-rose-300">Citizen QR Beacon</span>
+                  <QrCode className="w-4 h-4 text-rose-500 dark:text-rose-400 animate-pulse" />
+                  <span className="text-xs font-bold font-mono text-rose-700 dark:text-rose-300">Citizen QR Beacon</span>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+              <p className="text-[11px] text-slate-600 dark:text-slate-300 font-sans leading-snug">
                 Shareable mobile QR code for instant zero-download hardware GPS locking and 112 SMS dispatch.
               </p>
               <button
                 onClick={() => setIsQRCodeOpen(true)}
-                className="w-full py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-500/60 text-rose-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="w-full py-2 bg-rose-600 dark:bg-rose-950/80 hover:bg-rose-500 dark:hover:bg-rose-900 border border-rose-600 text-white dark:text-rose-200 font-bold font-mono text-xs rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
-                <QrCode className="w-3.5 h-3.5 text-rose-400" />
+                <QrCode className="w-3.5 h-3.5" />
                 <span>Open QR Beacon</span>
               </button>
             </div>
 
             {/* Card 3: 3D Topographic Elevation Slicing Card (NEW!) */}
-            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-cyan-500/30 flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0a0f1d] border border-cyan-300 dark:border-cyan-500/30 flex flex-col justify-between space-y-2.5 shadow-sm">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center space-x-1.5">
-                  <TrendingUp className="w-4 h-4 text-cyan-400 animate-pulse" />
-                  <span className="text-xs font-bold font-mono text-cyan-300">3D Elevation Cut</span>
+                  <TrendingUp className="w-4 h-4 text-cyan-600 dark:text-cyan-400 animate-pulse" />
+                  <span className="text-xs font-bold font-mono text-cyan-700 dark:text-cyan-300">3D Elevation Cut</span>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+              <p className="text-[11px] text-slate-600 dark:text-slate-300 font-sans leading-snug">
                 2D/3D cutaway terrain bathymetry analyzing riverbed, levee crest, and flood spillover points.
               </p>
               <button
                 onClick={() => setIsElevationOpen(true)}
-                className="w-full py-2 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="w-full py-2 bg-cyan-600 dark:bg-cyan-950/80 hover:bg-cyan-500 dark:hover:bg-cyan-900 border border-cyan-600 text-white dark:text-cyan-200 font-bold font-mono text-xs rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
-                <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
+                <TrendingUp className="w-3.5 h-3.5" />
                 <span>Open Elevation Cut</span>
               </button>
             </div>
 
             {/* Card 4: CCTV & Drone Video Recon Card */}
-            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0a0f1d] border border-slate-200 dark:border-[#1f2c44] flex flex-col justify-between space-y-2.5 shadow-sm">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center space-x-1.5">
-                  <Video className="w-4 h-4 text-cyan-400" />
-                  <span className="text-xs font-bold font-mono text-white">CCTV & Drone Matrix</span>
+                  <Video className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <span className="text-xs font-bold font-mono text-slate-900 dark:text-white">CCTV & Drone Matrix</span>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+              <p className="text-[11px] text-slate-600 dark:text-slate-300 font-sans leading-snug">
                 Municipal subway cameras and UAV survey drone feeds with real-time YOLOv8 vehicle detection.
               </p>
               <button
                 onClick={() => setIsDroneCCTVOpen(true)}
-                className="w-full py-2 bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="w-full py-2 bg-cyan-600 dark:bg-cyan-950/80 hover:bg-cyan-500 dark:hover:bg-cyan-900 border border-cyan-600 text-white dark:text-cyan-200 font-bold font-mono text-xs rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
-                <Video className="w-3.5 h-3.5 text-cyan-400" />
+                <Video className="w-3.5 h-3.5" />
                 <span>Launch CCTV Matrix</span>
               </button>
             </div>
 
             {/* Card 5: Push-to-Talk Voice AI Radio Card */}
-            <div className="p-3.5 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] flex flex-col justify-between space-y-2.5 shadow-lg">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0a0f1d] border border-slate-200 dark:border-[#1f2c44] flex flex-col justify-between space-y-2.5 shadow-sm">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
                 <div className="flex items-center space-x-1.5">
-                  <MessageSquare className="w-4 h-4 text-purple-400" />
-                  <span className="text-xs font-bold font-mono text-white">Voice Radio Co-Pilot</span>
+                  <MessageSquare className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <span className="text-xs font-bold font-mono text-slate-900 dark:text-white">Voice Radio Co-Pilot</span>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-300 font-sans leading-snug">
+              <p className="text-[11px] text-slate-600 dark:text-slate-300 font-sans leading-snug">
                 Tactical walkie-talkie voice radio with authentic squelch static SFX and AI SITREP responses.
               </p>
               <button
                 onClick={() => setIsVoiceRadioOpen(true)}
-                className="w-full py-2 bg-purple-950/80 hover:bg-purple-900 border border-purple-500/60 text-purple-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                className="w-full py-2 bg-purple-600 dark:bg-purple-950/80 hover:bg-purple-500 dark:hover:bg-purple-900 border border-purple-600 text-white dark:text-purple-200 font-bold font-mono text-xs rounded-xl shadow-sm transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                <Sparkles className="w-3.5 h-3.5" />
                 <span>Push-To-Talk Radio</span>
               </button>
             </div>
@@ -713,7 +711,7 @@ export const App: React.FC = () => {
           </div>
 
           {/* Render Active Deep Analysis Component */}
-          <div className="p-4 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] shadow-xl min-h-[480px]">
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0a0f1d] border border-slate-200 dark:border-[#1f2c44] shadow-md text-slate-900 dark:text-white min-h-[480px]">
             {analysisTab === 'cascade' && (
               <CascadeFailureGraph
                 state={state}
@@ -753,12 +751,12 @@ export const App: React.FC = () => {
         {/* SECTION 5: NDRF TACTICAL RADIO CHATTER STREAM                              */}
         {/* ========================================================================= */}
         <section className="space-y-2 pt-2 pb-8">
-          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-white uppercase tracking-wider">
-            <RadioIcon className="w-4 h-4 text-emerald-400" />
+          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+            <RadioIcon className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
             <span>5. Live NDRF Inter-Agency Tactical Radio Chatter (All 12 Battalions)</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#0a0f1d] border border-[#1f2c44] shadow-xl h-[420px]">
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0a0f1d] border border-slate-200 dark:border-[#1f2c44] shadow-md text-slate-900 dark:text-white h-[420px]">
             <TacticalRadioFeed
               messages={radioMessages}
               onSendMessage={handleSendRadio}

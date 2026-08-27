@@ -85,20 +85,20 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black">
+    <div className="w-full min-h-screen bg-[#f8fafc] dark:bg-[#030712] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500 selection:text-black">
       
       {/* 1. PUBLIC TOP NAVIGATION BAR */}
-      <nav className="sticky top-0 z-50 bg-[#060a14]/95 backdrop-blur-xl border-b border-cyan-500/30 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-2xl">
+      <nav className="sticky top-0 z-50 bg-white/95 dark:bg-[#060a14]/95 backdrop-blur-xl border-b border-slate-200 dark:border-cyan-500/30 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-cyan-950/90 border border-cyan-400/50 text-cyan-400 shadow-[0_0_15px_rgba(0,210,255,0.3)]">
+            <div className="p-2 rounded-xl bg-cyan-100 dark:bg-cyan-950/90 border border-cyan-400/50 text-cyan-600 dark:text-cyan-400 shadow-sm">
               <Activity className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <span className="text-base font-black tracking-wider bg-gradient-to-r from-orange-400 via-white to-emerald-400 bg-clip-text text-transparent">
+              <span className="font-pixel text-lg font-black tracking-wider bg-gradient-to-r from-orange-500 via-cyan-600 dark:via-white to-emerald-500 bg-clip-text text-transparent">
                 CIVICTWIN AI
               </span>
-              <span className="hidden sm:inline-block ml-2 text-[9px] font-mono px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-600 font-bold">
+              <span className="hidden sm:inline-block ml-2 text-[9px] font-mono px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-600 font-bold">
                 PUBLIC SAFETY PORTAL
               </span>
             </div>
@@ -106,10 +106,10 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* Center Navigation Links */}
-        <div className="hidden md:flex items-center space-x-6 text-xs font-mono font-bold text-slate-300">
-          <a href="#weather" className="hover:text-cyan-400 transition-colors">Live Weather & Safety</a>
-          <a href="#gemini" className="hover:text-blue-400 transition-colors">Gemini Safety AI</a>
-          <a href="#helplines" className="hover:text-emerald-400 transition-colors">24/7 Helplines</a>
+        <div className="hidden md:flex items-center space-x-6 text-xs font-mono font-bold text-slate-600 dark:text-slate-300">
+          <a href="#weather" className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">Live Weather & Safety</a>
+          <a href="#gemini" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Gemini Safety AI</a>
+          <a href="#helplines" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">24/7 Helplines</a>
         </div>
 
         {/* Right Action Buttons */}
@@ -267,17 +267,17 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* LIVE WEATHER & DISASTER CONDITION CARD */}
-        <div id="weather" className="p-5 rounded-3xl bg-slate-950/90 border border-cyan-500/30 shadow-2xl space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <div id="weather" className="p-5 rounded-3xl bg-white dark:bg-slate-950/90 border border-slate-200 dark:border-cyan-500/30 shadow-md space-y-4 text-slate-900 dark:text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
             <div className="flex items-center space-x-2.5">
-              <CloudRain className="w-5 h-5 text-cyan-400" />
-              <span className="text-sm font-bold text-white uppercase tracking-wider">
+              <CloudRain className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+              <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-pixel">
                 Live IMD Weather & Flood Threat Condition
               </span>
             </div>
             <button
               onClick={onOpenWeather}
-              className="text-xs font-mono text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 cursor-pointer"
+              className="text-xs font-mono text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 flex items-center space-x-1 cursor-pointer font-bold"
             >
               <span>View 7-Day Forecast & Tide Matrix</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -285,21 +285,21 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-            <div className="p-3 bg-slate-900/80 rounded-2xl border border-slate-800">
+            <div className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
               <div className="text-slate-500 text-[10px]">Active Region</div>
-              <div className="text-white font-bold mt-0.5 truncate">{cityName}</div>
+              <div className="text-slate-900 dark:text-white font-bold mt-0.5 truncate">{cityName}</div>
             </div>
-            <div className="p-3 bg-slate-900/80 rounded-2xl border border-slate-800">
+            <div className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
               <div className="text-slate-500 text-[10px]">Precipitation Rate</div>
-              <div className="text-cyan-300 font-black text-sm mt-0.5">{rain.toFixed(1)} mm/h</div>
+              <div className="text-cyan-600 dark:text-cyan-300 font-black text-sm mt-0.5">{rain.toFixed(1)} mm/h</div>
             </div>
-            <div className="p-3 bg-slate-900/80 rounded-2xl border border-slate-800">
+            <div className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
               <div className="text-slate-500 text-[10px]">Overall Threat Level</div>
-              <div className="text-amber-400 font-bold mt-0.5">{threat}</div>
+              <div className="text-amber-600 dark:text-amber-400 font-bold mt-0.5">{threat}</div>
             </div>
-            <div className="p-3 bg-slate-900/80 rounded-2xl border border-slate-800">
+            <div className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
               <div className="text-slate-500 text-[10px]">High-Ground Shelters</div>
-              <div className="text-emerald-400 font-bold mt-0.5">Active & Open</div>
+              <div className="text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">Active & Open</div>
             </div>
           </div>
         </div>
@@ -310,17 +310,17 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
       <section id="gemini" className="py-8 px-4 lg:px-8 max-w-5xl mx-auto space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-blue-950 border border-blue-500/50 text-blue-300">
-              <Sparkles className="w-5 h-5 text-cyan-300" />
+            <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-950 border border-blue-300 dark:border-blue-500/50 text-blue-700 dark:text-blue-300">
+              <Sparkles className="w-5 h-5 text-cyan-600 dark:text-cyan-300" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white flex items-center space-x-2">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center space-x-2 font-pixel">
                 <span>Google Gemini AI Public Disaster Advisor</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-950 border border-blue-500 text-blue-300 font-mono font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 border border-blue-300 dark:border-blue-500 text-blue-700 dark:text-blue-300 font-mono font-bold">
                   24/7 AI SAFETY
                 </span>
               </h2>
-              <p className="text-xs text-slate-400 font-sans mt-0.5">
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-sans mt-0.5">
                 Ask any question regarding flood safety, drinking water, first-aid, and nearest relief camps.
               </p>
             </div>
@@ -336,14 +336,14 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* Conversational Prompt Box */}
-        <div className="p-5 rounded-3xl bg-slate-950/90 border border-blue-500/30 space-y-4 shadow-xl">
+        <div className="p-5 rounded-3xl bg-white dark:bg-slate-950/90 border border-slate-200 dark:border-blue-500/30 space-y-4 shadow-md text-slate-900 dark:text-white">
           <div className="flex gap-2">
             <input
               type="text"
               value={heroPrompt}
               onChange={(e) => setHeroPrompt(e.target.value)}
               placeholder="Ask a safety question (e.g. How to purify water during flood?)"
-              className="flex-1 bg-slate-900 border border-slate-700 focus:border-blue-400 rounded-xl p-3 text-xs font-mono text-white focus:outline-none placeholder-slate-500"
+              className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:border-blue-500 rounded-xl p-3 text-xs font-mono text-slate-900 dark:text-white focus:outline-none placeholder-slate-400"
             />
             <button
               onClick={() => handleAskGemini()}

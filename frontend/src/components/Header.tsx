@@ -73,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
   const toolsMenuRef = useRef<HTMLDivElement>(null);
 
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    return (localStorage.getItem('civictwin_theme') as 'dark' | 'light') || 'dark';
+    return (localStorage.getItem('civictwin_theme') as 'dark' | 'light') || 'light';
   });
 
   useEffect(() => {
