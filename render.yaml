@@ -41,4 +41,8 @@ services:
         value: "gmnSpSaKqninoz0DQqF0ew2DhgCLPB1B"
       - key: PURPLEAIR_API_KEY
         value: "5817167C-A095-11F1-9E30-4201AC1DC129"
+      - key: TOMTOM_API_KEY
+        value: "MOUuKPsdQzqcmuZG8xjKMtn3I9WTkO3V"
+      - key: COASTAL_AIS_API_KEY
+        value: "3e811c72d597824d46772d1a741f67a8a00f3840"
 

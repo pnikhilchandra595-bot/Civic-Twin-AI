@@ -68,7 +68,7 @@ class DroneCCTVService:
                 state_name="Maharashtra",
                 lat=19.019,
                 lng=72.846,
-                video_url="https://assets.mixkit.co/videos/preview/mixkit-car-driving-through-a-flooded-street-41959-large.mp4",
+                video_url="https://upload.wikimedia.org/wikipedia/commons/e/e9/Flood_in_Soan_river.webm",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.58,
                 stalled_vehicles_count=3,
@@ -80,7 +80,7 @@ class DroneCCTVService:
                     ComputerVisionDetection(label="Water Pooling Level: 0.58m", confidence=0.98, bbox=[5, 62, 90, 32], hazard_severity="WARNING")
                 ]
             ),
-            # 2. Mumbai River Recon Drone (Garuda-1) - Real Aerial Raging Flood Waters
+            # 2. Mumbai River Recon Drone (Garuda-1) - Live River Flow Recon
             DroneCameraFeed(
                 camera_id="DRONE-MUM-01",
                 feed_name="UAV Recon Drone Garuda-1 (Mithi Riverfront)",
@@ -90,7 +90,7 @@ class DroneCCTVService:
                 state_name="Maharashtra",
                 lat=19.068,
                 lng=72.875,
-                video_url="https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-river-with-turbulent-waters-41961-large.mp4",
+                video_url="https://www.youtube.com/embed/8v_k3qBqf48?autoplay=1&mute=1&enablejsapi=1",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.92,
                 stalled_vehicles_count=5,
@@ -112,7 +112,7 @@ class DroneCCTVService:
                 state_name="Delhi NCR",
                 lat=28.665,
                 lng=77.235,
-                video_url="https://assets.mixkit.co/videos/preview/mixkit-flowing-water-in-a-raging-river-41960-large.mp4",
+                video_url="https://upload.wikimedia.org/wikipedia/commons/a/a6/Aerial_views_of_flood_control_via_the_Aqueduct_Intertie_at_Kern_River_Terminus%2C_California%2C_USA.webm",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.74,
                 stalled_vehicles_count=4,
@@ -133,7 +133,7 @@ class DroneCCTVService:
                 state_name="Karnataka",
                 lat=12.926,
                 lng=77.676,
-                video_url="https://assets.mixkit.co/videos/preview/mixkit-heavy-rain-falling-on-a-city-street-41962-large.mp4",
+                video_url="https://www.youtube.com/embed/1-iS7LArMPA?autoplay=1&mute=1&enablejsapi=1",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.45,
                 stalled_vehicles_count=8,
@@ -144,7 +144,7 @@ class DroneCCTVService:
                     ComputerVisionDetection(label="Traffic Gridlock / Stalled Sedans", confidence=0.92, bbox=[10, 50, 40, 35], hazard_severity="WARNING")
                 ]
             ),
-            # 5. Chennai Coastal Cyclone Radar Cam - Real Coastal Storm Surge
+            # 5. Chennai Coastal Cyclone Radar Cam - Live Waterway & Surge Stream
             DroneCameraFeed(
                 camera_id="CAM-CHN-01",
                 feed_name="Marina Beach Coastal Storm Surge Cam",
@@ -154,7 +154,7 @@ class DroneCCTVService:
                 state_name="Tamil Nadu",
                 lat=13.010,
                 lng=80.278,
-                video_url="https://assets.mixkit.co/videos/preview/mixkit-waves-crashing-on-a-coastal-cliff-during-a-storm-41963-large.mp4",
+                video_url="https://www.youtube.com/embed/HpZAez2oYS4?autoplay=1&mute=1&enablejsapi=1",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=1.15,
                 stalled_vehicles_count=1,
@@ -165,25 +165,46 @@ class DroneCCTVService:
                     ComputerVisionDetection(label="High Velocity Estuary Sluice Current", confidence=0.94, bbox=[30, 55, 40, 35], hazard_severity="CRITICAL")
                 ]
             ),
-            # 6. Assam Brahmaputra Aerial Recon Drone - Real Wide River Survey
+            # 6. Live 24/7 Satellite ISS & Earth Atmosphere Stream (YouTube Live)
             DroneCameraFeed(
-                camera_id="DRONE-ASM-01",
-                feed_name="UAV EagleEye-9 (Brahmaputra Valley)",
-                camera_type="UAV_SURVEY_DRONE",
-                city_id="assam_brahmaputra",
-                location_name="Guwahati Riverside Ghat & Embankment",
-                state_name="Assam",
-                lat=26.185,
-                lng=91.748,
-                video_url="https://assets.mixkit.co/videos/preview/mixkit-drone-shot-of-a-river-winding-through-a-landscape-41964-large.mp4",
+                camera_id="CAM-YT-EARTH-01",
+                feed_name="🛰️ NASA Live Earth & Cyclone Recon (YouTube 24/7)",
+                camera_type="COASTAL_RADAR_CAM",
+                city_id="all",
+                location_name="Low Earth Orbit Cloud & Cyclone Surveillance",
+                state_name="Spaceborne Reconnaissance",
+                lat=18.500,
+                lng=73.500,
+                video_url="https://www.youtube.com/embed/xRPjKOmDCBo?autoplay=1&mute=1&enablejsapi=1",
                 status="LIVE_STREAMING",
-                flood_depth_detected_m=1.45,
+                flood_depth_detected_m=0.0,
                 stalled_vehicles_count=0,
-                stranded_pedestrians_count=22,
-                flow_velocity_ms=4.2,
+                stranded_pedestrians_count=0,
+                flow_velocity_ms=7.8,
                 ai_yolo_detections=[
-                    ComputerVisionDetection(label="Brahmaputra Major Inundation Plain", confidence=0.98, bbox=[10, 15, 80, 55], hazard_severity="CRITICAL"),
-                    ComputerVisionDetection(label="Village Evacuees at River Bund (22x)", confidence=0.96, bbox=[40, 60, 35, 25], hazard_severity="CRITICAL")
+                    ComputerVisionDetection(label="Monsoon Cloud Vortex Detected", confidence=0.98, bbox=[15, 20, 70, 60], hazard_severity="WARNING"),
+                    ComputerVisionDetection(label="Atmospheric Moisture Band", confidence=0.94, bbox=[30, 40, 40, 30], hazard_severity="NORMAL")
+                ]
+            ),
+            # 7. Live 24/7 River & Wildlife Catchment Stream (YouTube Live)
+            DroneCameraFeed(
+                camera_id="CAM-YT-RIVER-01",
+                feed_name="🌊 Live River Rapids & Basin Sluice Cam (24/7)",
+                camera_type="MUNICIPAL_CCTV",
+                city_id="all",
+                location_name="Upper River Catchment & Hydro Gauge Point",
+                state_name="All-India Hydro Grid",
+                lat=19.076,
+                lng=72.877,
+                video_url="https://www.youtube.com/embed/8v_k3qBqf48?autoplay=1&mute=1&enablejsapi=1",
+                status="LIVE_STREAMING",
+                flood_depth_detected_m=0.65,
+                stalled_vehicles_count=2,
+                stranded_pedestrians_count=5,
+                flow_velocity_ms=2.4,
+                ai_yolo_detections=[
+                    ComputerVisionDetection(label="Active River Surge Waterflow", confidence=0.98, bbox=[10, 25, 80, 50], hazard_severity="CRITICAL"),
+                    ComputerVisionDetection(label="Hydrological Gauge Marker Level", confidence=0.95, bbox=[70, 60, 20, 30], hazard_severity="WARNING")
                 ]
             )
         ]

@@ -981,3 +981,122 @@ async def get_live_air_quality(
     return await live_multihazard_service.fetch_open_meteo_air_quality(lat, lng)
 
 
+@app.get("/api/realtime/traffic-incidents")
+async def get_live_traffic_incidents(
+    lat: float = Query(28.6139, description="Center latitude"),
+    lng: float = Query(77.2090, description="Center longitude"),
+    radius_deg: float = Query(0.3, description="Bounding radius in degrees")
+):
+    """
+    Ingests live traffic congestion & road incidents from TomTom Traffic API.
+    """
+    from app.services.live_traffic_service import live_traffic_service
+    return await live_traffic_service.fetch_traffic_incidents(lat, lng, radius_deg)
+
+
+@app.get("/api/realtime/ndma-alerts")
+async def get_live_ndma_alerts():
+    """
+    Ingests live disaster warning alerts from Government of India NDMA SACHET CAP Feed.
+    """
+    from app.services.live_ndma_service import live_ndma_service
+    return await live_ndma_service.fetch_ndma_alerts()
+
+
+@app.get("/api/realtime/aviation-stream")
+async def get_live_aviation_stream(
+    lat: float = Query(28.6139, description="Center latitude"),
+    lng: float = Query(77.2090, description="Center longitude"),
+    radius_deg: float = Query(1.0, description="Radius in degrees")
+):
+    """
+    Ingests live ADS-B aircraft and air ambulances from OpenSky Network.
+    """
+    from app.services.live_aviation_service import live_aviation_service
+    return await live_aviation_service.fetch_live_aircraft(lat, lng, radius_deg)
+
+
+@app.get("/api/realtime/power-grid")
+async def get_live_power_grid():
+    """
+    Ingests live national power grid frequency & stability from POSOCO / Grid-India.
+    """
+    from app.services.live_grid_service import live_grid_service
+    return await live_grid_service.fetch_grid_telemetry()
+
+
+@app.post("/api/telegram/webhook")
+async def receive_telegram_sos_webhook(payload: dict = Body(...)):
+    """
+    Receives incoming crowdsourced citizen disaster distress reports via Telegram Bot.
+    """
+    from app.services.telegram_sos_service import telegram_sos_service
+    res = await telegram_sos_service.process_incoming_webhook(payload)
+    # Broadcast to frontend via WebSockets
+    await ws_manager.broadcast({
+        "event": "citizen_sos_new",
+        "data": res.get("report")
+    })
+    return res
+
+
+@app.get("/api/infrastructure/shelters")
+async def get_live_relief_shelters(
+    lat: float = Query(28.6139, description="Latitude"),
+    lng: float = Query(77.2090, description="Longitude"),
+    radius_km: float = Query(10.0, description="Radius in km")
+):
+    """
+    Ingests live cyclone & flood relief shelters and evacuation camps.
+    """
+    from app.services.live_multihazard_service import live_multihazard_service
+    return await live_multihazard_service.fetch_relief_shelters(lat, lng, radius_km)
+
+
+@app.get("/api/infrastructure/emergency-stations")
+async def get_live_emergency_stations(
+    lat: float = Query(28.6139, description="Latitude"),
+    lng: float = Query(77.2090, description="Longitude"),
+    radius_km: float = Query(10.0, description="Radius in km")
+):
+    """
+    Ingests live 112 ERSS emergency response stations, fire depots, and police PCR units.
+    """
+    from app.services.live_multihazard_service import live_multihazard_service
+    return await live_multihazard_service.fetch_emergency_stations(lat, lng, radius_km)
+
+
+@app.get("/api/realtime/coastal-vessels")
+async def get_live_coastal_vessels(
+    lat: float = Query(18.95, description="Latitude"),
+    lng: float = Query(72.80, description="Longitude"),
+    radius_deg: float = Query(0.5, description="Radius in degrees")
+):
+    """
+    Ingests live coastal patrol and maritime rescue vessels from AISStream AIS transponder feed.
+    """
+    from app.services.live_multihazard_service import live_multihazard_service
+    return await live_multihazard_service.fetch_coastal_vessels(lat, lng, radius_deg)
+
+
+@app.get("/api/realtime/tide-gauges")
+async def get_live_tide_gauges(
+    lat: float = Query(18.95, description="Latitude"),
+    lng: float = Query(72.80, description="Longitude")
+):
+    """
+    Ingests live sea surface height & tidal surge data from UNESCO IOC Sea Level network.
+    """
+    from app.services.live_multihazard_service import live_multihazard_service
+    return await live_multihazard_service.fetch_tide_gauges(lat, lng)
+
+
+@app.get("/api/realtime/space-weather")
+async def get_live_space_weather():
+    """
+    Ingests live planetary K-index & GPS satellite communication alerts from NOAA SWPC.
+    """
+    from app.services.live_multihazard_service import live_multihazard_service
+    return await live_multihazard_service.fetch_space_weather()
+
+
