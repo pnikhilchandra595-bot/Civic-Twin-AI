@@ -153,19 +153,19 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="h-16 bg-[#1e293b]/95 border-b border-slate-700/80 px-4 flex items-center justify-between text-slate-100 z-40 backdrop-blur-xl font-sans relative shadow-md">
+    <header className="h-16 bg-[#0a1f1b]/95 border-b border-emerald-500/30 px-4 flex items-center justify-between text-emerald-100 z-40 backdrop-blur-xl font-sans relative shadow-lg">
       
       {/* LEFT SECTION: Logo + Region Switcher + Role Pill */}
       <div className="flex items-center space-x-3.5">
         {/* Animated Brand Icon */}
-        <div className="relative flex items-center justify-center p-2 rounded-xl bg-cyan-950/80 dark:bg-cyan-950/80 light:bg-cyan-100 border border-cyan-500/40 dark:border-cyan-500/40 light:border-cyan-400 shadow-[0_0_15px_rgba(0,210,255,0.25)]">
-          <Activity className="w-5 h-5 text-cyan-400 dark:text-cyan-400 light:text-cyan-600 animate-pulse" />
-          <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-400 rounded-full animate-ping" />
+        <div className="relative flex items-center justify-center p-2 rounded-xl bg-emerald-950/90 border border-emerald-400/60 shadow-[0_0_20px_rgba(16,185,129,0.35)]">
+          <Activity className="w-5 h-5 text-emerald-400 animate-pulse" />
+          <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping" />
         </div>
 
         <div className="flex items-center space-x-3">
           <div>
-            <span className="font-pixel text-lg sm:text-xl font-black tracking-wider bg-gradient-to-r from-orange-400 via-white dark:via-white light:via-cyan-600 to-emerald-400 bg-clip-text text-transparent">
+            <span className="font-pixel text-lg sm:text-xl font-black tracking-wider bg-gradient-to-r from-amber-300 via-emerald-200 to-emerald-400 bg-clip-text text-transparent">
               CIVICTWIN AI
             </span>
           </div>
@@ -182,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
                   ? 'bg-purple-950/90 border-purple-500 text-purple-200'
                   : isCitizen
                   ? 'bg-emerald-950/90 border-emerald-500 text-emerald-200'
-                  : 'bg-slate-900 dark:bg-slate-900 light:bg-slate-100 border-cyan-500/50 dark:border-cyan-500/50 light:border-slate-300 text-cyan-200 dark:text-cyan-200 light:text-slate-800 hover:border-cyan-400'
+                  : 'bg-[#071b17] border-emerald-500/50 text-emerald-200 hover:border-emerald-400'
               }`}
             >
               <optgroup label={isDistrictOfficer ? `🏢 Assigned District (${authUser?.assignedDistrict || 'DDMA'})` : isStateOfficer ? `🔒 Assigned State (${authUser?.assignedState})` : isCitizen ? `📍 Citizen Safe Zones` : `🇮🇳 Pan-India Corridors (All 20 States)`}>
@@ -212,10 +212,10 @@ export const Header: React.FC<HeaderProps> = ({
             {!isCitizen && onOpenDistrictAtlas && (
               <button
                 onClick={onOpenDistrictAtlas}
-                className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-600/30 via-cyan-600/30 to-emerald-600/30 hover:from-orange-600/50 hover:to-emerald-600/50 border border-cyan-500/50 text-cyan-200 dark:text-cyan-200 light:text-slate-800 text-xs font-mono font-bold flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
+                className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-900/40 via-teal-900/40 to-emerald-900/40 hover:from-emerald-900/60 hover:to-teal-900/60 border border-emerald-500/50 text-emerald-200 text-xs font-mono font-bold flex items-center space-x-1.5 shadow-md transition-all cursor-pointer"
                 title={isDistrictOfficer ? `Browse ${authUser?.assignedDistrict} DDMA municipal triage nodes` : isStateOfficer ? `Browse ${authUser?.assignedState} SDMA districts` : "Browse & search all 780+ Indian Districts across 36 States & UTs"}
               >
-                <Globe className="w-3.5 h-3.5 text-orange-400" />
+                <Globe className="w-3.5 h-3.5 text-amber-400" />
                 <span className="hidden sm:inline">
                   {isDistrictOfficer
                     ? `📍 ${authUser?.assignedDistrict || 'District'} DDMA Triage`
@@ -229,7 +229,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 18 Live Sovereign, Maritime, Aerospace, Grid & Traffic Feeds Inspector Button */}
             <button
               onClick={onOpenProvenance}
-              className="px-2.5 py-1.5 rounded-lg bg-emerald-950/80 dark:bg-emerald-950/80 light:bg-emerald-100 border border-emerald-500/80 dark:border-emerald-500/80 light:border-emerald-400 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 hover:bg-emerald-900/90 text-xs font-mono font-bold flex items-center space-x-1.5 transition-all shadow-lg hover:shadow-emerald-900/30 cursor-pointer animate-pulse"
+              className="px-2.5 py-1.5 rounded-lg bg-emerald-950/90 border border-emerald-400/80 text-emerald-300 hover:bg-emerald-900 text-xs font-mono font-bold flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer animate-pulse"
               title="Inspect 18 Real-Time Live Sovereign, Maritime, Aerospace, Grid, Traffic & Physical IoT Feeds"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>

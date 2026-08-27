@@ -85,20 +85,20 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#334155] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black">
+    <div className="w-full min-h-screen bg-[#071512] text-[#e6f7f2] font-sans selection:bg-emerald-500 selection:text-black">
       
       {/* 1. PUBLIC TOP NAVIGATION BAR */}
-      <nav className="sticky top-0 z-50 bg-[#1e293b]/95 backdrop-blur-xl border-b border-slate-700/80 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-lg">
+      <nav className="sticky top-0 z-50 bg-[#0a1f1b]/95 backdrop-blur-xl border-b border-emerald-500/30 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-lg">
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-slate-800 border border-cyan-500/50 text-cyan-400 shadow-md">
+            <div className="p-2 rounded-xl bg-emerald-950/90 border border-emerald-400/60 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.35)]">
               <Activity className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <span className="font-pixel text-lg font-black tracking-wider bg-gradient-to-r from-orange-400 via-white to-emerald-400 bg-clip-text text-transparent">
+              <span className="font-pixel text-lg font-black tracking-wider bg-gradient-to-r from-amber-300 via-emerald-200 to-emerald-400 bg-clip-text text-transparent">
                 CIVICTWIN AI
               </span>
-              <span className="hidden sm:inline-block ml-2 text-[9px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-cyan-300 border border-slate-600 font-bold">
+              <span className="hidden sm:inline-block ml-2 text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-600 font-bold">
                 PUBLIC SAFETY PORTAL
               </span>
             </div>
@@ -106,10 +106,10 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* Center Navigation Links */}
-        <div className="hidden md:flex items-center space-x-6 text-xs font-mono font-bold text-slate-300">
-          <a href="#weather" className="hover:text-cyan-400 transition-colors">Live Weather & Safety</a>
-          <a href="#gemini" className="hover:text-blue-400 transition-colors">Gemini Safety AI</a>
-          <a href="#helplines" className="hover:text-emerald-400 transition-colors">24/7 Helplines</a>
+        <div className="hidden md:flex items-center space-x-6 text-xs font-mono font-bold text-emerald-200/80">
+          <a href="#weather" className="hover:text-emerald-300 transition-colors">Live Weather & Safety</a>
+          <a href="#gemini" className="hover:text-cyan-300 transition-colors">Gemini Safety AI</a>
+          <a href="#helplines" className="hover:text-amber-300 transition-colors">24/7 Helplines</a>
         </div>
 
         {/* Right Action Buttons */}
@@ -126,14 +126,14 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
             <div className="flex items-center space-x-2">
               <button
                 onClick={onLaunchFullCockpit}
-                className="px-3 py-1.5 rounded-xl bg-cyan-950 border border-cyan-500 text-cyan-300 text-xs font-mono font-bold hover:bg-cyan-900 transition-all cursor-pointer flex items-center space-x-1"
+                className="px-3 py-1.5 rounded-xl bg-emerald-950 border border-emerald-500 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-900 transition-all cursor-pointer flex items-center space-x-1"
               >
                 <Compass className="w-3.5 h-3.5" />
                 <span>Enter Cockpit</span>
               </button>
               <button
                 onClick={onLogout}
-                className="p-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 text-xs font-mono transition-all"
+                className="p-1.5 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-400 hover:text-red-400 text-xs font-mono transition-all"
                 title={`Logged in as ${authUser.name} - Click to Logout`}
               >
                 <Lock className="w-4 h-4" />
@@ -142,9 +142,9 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
           ) : (
             <button
               onClick={onLoginRequest}
-              className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-cyan-400 text-slate-200 font-mono text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[#0d2822] hover:bg-emerald-900 border border-emerald-600/50 hover:border-emerald-400 text-emerald-200 font-mono text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer shadow-md"
             >
-              <Lock className="w-3.5 h-3.5 text-cyan-400" />
+              <Lock className="w-3.5 h-3.5 text-emerald-400" />
               <span>Officer Login</span>
             </button>
           )}
@@ -155,83 +155,83 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
       <section className="relative pt-10 pb-12 px-4 lg:px-8 max-w-5xl mx-auto space-y-6">
         
         {/* Background Glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-gradient-to-tr from-cyan-500/15 via-blue-500/10 to-transparent blur-3xl pointer-events-none rounded-full" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-gradient-to-tr from-emerald-500/20 via-teal-500/10 to-transparent blur-3xl pointer-events-none rounded-full" />
 
         {/* Top Government Tag */}
         <div className="flex flex-wrap items-center justify-center gap-2.5 text-center">
-          <span className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-cyan-950/90 border border-cyan-500/60 text-cyan-300 font-mono text-xs font-bold shadow-lg">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+          <span className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-emerald-950/90 border border-emerald-500/60 text-emerald-300 font-mono text-xs font-bold shadow-lg">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             <span>GOVERNMENT OF INDIA • CIVIL DEFENSE PUBLIC PORTAL</span>
           </span>
-          <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs font-bold">
+          <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-[#0d2822] border border-emerald-700 text-emerald-200 font-mono text-xs font-bold">
             <span>NDMA Safety Protocol</span>
           </span>
         </div>
 
         {/* Main Title Styled with Pixel/Arcade Font like the reference image */}
         <div className="text-center space-y-4 max-w-4xl mx-auto">
-          <h1 className="font-pixel text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-white dark:text-white light:text-slate-900 leading-tight uppercase">
+          <h1 className="font-pixel text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-emerald-100 leading-tight uppercase">
             SKILLS BUILD RESILIENCE.<br/>
-            <span className="bg-gradient-to-r from-cyan-400 via-emerald-300 to-teal-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-amber-300 via-emerald-300 to-teal-300 bg-clip-text text-transparent">
               WE HELP YOU DEFEND CITIES.
             </span>
           </h1>
-          <p className="text-sm sm:text-base text-slate-300 dark:text-slate-300 light:text-slate-600 max-w-2xl mx-auto leading-relaxed font-sans font-medium">
+          <p className="text-sm sm:text-base text-emerald-200/80 max-w-2xl mx-auto leading-relaxed font-sans font-medium">
             CivicTwin AI fusions real-time satellite radar, sovereign IoT sensor meshes, and Google Gemini AI to protect citizens and critical infrastructure.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={onOpenGPSLocationSOS || onOpenCitizenSOS}
-              className="font-pixel px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-all shadow-[0_0_25px_rgba(16,185,129,0.4)] flex items-center space-x-2 cursor-pointer transform hover:scale-105"
+              className="font-pixel px-5 py-3 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 text-xs font-black transition-all shadow-[0_0_30px_rgba(52,211,153,0.5)] flex items-center space-x-2 cursor-pointer transform hover:scale-105"
             >
               <span>GET STARTED 🚀</span>
             </button>
             <button
               onClick={onLaunchFullCockpit}
-              className="font-pixel px-5 py-3 rounded-xl bg-slate-900/90 dark:bg-slate-900/90 light:bg-white hover:bg-slate-800 dark:hover:bg-slate-800 light:hover:bg-slate-100 border border-slate-700 dark:border-slate-700 light:border-slate-300 text-white dark:text-white light:text-slate-900 text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shadow-md"
+              className="font-pixel px-5 py-3 rounded-xl bg-[#0d2822]/90 hover:bg-[#133d34] border border-emerald-500/50 text-emerald-200 text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shadow-md"
             >
               <span>ACCESS DASHBOARD 🎛️</span>
             </button>
             <button
               onClick={onOpenWeather}
-              className="font-pixel px-5 py-3 rounded-xl bg-slate-900/90 dark:bg-slate-900/90 light:bg-white hover:bg-slate-800 dark:hover:bg-slate-800 light:hover:bg-slate-100 border border-slate-700 dark:border-slate-700 light:border-slate-300 text-white dark:text-white light:text-slate-900 text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shadow-md"
+              className="font-pixel px-5 py-3 rounded-xl bg-[#0d2822]/90 hover:bg-[#133d34] border border-emerald-500/50 text-emerald-200 text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shadow-md"
             >
               <span>LIVE WEATHER 🌧️</span>
             </button>
           </div>
 
           <div className="pt-2">
-            <span className="font-pixel text-[11px] text-slate-400 dark:text-slate-400 light:text-slate-500 uppercase tracking-widest">
+            <span className="font-pixel text-[11px] text-emerald-400/80 uppercase tracking-widest">
               JOIN 780+ DISTRICT AUTHORITIES LEVELING UP DISASTER READINESS
             </span>
           </div>
 
           {/* Integrated Agencies Showcase Cards (Styled like reference screenshot) */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 pt-3">
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-cyan-500/50 transition-all">
+            <div className="p-3.5 rounded-2xl bg-[#0b221c]/80 border border-emerald-500/35 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-emerald-400/70 transition-all">
               <span className="font-pixel text-xs font-bold text-cyan-300">ISRO</span>
-              <span className="text-[9px] font-mono text-slate-400">Bhuvan GIS</span>
+              <span className="text-[9px] font-mono text-emerald-300/70">Bhuvan GIS</span>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-orange-500/50 transition-all">
-              <span className="font-pixel text-xs font-bold text-orange-400">NDMA</span>
-              <span className="text-[9px] font-mono text-slate-400">SACHET CAP</span>
+            <div className="p-3.5 rounded-2xl bg-[#0b221c]/80 border border-emerald-500/35 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-amber-400/70 transition-all">
+              <span className="font-pixel text-xs font-bold text-amber-400">NDMA</span>
+              <span className="text-[9px] font-mono text-emerald-300/70">SACHET CAP</span>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-sky-500/50 transition-all">
+            <div className="p-3.5 rounded-2xl bg-[#0b221c]/80 border border-emerald-500/35 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-sky-400/70 transition-all">
               <span className="font-pixel text-xs font-bold text-sky-400">IMD</span>
-              <span className="text-[9px] font-mono text-slate-400">Doppler Radar</span>
+              <span className="text-[9px] font-mono text-emerald-300/70">Doppler Radar</span>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-emerald-500/50 transition-all">
-              <span className="font-pixel text-xs font-bold text-emerald-400">NDRF</span>
-              <span className="text-[9px] font-mono text-slate-400">Tactical Units</span>
+            <div className="p-3.5 rounded-2xl bg-[#0b221c]/80 border border-emerald-500/35 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-emerald-400/70 transition-all">
+              <span className="font-pixel text-xs font-bold text-emerald-300">NDRF</span>
+              <span className="text-[9px] font-mono text-emerald-300/70">Tactical Units</span>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-blue-500/50 transition-all">
-              <span className="font-pixel text-xs font-bold text-blue-400">CWC</span>
-              <span className="text-[9px] font-mono text-slate-400">River Basin</span>
+            <div className="p-3.5 rounded-2xl bg-[#0b221c]/80 border border-emerald-500/35 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-teal-400/70 transition-all">
+              <span className="font-pixel text-xs font-bold text-teal-300">CWC</span>
+              <span className="text-[9px] font-mono text-emerald-300/70">River Basin</span>
             </div>
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-white/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-teal-500/50 transition-all">
-              <span className="font-pixel text-xs font-bold text-teal-400">UNESCO</span>
-              <span className="text-[9px] font-mono text-slate-400">IOC Sea Level</span>
+            <div className="p-3.5 rounded-2xl bg-[#0b221c]/80 border border-emerald-500/35 backdrop-blur-md flex flex-col items-center justify-center space-y-1 shadow-md hover:border-emerald-400/70 transition-all">
+              <span className="font-pixel text-xs font-bold text-emerald-400">UNESCO</span>
+              <span className="text-[9px] font-mono text-emerald-300/70">IOC Sea Level</span>
             </div>
           </div>
         </div>
@@ -267,17 +267,17 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* LIVE WEATHER & DISASTER CONDITION CARD */}
-        <div id="weather" className="p-5 rounded-3xl bg-white dark:bg-slate-950/90 border border-slate-200 dark:border-cyan-500/30 shadow-md space-y-4 text-slate-900 dark:text-white">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div id="weather" className="p-5 rounded-3xl bg-[#0b221c]/85 border border-emerald-500/30 shadow-xl space-y-4 text-emerald-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-900/60 pb-3">
             <div className="flex items-center space-x-2.5">
-              <CloudRain className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-              <span className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-pixel">
+              <CloudRain className="w-5 h-5 text-emerald-400" />
+              <span className="text-sm font-bold text-emerald-100 uppercase tracking-wider font-pixel">
                 Live IMD Weather & Flood Threat Condition
               </span>
             </div>
             <button
               onClick={onOpenWeather}
-              className="text-xs font-mono text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 flex items-center space-x-1 cursor-pointer font-bold"
+              className="text-xs font-mono text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 cursor-pointer font-bold"
             >
               <span>View 7-Day Forecast & Tide Matrix</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -285,21 +285,21 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-            <div className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <div className="text-slate-500 text-[10px]">Active Region</div>
-              <div className="text-slate-900 dark:text-white font-bold mt-0.5 truncate">{cityName}</div>
+            <div className="p-3 bg-[#071915] rounded-2xl border border-emerald-900/80">
+              <div className="text-emerald-400/60 text-[10px]">Active Region</div>
+              <div className="text-emerald-100 font-bold mt-0.5 truncate">{cityName}</div>
             </div>
-            <div className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <div className="text-slate-500 text-[10px]">Precipitation Rate</div>
-              <div className="text-cyan-600 dark:text-cyan-300 font-black text-sm mt-0.5">{rain.toFixed(1)} mm/h</div>
+            <div className="p-3 bg-[#071915] rounded-2xl border border-emerald-900/80">
+              <div className="text-emerald-400/60 text-[10px]">Precipitation Rate</div>
+              <div className="text-emerald-300 font-black text-sm mt-0.5">{rain.toFixed(1)} mm/h</div>
             </div>
-            <div className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <div className="text-slate-500 text-[10px]">Overall Threat Level</div>
-              <div className="text-amber-600 dark:text-amber-400 font-bold mt-0.5">{threat}</div>
+            <div className="p-3 bg-[#071915] rounded-2xl border border-emerald-900/80">
+              <div className="text-emerald-400/60 text-[10px]">Overall Threat Level</div>
+              <div className="text-amber-400 font-bold mt-0.5">{threat}</div>
             </div>
-            <div className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <div className="text-slate-500 text-[10px]">High-Ground Shelters</div>
-              <div className="text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">Active & Open</div>
+            <div className="p-3 bg-[#071915] rounded-2xl border border-emerald-900/80">
+              <div className="text-emerald-400/60 text-[10px]">High-Ground Shelters</div>
+              <div className="text-emerald-400 font-bold mt-0.5">Active & Open</div>
             </div>
           </div>
         </div>
@@ -310,17 +310,17 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
       <section id="gemini" className="py-8 px-4 lg:px-8 max-w-5xl mx-auto space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-950 border border-blue-300 dark:border-blue-500/50 text-blue-700 dark:text-blue-300">
-              <Sparkles className="w-5 h-5 text-cyan-600 dark:text-cyan-300" />
+            <div className="p-2 rounded-xl bg-emerald-950 border border-emerald-500/50 text-emerald-300">
+              <Sparkles className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center space-x-2 font-pixel">
+              <h2 className="text-xl font-bold text-emerald-100 flex items-center space-x-2 font-pixel">
                 <span>Google Gemini AI Public Disaster Advisor</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 border border-blue-300 dark:border-blue-500 text-blue-700 dark:text-blue-300 font-mono font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-500 text-emerald-300 font-mono font-bold">
                   24/7 AI SAFETY
                 </span>
               </h2>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-sans mt-0.5">
+              <p className="text-xs text-emerald-300/70 font-sans mt-0.5">
                 Ask any question regarding flood safety, drinking water, first-aid, and nearest relief camps.
               </p>
             </div>
@@ -328,7 +328,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
 
           <button
             onClick={onOpenGemini}
-            className="hidden sm:flex px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold items-center space-x-1.5 transition-all shadow-md cursor-pointer"
+            className="hidden sm:flex px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-xs font-bold items-center space-x-1.5 transition-all shadow-md cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Open Voice Assistant</span>
@@ -336,19 +336,19 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* Conversational Prompt Box */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-slate-950/90 border border-slate-200 dark:border-blue-500/30 space-y-4 shadow-md text-slate-900 dark:text-white">
+        <div className="p-5 rounded-3xl bg-[#0b221c]/85 border border-emerald-500/30 space-y-4 shadow-xl text-emerald-100">
           <div className="flex gap-2">
             <input
               type="text"
               value={heroPrompt}
               onChange={(e) => setHeroPrompt(e.target.value)}
               placeholder="Ask a safety question (e.g. How to purify water during flood?)"
-              className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:border-blue-500 rounded-xl p-3 text-xs font-mono text-slate-900 dark:text-white focus:outline-none placeholder-slate-400"
+              className="flex-1 bg-[#071915] border border-emerald-800/80 focus:border-emerald-400 rounded-xl p-3 text-xs font-mono text-emerald-100 focus:outline-none placeholder-emerald-500/60"
             />
             <button
               onClick={() => handleAskGemini()}
               disabled={isAsking}
-              className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all cursor-pointer shrink-0 shadow"
+              className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs flex items-center space-x-1.5 transition-all cursor-pointer shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
             >
               <span>{isAsking ? 'Thinking...' : 'Ask AI'}</span>
               <Send className="w-3.5 h-3.5" />
@@ -359,19 +359,19 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
           <div className="flex flex-wrap gap-2 text-xs font-mono">
             <button 
               onClick={() => { setHeroPrompt('Where are the nearest safe high-ground relief shelters?'); handleAskGemini('Where are the nearest safe high-ground relief shelters?'); }}
-              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-cyan-300 transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-[#071915] hover:bg-[#0e312a] border border-emerald-800/80 text-emerald-300 hover:text-emerald-100 transition-all cursor-pointer"
             >
               🧭 Nearest Relief Shelters?
             </button>
             <button 
               onClick={() => { setHeroPrompt('How do I purify drinking water during a flood?'); handleAskGemini('How do I purify drinking water during a flood?'); }}
-              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-cyan-300 transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-[#071915] hover:bg-[#0e312a] border border-emerald-800/80 text-emerald-300 hover:text-emerald-100 transition-all cursor-pointer"
             >
               💧 Drinking Water Safety?
             </button>
             <button 
               onClick={() => { setHeroPrompt('What emergency items should I pack in a flood kit?'); handleAskGemini('What emergency items should I pack in a flood kit?'); }}
-              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-cyan-300 transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-[#071915] hover:bg-[#0e312a] border border-emerald-800/80 text-emerald-300 hover:text-emerald-100 transition-all cursor-pointer"
             >
               🎒 Emergency Go-Bag Checklist?
             </button>
@@ -379,13 +379,13 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
 
           {/* Render Single Active AI Advice Box */}
           {activeAnswer && (
-            <div className="pt-2 border-t border-slate-800">
-              <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-500/40 space-y-1.5 text-xs shadow-lg">
-                <div className="font-bold text-cyan-300 font-mono flex items-center space-x-1.5 text-sm">
-                  <Sparkles className="w-4 h-4 text-cyan-400" />
+            <div className="pt-2 border-t border-emerald-900/60">
+              <div className="p-4 rounded-2xl bg-[#071915] border border-emerald-500/40 space-y-1.5 text-xs shadow-lg">
+                <div className="font-bold text-emerald-300 font-mono flex items-center space-x-1.5 text-sm">
+                  <Sparkles className="w-4 h-4 text-emerald-400" />
                   <span>Q: {activeAnswer.q}</span>
                 </div>
-                <div className="text-slate-200 font-sans leading-relaxed pl-5 text-xs sm:text-sm">
+                <div className="text-emerald-100 font-sans leading-relaxed pl-5 text-xs sm:text-sm">
                   {activeAnswer.a}
                 </div>
               </div>
@@ -402,10 +402,10 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
               <Phone className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-emerald-100 font-pixel">
                 24/7 National & State Emergency Helplines
               </h2>
-              <p className="text-xs text-slate-400 font-sans">
+              <p className="text-xs text-emerald-300/70 font-sans">
                 Toll-free emergency numbers for instant rescue, ambulance, and disaster assistance.
               </p>
             </div>
@@ -414,7 +414,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
           {onOpenWhatsApp && (
             <button
               onClick={onOpenWhatsApp}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition-all shadow-lg flex items-center space-x-1.5 cursor-pointer w-fit"
+              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center space-x-1.5 cursor-pointer w-fit"
             >
               <MessageSquare className="w-4 h-4" />
               <span>💬 Test WhatsApp Safety Bot</span>
@@ -428,14 +428,14 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
             <a
               key={idx}
               href={`tel:${h.number}`}
-              className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/70 transition-all flex items-center justify-between group cursor-pointer"
+              className="p-4 rounded-2xl bg-[#0b221c]/80 border border-emerald-500/30 hover:border-emerald-400 transition-all flex items-center justify-between group cursor-pointer shadow-md"
             >
               <div>
-                <div className="text-xs font-bold text-white group-hover:text-cyan-300 flex items-center space-x-1.5">
+                <div className="text-xs font-bold text-emerald-100 group-hover:text-emerald-300 flex items-center space-x-1.5">
                   <span>{h.icon}</span>
                   <span>{h.label}</span>
                 </div>
-                <div className="text-[11px] text-slate-400 font-sans mt-0.5">{h.desc}</div>
+                <div className="text-[11px] text-emerald-300/70 font-sans mt-0.5">{h.desc}</div>
               </div>
               <div className={`px-3.5 py-2 rounded-xl bg-gradient-to-r ${h.color} text-white font-mono font-black text-sm shadow-md shrink-0 ml-2`}>
                 {h.number}
@@ -445,17 +445,19 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* Officer Login Notice Box */}
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-slate-400">
+        <div className="p-4 rounded-2xl bg-[#0b221c]/80 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-emerald-300/70 shadow-md">
           <div className="flex items-center space-x-2">
-            <Lock className="w-4 h-4 text-cyan-400 shrink-0" />
-            <span>Disaster Management Officers (NDMA / SDMA / DDMA): Please login to access full digital twin tools & district synthesis.</span>
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Authorized NDMA, SDMA, and NDRF Incident Commanders can login for real-time physics digital twin controls.</span>
           </div>
-          <button
-            onClick={onLoginRequest}
-            className="px-4 py-1.5 rounded-xl bg-cyan-950 border border-cyan-500/60 text-cyan-300 hover:bg-cyan-900 font-bold transition-all shrink-0 cursor-pointer"
-          >
-            Officer Login ➔
-          </button>
+          {!authUser && (
+            <button
+              onClick={onLoginRequest}
+              className="px-4 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition-all shadow-sm shrink-0 cursor-pointer"
+            >
+              Access Digital Twin Cockpit ➔
+            </button>
+          )}
         </div>
       </section>
 
