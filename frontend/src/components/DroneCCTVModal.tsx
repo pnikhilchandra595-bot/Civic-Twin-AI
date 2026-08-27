@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Hls from 'hls.js';
 import { 
   Video, Eye, EyeOff, AlertTriangle, ShieldCheck, 
   Maximize2, X, RefreshCw, Layers, Crosshair, Navigation, 
@@ -107,7 +108,42 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
     return url;
   };
 
+  const isHlsStream = currentStreamUrl.includes('.m3u8') || currentStreamUrl.includes('m3u8');
   const isYouTubeStream = currentStreamUrl.includes('youtube.com') || currentStreamUrl.includes('youtu.be');
+
+  // Attach Hls.js for municipal Smart City HLS / RTSP-over-HLS .m3u8 streams
+  useEffect(() => {
+    let hls: Hls | null = null;
+    if (isHlsStream && videoRef.current) {
+      if (Hls.isSupported()) {
+        hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+          backBufferLength: 90
+        });
+        hls.loadSource(currentStreamUrl);
+        hls.attachMedia(videoRef.current);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          videoRef.current?.play().catch(() => {});
+        });
+        hls.on(Hls.Events.ERROR, (_event, data) => {
+          if (data.fatal) {
+            console.warn('HLS stream fatal error:', data);
+            setVideoError(true);
+          }
+        });
+      } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+        videoRef.current.src = currentStreamUrl;
+        videoRef.current.play().catch(() => {});
+      }
+    }
+
+    return () => {
+      if (hls) {
+        hls.destroy();
+      }
+    };
+  }, [currentStreamUrl, isHlsStream]);
 
   const handleApplyCustomStream = () => {
     if (customCameraInput.trim()) {
