@@ -885,20 +885,32 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
         const stateMarker = L.marker(st.coords, {
           icon: L.divIcon({
-            className: 'custom-div-icon',
+            className: 'custom-div-icon cursor-pointer pointer-events-auto',
             html: iconHtml,
             iconSize: [160, 40],
             iconAnchor: [80, 20]
           })
         }).addTo(layerGroup);
 
-        stateMarker.on('click', () => {
+        const activateState = (e?: any) => {
+          if (e && e.originalEvent) {
+            e.originalEvent.stopPropagation();
+          }
           setViewScope('city');
+          setClickCoordFeedback(`🎯 Navigating to ${st.name}...`);
+          setTimeout(() => setClickCoordFeedback(null), 3500);
           if (onSwitchCity) {
             onSwitchCity(st.cityId);
           }
-          map.flyTo(st.coords, 13, { duration: 1.2 });
-        });
+          if (onResolveLocation) {
+            onResolveLocation(st.name, st.coords[0], st.coords[1]);
+          }
+          map.flyTo(st.coords, 14, { duration: 1.2 });
+        };
+
+        stateMarker.on('click', activateState);
+        stateMarker.on('touchstart', activateState);
+        stateMarker.on('mousedown', activateState);
       });
 
       return;
@@ -911,7 +923,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
       districts.forEach(dst => {
         const iconHtml = `
-          <div class="flex flex-col items-center cursor-pointer group transform hover:scale-110 transition-all">
+          <div class="flex flex-col items-center cursor-pointer group transform hover:scale-110 active:scale-95 transition-all select-none pointer-events-auto" style="touch-action: manipulation;">
             <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-slate-950/95 border backdrop-blur-md shadow-2xl" style="border-color: ${dst.color}">
               <span class="w-2.5 h-2.5 rounded-full animate-ping" style="background-color: ${dst.color}"></span>
               <span class="text-xs font-extrabold text-white whitespace-nowrap">${dst.name}</span>
@@ -920,27 +932,39 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               </span>
             </div>
             <div class="text-[9px] font-mono text-purple-300 bg-slate-900/90 px-1.5 py-0.2 rounded-b border-b border-x border-slate-700 shadow-md">
-              🌧️ ${dst.rainfall} • ${stateName} SDMA
+              🌧️ ${dst.rainfall} • Click to Focus
             </div>
           </div>
         `;
 
         const dstMarker = L.marker(dst.coords, {
           icon: L.divIcon({
-            className: 'custom-div-icon',
+            className: 'custom-div-icon cursor-pointer pointer-events-auto',
             html: iconHtml,
             iconSize: [180, 40],
             iconAnchor: [90, 20]
           })
         }).addTo(layerGroup);
 
-        dstMarker.on('click', () => {
+        const activateDistrict = (e?: any) => {
+          if (e && e.originalEvent) {
+            e.originalEvent.stopPropagation();
+          }
           setViewScope('city');
+          setClickCoordFeedback(`🎯 Focused on ${dst.name} (${dst.rainfall})`);
+          setTimeout(() => setClickCoordFeedback(null), 3500);
           if (onSwitchCity) {
             onSwitchCity(dst.cityId);
           }
-          map.flyTo(dst.coords, 13, { duration: 1.2 });
-        });
+          if (onResolveLocation) {
+            onResolveLocation(dst.name, dst.coords[0], dst.coords[1]);
+          }
+          map.flyTo(dst.coords, 14.5, { duration: 1.2 });
+        };
+
+        dstMarker.on('click', activateDistrict);
+        dstMarker.on('touchstart', activateDistrict);
+        dstMarker.on('mousedown', activateDistrict);
       });
 
       return;
