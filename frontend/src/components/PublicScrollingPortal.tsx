@@ -85,10 +85,10 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#f8fafc] dark:bg-[#030712] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500 selection:text-black">
+    <div className="w-full min-h-screen bg-[#eef7f2] dark:bg-[#030712] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500 selection:text-black">
       
       {/* 1. PUBLIC TOP NAVIGATION BAR */}
-      <nav className="sticky top-0 z-50 bg-white/95 dark:bg-[#060a14]/95 backdrop-blur-xl border-b border-slate-200 dark:border-cyan-500/30 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-sm">
+      <nav className="sticky top-0 z-50 bg-[#f4faf7]/90 dark:bg-[#060a14]/95 backdrop-blur-xl border-b border-emerald-200/80 dark:border-cyan-500/30 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-sm">
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2.5">
             <div className="p-2 rounded-xl bg-cyan-100 dark:bg-cyan-950/90 border border-cyan-400/50 text-cyan-600 dark:text-cyan-400 shadow-sm">

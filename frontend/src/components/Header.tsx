@@ -153,7 +153,7 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="h-16 bg-[#060a14]/95 dark:bg-[#060a14]/95 light:bg-white/95 border-b border-cyan-500/30 dark:border-cyan-500/30 light:border-slate-200 px-4 flex items-center justify-between text-slate-100 dark:text-slate-100 light:text-slate-900 z-40 backdrop-blur-xl font-sans relative shadow-sm">
+    <header className="h-16 bg-[#060a14]/95 dark:bg-[#060a14]/95 light:bg-[#f4faf7]/90 border-b border-cyan-500/30 dark:border-cyan-500/30 light:border-emerald-200/80 px-4 flex items-center justify-between text-slate-100 dark:text-slate-100 light:text-slate-900 z-40 backdrop-blur-xl font-sans relative shadow-sm">
       
       {/* LEFT SECTION: Logo + Region Switcher + Role Pill */}
       <div className="flex items-center space-x-3.5">
