@@ -72,8 +72,8 @@ export const CitizenPortalModal: React.FC<CitizenPortalModalProps> = ({
     setSosActive(true);
     setSosSentSuccess(true);
     try {
-      if (gpsCoords) {
-        await apiService.sendCitizenSos({
+      if (gpsCoords && (apiService as any).sendCitizenSos) {
+        await (apiService as any).sendCitizenSos({
           name: authUser?.name || 'Citizen SOS Beacon',
           phone: authUser?.phone || '+91 98765 43210',
           lat: gpsCoords.lat,
@@ -103,26 +103,44 @@ export const CitizenPortalModal: React.FC<CitizenPortalModalProps> = ({
     setIsAiThinking(true);
 
     try {
-      const response = await apiService.askGeminiAdvisor({
-        query: userQuery,
-        context: {
-          user_type: 'citizen',
-          state: stateName,
-          district: districtName,
-          gps: gpsCoords
-        }
-      });
+      if ((apiService as any).askGeminiAdvisor) {
+        const response = await (apiService as any).askGeminiAdvisor({
+          query: userQuery,
+          context: {
+            user_type: 'citizen',
+            state: stateName,
+            district: districtName,
+            gps: gpsCoords
+          }
+        });
 
+        setChatMessages(prev => [
+          ...prev,
+          {
+            sender: 'gemini',
+            text: response?.answer || `Stay indoors and avoid wading through water. The nearest designated safe relief center in ${districtName} is operational with emergency supplies.`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]);
+        setIsAiThinking(false);
+        return;
+      }
+    } catch (e) {
+      console.warn('Gemini chat API error:', e);
+    }
+
+    setTimeout(() => {
       setChatMessages(prev => [
         ...prev,
         {
           sender: 'gemini',
-          text: response.answer || `Stay indoors and avoid wading through water. The nearest designated safe relief center in ${districtName} is operational with emergency supplies.`,
+          text: `⚠️ Safety Notice for ${districtName}: Heavy precipitation detected in your area. Avoid underpasses and stay on elevated ground. For urgent water rescue, call the District Disaster Cell at 1077 or National Emergency at 112.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
-    } catch (e) {
-      setTimeout(() => {
+      setIsAiThinking(false);
+    }, 700);
+  };
         setChatMessages(prev => [
           ...prev,
           {

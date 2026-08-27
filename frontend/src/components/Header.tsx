@@ -66,6 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMultiHazard,
   onOpenDistrictAtlas,
   onOpenQRCode,
+  onOpenCitizenPortal,
   onSyncLiveWeather,
   isSyncingWeather,
   onSwitchCity,
