@@ -1025,6 +1025,21 @@ async def get_live_power_grid():
     return await live_grid_service.fetch_grid_telemetry()
 
 
+@app.get("/api/satellite/bhoonidhi/live-assets")
+async def get_bhoonidhi_live_assets(
+    lat: float = Query(19.076, description="Center latitude"),
+    lng: float = Query(72.877, description="Center longitude"),
+    collection: Optional[str] = Query(None, description="Filter by collection (e.g. NISAR_SSAR_GCOV, EOS-06_SCAT_3WW, ResourceSat-2A_LISS4-MX70_L2, Sentinel-1A_SAR-IW_GRD)"),
+    limit: int = Query(12, description="Max assets to retrieve")
+):
+    """
+    Official ISRO NRSC Bhoonidhi STAC Catalog API.
+    Retrieves authenticated live NISAR SAR, EOS-06 Scatterometer, ResourceSat-2A LISS-4 5.8m, Sentinel-1A SAR, and CartoSat-1 DEM assets.
+    """
+    from app.services.bhoonidhi_service import bhoonidhi_service
+    return await bhoonidhi_service.search_stac_catalog(lat=lat, lng=lng, selected_collection=collection, limit=limit)
+
+
 @app.post("/api/telegram/webhook")
 async def receive_telegram_sos_webhook(payload: dict = Body(...)):
     """
