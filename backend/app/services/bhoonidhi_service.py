@@ -282,7 +282,7 @@ class BhoonidhiNRSCService:
                 "datetime": now_str,
                 "sun_elevation": 62.1,
                 "cloud_cover_pct": 0.0,
-                "online_status": "ONLINE (ISRO Bhoonidhi STAC Pipeline)",
+                "online_status": "⚠️ OFFLINE — Reference Data (Live Query Failed)",
                 "download_url": "https://bhoonidhi-api.nrsc.gov.in/download?id=NISAR_S2_PR_GCOV_029_026_A_011_2500_CRNA_A&collection=NISAR_SSAR_GCOV",
                 "source": "ISRO National Remote Sensing Centre (NRSC / Bhoonidhi)"
             },
@@ -299,7 +299,7 @@ class BhoonidhiNRSCService:
                 "datetime": now_str,
                 "sun_elevation": 54.8,
                 "cloud_cover_pct": 0.0,
-                "online_status": "ONLINE (ISRO Bhoonidhi STAC Pipeline)",
+                "online_status": "⚠️ OFFLINE — Reference Data (Live Query Failed)",
                 "download_url": "https://bhoonidhi-api.nrsc.gov.in/download?id=E06SCTL3WW2025365_25km_v1.0.5&collection=EOS-06_SCAT_3WW",
                 "source": "ISRO National Remote Sensing Centre (NRSC / Bhoonidhi)"
             },
@@ -316,7 +316,7 @@ class BhoonidhiNRSCService:
                 "datetime": now_str,
                 "sun_elevation": 58.2,
                 "cloud_cover_pct": 4.2,
-                "online_status": "ONLINE (ISRO Bhoonidhi STAC Pipeline)",
+                "online_status": "⚠️ OFFLINE — Reference Data (Live Query Failed)",
                 "download_url": "https://bhoonidhi-api.nrsc.gov.in/download?id=RAF27AUG2026050440011200058SSANSTUC00GTDD&collection=ResourceSat-2A_LISS4-MX70_L2",
                 "source": "ISRO National Remote Sensing Centre (NRSC / Bhoonidhi)"
             },
@@ -333,7 +333,7 @@ class BhoonidhiNRSCService:
                 "datetime": now_str,
                 "sun_elevation": 61.4,
                 "cloud_cover_pct": 0.0,
-                "online_status": "ONLINE (ISRO Bhoonidhi STAC Pipeline)",
+                "online_status": "⚠️ OFFLINE — Reference Data (Live Query Failed)",
                 "download_url": "https://bhoonidhi-api.nrsc.gov.in/download?id=SEN1A_SAR_IW_29JUN2026_065185_76FC_ESA_ST0C00NTD_DV&collection=Sentinel-1A_SAR-IW_GRD",
                 "source": "ISRO National Remote Sensing Centre (NRSC / Bhoonidhi)"
             }
@@ -350,11 +350,11 @@ class BhoonidhiNRSCService:
             a["download_url"] = f"http://127.0.0.1:8000/api/satellite/bhoonidhi/download?id={a['id']}&collection={a['collection']}"
 
         return {
-            "status": "success",
+            "status": "fallback",
             "source": "ISRO National Remote Sensing Centre (Bhoonidhi STAC API)",
             "authenticated_user": os.getenv("BHOONIDHI_USER_ID", "AUTHORIZED_OFFICER"),
             "target_coords": [lat, lng],
-            "note": f"Live STAC pipeline active ({reason})" if reason else "Live STAC pipeline active",
+            "note": f"⚠️ Live Bhoonidhi query failed: {reason}. Showing reference granule data." if reason else "⚠️ Live Bhoonidhi STAC query offline. Showing reference granule data.",
             "total_returned": len(assets),
             "supported_collections": list(BHOONIDHI_COLLECTIONS_REGISTRY.keys()),
             "assets": assets
