@@ -589,7 +589,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     }
   ];
 
-  // Specific State District Maps for State SDMA Officers
+  // Specific State District Maps for State SDMA Officers & Pan-India Navigation
   const stateDistrictsMap: Record<string, Array<{ name: string; coords: [number, number]; threat: string; rainfall: string; color: string; cityId: string }>> = {
     'Maharashtra': [
       { name: 'Mumbai City & Mithi Basin', coords: [19.076, 72.877], threat: 'CRITICAL', rainfall: '84 mm/h', color: '#ef4444', cityId: 'mumbai_monsoon' },
@@ -598,6 +598,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       { name: 'Pune & Mutha Valley', coords: [18.5204, 73.8567], threat: 'MONITOR', rainfall: '28 mm/h', color: '#10b981', cityId: 'mumbai_monsoon' },
       { name: 'Kolhapur & Panchganga', coords: [16.7050, 74.2433], threat: 'ELEVATED', rainfall: '45 mm/h', color: '#f59e0b', cityId: 'mumbai_monsoon' },
       { name: 'Nagpur & Vidarbha SDMA Hub', coords: [21.1458, 79.0882], threat: 'MONITOR', rainfall: '19 mm/h', color: '#10b981', cityId: 'mumbai_monsoon' }
+    ],
+    'Telangana': [
+      { name: 'Hyderabad & Musi River Basin', coords: [17.3850, 78.4867], threat: 'CRITICAL', rainfall: '76 mm/h', color: '#ef4444', cityId: 'telangana_hyderabad' },
+      { name: 'Warangal & Bhadradri Godavari Basin', coords: [17.9784, 79.5941], threat: 'ELEVATED', rainfall: '58 mm/h', color: '#f59e0b', cityId: 'telangana_hyderabad' },
+      { name: 'Nizamabad & Sriram Sagar Reservoir', coords: [18.6725, 78.0941], threat: 'MONITOR', rainfall: '24 mm/h', color: '#10b981', cityId: 'telangana_hyderabad' },
+      { name: 'Khammam & Munneru Basin', coords: [17.2473, 80.1514], threat: 'ELEVATED', rainfall: '48 mm/h', color: '#f59e0b', cityId: 'telangana_hyderabad' }
+    ],
+    'Andhra Pradesh': [
+      { name: 'Vijayawada & Prakasam Barrage (Krishna)', coords: [16.5062, 80.6480], threat: 'CRITICAL', rainfall: '82 mm/h', color: '#ef4444', cityId: 'andhra_krishna' },
+      { name: 'Visakhapatnam Coastal Surge & Port', coords: [17.6868, 83.2185], threat: 'ELEVATED', rainfall: '46 mm/h', color: '#f59e0b', cityId: 'andhra_krishna' },
+      { name: 'Rajahmundry & Godavari Delta', coords: [17.0005, 81.8040], threat: 'CRITICAL', rainfall: '70 mm/h', color: '#ef4444', cityId: 'andhra_krishna' }
+    ],
+    'Gujarat': [
+      { name: 'Surat & Tapi River Basin', coords: [21.1702, 72.8311], threat: 'CRITICAL', rainfall: '78 mm/h', color: '#ef4444', cityId: 'gujarat_tapi' },
+      { name: 'Ahmedabad & Sabarmati Riverfront', coords: [23.0225, 72.5714], threat: 'ELEVATED', rainfall: '44 mm/h', color: '#f59e0b', cityId: 'gujarat_tapi' },
+      { name: 'Vadodara & Vishwamitri Basin', coords: [22.3072, 73.1812], threat: 'CRITICAL', rainfall: '85 mm/h', color: '#ef4444', cityId: 'gujarat_tapi' },
+      { name: 'Rajkot & Aji River Dam', coords: [22.3039, 70.8022], threat: 'MONITOR', rainfall: '22 mm/h', color: '#10b981', cityId: 'gujarat_tapi' }
     ],
     'Delhi NCR': [
       { name: 'North-East Yamuna Floodplain', coords: [28.6692, 77.2628], threat: 'CRITICAL', rainfall: '68 mm/h', color: '#ef4444', cityId: 'delhi_yamuna' },
@@ -634,6 +651,36 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       { name: 'Rishikesh & Ganga Upper Basin', coords: [30.0869, 78.2676], threat: 'CRITICAL', rainfall: '85 mm/h', color: '#ef4444', cityId: 'uttarakhand_cloudburst' },
       { name: 'Chamoli & Alaknanda Gorge', coords: [30.4167, 79.3333], threat: 'CRITICAL', rainfall: '90 mm/h', color: '#ef4444', cityId: 'uttarakhand_cloudburst' },
       { name: 'Dehradun Valley & Song River', coords: [30.3165, 78.0322], threat: 'ELEVATED', rainfall: '56 mm/h', color: '#f59e0b', cityId: 'uttarakhand_cloudburst' }
+    ],
+    'Rajasthan': [
+      { name: 'Jaipur & Dravyavati Basin', coords: [26.9124, 75.7873], threat: 'ELEVATED', rainfall: '45 mm/h', color: '#f59e0b', cityId: 'rajasthan_jaipur' },
+      { name: 'Jodhpur & Luni River Basin', coords: [26.2389, 73.0243], threat: 'MONITOR', rainfall: '20 mm/h', color: '#10b981', cityId: 'rajasthan_jaipur' },
+      { name: 'Kota & Chambal Barrage', coords: [25.1800, 75.8300], threat: 'CRITICAL', rainfall: '75 mm/h', color: '#ef4444', cityId: 'rajasthan_jaipur' }
+    ],
+    'Punjab': [
+      { name: 'Amritsar & Ravi River Floodplain', coords: [31.6340, 74.8723], threat: 'ELEVATED', rainfall: '42 mm/h', color: '#f59e0b', cityId: 'punjab_sutlej' },
+      { name: 'Ludhiana & Sutlej Embankment', coords: [30.9010, 75.8573], threat: 'CRITICAL', rainfall: '66 mm/h', color: '#ef4444', cityId: 'punjab_sutlej' }
+    ],
+    'Haryana': [
+      { name: 'Gurugram & Badshahpur Drain', coords: [28.4595, 77.0266], threat: 'CRITICAL', rainfall: '72 mm/h', color: '#ef4444', cityId: 'haryana_ghaggar' },
+      { name: 'Yamunanagar & Hathnikund Barrage', coords: [30.1290, 77.2674], threat: 'CRITICAL', rainfall: '80 mm/h', color: '#ef4444', cityId: 'haryana_ghaggar' }
+    ],
+    'Uttar Pradesh': [
+      { name: 'Varanasi & Ganga Ghats', coords: [25.3176, 82.9739], threat: 'CRITICAL', rainfall: '68 mm/h', color: '#ef4444', cityId: 'uttar_pradesh_ganga' },
+      { name: 'Lucknow & Gomti River Basin', coords: [26.8467, 80.9462], threat: 'ELEVATED', rainfall: '45 mm/h', color: '#f59e0b', cityId: 'uttar_pradesh_ganga' },
+      { name: 'Prayagraj & Triveni Sangam', coords: [25.4358, 81.8463], threat: 'CRITICAL', rainfall: '74 mm/h', color: '#ef4444', cityId: 'uttar_pradesh_ganga' }
+    ],
+    'Bihar': [
+      { name: 'Patna & Ganga-Kosi Confluence', coords: [25.5941, 85.1376], threat: 'CRITICAL', rainfall: '75 mm/h', color: '#ef4444', cityId: 'bihar_kosi' },
+      { name: 'Bhagalpur & Vikramshila Ganga', coords: [25.2425, 86.9842], threat: 'ELEVATED', rainfall: '50 mm/h', color: '#f59e0b', cityId: 'bihar_kosi' }
+    ],
+    'Odisha': [
+      { name: 'Bhubaneswar & Mahanadi Basin', coords: [20.2961, 85.8245], threat: 'ELEVATED', rainfall: '52 mm/h', color: '#f59e0b', cityId: 'odisha_mahanadi' },
+      { name: 'Puri & Coastal Storm Surge', coords: [19.8135, 85.8312], threat: 'CRITICAL', rainfall: '88 mm/h', color: '#ef4444', cityId: 'odisha_mahanadi' }
+    ],
+    'Dadra & Nagar Haveli and Daman & Diu': [
+      { name: 'Daman & Damanganga River', coords: [20.3974, 72.8328], threat: 'CRITICAL', rainfall: '80 mm/h', color: '#ef4444', cityId: 'daman_damanganga' },
+      { name: 'Silvassa & Madhuban Dam', coords: [20.2763, 73.0083], threat: 'ELEVATED', rainfall: '54 mm/h', color: '#f59e0b', cityId: 'daman_damanganga' }
     ]
   };
 
@@ -733,8 +780,9 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           setTimeout(() => setClickCoordFeedback(null), 3500);
           return;
         }
-        setClickCoordFeedback(`📍 Resolving Micro-Catchment for [${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E]...`);
+        setClickCoordFeedback(`📍 Point & Navigate: Focused on [${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E]`);
         setTimeout(() => setClickCoordFeedback(null), 4000);
+        map.flyTo([lat, lng], Math.max(map.getZoom(), 13), { duration: 1.2 });
         if (onResolveLocation) {
           onResolveLocation('', lat, lng);
         }
