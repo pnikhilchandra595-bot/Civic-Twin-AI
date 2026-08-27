@@ -68,7 +68,7 @@ class DroneCCTVService:
                 state_name="Maharashtra",
                 lat=19.019,
                 lng=72.846,
-                video_url="https://upload.wikimedia.org/wikipedia/commons/e/e9/Flood_in_Soan_river.webm",
+                video_url="/videos/mumbai_mithi.mp4",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.58,
                 stalled_vehicles_count=3,
@@ -90,7 +90,7 @@ class DroneCCTVService:
                 state_name="Maharashtra",
                 lat=19.068,
                 lng=72.875,
-                video_url="https://www.youtube.com/embed/8v_k3qBqf48?autoplay=1&mute=1&enablejsapi=1",
+                video_url="/videos/river_drone.mp4",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.92,
                 stalled_vehicles_count=5,
@@ -112,7 +112,7 @@ class DroneCCTVService:
                 state_name="Delhi NCR",
                 lat=28.665,
                 lng=77.235,
-                video_url="https://upload.wikimedia.org/wikipedia/commons/a/a6/Aerial_views_of_flood_control_via_the_Aqueduct_Intertie_at_Kern_River_Terminus%2C_California%2C_USA.webm",
+                video_url="/videos/delhi_yamuna.mp4",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.74,
                 stalled_vehicles_count=4,
@@ -133,7 +133,7 @@ class DroneCCTVService:
                 state_name="Karnataka",
                 lat=12.926,
                 lng=77.676,
-                video_url="https://www.youtube.com/embed/1-iS7LArMPA?autoplay=1&mute=1&enablejsapi=1",
+                video_url="/videos/bengaluru_lakes.mp4",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.45,
                 stalled_vehicles_count=8,
@@ -154,7 +154,7 @@ class DroneCCTVService:
                 state_name="Tamil Nadu",
                 lat=13.010,
                 lng=80.278,
-                video_url="https://www.youtube.com/embed/HpZAez2oYS4?autoplay=1&mute=1&enablejsapi=1",
+                video_url="/videos/chennai_coastal.mp4",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=1.15,
                 stalled_vehicles_count=1,
@@ -165,46 +165,108 @@ class DroneCCTVService:
                     ComputerVisionDetection(label="High Velocity Estuary Sluice Current", confidence=0.94, bbox=[30, 55, 40, 35], hazard_severity="CRITICAL")
                 ]
             ),
-            # 6. Live 24/7 Satellite ISS & Earth Atmosphere Stream (YouTube Live)
+            # 6. Assam Brahmaputra Aerial Recon Drone - River Survey
             DroneCameraFeed(
-                camera_id="CAM-YT-EARTH-01",
-                feed_name="🛰️ NASA Live Earth & Cyclone Recon (YouTube 24/7)",
+                camera_id="DRONE-ASM-01",
+                feed_name="UAV EagleEye-9 (Brahmaputra Valley)",
+                camera_type="UAV_SURVEY_DRONE",
+                city_id="assam_brahmaputra",
+                location_name="Guwahati Riverside Ghat & Embankment",
+                state_name="Assam",
+                lat=26.185,
+                lng=91.748,
+                video_url="/videos/assam_brahmaputra.mp4",
+                status="LIVE_STREAMING",
+                flood_depth_detected_m=1.45,
+                stalled_vehicles_count=0,
+                stranded_pedestrians_count=22,
+                flow_velocity_ms=4.2,
+                ai_yolo_detections=[
+                    ComputerVisionDetection(label="Brahmaputra Major Inundation Plain", confidence=0.98, bbox=[10, 15, 80, 55], hazard_severity="CRITICAL"),
+                    ComputerVisionDetection(label="Village Evacuees at River Bund (22x)", confidence=0.96, bbox=[40, 60, 35, 25], hazard_severity="CRITICAL")
+                ]
+            ),
+            # 7. Official IMD Doppler Weather Radar Cam (Mumbai Colaba Live Radar GIF)
+            DroneCameraFeed(
+                camera_id="CAM-IMD-MUM-01",
+                feed_name="🌧️ IMD Doppler Weather Radar (Mumbai Colaba)",
+                camera_type="COASTAL_RADAR_CAM",
+                city_id="mumbai_monsoon",
+                location_name="IMD Colaba Weather Station & Arabian Sea Radar",
+                state_name="Maharashtra",
+                lat=18.898,
+                lng=72.812,
+                video_url="https://mausam.imd.gov.in/Radar/animation/Converted/MUM_MAXZ.gif",
+                status="LIVE_STREAMING",
+                flood_depth_detected_m=0.42,
+                stalled_vehicles_count=0,
+                stranded_pedestrians_count=0,
+                flow_velocity_ms=8.5,
+                ai_yolo_detections=[
+                    ComputerVisionDetection(label="IMD Severe Rain Band Reflectivity (48 dBZ)", confidence=0.99, bbox=[10, 10, 80, 80], hazard_severity="CRITICAL"),
+                    ComputerVisionDetection(label="Western Ghats Orgraphic Surge", confidence=0.95, bbox=[50, 20, 40, 60], hazard_severity="WARNING")
+                ]
+            ),
+            # 8. Official IMD National All-India Radar Mosaic (Live Composite GIF)
+            DroneCameraFeed(
+                camera_id="CAM-IMD-NAT-01",
+                feed_name="🛰️ IMD National All-India Doppler Radar Mosaic",
                 camera_type="COASTAL_RADAR_CAM",
                 city_id="all",
-                location_name="Low Earth Orbit Cloud & Cyclone Surveillance",
-                state_name="Spaceborne Reconnaissance",
-                lat=18.500,
-                lng=73.500,
-                video_url="https://www.youtube.com/embed/xRPjKOmDCBo?autoplay=1&mute=1&enablejsapi=1",
+                location_name="IMD National Meteorological Operations Grid",
+                state_name="All-India Radar Grid",
+                lat=22.500,
+                lng=78.500,
+                video_url="https://mausam.imd.gov.in/Radar/MOSAIC/Converted/mosaic.gif",
                 status="LIVE_STREAMING",
                 flood_depth_detected_m=0.0,
                 stalled_vehicles_count=0,
                 stranded_pedestrians_count=0,
-                flow_velocity_ms=7.8,
+                flow_velocity_ms=12.4,
                 ai_yolo_detections=[
-                    ComputerVisionDetection(label="Monsoon Cloud Vortex Detected", confidence=0.98, bbox=[15, 20, 70, 60], hazard_severity="WARNING"),
-                    ComputerVisionDetection(label="Atmospheric Moisture Band", confidence=0.94, bbox=[30, 40, 40, 30], hazard_severity="NORMAL")
+                    ComputerVisionDetection(label="Active Pan-India Monsoon Trough", confidence=0.98, bbox=[20, 20, 60, 60], hazard_severity="WARNING"),
+                    ComputerVisionDetection(label="High Cloud Precipitation Density", confidence=0.96, bbox=[35, 45, 40, 30], hazard_severity="CRITICAL")
                 ]
             ),
-            # 7. Live 24/7 River & Wildlife Catchment Stream (YouTube Live)
+            # 9. Hyderabad Musi River & Hussain Sagar Sluice Gate Cam
             DroneCameraFeed(
-                camera_id="CAM-YT-RIVER-01",
-                feed_name="🌊 Live River Rapids & Basin Sluice Cam (24/7)",
+                camera_id="CAM-HYD-MUSI-01",
+                feed_name="🌊 Hyderabad Musi Riverfront & Sluice Cam",
                 camera_type="MUNICIPAL_CCTV",
-                city_id="all",
-                location_name="Upper River Catchment & Hydro Gauge Point",
-                state_name="All-India Hydro Grid",
-                lat=19.076,
-                lng=72.877,
-                video_url="https://www.youtube.com/embed/8v_k3qBqf48?autoplay=1&mute=1&enablejsapi=1",
+                city_id="telangana_hyderabad",
+                location_name="Musi River Channel & Moosarambagh Bridge",
+                state_name="Telangana",
+                lat=17.3850,
+                lng=78.4867,
+                video_url="/videos/river_drone.mp4",
                 status="LIVE_STREAMING",
-                flood_depth_detected_m=0.65,
-                stalled_vehicles_count=2,
-                stranded_pedestrians_count=5,
-                flow_velocity_ms=2.4,
+                flood_depth_detected_m=0.85,
+                stalled_vehicles_count=4,
+                stranded_pedestrians_count=9,
+                flow_velocity_ms=3.1,
                 ai_yolo_detections=[
-                    ComputerVisionDetection(label="Active River Surge Waterflow", confidence=0.98, bbox=[10, 25, 80, 50], hazard_severity="CRITICAL"),
-                    ComputerVisionDetection(label="Hydrological Gauge Marker Level", confidence=0.95, bbox=[70, 60, 20, 30], hazard_severity="WARNING")
+                    ComputerVisionDetection(label="Musi River Level Above Red Mark (0.85m)", confidence=0.97, bbox=[15, 30, 70, 50], hazard_severity="CRITICAL"),
+                    ComputerVisionDetection(label="Moosarambagh Causeaway Submerged", confidence=0.94, bbox=[25, 60, 50, 30], hazard_severity="CRITICAL")
+                ]
+            ),
+            # 10. Official IMD Delhi NCR Doppler Weather Radar (Live Animation GIF)
+            DroneCameraFeed(
+                camera_id="CAM-IMD-DEL-01",
+                feed_name="🌧️ IMD Doppler Weather Radar (Delhi NCR Palam)",
+                camera_type="COASTAL_RADAR_CAM",
+                city_id="delhi_yamuna",
+                location_name="IMD Palam Station & Yamuna Basin Radar",
+                state_name="Delhi NCR",
+                lat=28.583,
+                lng=77.083,
+                video_url="https://mausam.imd.gov.in/Radar/animation/Converted/DLH_MAXZ.gif",
+                status="LIVE_STREAMING",
+                flood_depth_detected_m=0.55,
+                stalled_vehicles_count=0,
+                stranded_pedestrians_count=0,
+                flow_velocity_ms=6.8,
+                ai_yolo_detections=[
+                    ComputerVisionDetection(label="NCR Storm Front Cloud Cell", confidence=0.97, bbox=[15, 15, 70, 70], hazard_severity="WARNING")
                 ]
             )
         ]
