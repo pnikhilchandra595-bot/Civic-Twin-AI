@@ -1040,6 +1040,36 @@ async def get_bhoonidhi_live_assets(
     return await bhoonidhi_service.search_stac_catalog(lat=lat, lng=lng, selected_collection=collection, limit=limit)
 
 
+@app.get("/api/satellite/bhoonidhi/download")
+async def download_bhoonidhi_granule(
+    id: str = Query(..., description="Granule ID"),
+    collection: str = Query(..., description="Collection Name")
+):
+    """
+    Authenticated ISRO Bhoonidhi Granule Download Proxy.
+    Uses system credentials to stream raw satellite zip package directly to user's browser.
+    """
+    from app.services.bhoonidhi_service import bhoonidhi_service
+    from fastapi.responses import StreamingResponse
+    try:
+        remote_resp = bhoonidhi_service.download_granule_stream(id, collection)
+        
+        def iterfile():
+            while chunk := remote_resp.read(65536):
+                yield chunk
+
+        content_disposition = remote_resp.headers.get("Content-Disposition", f'attachment; filename="{id}.zip"')
+        content_type = remote_resp.headers.get("Content-Type", "application/octet-stream")
+        
+        return StreamingResponse(
+            iterfile(),
+            media_type=content_type,
+            headers={"Content-Disposition": content_disposition}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Bhoonidhi download proxy error: {str(e)}")
+
+
 @app.post("/api/telegram/webhook")
 async def receive_telegram_sos_webhook(payload: dict = Body(...)):
     """

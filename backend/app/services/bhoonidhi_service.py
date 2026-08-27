@@ -230,7 +230,7 @@ class BhoonidhiNRSCService:
                             "sun_elevation": props.get("sun_elevation", 58.4),
                             "cloud_cover_pct": props.get("cloud_cover", 0.0),
                             "online_status": "ONLINE (Direct ISRO STAC Granule)",
-                            "download_url": f"https://bhoonidhi-api.nrsc.gov.in/download?id={asset_id}&collection={col}",
+                            "download_url": f"http://127.0.0.1:8000/api/satellite/bhoonidhi/download?id={asset_id}&collection={col}",
                             "source": "ISRO National Remote Sensing Centre (NRSC Hyderabad / Bhoonidhi)"
                         })
 
@@ -345,6 +345,10 @@ class BhoonidhiNRSCService:
         else:
             assets = candidates
 
+        # Use backend proxy URL for direct authenticated browser downloads
+        for a in assets:
+            a["download_url"] = f"http://127.0.0.1:8000/api/satellite/bhoonidhi/download?id={a['id']}&collection={a['collection']}"
+
         return {
             "status": "success",
             "source": "ISRO National Remote Sensing Centre (Bhoonidhi STAC API)",
@@ -355,6 +359,20 @@ class BhoonidhiNRSCService:
             "supported_collections": list(BHOONIDHI_COLLECTIONS_REGISTRY.keys()),
             "assets": assets
         }
+
+    def download_granule_stream(self, granule_id: str, collection: str):
+        """Streams authenticated granule file directly from Bhoonidhi with Bearer token."""
+        token = self._get_valid_token()
+        if not token:
+            raise ValueError("Bhoonidhi authentication token unavailable.")
+
+        download_url = f"{self.base_url}/download?id={granule_id}&collection={collection}"
+        req = urllib.request.Request(download_url, headers={
+            "Authorization": f"Bearer {token}",
+            "User-Agent": "CivicTwin-AI/1.0"
+        })
+        resp = urllib.request.urlopen(req, timeout=30, context=self._ctx)
+        return resp
 
 
 bhoonidhi_service = BhoonidhiNRSCService()
