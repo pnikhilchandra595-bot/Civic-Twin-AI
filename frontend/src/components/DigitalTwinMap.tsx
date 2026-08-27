@@ -654,11 +654,12 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     'Uttarakhand': 'nuis:AND_PB_UL10K,nuis:AP_DH_UL10K'
   };
 
-  // Tile URL Map
+  // Tile URL Map (High-Resolution Providers)
   const tileUrls = {
-    dark: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png',
+    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
     satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    topo: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
   };
 
   // Sovereign Indian Territorial Boundary Check (Survey of India & NDMA Sovereign Guidelines)
@@ -1833,96 +1834,111 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         {isDistrictOfficer ? (
           <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-amber-500/40 shadow-xl bg-slate-950/90">
             <button
-              onClick={() => setViewScope('city')}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+              onClick={() => {
+                setViewScope('city');
+                if (mapInstanceRef.current && state?.center_coords) {
+                  mapInstanceRef.current.flyTo(state.center_coords, 14, { duration: 1.2 });
+                }
+              }}
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
                 viewScope === 'city'
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <Compass className="w-3.5 h-3.5" />
-              <span>Ward Triage</span>
+              <span>🎯 Exact Area ({state?.city_name?.split(' ')[0] || 'Local'})</span>
             </button>
 
             <button
               onClick={() => setViewScope('district_grid')}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
                 viewScope === 'district_grid'
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <Building2 className="w-3.5 h-3.5 text-amber-400" />
-              <span>📍 {authUser?.assignedDistrict || 'District'} Grid (DDMA)</span>
+              <span>📍 {authUser?.assignedDistrict || 'District'} Grid</span>
             </button>
           </div>
         ) : isStateOfficer ? (
           <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-purple-500/40 shadow-xl bg-slate-950/90">
             <button
-              onClick={() => setViewScope('city')}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+              onClick={() => {
+                setViewScope('city');
+                if (mapInstanceRef.current && state?.center_coords) {
+                  mapInstanceRef.current.flyTo(state.center_coords, 14, { duration: 1.2 });
+                }
+              }}
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
                 viewScope === 'city'
-                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50 font-bold'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Compass className="w-3.5 h-3.5" />
-              <span>Local Twin</span>
+              <Compass className="w-3.5 h-3.5 text-emerald-400" />
+              <span>🎯 Exact Area ({state?.city_name?.split(' ')[0] || 'Local'})</span>
             </button>
 
             <button
               onClick={() => setViewScope('state_grid')}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
                 viewScope === 'state_grid'
                   ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50 font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <Building2 className="w-3.5 h-3.5 text-purple-400" />
-              <span>🏢 {authUser?.assignedState || 'State'} Grid (SDMA)</span>
+              <span>🏢 {authUser?.assignedState || 'State'} Grid</span>
             </button>
           </div>
         ) : (
           <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-cyan-500/30 shadow-xl bg-slate-950/90">
             <button
-              onClick={() => setViewScope('city')}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+              onClick={() => {
+                setViewScope('city');
+                if (mapInstanceRef.current && state?.center_coords) {
+                  mapInstanceRef.current.flyTo(state.center_coords, 14, { duration: 1.2 });
+                }
+              }}
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
                 viewScope === 'city'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Compass className="w-3.5 h-3.5" />
-              <span>City Twin</span>
+              <Compass className="w-3.5 h-3.5 text-emerald-400" />
+              <span>🎯 Exact Area Twin</span>
             </button>
 
             <button
               onClick={() => setViewScope('india')}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all ${
+              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
                 viewScope === 'india'
                   ? 'bg-orange-500/20 text-orange-300 border border-orange-500/50 font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <Globe className="w-3.5 h-3.5 text-orange-400" />
-              <span>🇮🇳 All-India Grid</span>
+              <span>🇮🇳 All-India</span>
             </button>
           </div>
         )}
 
         {/* Base Map Style Selector */}
         <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-[11px] font-mono border border-slate-800 bg-slate-950/90 shadow-lg">
-          {(['dark', 'satellite', 'street', 'bhuvan'] as const).map(style => (
+          {(['satellite', 'dark', 'street', 'bhuvan'] as const).map(style => (
             <button
               key={style}
               onClick={() => setBaseMap(style)}
-              className={`px-2 py-0.5 rounded-lg capitalize transition-all ${
+              className={`px-2 py-0.5 rounded-lg capitalize transition-all cursor-pointer ${
                 baseMap === style
                   ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold shadow-sm'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              {style === 'dark' ? '🌃 Dark' : style === 'satellite' ? '🛰️ Sat' : style === 'street' ? '🗺️ Street' : '🇮🇳 ISRO Bhuvan'}
+              {style === 'satellite' ? '🛰️ Satellite' : style === 'dark' ? '🌃 Dark' : style === 'street' ? '🗺️ Street' : '🇮🇳 ISRO Bhuvan'}
             </button>
           ))}
         </div>
