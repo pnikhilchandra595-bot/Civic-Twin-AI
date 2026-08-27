@@ -3,6 +3,7 @@ import json
 import datetime
 import ssl
 import certifi
+from typing import Dict, Any, List, Optional
 
 ctx = ssl.create_default_context(cafile=certifi.where())
 

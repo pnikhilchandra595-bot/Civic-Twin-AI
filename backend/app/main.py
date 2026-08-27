@@ -995,6 +995,7 @@ async def get_live_traffic_incidents(
 
 
 @app.get("/api/realtime/ndma-alerts")
+@app.get("/api/ndma/alerts")
 async def get_live_ndma_alerts():
     """
     Ingests live disaster warning alerts from Government of India NDMA SACHET CAP Feed.
