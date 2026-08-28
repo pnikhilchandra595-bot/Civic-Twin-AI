@@ -1,13 +1,14 @@
-import httpx
-import asyncio
 import datetime
 from typing import List, Dict, Any, Optional
 
 class CWCandIMDScraperService:
     """
-    Automated Ingestion Service for:
-    1. CWC (Central Water Commission) - River water levels, gauge stations, warning & danger levels.
-    2. IMD (India Meteorological Department) - District-wise color-coded rainfall & cyclone warnings.
+    Reference Ingestion Service for:
+    1. CWC (Central Water Commission) - River water levels, gauge stations, warning & danger levels (Seeded Baseline).
+    2. IMD (India Meteorological Department) - District-wise color-coded rainfall & cyclone warnings (Seeded Baseline).
+    
+    NOTE: As documented in SYSTEM_DESIGN_DOCUMENT.md, this service provides calibrated seeded reference datasets.
+    Live scraping endpoints are not active in this build.
     """
 
     def __init__(self):
@@ -29,7 +30,8 @@ class CWCandIMDScraperService:
                 "trend": "RISING",
                 "rate_of_rise_m_hr": 0.24,
                 "status": "WARNING",
-                "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST")
+                "data_mode": "seeded_reference",
+                "last_updated": "Monsoon 2026 Reference Baseline"
             },
             {
                 "gauge_id": "CWC-DEL-02",
@@ -44,7 +46,8 @@ class CWCandIMDScraperService:
                 "trend": "RISING",
                 "rate_of_rise_m_hr": 0.18,
                 "status": "DANGER",
-                "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST")
+                "data_mode": "seeded_reference",
+                "last_updated": "Monsoon 2026 Reference Baseline"
             },
             {
                 "gauge_id": "CWC-ASM-03",
@@ -59,7 +62,8 @@ class CWCandIMDScraperService:
                 "trend": "RISING",
                 "rate_of_rise_m_hr": 0.31,
                 "status": "CRITICAL_OVERTOPPING",
-                "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST")
+                "data_mode": "seeded_reference",
+                "last_updated": "Monsoon 2026 Reference Baseline"
             },
             {
                 "gauge_id": "CWC-CHE-04",
@@ -74,7 +78,8 @@ class CWCandIMDScraperService:
                 "trend": "RISING",
                 "rate_of_rise_m_hr": 0.20,
                 "status": "WARNING",
-                "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST")
+                "data_mode": "seeded_reference",
+                "last_updated": "Monsoon 2026 Reference Baseline"
             },
             {
                 "gauge_id": "CWC-KOL-05",
@@ -89,7 +94,8 @@ class CWCandIMDScraperService:
                 "trend": "HIGH_TIDE_SURGE",
                 "rate_of_rise_m_hr": 0.28,
                 "status": "ELEVATED",
-                "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST")
+                "data_mode": "seeded_reference",
+                "last_updated": "Monsoon 2026 Reference Baseline"
             },
             {
                 "gauge_id": "CWC-KER-06",
@@ -104,7 +110,8 @@ class CWCandIMDScraperService:
                 "trend": "RISING",
                 "rate_of_rise_m_hr": 0.35,
                 "status": "DANGER",
-                "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST")
+                "data_mode": "seeded_reference",
+                "last_updated": "Monsoon 2026 Reference Baseline"
             },
             {
                 "gauge_id": "CWC-UTT-07",
@@ -119,7 +126,8 @@ class CWCandIMDScraperService:
                 "trend": "FLASH_SURGE",
                 "rate_of_rise_m_hr": 0.42,
                 "status": "CRITICAL_FLASH",
-                "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST")
+                "data_mode": "seeded_reference",
+                "last_updated": "Monsoon 2026 Reference Baseline"
             },
             {
                 "gauge_id": "CWC-ODI-08",
@@ -134,7 +142,8 @@ class CWCandIMDScraperService:
                 "trend": "RISING",
                 "rate_of_rise_m_hr": 0.22,
                 "status": "WARNING",
-                "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST")
+                "data_mode": "seeded_reference",
+                "last_updated": "Monsoon 2026 Reference Baseline"
             }
         ]
 
@@ -146,7 +155,8 @@ class CWCandIMDScraperService:
                 "warning_level": "RED",
                 "hazard_type": "Extremely Heavy Rainfall (Monsoon Cloudburst)",
                 "expected_rainfall_mm_24h": "180 - 240 mm",
-                "valid_until": "24 Hours (Next Day 12:00 IST)",
+                "valid_until": "Monsoon 2026 Reference Advisory",
+                "data_mode": "seeded_reference",
                 "impact_advisory": "Flash flooding in low-lying areas, local train delays, subway waterlogging. Movement discouraged unless emergency."
             },
             {
@@ -156,7 +166,8 @@ class CWCandIMDScraperService:
                 "warning_level": "ORANGE",
                 "hazard_type": "Moderate to Heavy Rain with Yamuna Catchment Runoff",
                 "expected_rainfall_mm_24h": "70 - 110 mm",
-                "valid_until": "36 Hours",
+                "valid_until": "Monsoon 2026 Reference Advisory",
+                "data_mode": "seeded_reference",
                 "impact_advisory": "Yamuna floodplain inundation, Ring road traffic diversion, low-lying slum evacuation."
             },
             {
@@ -166,7 +177,8 @@ class CWCandIMDScraperService:
                 "warning_level": "RED",
                 "hazard_type": "Severe Brahmaputra Spate & Inundation",
                 "expected_rainfall_mm_24h": "150 - 210 mm",
-                "valid_until": "48 Hours",
+                "valid_until": "Monsoon 2026 Reference Advisory",
+                "data_mode": "seeded_reference",
                 "impact_advisory": "Embankment breach risks in Kaziranga & Majuli, boat rescue operations activated."
             },
             {
@@ -176,27 +188,45 @@ class CWCandIMDScraperService:
                 "warning_level": "RED",
                 "hazard_type": "Heavy Ghats Orographic Rainfall & Landslide Warning",
                 "expected_rainfall_mm_24h": "190 - 250 mm",
-                "valid_until": "24 Hours",
+                "valid_until": "Monsoon 2026 Reference Advisory",
+                "data_mode": "seeded_reference",
                 "impact_advisory": "High landslide vulnerability on steep slopes, night travel prohibited on ghat roads."
             }
         ]
 
-    async def fetch_cwc_river_gauges(self, state_filter: Optional[str] = None) -> List[Dict[str, Any]]:
+    async def fetch_cwc_river_gauges(self, state_filter: Optional[str] = None) -> Dict[str, Any]:
         """
-        Fetches or simulates live river water levels and danger threshold telemetry from CWC.
+        Returns seeded/reference river gauge data (static baseline).
+        NOTE: This is not a live CWC scrape — see SYSTEM_DESIGN_DOCUMENT.md build status.
         """
         results = self.major_cwc_gauges
         if state_filter and state_filter.upper() != "ALL":
             results = [g for g in results if g["state"].lower() == state_filter.lower()]
-        return results
+        return {
+            "status": "seeded_reference",
+            "data_mode": "seeded_reference",
+            "source": "Central Water Commission (CWC) River Basin Baseline",
+            "note": "⚠️ Static reference dataset — live CWC scraping not yet connected.",
+            "total_gauges": len(results),
+            "gauges": results
+        }
 
-    async def fetch_imd_bulletins(self, state_filter: Optional[str] = None) -> List[Dict[str, Any]]:
+    async def fetch_imd_bulletins(self, state_filter: Optional[str] = None) -> Dict[str, Any]:
         """
-        Fetches live district-wise color-coded weather warning bulletins from IMD.
+        Returns seeded/reference IMD weather bulletins (static baseline).
+        NOTE: This is not a live IMD scrape — see SYSTEM_DESIGN_DOCUMENT.md build status.
         """
         results = self.imd_bulletins
         if state_filter and state_filter.upper() != "ALL":
             results = [b for b in results if b["state"].lower() == state_filter.lower()]
-        return results
+        return {
+            "status": "seeded_reference",
+            "data_mode": "seeded_reference",
+            "source": "India Meteorological Department (IMD) Warning Bulletins Baseline",
+            "note": "⚠️ Static reference dataset — live IMD bulletin scraping in progress.",
+            "total_bulletins": len(results),
+            "bulletins": results
+        }
+
 
 cwc_imd_service = CWCandIMDScraperService()
