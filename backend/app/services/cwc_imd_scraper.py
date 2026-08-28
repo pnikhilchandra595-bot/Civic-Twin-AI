@@ -363,8 +363,14 @@ class CWCandIMDScraperService:
         try:
             import httpx
             import certifi
-            async with httpx.AsyncClient(timeout=10.0, verify=certifi.where()) as client:
-                res = await client.get(self.CWC_LIVE_URL, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "application/json, text/plain, */*",
+                "Referer": "https://ffs.india-water.gov.in/",
+                "Origin": "https://ffs.india-water.gov.in"
+            }
+            async with httpx.AsyncClient(timeout=12.0, verify=certifi.where()) as client:
+                res = await client.get(self.CWC_LIVE_URL, headers=headers)
                 if res.status_code == 200:
                     raw = res.json()
                     stations = []
