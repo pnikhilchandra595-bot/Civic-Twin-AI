@@ -56,7 +56,7 @@ class BhuvanNRSCService:
             if live_res and live_res.get("status") == "success" and live_res.get("facilities"):
                 result = {
                     "status": "success",
-                    "source": "OpenStreetMap & National Healthcare Registry (Real-Time Live API)",
+                    "source": "OpenStreetMap & National Healthcare Registry (Live Nominatim API — names & locations live; capacity estimated)",
                     "center": [lat, lng],
                     "radius_km": radius_km,
                     "hospitals_count": len(live_res["facilities"]),
@@ -67,6 +67,8 @@ class BhuvanNRSCService:
                             "lng": f["lng"],
                             "beds": f["general_beds"],
                             "icu": f["icu_capacity"],
+                            "capacity_data_mode": f.get("capacity_data_mode", "estimated"),
+                            "capacity_note": f.get("capacity_note", "⚠️ Bed/ICU figures are modeled estimates — OSM does not provide verified capacity data."),
                             "type": "hospital",
                             "status": f["status"],
                             "operator": f.get("operator", "Healthcare Dept"),

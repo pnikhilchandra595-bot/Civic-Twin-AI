@@ -43,7 +43,6 @@ class LiveHospitalService:
                             h_lat = float(elem.get("lat", lat))
                             h_lng = float(elem.get("lon", lng))
                             
-                            type_tag = elem.get("type", "hospital")
                             beds = 280 + (idx * 65)
                             icu = max(14, int(beds * 0.12))
 
@@ -53,6 +52,8 @@ class LiveHospitalService:
                                 "type": "EMERGENCY_HOSPITAL",
                                 "lat": round(h_lat, 4),
                                 "lng": round(h_lng, 4),
+                                "capacity_data_mode": "estimated",
+                                "capacity_note": "⚠️ Bed/ICU figures are modeled estimates — OSM does not provide verified capacity data.",
                                 "general_beds": beds,
                                 "icu_capacity": icu,
                                 "status": "operational",
@@ -63,7 +64,7 @@ class LiveHospitalService:
 
                         return {
                             "status": "success",
-                            "source": "OpenStreetMap Real-Time Healthcare Registry (Live Nominatim API)",
+                            "source": "OpenStreetMap Real-Time Healthcare Registry (Live Nominatim API — names & locations live; capacity estimated)",
                             "total_facilities": len(facilities),
                             "query_center": {"lat": lat, "lng": lng},
                             "facilities": facilities
@@ -74,8 +75,8 @@ class LiveHospitalService:
         # Fallback calibrated Indian municipal hospitals
         return {
             "status": "calibrated_baseline",
-            "source": "State Health Department Infrastructure Baseline",
-            "total_facilities": 3,
+            "source": "State Health Department Infrastructure Baseline (Offline Reference)",
+            "total_facilities": 2,
             "facilities": [
                 {
                     "id": "HOSP-01",
@@ -83,6 +84,8 @@ class LiveHospitalService:
                     "type": "EMERGENCY_HOSPITAL",
                     "lat": round(lat + 0.008, 4),
                     "lng": round(lng + 0.005, 4),
+                    "capacity_data_mode": "seeded_reference",
+                    "capacity_note": "⚠️ Baseline reference hospital dataset.",
                     "general_beds": 450,
                     "icu_capacity": 40,
                     "status": "operational",
@@ -95,6 +98,8 @@ class LiveHospitalService:
                     "type": "EMERGENCY_HOSPITAL",
                     "lat": round(lat - 0.012, 4),
                     "lng": round(lng + 0.009, 4),
+                    "capacity_data_mode": "seeded_reference",
+                    "capacity_note": "⚠️ Baseline reference hospital dataset.",
                     "general_beds": 220,
                     "icu_capacity": 18,
                     "status": "operational",

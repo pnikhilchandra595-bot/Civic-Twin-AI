@@ -716,6 +716,7 @@ async def get_copernicus_elevation_profile(
 # =========================================================================
 
 @app.get("/api/bhuvan/hospitals")
+@app.get("/api/realtime/hospitals")
 async def get_bhuvan_hospitals_and_postal(lat: float = 19.076, lng: float = 72.877, radius_km: float = 5.0):
     """ISRO Bhuvan Postal & Hospital Lifeline Infrastructure POI API (Token: 0d802eb03b...)"""
     return await bhuvan_service.fetch_hospitals_and_postal(lat, lng, radius_km)
