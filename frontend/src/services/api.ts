@@ -862,6 +862,11 @@ export class DigitalTwinApiService {
     return await res.json();
   }
 
+  async getMOSDACFreshness(): Promise<any> {
+    const res = await fetch(`${API_BASE}/real-data/mosdac-freshness`);
+    return await res.json();
+  }
+
   async getBhuvanHospitals(lat: number = 19.076, lng: number = 72.877, radiusKm: number = 8.0): Promise<any> {
     try {
       const res = await fetch(`${API_BASE}/bhuvan/hospitals?lat=${lat}&lng=${lng}&radius_km=${radiusKm}`);

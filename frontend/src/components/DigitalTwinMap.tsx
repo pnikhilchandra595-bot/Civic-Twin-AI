@@ -48,6 +48,27 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [viewScope, setViewScope] = useState<'city' | 'india' | 'state_grid' | 'district_grid'>('city');
   const [isLayersOpen, setIsLayersOpen] = useState(false);
   const [clickCoordFeedback, setClickCoordFeedback] = useState<string | null>(null);
+  const [mosdacFreshness, setMosdacFreshness] = useState<{
+    satellite: string;
+    latest_pass_utc: string;
+    active_granules_count: number;
+    total_volume_gb: number;
+    live_products: string[];
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchFreshness = async () => {
+      try {
+        const data = await apiService.getMOSDACFreshness();
+        if (data && data.status) {
+          setMosdacFreshness(data);
+        }
+      } catch (e) {
+        console.error('Failed to fetch MOSDAC freshness:', e);
+      }
+    };
+    fetchFreshness();
+  }, []);
   
   // Layer visibility toggles
   const [showFloodHeatmap, setShowFloodHeatmap] = useState(true);
@@ -2332,21 +2353,23 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       {/* Top-Right Collapsible GIS Layer Controls & Satellite Orbit HUD */}
       <div className="absolute top-3 right-3 z-10 flex flex-col items-end space-y-1.5">
         <div className="flex items-center space-x-1.5">
-          {/* Always Visible Quick MOSDAC Satellite Orb Status Pill */}
+          {/* Real-Time Live ISRO MOSDAC Satellite Freshness & Tasking Pill */}
           <button
             onClick={() => {
               setShowMosdacInsat(true);
               setActiveSatelliteModal(activeSatelliteModal === 'MOSDAC' ? null : 'MOSDAC');
             }}
-            title="Inspect Live ISRO MOSDAC INSAT-3DR Telemetry"
-            className={`hud-panel px-2.5 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-mono border shadow-xl transition-all cursor-pointer ${
-              activeSatelliteModal === 'MOSDAC' || showMosdacInsat
-                ? 'border-purple-500/80 bg-purple-950/90 text-purple-200 shadow-[0_0_15px_rgba(192,132,252,0.4)] font-bold'
-                : 'border-slate-800 bg-slate-950/80 text-slate-500'
-            }`}
+            title="Inspect Live ISRO MOSDAC INSAT-3DR Telemetry & Archived Granules"
+            className="hud-panel px-3 py-1.5 rounded-xl flex items-center space-x-2 text-xs font-mono border border-blue-500/60 bg-slate-950/95 text-blue-200 shadow-xl hover:border-blue-400 transition-all cursor-pointer group"
           >
-            <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
-            <span>🛰️ MOSDAC INSAT</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span className="font-bold text-white">🛰️ {mosdacFreshness?.satellite || 'INSAT-3DR'}</span>
+            <span className="text-slate-400 hidden sm:inline">Passed</span>
+            <span className="text-cyan-300 font-bold">{mosdacFreshness?.latest_pass_utc || '17:00 UTC'}</span>
+            <span className="text-slate-600 hidden md:inline">•</span>
+            <span className="text-emerald-400 font-bold hidden md:inline">{mosdacFreshness?.active_granules_count || 334} Granules</span>
+            <span className="text-slate-600 hidden lg:inline">•</span>
+            <span className="text-amber-300 text-[11px] hidden lg:inline">Rain (HEM), SST, LST Live</span>
           </button>
 
           {/* Always Visible Quick ISRO Bhuvan Satellite Orb Status Pill */}

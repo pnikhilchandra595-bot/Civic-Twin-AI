@@ -689,6 +689,11 @@ async def get_mosdac_satellite_catalog(
         count=count
     )
 
+@app.get("/api/real-data/mosdac-freshness")
+async def get_mosdac_satellite_freshness():
+    """Real Live ISRO MOSDAC INSAT-3DR Satellite Freshness & Tasking Metadata Telemetry"""
+    return await mosdac_service.get_satellite_freshness()
+
 # =========================================================================
 # COPERNICUS & NASA SRTM 30M GLOBAL DIGITAL ELEVATION MODEL (DEM)
 # =========================================================================
