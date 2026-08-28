@@ -35,9 +35,9 @@ import { PublicScrollingPortal } from './components/PublicScrollingPortal';
 import { WhatsAppSimulatorModal } from './components/WhatsAppSimulatorModal';
 import { PublicGPSLocationSOSModal } from './components/PublicGPSLocationSOSModal';
 import { MobileHeadAppModal } from './components/MobileHeadAppModal';
-import { DistrictSelectionModal } from './components/DistrictSelectionModal';
 import { CitizenQRCodeModal } from './components/CitizenQRCodeModal';
 import { CitizenPortalModal } from './components/CitizenPortalModal';
+import { CWCGaugesModal } from './components/CWCGaugesModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon,
@@ -108,6 +108,7 @@ export const App: React.FC = () => {
   const [isDistrictAtlasOpen, setIsDistrictAtlasOpen] = useState<boolean>(false);
   const [isQRCodeOpen, setIsQRCodeOpen] = useState<boolean>(false);
   const [isCitizenPortalOpen, setIsCitizenPortalOpen] = useState<boolean>(false);
+  const [isCWCGaugesOpen, setIsCWCGaugesOpen] = useState<boolean>(false);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
@@ -420,6 +421,7 @@ export const App: React.FC = () => {
         onOpenMesh={() => setIsMeshOpen(true)}
         onOpenAICopilot={() => setIsAICopilotOpen(true)}
         onOpenMultiHazard={() => setIsMultiHazardOpen(true)}
+        onOpenCWCGauges={() => setIsCWCGaugesOpen(true)}
         onOpenDistrictAtlas={() => setIsDistrictAtlasOpen(true)}
         onOpenQRCode={() => setIsQRCodeOpen(true)}
         onOpenCitizenPortal={() => setIsCitizenPortalOpen(true)}
@@ -968,6 +970,14 @@ export const App: React.FC = () => {
           cityName={state?.city_name || 'Mumbai'}
           onClose={() => setIsCitizenPortalOpen(false)}
           onNavigateToLocation={(lat, lng, label) => handleResolveLocation(label, lat, lng)}
+        />
+      )}
+
+      {/* Central Water Commission (CWC) Live River Gauges Modal */}
+      {isCWCGaugesOpen && (
+        <CWCGaugesModal
+          isOpen={isCWCGaugesOpen}
+          onClose={() => setIsCWCGaugesOpen(false)}
         />
       )}
     </div>

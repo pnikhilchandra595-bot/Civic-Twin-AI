@@ -32,6 +32,7 @@ interface HeaderProps {
   onOpenMesh: () => void;
   onOpenAICopilot: () => void;
   onOpenMultiHazard: () => void;
+  onOpenCWCGauges?: () => void;
   onOpenDistrictAtlas?: () => void;
   onOpenQRCode?: () => void;
   onOpenCitizenPortal?: () => void;
@@ -64,6 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMesh,
   onOpenAICopilot,
   onOpenMultiHazard,
+  onOpenCWCGauges,
   onOpenDistrictAtlas,
   onOpenQRCode,
   onOpenCitizenPortal,
@@ -389,6 +391,14 @@ export const Header: React.FC<HeaderProps> = ({
                   >
                     <Skull className="w-4 h-4 text-amber-400" />
                     <span>Hazmat Sim</span>
+                  </button>
+
+                  <button
+                    onClick={() => { setIsToolsMenuOpen(false); if (onOpenCWCGauges) onOpenCWCGauges(); }}
+                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-blue-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                  >
+                    <Waves className="w-4 h-4 text-cyan-300 animate-pulse" />
+                    <span>CWC River Gauges</span>
                   </button>
 
                   <button
