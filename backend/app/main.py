@@ -1027,6 +1027,33 @@ async def get_live_power_grid():
     return await live_grid_service.fetch_grid_telemetry()
 
 
+@app.get("/api/realtime/glof-monitoring")
+async def get_himalayan_glof_monitoring():
+    """
+    ISRO MOSDAC / NRSC Himalayan Glacial Lake Outburst Flood (GLOF) & Cryosphere Sentinel.
+    """
+    from app.services.glof_service import glof_engine
+    return glof_engine.get_himalayan_lake_inventory()
+
+class GLOFBreachSimRequest(BaseModel):
+    lake_id: str = "GLOF-SK-01"
+    breach_depth_m: float = 24.0
+    breach_width_m: float = 65.0
+    moraine_soil_erosion_rate: float = 1.8
+
+@app.post("/api/simulation/glof-cascade")
+async def simulate_himalayan_glof_breach(payload: GLOFBreachSimRequest):
+    """
+    Simulates Glacial Moraine Dam Breach Hydraulics & Downstream Hydro Dam Impact Timelines.
+    """
+    from app.services.glof_service import glof_engine
+    return glof_engine.simulate_glof_breach(
+        lake_id=payload.lake_id,
+        breach_depth_m=payload.breach_depth_m,
+        breach_width_m=payload.breach_width_m,
+        moraine_soil_erosion_rate=payload.moraine_soil_erosion_rate
+    )
+
 @app.get("/api/satellite/bhoonidhi/live-assets")
 async def get_bhoonidhi_live_assets(
     lat: float = Query(19.076, description="Center latitude"),

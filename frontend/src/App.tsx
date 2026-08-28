@@ -40,6 +40,7 @@ import { CitizenQRCodeModal } from './components/CitizenQRCodeModal';
 import { CitizenPortalModal } from './components/CitizenPortalModal';
 import { CWCGaugesModal } from './components/CWCGaugesModal';
 import { MOSDACModal } from './components/MOSDACModal';
+import { GLOFModal } from './components/GLOFModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon,
@@ -112,6 +113,7 @@ export const App: React.FC = () => {
   const [isCitizenPortalOpen, setIsCitizenPortalOpen] = useState<boolean>(false);
   const [isCWCGaugesOpen, setIsCWCGaugesOpen] = useState<boolean>(false);
   const [isMOSDACOpen, setIsMOSDACOpen] = useState<boolean>(false);
+  const [isGLOFOpen, setIsGLOFOpen] = useState<boolean>(false);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
@@ -426,6 +428,7 @@ export const App: React.FC = () => {
         onOpenMultiHazard={() => setIsMultiHazardOpen(true)}
         onOpenCWCGauges={() => setIsCWCGaugesOpen(true)}
         onOpenMOSDAC={() => setIsMOSDACOpen(true)}
+        onOpenGLOF={() => setIsGLOFOpen(true)}
         onOpenDistrictAtlas={() => setIsDistrictAtlasOpen(true)}
         onOpenQRCode={() => setIsQRCodeOpen(true)}
         onOpenCitizenPortal={() => setIsCitizenPortalOpen(true)}
@@ -990,6 +993,14 @@ export const App: React.FC = () => {
         <MOSDACModal
           isOpen={isMOSDACOpen}
           onClose={() => setIsMOSDACOpen(false)}
+        />
+      )}
+
+      {/* Himalayan Glacial Lake Outburst Flood (GLOF) Early Warning Modal */}
+      {isGLOFOpen && (
+        <GLOFModal
+          isOpen={isGLOFOpen}
+          onClose={() => setIsGLOFOpen(false)}
         />
       )}
     </div>

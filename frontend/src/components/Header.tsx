@@ -7,7 +7,7 @@ import {
   CloudRain, Radar, BookOpen, MessageSquare, PhoneCall, 
   FileText, LogOut, UserCheck, Globe, Video, Mic, Skull, AlertOctagon, Settings, Database,
   TrendingUp, Waves, HeartPulse, WifiOff, Smartphone, QrCode, Bot, Sparkles, Building2, Lock, User,
-  ChevronDown, Grid, Shield, Flame, Sun, Moon, Satellite
+  ChevronDown, Grid, Shield, Flame, Sun, Moon, Satellite, Mountain
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -34,6 +34,7 @@ interface HeaderProps {
   onOpenMultiHazard: () => void;
   onOpenCWCGauges?: () => void;
   onOpenMOSDAC?: () => void;
+  onOpenGLOF?: () => void;
   onOpenDistrictAtlas?: () => void;
   onOpenQRCode?: () => void;
   onOpenCitizenPortal?: () => void;
@@ -68,6 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMultiHazard,
   onOpenCWCGauges,
   onOpenMOSDAC,
+  onOpenGLOF,
   onOpenDistrictAtlas,
   onOpenQRCode,
   onOpenCitizenPortal,
@@ -409,6 +411,14 @@ export const Header: React.FC<HeaderProps> = ({
                   >
                     <Satellite className="w-4 h-4 text-blue-400 animate-pulse" />
                     <span>MOSDAC Satellites</span>
+                  </button>
+
+                  <button
+                    onClick={() => { setIsToolsMenuOpen(false); if (onOpenGLOF) onOpenGLOF(); }}
+                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                  >
+                    <Mountain className="w-4 h-4 text-cyan-400 animate-pulse" />
+                    <span>Himalayan GLOF</span>
                   </button>
 
                   <button
