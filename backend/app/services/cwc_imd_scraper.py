@@ -387,22 +387,23 @@ class CWCandIMDScraperService:
                             "source": "LIVE — CWC ffs.india-water.gov.in"
                         })
 
-                    if state_filter and state_filter.upper() != "ALL":
-                        stations = [s for s in stations if s["state"].lower() == state_filter.lower()]
+                    if len(stations) > 0:
+                        if state_filter and state_filter.upper() != "ALL":
+                            stations = [s for s in stations if s["state"].lower() == state_filter.lower()]
 
-                    return {
-                        "status": "success",
-                        "data_mode": "live",
-                        "source": "Central Water Commission (CWC ffs.india-water.gov.in)",
-                        "note": "✅ Live CWC real-time stations currently above warning level.",
-                        "total_stations": len(stations),
-                        "total_gauges": len(stations),
-                        "gauges": stations
-                    }
+                        return {
+                            "status": "success",
+                            "data_mode": "live",
+                            "source": "Central Water Commission (CWC ffs.india-water.gov.in)",
+                            "note": "✅ Live CWC real-time stations currently above warning level.",
+                            "total_stations": len(stations),
+                            "total_gauges": len(stations),
+                            "gauges": stations
+                        }
         except Exception as e:
             print(f"CWC live fetch failed: {e}")
 
-        # Honest fallback if live endpoint is unreachable
+        # Honest fallback if live endpoint is unreachable or empty
         results = self.major_cwc_gauges
         if state_filter and state_filter.upper() != "ALL":
             results = [g for g in results if g["state"].lower() == state_filter.lower()]
