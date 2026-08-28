@@ -51,11 +51,12 @@ export const MOSDACModal: React.FC<MOSDACModalProps> = ({ isOpen, onClose }) => 
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const DATASETS = [
-    { id: '3SIMG_L1B_STD', name: 'INSAT-3DR Imager L1B (Half-Hour)', desc: '6-channel VIS, SWIR, TIR-1, TIR-2, WV Multispectral' },
-    { id: '3SND_L2B_TPW', name: 'INSAT-3D Sounder TPW / Moisture', desc: 'Total Precipitable Water & Atmospheric Profiles' },
-    { id: '3DIMG_L2B_HEM', name: 'INSAT-3D Hydro-Estimator QPE', desc: 'Quantitative Precipitation Estimates across Indian Basins' },
-    { id: 'OCM_L1B_STD', name: 'Oceansat-3 Ocean Color Monitor', desc: 'Coastal Turbidity, Sediment & Chlorophyll-a' },
-    { id: 'SCT_L2B_WND', name: 'SCATSAT-1 Ocean Surface Winds', desc: 'Marine Wind Vectors & Cyclone Storm Surge Analysis' }
+    { id: '3SIMG_L1B_STD', name: 'INSAT-3DR Imager L1B', desc: '6-channel VIS, SWIR, TIR-1, TIR-2, WV Multispectral Telemetry' },
+    { id: '3SIMG_L2B_HEM', name: 'INSAT-3DR Hydro-Estimator (HEM)', desc: 'Quantitative Precipitation Estimates & Monsoon Cloudbursts' },
+    { id: '3SIMG_L2B_SST', name: 'INSAT-3DR Sea Surface Temp (SST)', desc: 'Oceanic Thermal Dynamics & Cyclone Storm Surge Analysis' },
+    { id: '3SIMG_L2B_CTP', name: 'INSAT-3DR Cloud Top Pressure (CTP)', desc: 'Severe Convective Storm Height & Barometric Sounding' },
+    { id: '3SIMG_L2B_OLR', name: 'INSAT-3DR Longwave Radiation (OLR)', desc: 'Atmospheric Convection Flux & Radiative Cooling' },
+    { id: '3SIMG_L2B_LST', name: 'INSAT-3DR Land Surface Temp (LST)', desc: 'Urban Heat Island & Thermal Radiance Matrix' }
   ];
 
   const fetchCatalog = async (datasetId: string) => {
