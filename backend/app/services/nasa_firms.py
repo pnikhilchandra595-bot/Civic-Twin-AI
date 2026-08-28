@@ -12,7 +12,7 @@ class NASAFIRMSIngestionService:
     """
 
     def __init__(self):
-        self.map_key = os.getenv("NASA_FIRMS_API_KEY", "f92492eda2c0ae61f0d34bf1399a4548")
+        self.map_key = os.getenv("NASA_FIRMS_API_KEY")
         # India Bounding Box: West=68°E, South=8°N, East=97°E, North=37°N
         self.area_bbox = "68,8,97,37"
         self._cached_hotspots: List[Dict[str, Any]] = []

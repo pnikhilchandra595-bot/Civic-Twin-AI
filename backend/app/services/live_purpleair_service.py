@@ -6,7 +6,7 @@ from typing import Dict, Any, List, Optional
 
 class LivePurpleAirService:
     def __init__(self):
-        self.api_key = os.getenv('PURPLEAIR_API_KEY', '5817167C-A095-11F1-9E30-4201AC1DC129')
+        self.api_key = os.getenv('PURPLEAIR_API_KEY')
         self._cache: Dict[str, Any] = {}
         self._last_fetch: Optional[datetime.datetime] = None
         self._cache_ttl_sec = 60
@@ -14,6 +14,15 @@ class LivePurpleAirService:
     async def fetch_live_india_air_sensors(self, target_lat: float = 28.6139, target_lng: float = 77.2090, radius_deg: float = 0.8) -> Dict[str, Any]:
         now = datetime.datetime.now()
         cache_key = f'{round(target_lat, 2)}_{round(target_lng, 2)}_{round(radius_deg, 2)}'
+
+        if not self.api_key:
+            return {
+                'status': 'unauthenticated',
+                'message': '⚠️ PURPLEAIR_API_KEY not configured in .env. Live PurpleAir IoT sensor stream unavailable.',
+                'source': 'PurpleAir Global Physical IoT Network',
+                'count': 0,
+                'sensors': []
+            }
 
         if self._last_fetch and (now - self._last_fetch).total_seconds() < self._cache_ttl_sec and cache_key in self._cache:
             return self._cache[cache_key]

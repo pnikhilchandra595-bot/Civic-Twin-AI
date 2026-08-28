@@ -6,7 +6,7 @@ from typing import Dict, Any, List, Optional
 
 class LiveTomTomTrafficService:
     def __init__(self):
-        self.api_key = os.getenv('TOMTOM_API_KEY', 'MOUuKPsdQzqcmuZG8xjKMtn3I9WTkO3V')
+        self.api_key = os.getenv('TOMTOM_API_KEY')
         self._cache: Dict[str, Any] = {}
         self._last_fetch: Optional[datetime.datetime] = None
         self._cache_ttl_sec = 60
@@ -14,6 +14,14 @@ class LiveTomTomTrafficService:
     async def fetch_traffic_incidents(self, lat: float = 28.6139, lng: float = 77.2090, radius_deg: float = 0.3) -> Dict[str, Any]:
         now = datetime.datetime.now()
         cache_key = f'{round(lat, 2)}_{round(lng, 2)}_{round(radius_deg, 2)}'
+
+        if not self.api_key:
+            return {
+                'status': 'unauthenticated',
+                'message': '⚠️ TOMTOM_API_KEY not configured in .env. Live traffic stream unavailable.',
+                'source': 'TomTom Traffic API',
+                'incidents': []
+            }
 
         if self._last_fetch and (now - self._last_fetch).total_seconds() < self._cache_ttl_sec and cache_key in self._cache:
             return self._cache[cache_key]
@@ -30,69 +38,65 @@ class LiveTomTomTrafficService:
             f'&language=en-GB'
         )
 
-        req = urllib.request.Request(url, headers={'User-Agent': 'CivicTwin-AI/1.0'})
         try:
+            req = urllib.request.Request(url, headers={'User-Agent': 'CivicTwin-AI/1.0'})
             with urllib.request.urlopen(req, timeout=8) as resp:
                 data = json.loads(resp.read().decode())
                 raw_incidents = data.get('incidents', [])
-                parsed_incidents: List[Dict[str, Any]] = []
 
-                for inc in raw_incidents[:50]:
+                parsed = []
+                for inc in raw_incidents:
                     props = inc.get('properties', {})
                     geom = inc.get('geometry', {})
                     coords = geom.get('coordinates', [])
-                    
-                    # Extract representative lat/lng
-                    inc_lat, inc_lng = lat, lng
-                    if geom.get('type') == 'Point' and len(coords) >= 2:
-                        inc_lng, inc_lat = coords[0], coords[1]
-                    elif geom.get('type') == 'LineString' and len(coords) > 0 and len(coords[0]) >= 2:
-                        inc_lng, inc_lat = coords[0][0], coords[0][1]
 
                     events = props.get('events', [])
-                    desc = events[0].get('description', 'Traffic Congestion') if events else 'Traffic Delay'
+                    desc = events[0].get('description', 'Traffic Incident') if events else 'Traffic Disruption'
+
                     delay_sec = props.get('delay', 0)
-                    magnitude = props.get('magnitudeOfDelay', 1)
+                    delay_min = round(delay_sec / 60.0, 1)
 
-                    severity = 'Low'
-                    color = '#10b981'
-                    if magnitude == 3 or delay_sec > 600:
-                        severity = 'Major Delay / Closure'
-                        color = '#ef4444'
-                    elif magnitude == 2 or delay_sec > 180:
-                        severity = 'Moderate Delay'
-                        color = '#f59e0b'
+                    mag_map = {0: 'Unknown', 1: 'Minor', 2: 'Moderate', 3: 'Major', 4: 'Undefined'}
+                    mag_label = mag_map.get(props.get('magnitudeOfDelay', 0), 'Moderate')
 
-                    parsed_incidents.append({
-                        'id': str(props.get('id', len(parsed_incidents))),
-                        'description': desc,
-                        'from_location': props.get('from', 'Urban Corridor'),
-                        'to_location': props.get('to', 'Major Junction'),
-                        'delay_seconds': delay_sec,
-                        'delay_minutes': round(delay_sec / 60.0, 1),
-                        'severity': severity,
-                        'color': color,
-                        'lat': inc_lat,
-                        'lng': inc_lng,
-                        'source': 'TomTom Live Traffic Intelligence'
-                    })
+                    incident_point = None
+                    if geom.get('type') == 'Point' and len(coords) >= 2:
+                        incident_point = [coords[1], coords[0]]
+                    elif geom.get('type') == 'LineString' and coords and len(coords[0]) >= 2:
+                        mid = len(coords) // 2
+                        incident_point = [coords[mid][1], coords[mid][0]]
+
+                    if incident_point:
+                        parsed.append({
+                            'id': props.get('id', f'TOMTOM-{len(parsed)+1}'),
+                            'description': desc,
+                            'from_road': props.get('from', 'Roadway'),
+                            'to_road': props.get('to', ''),
+                            'delay_min': delay_min,
+                            'length_meters': props.get('length', 0),
+                            'severity': mag_label,
+                            'location': incident_point,
+                            'icon_category': props.get('iconCategory', 0),
+                            'timestamp': props.get('startTime', now.isoformat())
+                        })
 
                 result = {
                     'status': 'success',
-                    'source': 'TomTom Real-Time Traffic & Incident Stream',
-                    'count': len(parsed_incidents),
+                    'source': 'TomTom Real-Time Live Traffic Flow API',
+                    'count': len(parsed),
                     'target_coords': [lat, lng],
-                    'incidents': parsed_incidents
+                    'incidents': parsed
                 }
                 self._cache[cache_key] = result
                 self._last_fetch = now
                 return result
+
         except Exception as e:
             return {
                 'status': 'error',
-                'message': str(e),
-                'count': 0,
+                'message': f'TomTom Traffic API error: {str(e)}',
+                'source': 'TomTom Real-Time Traffic Feed',
                 'incidents': []
             }
 
-live_traffic_service = LiveTomTomTrafficService()
+live_tomtom_service = LiveTomTomTrafficService()
