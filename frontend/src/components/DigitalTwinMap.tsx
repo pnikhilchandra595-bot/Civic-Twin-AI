@@ -1829,14 +1829,17 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
     // 14. 🚦 Real Live TomTom Traffic Flow Raster Tiles & Live Incidents
     if (showTomTomTraffic) {
-      try {
-        L.tileLayer('https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key=MOUuKPsdQzqcmuZG8xjKMtn3I9WTkO3V', {
-          opacity: 0.85,
-          zIndex: 15,
-          attribution: '© TomTom Real-Time Traffic Flow'
-        }).addTo(layerGroup);
-      } catch (e) {
-        console.warn('TomTom Traffic Tile error:', e);
+      const tomtomKey = (import.meta as any).env?.VITE_TOMTOM_KEY || '';
+      if (tomtomKey) {
+        try {
+          L.tileLayer(`https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key=${tomtomKey}`, {
+            opacity: 0.85,
+            zIndex: 15,
+            attribution: '© TomTom Real-Time Traffic Flow'
+          }).addTo(layerGroup);
+        } catch (e) {
+          console.warn('TomTom Traffic Tile error:', e);
+        }
       }
 
       if (Array.isArray(liveTrafficIncidents)) {

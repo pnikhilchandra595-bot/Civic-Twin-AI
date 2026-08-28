@@ -38,11 +38,14 @@ services:
       - key: BHUVAN_GEOID_KEY
         sync: false
       - key: DELHI_OTD_API_KEY
-        value: "gmnSpSaKqninoz0DQqF0ew2DhgCLPB1B"
+        sync: false
       - key: PURPLEAIR_API_KEY
-        value: "5817167C-A095-11F1-9E30-4201AC1DC129"
+        sync: false
       - key: TOMTOM_API_KEY
-        value: "MOUuKPsdQzqcmuZG8xjKMtn3I9WTkO3V"
+        sync: false
       - key: COASTAL_AIS_API_KEY
-        value: "3e811c72d597824d46772d1a741f67a8a00f3840"
-
+        sync: false
+      - key: BHOONIDHI_USER_ID
+        sync: false
+      - key: BHOONIDHI_PASSWORD
+        sync: false

@@ -216,49 +216,9 @@ export class DigitalTwinApiService {
       const res = await fetch(`${API_BASE}/realtime/air-sensors?lat=${lat}&lng=${lng}&radius_deg=${radiusDeg}`);
       if (res.ok) return await res.json();
     } catch (e) {
-      // Backend not running on Vercel; fetch directly from PurpleAir public CORS endpoint
+      console.warn('Live air sensors backend fetch error:', e);
     }
-    try {
-      const nwlng = lng - radiusDeg;
-      const nwlat = lat + radiusDeg;
-      const selng = lng + radiusDeg;
-      const selat = lat - radiusDeg;
-      const directUrl = `https://api.purpleair.com/v1/sensors?fields=name,latitude,longitude,pm2.5,humidity,temperature&nwlng=${nwlng.toFixed(4)}&nwlat=${nwlat.toFixed(4)}&selng=${selng.toFixed(4)}&selat=${selat.toFixed(4)}`;
-      const pRes = await fetch(directUrl, {
-        headers: { 'X-API-Key': '5817167C-A095-11F1-9E30-4201AC1DC129' }
-      });
-      if (pRes.ok) {
-        const raw = await pRes.json();
-        const fields: string[] = raw.fields || [];
-        const rows: any[][] = raw.data || [];
-        const idxMap: Record<string, number> = {};
-        fields.forEach((f, i) => { idxMap[f] = i; });
-        const sensors = rows.map(r => {
-          const sLat = r[idxMap['latitude'] ?? 2];
-          const sLng = r[idxMap['longitude'] ?? 3];
-          const pm25 = r[idxMap['pm2.5'] ?? 6] ?? 25.0;
-          let aqiCat = 'Good';
-          let aqiCol = '#10b981';
-          if (pm25 > 120) { aqiCat = 'Severe / Hazardous'; aqiCol = '#ef4444'; }
-          else if (pm25 > 60) { aqiCat = 'Poor / Unhealthy'; aqiCol = '#f97316'; }
-          else if (pm25 > 30) { aqiCat = 'Moderate'; aqiCol = '#f59e0b'; }
-          return {
-            sensor_index: r[idxMap['sensor_index'] ?? 0],
-            name: String(r[idxMap['name'] ?? 1] || 'PurpleAir Station').split('(')[0].trim(),
-            lat: Number(sLat),
-            lng: Number(sLng),
-            pm2_5: Number(pm25),
-            aqi_category: aqiCat,
-            aqi_color: aqiCol,
-            hardware_type: 'Physical Laser Particle Counter (Plantower PMS5003)'
-          };
-        }).filter(s => !isNaN(s.lat) && !isNaN(s.lng));
-        return { status: 'success', count: sensors.length, sensors };
-      }
-    } catch (e) {
-      console.warn('Direct PurpleAir fetch fallback error:', e);
-    }
-    return { status: 'fallback', count: 0, sensors: [] };
+    return { status: 'offline', count: 0, sensors: [] };
   }
 
   async getLiveThingSpeakStream(): Promise<any> {
@@ -405,52 +365,9 @@ export class DigitalTwinApiService {
       const res = await fetch(`${API_BASE}/realtime/traffic-incidents?lat=${lat}&lng=${lng}&radius_deg=${radiusDeg}`);
       if (res.ok) return await res.json();
     } catch (e) {
-      // Direct CORS fallback to TomTom v5 Incidents API
+      console.warn('Live traffic incidents backend fetch error:', e);
     }
-    try {
-      const minLon = lng - radiusDeg;
-      const minLat = lat - radiusDeg;
-      const maxLon = lng + radiusDeg;
-      const maxLat = lat + radiusDeg;
-      const url = `https://api.tomtom.com/traffic/services/5/incidentDetails?key=MOUuKPsdQzqcmuZG8xjKMtn3I9WTkO3V&bbox=${minLon.toFixed(4)},${minLat.toFixed(4)},${maxLon.toFixed(4)},${maxLat.toFixed(4)}&fields={incidents{type,geometry{type,coordinates},properties{iconCategory,magnitudeOfDelay,events{description,code},startTime,endTime,from,to,length,delay}}}&language=en-GB`;
-      const tRes = await fetch(url);
-      if (tRes.ok) {
-        const data = await tRes.json();
-        const raw = data.incidents || [];
-        const incidents = raw.slice(0, 40).map((inc: any, i: number) => {
-          const props = inc.properties || {};
-          const geom = inc.geometry || {};
-          const coords = geom.coordinates || [];
-          let incLat = lat;
-          let incLng = lng;
-          if (geom.type === 'Point' && coords.length >= 2) {
-            incLng = coords[0]; incLat = coords[1];
-          } else if (geom.type === 'LineString' && coords.length > 0 && coords[0].length >= 2) {
-            incLng = coords[0][0]; incLat = coords[0][1];
-          }
-          const events = props.events || [];
-          const desc = events[0]?.description || 'Traffic Congestion';
-          const delaySec = props.delay || 0;
-          return {
-            id: String(props.id || i),
-            description: desc,
-            from_location: props.from || 'Urban Corridor',
-            to_location: props.to || 'Major Junction',
-            delay_seconds: delaySec,
-            delay_minutes: Math.round(delaySec / 60),
-            severity: delaySec > 600 ? 'Major Delay' : 'Moderate Delay',
-            color: delaySec > 600 ? '#ef4444' : '#f59e0b',
-            lat: incLat,
-            lng: incLng,
-            source: 'TomTom Live Traffic Intelligence'
-          };
-        });
-        return { status: 'success', count: incidents.length, incidents };
-      }
-    } catch (e) {
-      console.warn('Direct TomTom fetch error:', e);
-    }
-    return { status: 'fallback', count: 0, incidents: [] };
+    return { status: 'offline', count: 0, incidents: [] };
   }
 
   async getLiveNDMAAlerts(): Promise<any> {
