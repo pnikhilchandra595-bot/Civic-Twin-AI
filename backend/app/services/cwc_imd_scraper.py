@@ -211,11 +211,11 @@ class CWCandIMDScraperService:
                     raw = res.json()
                     stations = [
                         {
-                            "gauge_id": item.get("stationCode", f"CWC-{item.get('id', 'STN')}"),
+                            "gauge_id": item.get("stationCode"),
                             "station_code": item.get("stationCode"),
                             "current_level_m": item.get("value"),
                             "status": item.get("status"),
-                            "trend": item.get("trend"),
+                            "trend": item.get("trend") or "UNKNOWN",
                             "data_mode": "live",
                             "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST"),
                             "source": "LIVE — CWC ffs.india-water.gov.in"
