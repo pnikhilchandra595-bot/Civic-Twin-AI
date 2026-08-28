@@ -39,6 +39,7 @@ import { DistrictSelectionModal } from './components/DistrictSelectionModal';
 import { CitizenQRCodeModal } from './components/CitizenQRCodeModal';
 import { CitizenPortalModal } from './components/CitizenPortalModal';
 import { CWCGaugesModal } from './components/CWCGaugesModal';
+import { MOSDACModal } from './components/MOSDACModal';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon,
@@ -110,6 +111,7 @@ export const App: React.FC = () => {
   const [isQRCodeOpen, setIsQRCodeOpen] = useState<boolean>(false);
   const [isCitizenPortalOpen, setIsCitizenPortalOpen] = useState<boolean>(false);
   const [isCWCGaugesOpen, setIsCWCGaugesOpen] = useState<boolean>(false);
+  const [isMOSDACOpen, setIsMOSDACOpen] = useState<boolean>(false);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
@@ -423,6 +425,7 @@ export const App: React.FC = () => {
         onOpenAICopilot={() => setIsAICopilotOpen(true)}
         onOpenMultiHazard={() => setIsMultiHazardOpen(true)}
         onOpenCWCGauges={() => setIsCWCGaugesOpen(true)}
+        onOpenMOSDAC={() => setIsMOSDACOpen(true)}
         onOpenDistrictAtlas={() => setIsDistrictAtlasOpen(true)}
         onOpenQRCode={() => setIsQRCodeOpen(true)}
         onOpenCitizenPortal={() => setIsCitizenPortalOpen(true)}
@@ -979,6 +982,14 @@ export const App: React.FC = () => {
         <CWCGaugesModal
           isOpen={isCWCGaugesOpen}
           onClose={() => setIsCWCGaugesOpen(false)}
+        />
+      )}
+
+      {/* ISRO MOSDAC Spaceborne Satellite Telemetry & Numerical Catalog Modal */}
+      {isMOSDACOpen && (
+        <MOSDACModal
+          isOpen={isMOSDACOpen}
+          onClose={() => setIsMOSDACOpen(false)}
         />
       )}
     </div>
