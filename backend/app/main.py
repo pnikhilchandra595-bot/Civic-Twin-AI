@@ -659,7 +659,7 @@ def get_feature_store_table():
 
 @app.get("/api/real-data/firms-hotspots")
 async def get_real_nasa_firms_hotspots(day_range: int = 1):
-    """Real Live NASA FIRMS Thermal Anomaly Fire Hotspots across India (Using Key f92492eda2c0ae61f0d34bf1399a4548)"""
+    """Real Live NASA FIRMS Thermal Anomaly Fire Hotspots across India"""
     return await nasa_firms_service.fetch_live_india_hotspots(day_range)
 
 @app.get("/api/real-data/copernicus-ndwi")
@@ -718,22 +718,22 @@ async def get_copernicus_elevation_profile(
 @app.get("/api/bhuvan/hospitals")
 @app.get("/api/realtime/hospitals")
 async def get_bhuvan_hospitals_and_postal(lat: float = 19.076, lng: float = 72.877, radius_km: float = 5.0):
-    """ISRO Bhuvan Postal & Hospital Lifeline Infrastructure POI API (Token: 0d802eb03b...)"""
+    """ISRO Bhuvan Postal & Hospital Lifeline Infrastructure POI API"""
     return await bhuvan_service.fetch_hospitals_and_postal(lat, lng, radius_km)
 
 @app.get("/api/bhuvan/village-geocode")
 async def get_bhuvan_village_geocode(query: str = "Kurla", state: Optional[str] = "Maharashtra"):
-    """ISRO Bhuvan Village & Rural Ward Geocoding Directory (Token: 87380f11d2...)"""
+    """ISRO Bhuvan Village & Rural Ward Geocoding Directory"""
     return await bhuvan_service.geocode_village_or_ward(query, state)
 
 @app.get("/api/bhuvan/lulc")
 async def get_bhuvan_lulc_statistics(district: str = "Mumbai Suburban", state: str = "Maharashtra"):
-    """ISRO Bhuvan 1:50K Land Use / Land Cover (LULC) Runoff Statistical API (Token: 0dcac2e137...)"""
+    """ISRO Bhuvan 1:50K Land Use / Land Cover (LULC) Runoff Statistical API"""
     return await bhuvan_service.fetch_lulc_statistics(district, state)
 
 @app.get("/api/bhuvan/geoid-elevation")
 async def get_bhuvan_geoid_elevation(lat: float = 19.076, lng: float = 72.877):
-    """ISRO Bhuvan Indian High-Precision Geoid Elevation Model (Token: 76b423acb3...)"""
+    """ISRO Bhuvan Indian High-Precision Geoid Elevation Model"""
     return await bhuvan_service.fetch_geoid_elevation(lat, lng)
 
 class BhuvanRouteRequest(BaseModel):

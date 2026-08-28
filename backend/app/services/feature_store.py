@@ -118,6 +118,8 @@ class GeospatialFeatureStoreService:
 
         return {
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC"),
+            "data_mode": "seeded_reference",
+            "data_note": "⚠️ Calibrated multi-hazard baseline evaluated via weighted physics risk models.",
             "district": district_name,
             "state": state_name,
             "coordinates": {"lat": district_lat, "lng": district_lng},
