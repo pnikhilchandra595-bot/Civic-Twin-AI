@@ -194,11 +194,47 @@ class CWCandIMDScraperService:
             }
         ]
 
+    CWC_LIVE_URL = "https://ffs.india-water.gov.in/ffm/api/station-water-level-above-warning/"
+
     async def fetch_cwc_river_gauges(self, state_filter: Optional[str] = None) -> Dict[str, Any]:
         """
-        Returns seeded/reference river gauge data (static baseline).
-        NOTE: This is not a live CWC scrape — see SYSTEM_DESIGN_DOCUMENT.md build status.
+        Fetches LIVE river gauge stations currently above warning level from CWC's
+        official flood forecasting API (ffs.india-water.gov.in). Falls back to a
+        clearly labeled seeded reference dataset if the live call fails.
         """
+        try:
+            import httpx
+            import certifi
+            async with httpx.AsyncClient(timeout=10.0, verify=certifi.where()) as client:
+                res = await client.get(self.CWC_LIVE_URL, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+                if res.status_code == 200:
+                    raw = res.json()
+                    stations = [
+                        {
+                            "gauge_id": item.get("stationCode", f"CWC-{item.get('id', 'STN')}"),
+                            "station_code": item.get("stationCode"),
+                            "current_level_m": item.get("value"),
+                            "status": item.get("status"),
+                            "trend": item.get("trend"),
+                            "data_mode": "live",
+                            "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST"),
+                            "source": "LIVE — CWC ffs.india-water.gov.in"
+                        }
+                        for item in raw
+                    ]
+                    return {
+                        "status": "success",
+                        "data_mode": "live",
+                        "source": "Central Water Commission (CWC ffs.india-water.gov.in)",
+                        "note": "✅ Live CWC real-time stations currently above warning level.",
+                        "total_stations": len(stations),
+                        "total_gauges": len(stations),
+                        "gauges": stations
+                    }
+        except Exception as e:
+            print(f"CWC live fetch failed: {e}")
+
+        # Honest fallback if live endpoint is unreachable
         results = self.major_cwc_gauges
         if state_filter and state_filter.upper() != "ALL":
             results = [g for g in results if g["state"].lower() == state_filter.lower()]
@@ -206,7 +242,8 @@ class CWCandIMDScraperService:
             "status": "seeded_reference",
             "data_mode": "seeded_reference",
             "source": "Central Water Commission (CWC) River Basin Baseline",
-            "note": "⚠️ Static reference dataset — live CWC scraping not yet connected.",
+            "note": "⚠️ Static reference dataset — live CWC query failed or unavailable.",
+            "total_stations": len(results),
             "total_gauges": len(results),
             "gauges": results
         }
