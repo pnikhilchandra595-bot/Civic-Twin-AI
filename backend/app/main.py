@@ -1027,10 +1027,11 @@ async def get_live_power_grid():
     return await live_grid_service.fetch_grid_telemetry()
 
 
+@app.get("/api/simulation/glof-inventory")
 @app.get("/api/realtime/glof-monitoring")
-async def get_himalayan_glof_monitoring():
+async def get_himalayan_glof_inventory():
     """
-    ISRO MOSDAC / NRSC Himalayan Glacial Lake Outburst Flood (GLOF) & Cryosphere Sentinel.
+    Himalayan Glacial Lake Outburst Flood (GLOF) Cryosphere Baseline Inventory.
     """
     from app.services.glof_service import glof_engine
     return glof_engine.get_himalayan_lake_inventory()

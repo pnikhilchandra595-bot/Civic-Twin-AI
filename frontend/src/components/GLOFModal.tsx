@@ -79,7 +79,7 @@ export const GLOFModal: React.FC<GLOFModalProps> = ({ isOpen, onClose }) => {
   const fetchLakes = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/realtime/glof-monitoring');
+      const res = await fetch('http://127.0.0.1:8000/api/simulation/glof-inventory');
       if (res.ok) {
         const data = await res.json();
         setLakes(data.lakes || []);
@@ -141,13 +141,16 @@ export const GLOFModal: React.FC<GLOFModalProps> = ({ isOpen, onClose }) => {
                 <h2 className="text-lg font-bold text-white tracking-wide">
                   Himalayan Glacial Lake Outburst Flood (GLOF) Sentinel
                 </h2>
-                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-full flex items-center gap-1">
-                  <ThermometerSnowflake className="w-3 h-3" />
-                  HIGH-ALTITUDE CRYOSPHERE RADAR
+                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full flex items-center gap-1">
+                  <Activity className="w-3 h-3 text-amber-400" />
+                  HYDRODYNAMIC PHYSICS SIMULATION
+                </span>
+                <span className="px-2 py-0.5 text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-700 rounded-full">
+                  CALIBRATED CRYOSPHERE BASELINE
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                ISRO MOSDAC / NRSC Spaceborne Snowmelt, Moraine Stability & Hydro Dam Cascade Early Warning
+                Froehlich (1995) Dam Breach Hydraulics & Debris Cascade Forecasting for Himalayan Hydro Dams
               </p>
             </div>
           </div>

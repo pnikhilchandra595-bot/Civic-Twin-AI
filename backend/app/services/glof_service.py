@@ -134,6 +134,8 @@ class HimalayanGLOFEngine:
 
         return {
             "status": "success",
+            "data_mode": "modeled_physics_simulation",
+            "data_note": "⚠️ Dam breach peak discharge and valley arrival ETAs are dynamically modeled using the Froehlich (1995) hydrodynamic equation with debris-bulking and exponential attenuation.",
             "hazard_type": "HIMALAYAN_GLOF_BREACH_CASCADE",
             "lake": lake,
             "simulation_inputs": {
@@ -161,6 +163,8 @@ class HimalayanGLOFEngine:
         """Returns inventory of critical Himalayan glacial lakes monitored via spaceborne telemetry."""
         return {
             "status": "success",
+            "data_mode": "calibrated_spatial_baseline",
+            "data_note": "⚠️ Glacial lake locations, elevations, and impoundment volumes represent a calibrated cryospheric baseline derived from CWC/NRSC glacial lake inventories & post-disaster survey literature.",
             "source": "ISRO MOSDAC / NRSC Himalayan Cryosphere & Glacial Lake Registry",
             "total_critical_lakes_tracked": len(self.CRITICAL_HIMALAYAN_GLACIAL_LAKES),
             "cryosphere_monitoring_regions": ["Sikkim Himalaya", "Uttarakhand Garhwal", "Himachal Lahaul-Spiti", "J&K Ladakh"],
