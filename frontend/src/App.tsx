@@ -35,6 +35,7 @@ import { PublicScrollingPortal } from './components/PublicScrollingPortal';
 import { WhatsAppSimulatorModal } from './components/WhatsAppSimulatorModal';
 import { PublicGPSLocationSOSModal } from './components/PublicGPSLocationSOSModal';
 import { MobileHeadAppModal } from './components/MobileHeadAppModal';
+import { DistrictSelectionModal } from './components/DistrictSelectionModal';
 import { CitizenQRCodeModal } from './components/CitizenQRCodeModal';
 import { CitizenPortalModal } from './components/CitizenPortalModal';
 import { CWCGaugesModal } from './components/CWCGaugesModal';
