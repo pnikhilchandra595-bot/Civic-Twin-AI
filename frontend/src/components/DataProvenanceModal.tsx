@@ -434,21 +434,21 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                 </div>
               </div>
 
-              {/* Feed 14: POSOCO / Grid-India National Power Grid Telemetry */}
+              {/* Feed 14: Ministry of Power Vidyut Pravah National Grid Telemetry */}
               <div className="p-4 rounded-xl bg-slate-950/90 border border-yellow-500/50 space-y-2">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center space-x-2 text-yellow-300 font-bold">
                     <span className="text-base">⚡</span>
-                    <span>14. National Power Grid Frequency Telemetry</span>
+                    <span>14. National Power Grid Demand & Peak Shortage Telemetry</span>
                   </div>
                   <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-600">
-                    🟢 100% Live
+                    🟢 100% Live Ingest
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-300 space-y-1">
-                  <div><strong>Provider:</strong> Grid Controller of India (POSOCO / Grid-India NLDC)</div>
-                  <div><strong>Nominal Frequency:</strong> <span className="text-yellow-300 font-bold">50.00 Hz</span> (IEGC Band: 49.90 Hz – 50.05 Hz)</div>
-                  <div><strong>Risk Analytics:</strong> Continuous grid-collapse & blackout probability index</div>
+                  <div><strong>Provider:</strong> Ministry of Power — Vidyut Pravah (vidyutpravah.in)</div>
+                  <div><strong>Metrics:</strong> Live All-India Demand Met (GW), Peak Shortage (MW), Energy Shortage (MU)</div>
+                  <div><strong>Update Cycle:</strong> Real-time per 15-minute national power exchange block</div>
                 </div>
               </div>
 

@@ -448,19 +448,15 @@ export class DigitalTwinApiService {
       const res = await fetch(`${API_BASE}/realtime/power-grid`);
       if (res.ok) return await res.json();
     } catch (e) {
-      // Fallback
+      console.warn('Live power grid backend fetch error:', e);
     }
-    const secFactor = Math.sin(Date.now() / 15000) * 0.04;
-    const freq = Number((50.00 + secFactor).toFixed(3));
     return {
-      status: 'success',
-      source: 'POSOCO / Grid-India National Load Despatch Telemetry',
-      grid_frequency_hz: freq,
-      nominal_hz: 50.00,
-      operating_band: '49.90 Hz - 50.05 Hz (IEGC Standard)',
-      stability_index_pct: 98.4,
-      grid_state: 'Normal / Synchronized',
-      color: '#10b981'
+      status: 'offline',
+      data_mode: 'offline',
+      source: 'Ministry of Power — Vidyut Pravah (vidyutpravah.in)',
+      note: '⚠️ Live power grid demand/supply stream currently offline.',
+      demand_met_gw: null,
+      peak_shortage_mw: null
     };
   }
 
