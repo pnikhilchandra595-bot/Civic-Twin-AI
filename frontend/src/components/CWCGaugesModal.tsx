@@ -45,9 +45,13 @@ export const CWCGaugesModal: React.FC<CWCGaugesModalProps> = ({ isOpen, onClose 
   if (!isOpen) return null;
 
   const filteredGauges = gauges.filter(g => {
-    const matchesSearch = (g.station_code || g.gauge_id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          (g.river || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          (g.state || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const q = searchTerm.toLowerCase();
+    const matchesSearch = (g.station_code || g.gauge_id || '').toLowerCase().includes(q) ||
+                          (g.station_name || '').toLowerCase().includes(q) ||
+                          (g.river || '').toLowerCase().includes(q) ||
+                          (g.basin || '').toLowerCase().includes(q) ||
+                          (g.district || '').toLowerCase().includes(q) ||
+                          (g.state || '').toLowerCase().includes(q);
     const matchesStatus = statusFilter === 'ALL' || g.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -202,17 +206,29 @@ export const CWCGaugesModal: React.FC<CWCGaugesModalProps> = ({ isOpen, onClose 
               {filteredGauges.map((g, idx) => (
                 <div 
                   key={idx}
-                  className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800/80 hover:border-cyan-500/50 transition-all space-y-2 shadow-md"
+                  className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800/80 hover:border-cyan-500/50 transition-all space-y-2.5 shadow-md"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-white font-mono flex items-center space-x-1.5">
-                      <Activity className="w-3.5 h-3.5 text-blue-400" />
-                      <span>{g.station_code || g.gauge_id}</span>
-                    </span>
-                    {getStatusBadge(g.status)}
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="text-xs font-bold text-white font-mono flex items-center space-x-1.5 leading-snug">
+                        <Activity className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                        <span>{g.station_name || `Station ${g.station_code || g.gauge_id}`}</span>
+                      </span>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 text-[10px] text-cyan-300 font-mono font-bold">
+                          {g.station_code || g.gauge_id}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          {g.state ? `${g.state} • ${g.basin || 'Basin'}` : 'National River Gauge'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="shrink-0">
+                      {getStatusBadge(g.status)}
+                    </div>
                   </div>
 
-                  <div className="flex items-baseline justify-between pt-1 border-t border-slate-800/60">
+                  <div className="flex items-baseline justify-between pt-1.5 border-t border-slate-800/60">
                     <div>
                       <span className="text-[10px] text-slate-400 block">Water Level</span>
                       <span className="text-lg font-black text-cyan-300">{g.current_level_m} <span className="text-xs font-normal text-slate-400">m</span></span>
@@ -230,7 +246,7 @@ export const CWCGaugesModal: React.FC<CWCGaugesModalProps> = ({ isOpen, onClose 
 
                   <div className="pt-1.5 border-t border-slate-800/40 flex items-center justify-between text-[10px] text-slate-400">
                     <span>{g.last_updated || 'Live Stream'}</span>
-                    <span className="text-slate-400 font-bold">CWC Flood Portal</span>
+                    <span className="text-cyan-400/80 font-bold">{g.district || 'CWC Flood Portal'}</span>
                   </div>
                 </div>
               ))}

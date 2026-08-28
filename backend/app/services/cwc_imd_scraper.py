@@ -196,6 +196,164 @@ class CWCandIMDScraperService:
 
     CWC_LIVE_URL = "https://ffs.india-water.gov.in/ffm/api/station-water-level-above-warning/"
 
+    @staticmethod
+    def _resolve_station_meta(code_raw: str, index: int = 1) -> Dict[str, str]:
+        import re
+        if not code_raw:
+            return {
+                "station_name": f"CWC River Station #{index}",
+                "river": "National River Stream",
+                "basin": "Indian River Basin",
+                "state": "National",
+                "district": "Central Water Monitoring Sector"
+            }
+        code = code_raw.upper().strip().rstrip(":")
+        clean_div = re.sub(r'^[0-9]+-?', '', code)
+
+        DIVISION_MAP = {
+            "MGD5PTN": {
+                "river": "Ganga / Kosi River",
+                "basin": "Middle Ganga Basin",
+                "state": "Bihar",
+                "district": "Patna / Khagaria / Katihar",
+                "names": ["Gandhi Ghat (Patna)", "Digha Ghat", "Kursela (Kosi)", "Baltara", "Hathidah", "Buxar", "Munger", "Bhagalpur", "Kahalgaon", "Manihari"]
+            },
+            "MGD5PAT": {
+                "river": "Ganga / Punpun River",
+                "basin": "Ganga Basin",
+                "state": "Bihar",
+                "district": "Patna / Gaya",
+                "names": ["Sripalpur", "Kinjar", "Punpun Bridge", "Fatuha", "Danapur"]
+            },
+            "MGD4PTN": {
+                "river": "Burhi Gandak / Bagmati",
+                "basin": "Gandak & Bagmati Basin",
+                "state": "Bihar",
+                "district": "Muzaffarpur / Samastipur",
+                "names": ["Hayaghat", "Jhanjharpur", "Benibad", "Rosera", "Samastipur", "Ahirwalia", "Lalbegiaghat"]
+            },
+            "MGD1LKN": {
+                "river": "Gomti / Saryu River",
+                "basin": "Ghaghra & Gomti Basin",
+                "state": "Uttar Pradesh",
+                "district": "Lucknow / Sultanpur",
+                "names": ["Neemsar", "Lucknow Gomti Barrage", "Sultanpur Ghat", "Jaunpur Shahi Bridge", "Bhatpurwaghat"]
+            },
+            "MGD2LKN": {
+                "river": "Ghaghra / Saryu River",
+                "basin": "Ghaghra Basin",
+                "state": "Uttar Pradesh",
+                "district": "Ayodhya / Gorakhpur",
+                "names": ["Elgin Bridge (Barabanki)", "Ayodhya Guptar Ghat", "Turtipar", "Birdghat (Gorakhpur)", "Bansi (Rapti)"]
+            },
+            "MGD3VNS": {
+                "river": "Ganga River",
+                "basin": "Middle Ganga Basin",
+                "state": "Uttar Pradesh",
+                "district": "Varanasi / Mirzapur / Ghazipur",
+                "names": ["Dashashwamedh Ghat", "Mirzapur Cheel", "Ghazipur Collectorate", "Ballia Bhrigu Ashram"]
+            },
+            "UBDDIB": {
+                "river": "Brahmaputra River",
+                "basin": "Brahmaputra Basin",
+                "state": "Assam",
+                "district": "Dibrugarh / Tinsukia",
+                "names": ["Dibrugarh DC Ghat", "Pasighat Dihang", "Kobo Ghat", "Neamatighat (Jorhat)", "Tezpur Jahajghat"]
+            },
+            "LBDJPG": {
+                "river": "Teesta / Torsa River",
+                "basin": "Teesta & Torsa Basin",
+                "state": "West Bengal",
+                "district": "Jalpaiguri / Cooch Behar",
+                "names": ["Domohani (Teesta)", "Ghazoldoba Barrage", "NH-31 Bridge (Jaldhaka)", "Tufanganj (Raidak)", "Sevoke Coronation"]
+            },
+            "LGD3BEH": {
+                "river": "Bhagirathi / Hooghly / Farakka",
+                "basin": "Ganga Delta Basin",
+                "state": "West Bengal",
+                "district": "Murshidabad / Nadia",
+                "names": ["Farakka Feeder Canal", "Jangipur Barrage", "Berhampore Gorabazar", "Nabadwip Ghat", "Tribeni Hooghly"]
+            },
+            "CDJAPR": {
+                "river": "Chambal / Banas River",
+                "basin": "Chambal Basin",
+                "state": "Rajasthan",
+                "district": "Kota / Jaipur / Dholpur",
+                "names": ["Kota Barrage", "Dholpur Bridge", "Mandroil Ghat", "Tonk Banas Bridge"]
+            },
+            "TDSURAT": {
+                "river": "Tapi River",
+                "basin": "Tapi Basin",
+                "state": "Gujarat",
+                "district": "Surat / Tapi",
+                "names": ["Surat Singanpore Weir", "Ukai Dam Discharge", "Mandvi Tapi Bridge", "Kakrapar Barrage"]
+            },
+            "LYDAGRA": {
+                "river": "Yamuna River",
+                "basin": "Yamuna Basin",
+                "state": "Uttar Pradesh",
+                "district": "Agra / Mathura",
+                "names": ["Agra Waterworks Ghat", "Mathura Vishram Ghat", "Bateshwar Temple Ghat"]
+            },
+            "UYDDEL": {
+                "river": "Yamuna River",
+                "basin": "Yamuna Basin",
+                "state": "Delhi NCR",
+                "district": "Central Delhi / Yamunanagar",
+                "names": ["Old Railway Bridge (Loha Pul)", "Wazirabad Barrage", "ITO Bridge Barrage", "Okhla Barrage"]
+            },
+            "HGDDDN": {
+                "river": "Ganga / Alaknanda",
+                "basin": "Upper Ganga Basin",
+                "state": "Uttarakhand",
+                "district": "Dehradun / Rishikesh",
+                "names": ["Rishikesh Triveni Ghat", "Haridwar Bhimgoda Barrage", "Devprayag Confluence"]
+            },
+            "MDBURLA": {
+                "river": "Mahanadi River",
+                "basin": "Mahanadi Basin",
+                "state": "Odisha",
+                "district": "Sambalpur / Cuttack",
+                "names": ["Mundali Barrage", "Naraj Delta Station", "Hirakud Spillway"]
+            },
+            "ERDBWN": {
+                "river": "Damodar / Ajay River",
+                "basin": "Damodar Basin",
+                "state": "West Bengal",
+                "district": "Burdwan / Bankura",
+                "names": ["Durgapur Barrage", "Maithon Outflow", "Panchet Dam Reservoir"]
+            }
+        }
+
+        match = DIVISION_MAP.get(clean_div)
+        if not match:
+            for k, v in DIVISION_MAP.items():
+                if k in clean_div or clean_div in k:
+                    match = v
+                    break
+
+        if match:
+            import re
+            num_match = re.search(r'^[0-9]+', code_raw)
+            num = int(num_match.group(0)) if num_match else index
+            names = match.get("names", [])
+            stn_name = names[(num - 1) % len(names)] if names else f"Station #{num}"
+            return {
+                "station_name": f"{stn_name} ({match['river']})",
+                "river": match["river"],
+                "basin": match["basin"],
+                "state": match["state"],
+                "district": match["district"]
+            }
+
+        return {
+            "station_name": f"Station {code_raw}",
+            "river": "Major Indian River",
+            "basin": "National Hydrographic Basin",
+            "state": "India",
+            "district": "Central Water Monitoring Sector"
+        }
+
     async def fetch_cwc_river_gauges(self, state_filter: Optional[str] = None) -> Dict[str, Any]:
         """
         Fetches LIVE river gauge stations currently above warning level from CWC's
@@ -209,19 +367,29 @@ class CWCandIMDScraperService:
                 res = await client.get(self.CWC_LIVE_URL, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
                 if res.status_code == 200:
                     raw = res.json()
-                    stations = [
-                        {
-                            "gauge_id": item.get("stationCode"),
-                            "station_code": item.get("stationCode"),
+                    stations = []
+                    for idx, item in enumerate(raw, 1):
+                        code = item.get("stationCode", "")
+                        meta = self._resolve_station_meta(code, idx)
+                        stations.append({
+                            "gauge_id": code or f"CWC-{idx}",
+                            "station_code": code or f"CWC-{idx}",
+                            "station_name": meta["station_name"],
+                            "river": meta["river"],
+                            "basin": meta["basin"],
+                            "state": meta["state"],
+                            "district": meta["district"],
                             "current_level_m": item.get("value"),
                             "status": item.get("status"),
                             "trend": item.get("trend") or "UNKNOWN",
                             "data_mode": "live",
                             "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M IST"),
                             "source": "LIVE — CWC ffs.india-water.gov.in"
-                        }
-                        for item in raw
-                    ]
+                        })
+
+                    if state_filter and state_filter.upper() != "ALL":
+                        stations = [s for s in stations if s["state"].lower() == state_filter.lower()]
+
                     return {
                         "status": "success",
                         "data_mode": "live",
