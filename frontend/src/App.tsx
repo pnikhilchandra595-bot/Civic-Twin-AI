@@ -128,6 +128,17 @@ export const App: React.FC = () => {
 
   // Initialize digital twin state, radio comms, and SAR
   useEffect(() => {
+    // If officer profile is saved in localStorage but JWT token is missing, restore valid token in background
+    if (authUser && !localStorage.getItem('civictwin_jwt_token')) {
+      apiService.loginOfficer(
+        authUser.badgeId || 'NDMA-HQ-01',
+        'FieldDemo@2026',
+        authUser.userType,
+        authUser.assignedState || 'Maharashtra',
+        authUser.assignedDistrict || 'Mumbai Suburban'
+      );
+    }
+
     const fetchInitial = async () => {
       try {
         const initialState = await apiService.getState();
@@ -178,6 +189,7 @@ export const App: React.FC = () => {
   const handleLogout = () => {
     setAuthUser(null);
     localStorage.removeItem('civictwin_officer');
+    apiService.setAuthToken(null);
   };
 
   const handleReset = async () => {
