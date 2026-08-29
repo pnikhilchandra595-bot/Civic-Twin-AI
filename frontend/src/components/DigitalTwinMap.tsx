@@ -2215,7 +2215,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   }, [state, baseMap, viewScope, showFloodHeatmap, showRoads, showEvacuationRoutes, showSensors, showUnits, showSentinelSAR, showSentinel2, showNasaFirms, showMosdacInsat, showBhuvanDisaster, showBhuvanWMS, showPurpleAir, showSeismic, showEonetEvents, showTomTomTraffic, showAircraft, showShelters, showEmergencyStations, showMaritime, showTideGauges, liveHospitals, liveSatelliteVehicles, liveAirSensors, liveSeismic, liveEonetEvents, liveTrafficIncidents, liveAircraft, liveShelters, liveStations, liveMaritimeVessels, liveTideData, liveBhoonidhiAssets]);
 
   return (
-    <div className="relative w-full h-[540px] lg:h-[620px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
+    <div className="relative w-full h-[calc(100vh-210px)] min-h-[680px] max-h-[940px] bg-[#060a12] rounded-2xl border border-[#1f2c44] overflow-hidden select-none shadow-2xl">
       {/* Leaflet Map Canvas Container */}
       <div ref={mapContainerRef} className="w-full h-full z-0" />
 
@@ -2231,119 +2231,119 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         </div>
       )}
 
-      {/* Top-Left Geographic Toolbar */}
-      <div className="absolute top-3 left-3 z-10 flex flex-col space-y-1.5">
-        {/* Role-Specific Geographic Grid Switcher */}
-        {isDistrictOfficer ? (
-          <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-amber-500/40 shadow-xl bg-slate-950/90">
-            <button
-              onClick={() => {
-                setViewScope('city');
-                if (mapInstanceRef.current && state?.center_coords) {
-                  mapInstanceRef.current.flyTo(state.center_coords, 14, { duration: 1.2 });
-                }
-              }}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
-                viewScope === 'city'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Compass className="w-3.5 h-3.5" />
-              <span>🎯 Exact Area ({state?.city_name?.split(' ')[0] || 'Local'})</span>
-            </button>
+      {/* Top-Left Geographic Toolbar (Clean Unified Frosted HUD) */}
+      <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2 max-w-[calc(100%-380px)]">
+        {/* Role-Specific Geographic Grid Switcher & Base Map Group */}
+        <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-cyan-500/30 shadow-2xl bg-slate-950/90 backdrop-blur-md">
+          {/* Scope buttons */}
+          {isDistrictOfficer ? (
+            <>
+              <button
+                onClick={() => {
+                  setViewScope('city');
+                  if (mapInstanceRef.current && state?.center_coords) {
+                    mapInstanceRef.current.flyTo(state.center_coords, 14, { duration: 1.2 });
+                  }
+                }}
+                className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
+                  viewScope === 'city'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Compass className="w-3.5 h-3.5" />
+                <span>🎯 Exact ({state?.city_name?.split(' ')[0] || 'Local'})</span>
+              </button>
+              <button
+                onClick={() => setViewScope('district_grid')}
+                className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
+                  viewScope === 'district_grid'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Building2 className="w-3.5 h-3.5 text-amber-400" />
+                <span>📍 {authUser?.assignedDistrict || 'District'}</span>
+              </button>
+            </>
+          ) : isStateOfficer ? (
+            <>
+              <button
+                onClick={() => {
+                  setViewScope('city');
+                  if (mapInstanceRef.current && state?.center_coords) {
+                    mapInstanceRef.current.flyTo(state.center_coords, 14, { duration: 1.2 });
+                  }
+                }}
+                className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
+                  viewScope === 'city'
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Compass className="w-3.5 h-3.5 text-emerald-400" />
+                <span>🎯 Exact ({state?.city_name?.split(' ')[0] || 'Local'})</span>
+              </button>
+              <button
+                onClick={() => setViewScope('state_grid')}
+                className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
+                  viewScope === 'state_grid'
+                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50 font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Building2 className="w-3.5 h-3.5 text-purple-400" />
+                <span>🏢 {authUser?.assignedState || 'State'}</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  setViewScope('city');
+                  if (mapInstanceRef.current && state?.center_coords) {
+                    mapInstanceRef.current.flyTo(state.center_coords, 14, { duration: 1.2 });
+                  }
+                }}
+                className={`px-2 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
+                  viewScope === 'city'
+                    ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Compass className="w-3.5 h-3.5 text-emerald-400" />
+                <span>🎯 Area</span>
+              </button>
+              <button
+                onClick={() => setViewScope('india')}
+                className={`px-2 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
+                  viewScope === 'india'
+                    ? 'bg-orange-500/25 text-orange-300 border border-orange-500/50 font-bold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Globe className="w-3.5 h-3.5 text-orange-400" />
+                <span>🇮🇳 India</span>
+              </button>
+            </>
+          )}
 
-            <button
-              onClick={() => setViewScope('district_grid')}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
-                viewScope === 'district_grid'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Building2 className="w-3.5 h-3.5 text-amber-400" />
-              <span>📍 {authUser?.assignedDistrict || 'District'} Grid</span>
-            </button>
-          </div>
-        ) : isStateOfficer ? (
-          <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-purple-500/40 shadow-xl bg-slate-950/90">
-            <button
-              onClick={() => {
-                setViewScope('city');
-                if (mapInstanceRef.current && state?.center_coords) {
-                  mapInstanceRef.current.flyTo(state.center_coords, 14, { duration: 1.2 });
-                }
-              }}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
-                viewScope === 'city'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 font-bold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Compass className="w-3.5 h-3.5 text-emerald-400" />
-              <span>🎯 Exact Area ({state?.city_name?.split(' ')[0] || 'Local'})</span>
-            </button>
+          <span className="text-slate-700">|</span>
 
-            <button
-              onClick={() => setViewScope('state_grid')}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
-                viewScope === 'state_grid'
-                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/50 font-bold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Building2 className="w-3.5 h-3.5 text-purple-400" />
-              <span>🏢 {authUser?.assignedState || 'State'} Grid</span>
-            </button>
-          </div>
-        ) : (
-          <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-cyan-500/30 shadow-xl bg-slate-950/90">
-            <button
-              onClick={() => {
-                setViewScope('city');
-                if (mapInstanceRef.current && state?.center_coords) {
-                  mapInstanceRef.current.flyTo(state.center_coords, 14, { duration: 1.2 });
-                }
-              }}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
-                viewScope === 'city'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 font-bold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Compass className="w-3.5 h-3.5 text-emerald-400" />
-              <span>🎯 Exact Area Twin</span>
-            </button>
-
-            <button
-              onClick={() => setViewScope('india')}
-              className={`px-2.5 py-1 rounded-lg flex items-center space-x-1 transition-all cursor-pointer ${
-                viewScope === 'india'
-                  ? 'bg-orange-500/20 text-orange-300 border border-orange-500/50 font-bold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Globe className="w-3.5 h-3.5 text-orange-400" />
-              <span>🇮🇳 All-India</span>
-            </button>
-          </div>
-        )}
-
-        {/* Base Map Style Selector */}
-        <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-[11px] font-mono border border-slate-800 bg-slate-950/90 shadow-lg">
+          {/* Base Map Style Selector */}
           {([
-            { id: 'google_hybrid', label: '🌍 Google Satellite' },
-            { id: 'google_streets', label: '🗺️ Google Roads' },
+            { id: 'google_hybrid', label: '🌍 Sat' },
+            { id: 'google_streets', label: '🗺️ Roads' },
             { id: 'google_terrain', label: '🏔️ Terrain' },
-            { id: 'dark', label: '🌃 Dark HUD' },
-            { id: 'bhuvan', label: '🇮🇳 ISRO Bhuvan' }
+            { id: 'dark', label: '🌃 Dark' },
+            { id: 'bhuvan', label: '🇮🇳 Bhuvan' }
           ] as const).map(style => (
             <button
               key={style.id}
               onClick={() => setBaseMap(style.id)}
-              className={`px-2 py-0.5 rounded-lg capitalize transition-all cursor-pointer ${
+              className={`px-1.5 py-0.5 rounded-md text-[11px] transition-all cursor-pointer ${
                 baseMap === style.id
-                  ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-500/50 font-bold shadow-[0_0_10px_rgba(56,189,248,0.3)]'
+                  ? 'bg-cyan-500/30 text-cyan-200 border border-cyan-500/60 font-bold shadow-sm'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -2352,13 +2352,13 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           ))}
         </div>
 
-        {/* Omnibox Search Any Place in India (780+ Districts & Infinite GPS Points) */}
+        {/* Omnibox Search (Compact) */}
         <form 
           onSubmit={(e) => {
             e.preventDefault();
             if (!searchQuery.trim()) return;
-            setClickCoordFeedback(`🔍 Resolving "${searchQuery}" across Pan-India Digital Twin...`);
-            setTimeout(() => setClickCoordFeedback(null), 4000);
+            setClickCoordFeedback(`🔍 Resolving "${searchQuery}"...`);
+            setTimeout(() => setClickCoordFeedback(null), 3500);
             const parts = searchQuery.split(',').map(s => parseFloat(s.trim()));
             if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
               if (onResolveLocation) onResolveLocation('', parts[0], parts[1]);
@@ -2366,57 +2366,27 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               if (onResolveLocation) onResolveLocation(searchQuery);
             }
           }}
-          className="hud-panel p-1 rounded-xl border border-cyan-500/40 bg-slate-950/95 flex items-center space-x-1.5 shadow-2xl max-w-xs"
+          className="hud-panel p-1 rounded-xl border border-cyan-500/40 bg-slate-950/90 backdrop-blur-md flex items-center space-x-1.5 shadow-2xl w-48 sm:w-56"
         >
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search any town, district or lat, lng..."
-            className="bg-transparent border-none text-[11px] font-mono text-white placeholder-slate-500 focus:outline-none flex-1 px-2 py-0.5"
+            placeholder="Search town, district, coords..."
+            className="bg-transparent border-none text-[10px] font-mono text-white placeholder-slate-500 focus:outline-none flex-1 px-1.5 py-0.5"
           />
           <button
             type="submit"
-            className="px-2 py-0.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-mono font-bold cursor-pointer"
+            className="px-2 py-0.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-[9px] font-mono font-bold cursor-pointer"
           >
             Locate
           </button>
         </form>
 
-        {/* Real-Time NDRF Sortie Simulation Trigger */}
-        <div className="hud-panel p-1 rounded-xl border border-orange-500/50 bg-slate-950/95 flex items-center space-x-1.5 shadow-2xl">
-          <button
-            type="button"
-            onClick={() => {
-              setIsSortieSimulating(prev => !prev);
-              setClickCoordFeedback(
-                !isSortieSimulating
-                  ? "🚁 DEMO SORTIE INJECTED: IAF Mi-17V5 moving across active flood sector (SIMULATED)"
-                  : "⏹️ Demo Sortie Stopped"
-              );
-              setTimeout(() => setClickCoordFeedback(null), 4000);
-            }}
-            className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold flex items-center space-x-1.5 cursor-pointer transition-all ${
-              isSortieSimulating
-                ? 'bg-orange-600 hover:bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.5)] animate-pulse'
-                : 'bg-orange-950/80 hover:bg-orange-900 border border-orange-600/70 text-orange-200'
-            }`}
-          >
-            <span>{isSortieSimulating ? '⏹️ Stop Demo Sortie' : '🚁 Launch Demo NDRF Sortie'}</span>
-            <span className="text-[9px] px-1 py-0.2 rounded bg-black/60 font-mono text-orange-300">
-              {isSortieSimulating ? 'LIVE FLIGHT' : 'SIMULATED'}
-            </span>
-          </button>
-        </div>
-
         {/* Live Coordinate Resolution Status Feedback */}
-        {clickCoordFeedback ? (
+        {clickCoordFeedback && (
           <div className="px-2.5 py-1 rounded-lg bg-cyan-950/95 border border-cyan-400 text-cyan-300 text-[10px] font-mono font-bold shadow-2xl animate-pulse">
             {clickCoordFeedback}
-          </div>
-        ) : (
-          <div className="text-[9px] font-mono text-slate-400 bg-slate-950/80 px-2 py-0.5 rounded border border-slate-800 pointer-events-none">
-            🇮🇳 Click within Indian territory to inspect micro-catchment & flood risk
           </div>
         )}
       </div>
@@ -2486,11 +2456,35 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         </div>
 
         {isLayersOpen && (
-          <div className="hud-panel p-2.5 rounded-xl flex flex-col space-y-1 text-[11px] font-mono border border-slate-800 bg-slate-950/95 shadow-2xl min-w-[220px] max-w-[250px] max-h-[360px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900 z-50">
+          <div className="hud-panel p-2.5 rounded-xl flex flex-col space-y-1 text-[11px] font-mono border border-slate-800 bg-slate-950/95 shadow-2xl min-w-[230px] max-w-[260px] max-h-[380px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900 z-50">
             <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-1 pb-1 border-b border-slate-800/80 flex justify-between items-center">
               <span>GIS & Sensor Layers</span>
               <span className="text-cyan-400 text-[8px] bg-cyan-950/80 px-1 rounded border border-cyan-800">12 Live</span>
             </div>
+
+            {/* Quick Demo Sortie Simulation Trigger */}
+            <button
+              onClick={() => {
+                setIsSortieSimulating(prev => !prev);
+                setClickCoordFeedback(
+                  !isSortieSimulating
+                    ? "🚁 DEMO SORTIE INJECTED: IAF Mi-17V5 moving across active flood sector (SIMULATED)"
+                    : "⏹️ Demo Sortie Stopped"
+                );
+                setTimeout(() => setClickCoordFeedback(null), 4000);
+              }}
+              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border text-[11px] font-mono transition-all cursor-pointer ${
+                isSortieSimulating ? 'bg-orange-600 border-orange-400 text-white font-bold shadow-[0_0_12px_rgba(249,115,22,0.5)] animate-pulse' : 'bg-orange-950/70 border-orange-600/50 text-orange-200 hover:bg-orange-900/70'
+              }`}
+            >
+              <span className="flex items-center space-x-1.5 truncate">
+                <span>🚁</span>
+                <span>{isSortieSimulating ? 'Stop Sortie' : 'Demo Sortie'}</span>
+              </span>
+              <span className="text-[8px] px-1 py-0.2 rounded bg-black/60 font-mono text-orange-300">
+                {isSortieSimulating ? 'ACTIVE' : 'SIMULATED'}
+              </span>
+            </button>
 
             <button
               onClick={() => setShowFloodHeatmap(!showFloodHeatmap)}

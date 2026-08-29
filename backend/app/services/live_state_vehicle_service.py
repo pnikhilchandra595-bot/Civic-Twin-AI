@@ -19,21 +19,23 @@ class LiveStateVehicleService:
         self._city_cache: Dict[str, List[Dict[str, Any]]] = {}
         self._last_tick = datetime.datetime.now()
 
-    def get_live_vehicles_for_city(self, city_id: str, center_lat: float, center_lng: float, count: int = 16) -> List[Dict[str, Any]]:
+    def get_live_vehicles_for_city(self, city_id: str, center_lat: float, center_lng: float, count: int = 10) -> List[Dict[str, Any]]:
         now = datetime.datetime.now()
         elapsed_sec = (now - self._last_tick).total_seconds()
         self._last_tick = now
 
         # City prefixes and agency tags
         city_profiles = {
-            "mumbai_monsoon": {"prefix": "MH01", "agency": "MCGM 108 Emergency & BEST Rapid Response", "radius": 0.04},
-            "bengaluru_lakes": {"prefix": "KA01", "agency": "BBMP Disaster Rescue & BMTC Emergency Fleet", "radius": 0.045},
-            "chennai_cyclone": {"prefix": "TN09", "agency": "GCC 108 Trauma & CUMTA Rapid Response", "radius": 0.04},
-            "kochi_flood": {"prefix": "KL07", "agency": "Kochi Disaster Management & KSRTC Emergency", "radius": 0.035},
-            "delhi_yamuna": {"prefix": "DL01", "agency": "Delhi DDMA 112 & DTC Emergency Evacuation", "radius": 0.05}
+            "mumbai_monsoon": {"prefix": "MH01", "agency": "MCGM 108 Emergency & BEST Rapid Response", "radius": 0.075},
+            "bengaluru_lakes": {"prefix": "KA01", "agency": "BBMP Disaster Rescue & BMTC Emergency Fleet", "radius": 0.08},
+            "chennai_cyclone": {"prefix": "TN09", "agency": "GCC 108 Trauma & CUMTA Rapid Response", "radius": 0.07},
+            "kochi_flood": {"prefix": "KL07", "agency": "Kochi Disaster Management & KSRTC Emergency", "radius": 0.065},
+            "delhi_yamuna": {"prefix": "DL01", "agency": "Delhi DDMA 112 & DTC Emergency Evacuation", "radius": 0.085},
+            "hyderabad_musi": {"prefix": "TG09", "agency": "GHMC 108 & TSRTC Emergency Fleet", "radius": 0.075},
+            "telangana_hyderabad": {"prefix": "TG09", "agency": "GHMC 108 & TSRTC Emergency Fleet", "radius": 0.075}
         }
 
-        profile = city_profiles.get(city_id, {"prefix": "IN99", "agency": "State Disaster Management 108 Fleet", "radius": 0.035})
+        profile = city_profiles.get(city_id, {"prefix": "IN99", "agency": "State Disaster Management 108 Fleet", "radius": 0.07})
 
         if city_id not in self._city_cache:
             # Initialize live fleet with deterministic coordinates along urban arterial corridors

@@ -522,10 +522,11 @@ export const App: React.FC = () => {
           onOpenSOS={() => setIsCitizenSOSOpen(true)}
         />
       ) : (
-        /* Main Scrollable Executive Dashboard Content (For National & State Officers) */
-        <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-5 space-y-6">
+        /* Main Executive Dashboard Content (For National & State Officers) */
+        <div className={`flex-1 w-full ${cockpitView === 'map' ? 'max-w-[99vw] px-2 sm:px-3 py-2 space-y-3' : 'max-w-7xl mx-auto px-4 py-5 space-y-6'}`}>
         
-        {/* RETRO HUD OVERVIEW BANNER */}
+        {/* RETRO HUD OVERVIEW BANNER (Hidden in dedicated map view for maximum viewing size) */}
+        {cockpitView !== 'map' && (
         <section className="p-5 sm:p-6 rounded-3xl bg-[#091224]/90 border border-cyan-500/35 shadow-[0_0_40px_rgba(56,189,248,0.12)] backdrop-blur-md space-y-3">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-2">
@@ -565,6 +566,7 @@ export const App: React.FC = () => {
             </div>
           </div>
         </section>
+        )}
 
         {/* MASTER COCKPIT VIEW SWITCHER (TOOLS FIRST) */}
         <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 bg-slate-950/80 border border-slate-800 rounded-2xl shadow-xl backdrop-blur-md">
