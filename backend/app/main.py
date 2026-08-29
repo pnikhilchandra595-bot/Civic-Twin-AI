@@ -33,7 +33,7 @@ from app.services.satellite_hub_service import satellite_hub_service
 from app.services.mosdac_service import mosdac_service
 from app.services.bhuvan_service import bhuvan_service
 from app.services.copernicus_elevation_service import copernicus_elevation_service
-from app.services.auth_service import auth_service, get_current_officer, Depends
+from app.services.auth_service import auth_service, get_current_officer, require_clearance, Depends
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -416,10 +416,68 @@ async def toggle_road_blockage(road_id: str):
     })
     return updated
 
+class OfficerLoginRequest(BaseModel):
+    username: str
+    password: Optional[str] = None
+    role: Optional[str] = "district_officer"
+    assigned_state: Optional[str] = "Maharashtra"
+    assigned_district: Optional[str] = "Mumbai Suburban"
+
+@app.post("/api/auth/login")
+async def login_officer(req: OfficerLoginRequest):
+    """
+    Authenticate emergency response officer & issue signed HMAC-SHA256 JWT access token.
+    """
+    clearance_map = {
+        "national_authority": 5,
+        "state_officer": 3,
+        "district_officer": 2,
+        "citizen": 1
+    }
+    
+    role = req.role or "district_officer"
+    clearance = clearance_map.get(role, 2)
+    
+    department_map = {
+        "national_authority": "National Disaster Management Authority (NDMA HQ)",
+        "state_officer": f"State Disaster Management Authority ({req.assigned_state} SDMA)",
+        "district_officer": f"District Emergency Operations Center ({req.assigned_district})",
+        "citizen": "Civic Public Safety Network"
+    }
+    
+    token_claims = {
+        "sub": req.username,
+        "officer_name": req.username,
+        "role": role,
+        "clearance_level": clearance,
+        "assigned_state": req.assigned_state,
+        "assigned_district": req.assigned_district,
+        "department": department_map.get(role, "Disaster Management Authority")
+    }
+    
+    access_token = auth_service.create_access_token(token_claims, expires_in_seconds=86400)
+    return {
+        "status": "success",
+        "access_token": access_token,
+        "token_type": "bearer",
+        "expires_in": 86400,
+        "user": token_claims
+    }
+
+@app.get("/api/auth/me")
+async def get_current_user_profile(officer: Dict[str, Any] = Depends(get_current_officer)):
+    """
+    Returns current authenticated officer identity, role, and clearance level.
+    """
+    return {
+        "status": "success",
+        "officer": officer
+    }
+
 @app.post("/api/control", response_model=CityDigitalTwinState)
 async def update_simulation_control(
     cmd: SimulationControlCommand,
-    officer: Dict[str, Any] = Depends(get_current_officer)
+    officer: Dict[str, Any] = Depends(require_clearance(min_level=1))
 ):
     updated = state_manager.apply_control_command(cmd)
     await ws_manager.broadcast({
@@ -433,7 +491,7 @@ async def update_simulation_control(
 async def control_playback(
     action: str,
     speed: float = 1.0,
-    officer: Dict[str, Any] = Depends(get_current_officer)
+    officer: Dict[str, Any] = Depends(require_clearance(min_level=1))
 ):
     if action == "play":
         state_manager.is_playing = True
@@ -461,7 +519,7 @@ async def control_playback(
 @app.post("/api/reset", response_model=CityDigitalTwinState)
 async def reset_simulation(
     city_id: str = "mumbai_monsoon",
-    officer: Dict[str, Any] = Depends(get_current_officer)
+    officer: Dict[str, Any] = Depends(require_clearance(min_level=1))
 ):
     res = state_manager.reset_scenario(city_id)
     await ws_manager.broadcast({
@@ -473,7 +531,7 @@ async def reset_simulation(
 @app.post("/api/what-if/inject", response_model=CityDigitalTwinState)
 async def inject_what_if_crisis_event(
     event_type: str = "100_year_storm",
-    officer: Dict[str, Any] = Depends(get_current_officer)
+    officer: Dict[str, Any] = Depends(require_clearance(min_level=1))
 ):
     """Simulates what-if extreme disaster injections (100-year cloudburst storm, dam breach, power trip)"""
     if event_type == "100_year_storm":

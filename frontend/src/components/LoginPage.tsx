@@ -90,8 +90,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onClose }) => {
   }, [resendTimer]);
 
   // Instant 1-Tap Login handler for evaluation
-  const handleInstantLogin = (role: UserType, stateName: string = 'Maharashtra') => {
+  const handleInstantLogin = async (role: UserType, stateName: string = 'Maharashtra') => {
     setIsAuthenticating(true);
+    
+    // Authenticate with backend and obtain HMAC-SHA256 JWT
+    const mapping = stateCityMap[stateName] || stateCityMap['Maharashtra'];
+    let username = 'NDMA-HQ-01';
+    if (role === 'state_officer') username = `${stateName.slice(0, 2).toUpperCase()}-SDMA-108`;
+    else if (role === 'district_officer') username = `${mapping.district.slice(0, 3).toUpperCase()}-DDMA-01`;
+    else if (role === 'citizen') username = 'Citizen-98765';
+
+    await apiService.loginOfficer(username, 'FieldDemo@2026', role, stateName, mapping.district);
+
     setTimeout(() => {
       setIsAuthenticating(false);
       setAuthSuccess(true);

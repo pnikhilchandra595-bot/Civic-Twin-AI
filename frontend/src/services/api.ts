@@ -131,9 +131,41 @@ export class DigitalTwinApiService {
   private onSOSReceivedCallback: ((sos: CitizenSOSReport) => void) | null = null;
   private isConnected = false;
   private reconnectTimer: any = null;
+  private authToken: string | null = (typeof window !== 'undefined' ? localStorage.getItem('civictwin_jwt_token') : null);
+
+  setAuthToken(token: string | null) {
+    this.authToken = token;
+    if (typeof window !== 'undefined') {
+      if (token) localStorage.setItem('civictwin_jwt_token', token);
+      else localStorage.removeItem('civictwin_jwt_token');
+    }
+  }
+
+  getAuthHeaders(): Record<string, string> {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (this.authToken) {
+      headers['Authorization'] = `Bearer ${this.authToken}`;
+    }
+    return headers;
+  }
+
+  async loginOfficer(username: string, password?: string, role: string = 'district_officer', state: string = 'Maharashtra', district: string = 'Mumbai Suburban'): Promise<any> {
+    const data = await safeJsonFetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, role, assigned_state: state, assigned_district: district })
+    });
+    if (data && data.access_token) {
+      this.setAuthToken(data.access_token);
+      return data;
+    }
+    return null;
+  }
 
   async getState(): Promise<CityDigitalTwinState> {
-    const data = await safeJsonFetch<CityDigitalTwinState>(`${API_BASE}/state`);
+    const data = await safeJsonFetch<CityDigitalTwinState>(`${API_BASE}/state`, {
+      headers: this.getAuthHeaders()
+    });
     if (data && data.city_name && data.nodes) {
       return data;
     }
@@ -143,7 +175,7 @@ export class DigitalTwinApiService {
   async sendControl(cmd: SimulationControlCommand): Promise<CityDigitalTwinState> {
     const data = await safeJsonFetch<CityDigitalTwinState>(`${API_BASE}/control`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: this.getAuthHeaders(),
       body: JSON.stringify(cmd)
     });
     if (data && data.city_name) return data;
