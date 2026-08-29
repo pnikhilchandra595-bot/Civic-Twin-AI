@@ -7,21 +7,26 @@
 
 ```mermaid
 graph TD
-    subgraph INGESTION ["1. Multi-Source Ingestion Layer"]
+    subgraph INGESTION ["1. Multi-Source Ingestion & Simulation Layer"]
         MOSDAC["ISRO MOSDAC / INSAT-3DR (SAC)"]
         BHUVAN["ISRO Bhuvan NRSC WMS / CartoDEM"]
+        BHOONIDHI["ISRO Bhoonidhi STAC (NISAR / S-1A)"]
         IMD["IMD Doppler Radar Animation Loops"]
         OPENSKY["OpenSky ADS-B Transponders"]
+        DELHI_OTD["Delhi Open Transit Data (AIS-140)"]
         SAR["Sentinel-1 C-Band SAR & Sentinel-2 Optical"]
         FIRMS["NASA FIRMS VIIRS 375m"]
         GLOFAS["Copernicus GloFAS River Flow"]
-        WEBCAM["Webcam & RTSP/MJPEG Feeds"]
+        HOSPITALS["OpenStreetMap Healthcare Registry"]
+        GRID["Vidyut Pravah National Power Grid"]
     end
 
     subgraph BACKEND_SERVICES ["2. FastAPI Backend & Micro-Services"]
-        ROUTER["API Gateway & CORS Controller"]
+        DEMO_STATE["Global Demo Mode Switch (demo_state.py)"]
+        ROUTER["API Gateway & Clearance Controller"]
         STATE_MGR["Digital Twin State Manager (state_manager.py)"]
-        AVIATION_SVC["Two-Tier Aviation & 24h Cache Filter"]
+        AVIATION_SVC["Two-Tier Aviation & ADS-B Stream Service"]
+        DISPATCH_SVC["Emergency Hospital Deployment Engine"]
         CASCADE_ENGINE["Physics & Infrastructure Cascade Engine"]
         GEMINI_AI["Google Gemini AI Incident Commander"]
         CAP_BROADCAST["NDMA CAP / SMS Dispatch Engine"]
@@ -34,16 +39,19 @@ graph TD
     end
 
     subgraph CLIENT_INTERFACE ["4. Frontend HUD & 4-Tier RBAC Portal"]
-        MAP_ENGINE["Leaflet GIS Map Canvas (Boundary Clamped)"]
-        HUD_BAR["Floating Telemetry & Tactical Controls"]
-        SORTIE_SIM["Dynamic Real-Time Moving Sortie Simulator"]
-        CCTV_MATRIX["Tactical CCTV Matrix & YOLO Telemetry"]
+        MAP_ENGINE["Expanded Leaflet GIS Canvas (calc(100vh-210px), 99vw)"]
+        HUD_BAR["Unified Frosted-Glass Telemetry & Controls"]
+        SORTIE_SIM["Dynamic Real-Time Sortie Simulator"]
+        DISPATCH_SIM["Animated 108/NDRF Hospital Route Tracker"]
+        DEMO_BANNER["Persistent Honest Demo Mode Banner"]
         CITIZEN_PORTAL["Citizen Safety & SOS Assistant Modal"]
     end
 
-    INGESTION --> ROUTER
+    INGESTION --> DEMO_STATE
+    DEMO_STATE --> ROUTER
     ROUTER --> STATE_MGR
     ROUTER --> AVIATION_SVC
+    ROUTER --> DISPATCH_SVC
     ROUTER --> CASCADE_ENGINE
     ROUTER --> GEMINI_AI
     ROUTER --> CAP_BROADCAST
@@ -53,14 +61,60 @@ graph TD
     WS_HUB --> CLIENT_INTERFACE
     ROUTER --> CLIENT_INTERFACE
     MAP_ENGINE --> SORTIE_SIM
+    MAP_ENGINE --> DISPATCH_SIM
+    DEMO_STATE --> DEMO_BANNER
 ```
 
 ---
 
-## 2. Component Design & Subsystems
+## 2. Component Design & Microservices
 
-### 2.1 Aviation Filter & Two-Tier Aircraft Registry (`live_aviation_service.py`)
-- **Ingestion**: Polls OpenSky Network `/api/states/all` over the city's bounding box ($1.2^\circ$ radius).
+### 2.1 Transparent Stage Demo Mode Engine (`demo_state.py`)
+- **Architecture**: A singleton class managing global execution mode across all backend services:
+  ```python
+  class DemoState:
+      _demo_mode: bool = False
+
+      @classmethod
+      def is_on(cls) -> bool:
+          return cls._demo_mode
+
+      @classmethod
+      def set(cls, value: bool):
+          cls._demo_mode = value
+
+  demo_state = DemoState()
+  ```
+- **Service Instrumentation**: When `demo_state.is_on()` is true, all live external services skip external HTTP calls and immediately return calibrated reference data with `data_mode="demo_simulated"`.
+- **API Endpoints**:
+  - `GET /api/demo-mode` $\rightarrow$ Public read of current presentation mode.
+  - `POST /api/demo-mode` $\rightarrow$ Clearance-gated toggle for admin presentation control.
+
+---
+
+### 2.2 Grounded Emergency Response Deployment Engine (`emergency_deployment_service.py`)
+- **Functionality**: Generates realistic, animated emergency dispatches connecting verified OpenStreetMap hospitals to active disaster inundation zones.
+- **Route Interpolation & Kinematics**:
+  ```python
+  def generate_deployment(origin_lat, origin_lng, dest_lat, dest_lng, unit_type="AMB", steps=50):
+      route = []
+      for i in range(steps + 1):
+          t = i / steps
+          curve_offset = math.sin(t * math.pi) * 0.005
+          lat = origin_lat + (dest_lat - origin_lat) * t + curve_offset
+          lng = origin_lng + (dest_lng - origin_lng) * t - (curve_offset * 0.5)
+          route.append({"lat": round(lat, 5), "lng": round(lng, 5), "step": i})
+      
+      distance_km = round(math.sqrt((dest_lat - origin_lat)**2 + (dest_lng - origin_lng)**2) * 111.0, 2)
+      eta_min = round(max(1.0, (distance_km / unit["speed_kmh"]) * 60.0), 1)
+      return { ... }
+  ```
+- **API Endpoint**: `POST /api/simulate/emergency-deployment`
+
+---
+
+### 2.3 Two-Tier Aviation Filter & ADS-B Stream (`live_aviation_service.py`)
+- **Ingestion**: Polls OpenSky Network `/api/states/all` over Indian airspace ($1.8^\circ$ radius).
 - **Matching Algorithm**:
   ```python
   def filter_aircraft(raw_states, registry, cache):
@@ -72,77 +126,44 @@ graph TD
           elif matches_callsign_prefix(state[1], ["IAF", "NDRF", "SDRF", "PAWAN"]):
               tag_disaster_response(state, generic_profile, status="LIVE_ADSB")
   ```
-- **24-Hour Cache Lifecycle**:
-  Sightings are stored with UTC timestamp. Any record where $(\text{now} - \text{recorded\_at}) > 86,400\,\text{s}$ is automatically purged.
+- **Frontend Layer Stacking**: Markers rendered with `zIndexOffset: 8500` ensuring zero visual occlusion beneath flood polygons or WMS raster tiles.
+- **Polling Interval**: Automated continuous 6-second polling loop.
 
 ---
 
-### 2.2 Sovereign Indian Map Boundary Enforcer (`DigitalTwinMap.tsx`)
-- Hard constraints applied during Leaflet map initialization:
-  ```typescript
-  const INDIA_BOUNDS = L.latLngBounds(L.latLng(6.5, 68.0), L.latLng(37.5, 97.5));
-
-  const map = L.map(container, {
-    maxBounds: INDIA_BOUNDS,
-    maxBoundsViscosity: 1.0,
-    minZoom: 4,
-    maxZoom: 20
-  });
-  ```
-- Dynamic role-based clamping:
-  - **State Officer**: `map.setMaxBounds(stateBounds); map.setMinZoom(6);`
-  - **District Officer**: `map.setMaxBounds(districtBounds); map.setMinZoom(10);`
+### 2.4 Ground Transit Telemetry (`live_delhi_otd_service.py` & `live_state_vehicle_service.py`)
+- **Live Delhi OTD Feed**: Ingests official binary GTFS-Realtime Protocol Buffers from `otd.delhi.gov.in/api/realtime/VehiclePositions.pb`, parsing over 4,900 live GPS vehicles.
+- **Simulated Smart City Fleets**: Generates kinematically moving emergency units across major cities (Mumbai, Bengaluru, Chennai, Kochi, Hyderabad) with `[SIM]` tags and realistic arterial corridors ($0.075^\circ$–$0.085^\circ$).
 
 ---
 
-### 2.3 Physics-Informed 2D Inundation & Cascade Engine
-- **Peak Discharge**:
-  $$Q_{\text{peak}} = \frac{1}{360} \cdot C \cdot I \cdot A$$
-  where $C$ is the composite runoff coefficient ($0.78$ for dense urban areas), $I$ is precipitation intensity in $\text{mm/h}$, and $A$ is catchment area in hectares.
-- **Inundation Depth**:
-  $$h(x, y, t) = h_0 + \int (R - I_{\text{infil}} - Q_{\text{drain}}) \, dt$$
-- **Infrastructure Cascade Matrix**:
-  - Substation trip occurs when $h > 0.45\,\text{m}$.
-  - Secondary water pump failure triggered upon substation de-energization.
-  - Hospital ICU emergency generator runtime evaluated against fuel tank depletion curve.
+### 2.5 Map Viewport & Layer Hierarchy (`DigitalTwinMap.tsx`)
+
+| Layer / Element | Z-Index Offset | Visual Treatment |
+| :--- | :--- | :--- |
+| **Base Satellite/Road Tiles** | Base ($0$) | Google Satellite, Roads, Terrain, Dark, Bhuvan |
+| **Bhuvan / Sentinel WMS Overlays** | $1000$ | Inundation Rasters & LULC Classifications |
+| **Flood Inundation Polygons** | $2000$ | Semi-transparent Depth Contours ($0.1\text{--}2.5\text{m}$) |
+| **Critical Infrastructure Nodes** | $3000$ | Substations, Water Pumps, Bridges, Hospitals |
+| **OpenStreetMap Live Hospitals** | $5000$ | Glowing 32px Hospital Pins with Dispatch Buttons |
+| **Ground Transit & Smart City Vehicles** | $6000$ | Compact Icon Pins with Hover-Revealed ID Tags |
+| **Live OpenSky Aircraft & Sorties** | $8500$ | Glowing 32px Transponder Pins with Active Headings |
+| **108 Emergency Route & Target** | $12000\text{--}16000$ | Glowing Red Dashed Polyline & Moving Ambulance |
 
 ---
 
-### 2.4 Dynamic Moving Sortie Flight Simulator
-- Waypoint interpolation equation:
-  $$P(t) = (1 - \alpha) \cdot W_k + \alpha \cdot W_{k+1}, \quad \alpha = \frac{t \bmod \Delta t}{\Delta t}$$
-- Smoothly advances heading angle $\theta$, altitude $z(t)$, and airspeed $v(t)$ across 12 distinct mission phases with real-time popup telemetry.
+## 3. Physics-Informed Cascade Engine Equations
 
----
+### 3.1 Saint-Venant 2D Inundation Kinematics
+Water surface elevation and depth propagation computed via 2D shallow water conservation:
+$$\frac{\partial h}{\partial t} + \frac{\partial (h u)}{\partial x} + \frac{\partial (h v)}{\partial y} = R_{\text{intensity}} - I_{\text{soil}}$$
 
-## 3. Data Schema & Persistence
+Where:
+- $h$: Water depth ($m$)
+- $u, v$: Velocity vector components ($m/s$)
+- $R_{\text{intensity}}$: Rainfall rate from IMD/MOSDAC ($m/s$)
+- $I_{\text{soil}}$: Infiltration capacity rate ($m/s$)
 
-### 3.1 Digital Twin State Schema (`schemas.py`)
-```json
-{
-  "city_id": "mumbai_monsoon",
-  "city_name": "Mumbai",
-  "center_coords": [19.076, 72.877],
-  "timeline_hour": 3.5,
-  "rain_intensity_mmhr": 48.5,
-  "storm_surge_m": 0.85,
-  "flood_depth_avg_m": 0.62,
-  "inundated_area_km2": 14.8,
-  "nodes": [...],
-  "sensors": [...],
-  "roads": [...],
-  "evacuation_routes": [...],
-  "dispatch_units": [...],
-  "iap": {
-    "overall_threat_level": "CRITICAL",
-    "priority_actions": [...]
-  }
-}
-```
-
----
-
-## 4. Security & Compliance
-- **Authentication**: JWT clearance tokens with role scopes (`national_authority`, `state_officer`, `district_officer`, `citizen`).
-- **Standardization**: Full adherence to NDMA Common Alerting Protocol (CAP v1.2) and WMS/WFS open geospatial standards.
-- **Encryption**: TLS 1.3 / HTTPS for API traffic and AES-256 for database storage.
+### 3.2 Electrical Substation Trip Cascade Trigger
+A power node trips when local inundation exceeds critical bund height:
+$$\text{TripCondition}(Node_i) = \begin{cases} \text{TRIPPED} & \text{if } h_i \ge H_{\text{bund}} \ (0.45\,\text{m}) \\ \text{OPERATIONAL} & \text{otherwise} \end{cases}$$
