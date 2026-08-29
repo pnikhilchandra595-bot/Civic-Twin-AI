@@ -618,6 +618,10 @@ export const App: React.FC = () => {
             onSwitchCity={handleSwitchCity}
             onResolveLocation={handleResolveLocation}
             isSyncing={isSyncing}
+            isPlaying={isPlaying}
+            playbackSpeed={playbackSpeed}
+            onTogglePlayback={handleTogglePlayback}
+            onSetSpeed={handleSetSpeed}
           />
         </section>
         )}

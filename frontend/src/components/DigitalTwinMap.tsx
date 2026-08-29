@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { AuthUser } from './LoginPage';
 import { apiService } from '../services/api';
+import { ScenarioSandbox } from './ScenarioSandbox';
 
 interface DigitalTwinMapProps {
   state: CityDigitalTwinState | null;
@@ -20,6 +21,10 @@ interface DigitalTwinMapProps {
   onSwitchCity?: (cityId: string) => void;
   onResolveLocation?: (query?: string, lat?: number, lng?: number) => void;
   isSyncing?: boolean;
+  isPlaying?: boolean;
+  playbackSpeed?: number;
+  onTogglePlayback?: () => void;
+  onSetSpeed?: (speed: number) => void;
 }
 
 export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
@@ -30,7 +35,11 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   onSelectRoute,
   onSwitchCity,
   onResolveLocation,
-  isSyncing = false
+  isSyncing = false,
+  isPlaying,
+  playbackSpeed,
+  onTogglePlayback,
+  onSetSpeed
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -47,6 +56,15 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [baseMap, setBaseMap] = useState<'google_hybrid' | 'google_streets' | 'google_terrain' | 'dark' | 'esri_sat' | 'bhuvan'>('google_hybrid');
   const [viewScope, setViewScope] = useState<'city' | 'india' | 'state_grid' | 'district_grid'>('city');
   const [isLayersOpen, setIsLayersOpen] = useState(false);
+  const [showCrisisSandbox, setShowCrisisSandbox] = useState(false);
+  const [internalPlaying, setInternalPlaying] = useState(false);
+  const [internalSpeed, setInternalSpeed] = useState(1);
+
+  const activePlaying = isPlaying !== undefined ? isPlaying : internalPlaying;
+  const activeSpeed = playbackSpeed !== undefined ? playbackSpeed : internalSpeed;
+  const handleTogglePlay = onTogglePlayback || (() => setInternalPlaying(!internalPlaying));
+  const handleSetSpd = onSetSpeed || ((s: number) => setInternalSpeed(s));
+
   const [clickCoordFeedback, setClickCoordFeedback] = useState<string | null>(null);
   const [mosdacFreshness, setMosdacFreshness] = useState<{
     satellite: string;
@@ -2389,6 +2407,21 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             <span>🛰️ Bhuvan EOS</span>
           </button>
 
+          {/* CRISIS SANDBOX QUICK TOGGLE BUTTON (Direct inside Twin Map) */}
+          <button
+            onClick={() => setShowCrisisSandbox(!showCrisisSandbox)}
+            title="Toggle Live Crisis Simulation Sandbox & Physics Timeline Over Map"
+            className={`hud-panel px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-mono border shadow-xl transition-all cursor-pointer ${
+              showCrisisSandbox
+                ? 'border-amber-400 bg-amber-950/95 text-amber-200 shadow-[0_0_20px_rgba(251,191,36,0.5)] font-bold'
+                : 'border-slate-800 bg-slate-950/85 text-amber-300 hover:border-amber-500/70'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            <span className="text-amber-400 text-sm">⚡</span>
+            <span className="font-bold tracking-wider uppercase">CRISIS SANDBOX</span>
+          </button>
+
           <button
             onClick={() => setIsLayersOpen(!isLayersOpen)}
             className="hud-panel px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-mono border border-slate-700 bg-slate-950/90 text-cyan-300 shadow-xl hover:border-cyan-500 transition-all cursor-pointer"
@@ -2780,6 +2813,35 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* FLOATING CRISIS SANDBOX OVERLAY CONTROLS DIRECTLY ON THE MAP */}
+      {showCrisisSandbox && (
+        <div className="absolute bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-[680px] z-[1000] p-4 rounded-2xl bg-slate-950/95 border-2 border-amber-500/60 shadow-[0_0_40px_rgba(0,0,0,0.85)] backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-200">
+          <div className="flex items-center justify-between pb-2 mb-3 border-b border-amber-500/30">
+            <div className="flex items-center space-x-2">
+              <Activity className="w-4 h-4 text-amber-400 animate-pulse" />
+              <span className="text-amber-400 font-bold">⚡</span>
+              <span className="text-xs font-bold font-mono text-white tracking-wider uppercase">
+                "What-If" Crisis Simulation Sandbox & Timeline Controller
+              </span>
+            </div>
+            <button
+              onClick={() => setShowCrisisSandbox(false)}
+              className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-mono cursor-pointer transition-all flex items-center space-x-1"
+            >
+              <span>✕</span>
+              <span>Minimize</span>
+            </button>
+          </div>
+          <ScenarioSandbox
+            state={state}
+            isPlaying={activePlaying}
+            playbackSpeed={activeSpeed}
+            onTogglePlayback={handleTogglePlay}
+            onSetSpeed={handleSetSpd}
+          />
         </div>
       )}
     </div>
