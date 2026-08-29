@@ -62,7 +62,10 @@ class LiveStateVehicleService:
                     "speed_kmh": round(speed, 1),
                     "bearing": round(bearing, 1),
                     "status": "en_route" if speed > 5 else "staging_hub",
-                    "gnss_source": "ISRO NavIC / GPS AIS-140 Live",
+                    "data_mode": "modeled_benchmark_simulation",
+                    "is_simulated": True,
+                    "provenance": "SIMULATED_URBAN_FLEET",
+                    "gnss_source": "Modeled AIS-140 Trajectory (Kinematic Fleet Simulation)",
                     "route_phase": i * 0.4
                 })
             self._city_cache[city_id] = fleet

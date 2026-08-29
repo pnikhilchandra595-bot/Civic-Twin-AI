@@ -1527,19 +1527,20 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
         try {
           const isAmb = veh.vehicle_type === 'EMERGENCY_AMBULANCE';
           const iconEmoji = isAmb ? '🚑' : '🚌';
-          const iconColor = isAmb ? '#ef4444' : '#00d2ff';
+          const isSimulated = veh.is_simulated || veh.data_mode === 'modeled_benchmark_simulation' || veh.data_mode === 'demo_simulated' || veh.provenance === 'SIMULATED_URBAN_FLEET' || !veh.gnss_source?.includes('Delhi Open Transit');
+          const iconColor = isAmb ? '#ef4444' : isSimulated ? '#f59e0b' : '#00d2ff';
           const safeId = String(veh.id || 'AMB').slice(-8);
           const safeName = String(veh.name || `Vehicle ${safeId}`);
-          const safeAgency = String(veh.agency || 'Emergency Response Fleet (AIS-140)');
+          const safeAgency = String(veh.agency || (isSimulated ? 'Municipal Emergency Fleet (Modeled Simulation)' : 'Delhi Transport Corporation (AIS-140)'));
           const safeSpeed = typeof veh.speed_kmh === 'number' ? veh.speed_kmh : 0;
           const safeBearing = typeof veh.bearing === 'number' ? veh.bearing : 0;
 
           const vehHtml = `
             <div class="relative flex items-center justify-center w-7 h-7 rounded-full bg-[#090e1a] border-2 shadow-2xl cursor-pointer group transform hover:scale-125 transition-all" style="border-color: ${iconColor}">
               <span class="text-xs">${iconEmoji}</span>
-              <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full ${isAmb ? 'bg-rose-500 animate-ping' : 'bg-cyan-400'}"></span>
-              <div class="absolute -bottom-3.5 left-1/2 -translate-x-1/2 text-[7px] font-mono px-1 rounded bg-slate-950 text-slate-300 border border-slate-700 font-bold whitespace-nowrap">
-                ${safeId}
+              <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full ${isAmb ? 'bg-rose-500 animate-ping' : isSimulated ? 'bg-amber-400' : 'bg-emerald-400'}"></span>
+              <div class="absolute -bottom-3.5 left-1/2 -translate-x-1/2 text-[7px] font-mono px-1 rounded bg-slate-950 ${isSimulated ? 'text-amber-300 border-amber-500/70' : 'text-emerald-300 border-emerald-500/70'} border font-bold whitespace-nowrap shadow-md">
+                ${isSimulated ? `SIM · ${safeId}` : `LIVE · ${safeId}`}
               </div>
             </div>
           `;
@@ -1555,14 +1556,14 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           }).addTo(layerGroup);
 
           vMarker.bindPopup(`
-            <div class="text-xs font-mono p-2 bg-slate-950 text-slate-100 rounded-xl border border-cyan-500/50 shadow-2xl space-y-1 min-w-[220px]">
-              <div class="flex items-center space-x-1.5 text-cyan-300 font-bold text-xs">
+            <div class="text-xs font-mono p-2.5 bg-slate-950 text-slate-100 rounded-xl border ${isSimulated ? 'border-amber-500/50' : 'border-emerald-500/50'} shadow-2xl space-y-1.5 min-w-[240px]">
+              <div class="flex items-center space-x-1.5 ${isSimulated ? 'text-amber-300' : 'text-cyan-300'} font-bold text-xs">
                 <span>${iconEmoji} ${safeName}</span>
               </div>
-              <div class="text-[10px] text-emerald-400 font-bold flex items-center space-x-1">
-                <span>🟢 Live Satellite GNSS (AIS-140 Open AVL)</span>
+              <div class="text-[10px] ${isSimulated ? 'text-amber-300 bg-amber-950/70 border border-amber-500/40' : 'text-emerald-300 bg-emerald-950/70 border border-emerald-500/40'} px-2 py-0.5 rounded font-bold flex items-center space-x-1">
+                <span>${isSimulated ? '⚠️ Modeled Kinematic Fleet Simulation' : '🟢 Live Satellite GNSS (AIS-140 Open AVL)'}</span>
               </div>
-              <div class="text-[9px] text-slate-400">
+              <div class="text-[9px] text-slate-300">
                 <span><strong>Agency:</strong> ${safeAgency}</span>
               </div>
               <div class="grid grid-cols-2 gap-1 text-center pt-1 border-t border-slate-800">
@@ -1575,9 +1576,9 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
                   <span class="text-amber-300 font-bold">${safeBearing.toFixed(0)}°</span>
                 </div>
               </div>
-              <div class="text-[9px] text-slate-400 pt-1">
+              <div class="text-[9px] text-slate-400 pt-1 border-t border-slate-800 space-y-0.5">
                 <div><strong>GPS:</strong> [${veh.lat.toFixed(5)}°N, ${veh.lng.toFixed(5)}°E]</div>
-                <div><strong>Constellation:</strong> ISRO NavIC / GPS L1/L5</div>
+                <div><strong>Provenance:</strong> ${isSimulated ? 'Modeled Dynamic Road Routing' : 'Delhi Open Transit Data Real-Time Stream'}</div>
               </div>
             </div>
           `);
