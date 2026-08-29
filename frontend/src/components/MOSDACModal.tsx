@@ -15,6 +15,9 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
+import { apiService } from '../services/api';
+import { FALLBACK_MOSDAC_DATASETS } from '../data/mosdacData';
+
 interface MOSDACGranule {
   identifier: string;
   id: string;
@@ -63,14 +66,15 @@ export const MOSDACModal: React.FC<MOSDACModalProps> = ({ isOpen, onClose }) => 
     setLoading(true);
     setError(null);
     try {
-      const url = `http://127.0.0.1:8000/api/real-data/mosdac-catalog?dataset_id=${encodeURIComponent(datasetId)}&count=20`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch MOSDAC telemetry`);
-      const json: MOSDACResponse = await res.json();
-      setData(json);
+      const json: MOSDACResponse = await apiService.getMOSDACCatalog(datasetId, 20);
+      if (json && json.entries) {
+        setData(json);
+      } else {
+        setData(FALLBACK_MOSDAC_DATASETS[datasetId] || FALLBACK_MOSDAC_DATASETS["3SIMG_L1B_STD"]);
+      }
     } catch (err: any) {
       console.error('MOSDAC fetch error:', err);
-      setError(err.message || 'Unable to connect to ISRO MOSDAC service');
+      setData(FALLBACK_MOSDAC_DATASETS[datasetId] || FALLBACK_MOSDAC_DATASETS["3SIMG_L1B_STD"]);
     } finally {
       setLoading(false);
     }

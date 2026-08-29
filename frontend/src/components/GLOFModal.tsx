@@ -16,6 +16,7 @@ import {
   ThermometerSnowflake,
   Radio
 } from 'lucide-react';
+import { apiService } from '../services/api';
 
 interface DownstreamAsset {
   name: string;
@@ -79,11 +80,8 @@ export const GLOFModal: React.FC<GLOFModalProps> = ({ isOpen, onClose }) => {
   const fetchLakes = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/simulation/glof-inventory');
-      if (res.ok) {
-        const data = await res.json();
-        setLakes(data.lakes || []);
-      }
+      const data = await apiService.getGLOFInventory();
+      setLakes(data.lakes || []);
     } catch (e) {
       console.error('Failed to fetch GLOF lakes:', e);
     } finally {
@@ -94,20 +92,8 @@ export const GLOFModal: React.FC<GLOFModalProps> = ({ isOpen, onClose }) => {
   const runSimulation = async () => {
     setSimulating(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/simulation/glof-cascade', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lake_id: selectedLakeId,
-          breach_depth_m: breachDepth,
-          breach_width_m: breachWidth,
-          moraine_soil_erosion_rate: erosionRate
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setSimResult(data);
-      }
+      const data = await apiService.simulateGLOFBreach(selectedLakeId, breachDepth, erosionRate);
+      setSimResult(data);
     } catch (e) {
       console.error('GLOF simulation error:', e);
     } finally {
