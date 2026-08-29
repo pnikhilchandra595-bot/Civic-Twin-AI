@@ -160,6 +160,27 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     return () => clearInterval(interval);
   }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1]]);
 
+  // Stream Live OpenSky Network Aviation & Two-Tier Disaster Aircraft
+  useEffect(() => {
+    if (!state?.center_coords) return;
+    const [lat, lng] = state.center_coords;
+
+    const pollAviation = async () => {
+      try {
+        const res = await apiService.getLiveAviationStream(lat, lng, 1.8);
+        if (res && Array.isArray(res.aircraft)) {
+          setLiveAircraft(res.aircraft);
+        }
+      } catch (e) {
+        console.warn('Failed to poll live aviation stream:', e);
+      }
+    };
+
+    pollAviation();
+    const interval = setInterval(pollAviation, 6000);
+    return () => clearInterval(interval);
+  }, [state?.city_id, state?.center_coords?.[0], state?.center_coords?.[1]]);
+
   // Fetch real-world hospitals, PurpleAir, EMSC Earthquakes, NASA EONET, TomTom, Aviation, Shelters, and Maritime
   useEffect(() => {
     const fetchHospitalsForRegion = async () => {
@@ -1917,18 +1938,20 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     // 15. ✈️ Real Live OpenSky Network Aircraft & Two-Tier Disaster Response Fleet
     if (showAircraft && Array.isArray(liveAircraft)) {
       liveAircraft.forEach(ac => {
-        if (ac.lat && ac.lng) {
+        if (ac.lat && ac.lng && !isNaN(ac.lat) && !isNaN(ac.lng)) {
           const isDisaster = ac.is_disaster_response;
           const isCache = ac.telemetry_status === 'LAST_RECORDED_CACHE';
           const borderColor = isDisaster ? (isCache ? '#f59e0b' : '#f97316') : '#38bdf8';
-          const bgColor = isDisaster ? (isCache ? 'bg-amber-950' : 'bg-orange-950') : 'bg-sky-950';
+          const bgColor = isDisaster ? (isCache ? 'bg-amber-950/90' : 'bg-orange-950/90') : 'bg-sky-950/90';
+          const iconEmoji = ac.emoji || (isDisaster ? '🚁' : '✈️');
+          const flightId = ac.tail_number || ac.callsign || ac.icao24?.toUpperCase() || 'FLIGHT';
 
           const acHtml = `
-            <div class="relative flex items-center justify-center w-8 h-8 rounded-full ${bgColor} border-2 shadow-2xl cursor-pointer transform hover:scale-125 transition-all" style="border-color: ${borderColor}">
-              ${isDisaster ? `<span class="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-orange-400 animate-ping"></span>` : ''}
-              <span class="text-[12px]">${ac.emoji || '✈️'}</span>
-              <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-white border font-bold whitespace-nowrap" style="border-color: ${borderColor}">
-                ${ac.tail_number || ac.callsign || 'FLIGHT'}
+            <div class="relative flex items-center justify-center w-8 h-8 rounded-full ${bgColor} border-2 shadow-[0_0_15px_rgba(56,189,248,0.5)] cursor-pointer transform hover:scale-125 transition-all" style="border-color: ${borderColor}">
+              <span class="text-sm">${iconEmoji}</span>
+              <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full ${isDisaster ? 'bg-orange-500 animate-ping' : 'bg-sky-400 animate-pulse'}"></span>
+              <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1 rounded bg-slate-950 text-white border font-bold whitespace-nowrap shadow-md" style="border-color: ${borderColor}">
+                ${flightId}
               </div>
             </div>
           `;
@@ -1938,17 +1961,46 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               html: acHtml,
               iconSize: [32, 32],
               iconAnchor: [16, 16]
-            })
+            }),
+            zIndexOffset: 8500
           }).addTo(layerGroup);
 
+          const popupContent = `
+            <div class="text-xs font-mono p-2.5 bg-slate-950 text-slate-100 rounded-xl border border-sky-500/50 shadow-2xl space-y-1.5 min-w-[240px]">
+              <div class="flex items-center space-x-1.5 text-sky-300 font-bold text-xs">
+                <span>${iconEmoji} ${flightId} — ${ac.operator || 'Aviation'}</span>
+              </div>
+              <div class="text-[10px] ${isDisaster ? 'text-orange-300 bg-orange-950/70 border border-orange-500/40' : 'text-sky-300 bg-sky-950/70 border border-sky-500/40'} px-2 py-0.5 rounded font-bold flex items-center space-x-1">
+                <span>${isDisaster ? '🚨 Two-Tier Disaster Response Aircraft' : '🛰️ Live ADS-B Transponder Stream'}</span>
+              </div>
+              <div class="text-[9px] text-slate-300 space-y-0.5">
+                <div><strong>Type:</strong> <span class="text-white">${ac.aircraft_type || 'Civil Aviation'}</span></div>
+                <div><strong>Role:</strong> <span class="text-amber-300">${ac.role || 'Airway Transit'}</span></div>
+                <div><strong>Status:</strong> <span class="${isCache ? 'text-amber-400' : 'text-emerald-400'} font-bold">${ac.status_label || 'Active Airborne'}</span></div>
+              </div>
+              <div class="grid grid-cols-2 gap-1 text-center pt-1 border-t border-slate-800">
+                <div class="bg-slate-900 p-1 rounded border border-slate-800">
+                  <span class="text-[8px] text-slate-400 block">Altitude</span>
+                  <span class="text-white font-bold">${ac.altitude_m || 0} m</span>
+                </div>
+                <div class="bg-slate-900 p-1 rounded border border-slate-800">
+                  <span class="text-[8px] text-slate-400 block">Speed</span>
+                  <span class="text-cyan-300 font-bold">${ac.velocity_kmh || 0} km/h</span>
+                </div>
+              </div>
+              <div class="text-[9px] text-slate-400 pt-1 border-t border-slate-800 space-y-0.5">
+                <div><strong>ICAO24:</strong> <code>${ac.icao24 || 'N/A'}</code></div>
+                <div><strong>GPS:</strong> [${ac.lat.toFixed(4)}°N, ${ac.lng.toFixed(4)}°E]</div>
+                <div><strong>Source:</strong> OpenSky Network Real-Time ADS-B</div>
+              </div>
+            </div>
+          `;
+
+          aMarker.bindPopup(popupContent);
           aMarker.bindTooltip(`
             <div class="text-xs font-mono p-1">
-              <strong style="color: ${borderColor}">${ac.emoji} ${ac.tail_number || ac.callsign} — ${ac.operator || 'Aviation'}</strong><br/>
-              Type: <span class="text-white">${ac.aircraft_type}</span><br/>
-              Role: <span class="text-amber-300">${ac.role}</span><br/>
-              Status: <span class="font-bold ${isCache ? 'text-amber-400' : 'text-emerald-400'}">${ac.status_label || 'Active'}</span><br/>
-              Altitude: <span class="text-white font-bold">${ac.altitude_m} m</span> • Speed: <span class="text-cyan-300 font-bold">${ac.velocity_kmh} km/h</span><br/>
-              Transponder: <span class="text-slate-400">ICAO24: <code>${ac.icao24}</code></span>
+              <strong style="color: ${borderColor}">${iconEmoji} ${flightId} (${ac.operator || 'Aviation'})</strong><br/>
+              Alt: <span class="text-white font-bold">${ac.altitude_m || 0} m</span> • Speed: <span class="text-cyan-300 font-bold">${ac.velocity_kmh || 0} km/h</span>
             </div>
           `);
         }
