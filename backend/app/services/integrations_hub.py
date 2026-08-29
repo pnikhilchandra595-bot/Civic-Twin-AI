@@ -89,12 +89,14 @@ class ProductionIntegrationsHub:
             },
             "iot_telemetry_bridge": {
                 "mqtt_broker": f"{self.config.mqtt_broker_host}:{self.config.mqtt_port}",
+                "mqtt_configured": bool(os.getenv("MQTT_BROKER_HOST")),
                 "rest_ingest_endpoint": "/api/iot/ingest",
-                "status": "LISTENING"
+                "status": "MQTT_CONFIGURED" if os.getenv("MQTT_BROKER_HOST") else "REST_INGESTION_STANDBY"
             },
             "meteorological_bridge": {
-                "imd_openmeteo": "ACTIVE (Auto-sync enabled)",
+                "provider": "Open-Meteo & ECMWF Satellite Ingest",
                 "custom_key_configured": bool(self.config.open_meteo_api_key),
+                "status": "PRO_TIER_AUTHENTICATED" if self.config.open_meteo_api_key else "COMMUNITY_OPEN_TIER_ACTIVE",
                 "refresh_interval_sec": 60
             }
         }

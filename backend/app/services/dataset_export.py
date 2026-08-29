@@ -5,44 +5,50 @@ from app.models.schemas import CityDigitalTwinState
 class DatasetExportService:
     """
     Generates structured, human-readable data documents and reports
-    from the live Digital Twin state across all urban aspects.
+    from the Digital Twin state across all urban aspects with explicit data provenance classification.
     """
 
     def generate_markdown_doc(self, state: CityDigitalTwinState) -> str:
         now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S IST")
         
-        doc = f"""# 🏙️ CIVICTWIN AI – LIVE URBAN DIGITAL TWIN REAL-TIME DATASET REPORT
+        doc = f"""# 🏙️ CIVICTWIN AI – DISASTER DIGITAL TWIN STATE & TELEMETRY REPORT
 **Generated At:** {now_str}  
 **Active Scenario:** {state.city_name} (`{state.city_id}`)  
 **Center Coordinates:** Lat {state.center_coords[0]:.4f}° N, Lng {state.center_coords[1]:.4f}° E  
 **Simulation Timeline:** T+{state.timeline_hour:.1f} Hours  
 **Overall Disaster Threat Level:** {state.iap.overall_threat_level}  
-**National Disaster Management Authority (NDMA / SDMA) - Incident Command System**
+**Incident Command Framework:** Integrated Multi-Hazard Incident Action Plan (ICS-NDMA)
+
+> [!NOTE]
+> **Data Provenance Classification:**
+> - 🛰️ **LIVE_TELEMETRY**: Real-time streams from Open-Meteo, IMD Doppler radar mosaic, and CWC live monitoring stations.
+> - 📐 **CALIBRATED_BASELINE**: Seeded digital elevation models, OpenStreetMap infrastructure geometries, and CWC historical high-flood levels (HFL).
+> - ⚡ **MODELED_SIMULATION**: Hydrodynamic Manning-Strickler runoff, 2D shallow water surface pooling, and cascade failure network propagation.
 
 ---
 
 ## 1. 🌦️ ATMOSPHERIC, WEATHER & SATELLITE RADAR TELEMETRY
 
-| Parameter | Current Live Reading | Threshold / Normal Range | Status | Data Source |
-| :--- | :--- | :--- | :--- | :--- |
-| **Precipitation / Rain Rate** | **{state.rain_intensity_mmhr:.1f} mm/hr** | Normal: <15 mm/hr, Warning: >35 mm/hr, Heavy: >65 mm/hr | {'CRITICAL' if state.rain_intensity_mmhr >= 45 else 'WARNING' if state.rain_intensity_mmhr >= 15 else 'NORMAL'} | IMD / Open-Meteo Satellite Mesh |
-| **Coastal / River Surge** | **{state.storm_surge_m:.2f} meters** | Normal: 0.0m, High Tide Warning: >0.8m, Surge: >1.5m | {'CRITICAL' if state.storm_surge_m >= 1.2 else 'WARNING' if state.storm_surge_m > 0.4 else 'NORMAL'} | Central Water Commission (CWC) Tidal Gauge |
-| **Atmospheric Wind Speed** | **{state.wind_speed_kmh:.1f} km/h** | Gale Warning: >60 km/h, Cyclone: >90 km/h | {'WARNING' if state.wind_speed_kmh >= 50 else 'NORMAL'} | IMD Doppler Weather Radar |
-| **Wind Direction** | **{state.wind_direction_deg:.0f}° (South-West Monsoon)** | - | Active Monsoon Vector | Anemometer Array |
-| **Mithi River Floodgates** | **{'BREACHED / OVERFLOWING' if state.levee_breached else 'SECURE / HIGH TIDE LOCK'}** | Retaining Wall: 5.5m | {'EMERGENCY' if state.levee_breached else 'NORMAL'} | BMC Stormwater Telemetry |
-| **Primary Power Grid** | **{'TRIPPED / OFFLINE' if state.substation_tripped else 'OPERATIONAL ONLINE'}** | 220kV Receiving Bus | {'BLACKOUT' if state.substation_tripped else 'NORMAL'} | State Load Dispatch Center (SLDC) |
+| Parameter | Current Reading | Normal Range | Status | Data Mode | Attribution Source |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Precipitation / Rain Rate** | **{state.rain_intensity_mmhr:.1f} mm/hr** | Normal: <15 mm/hr, Heavy: >45 mm/hr | {'CRITICAL' if state.rain_intensity_mmhr >= 45 else 'WARNING' if state.rain_intensity_mmhr >= 15 else 'NORMAL'} | `LIVE_TELEMETRY` | Open-Meteo / IMD Weather Mesh |
+| **Coastal / River Surge** | **{state.storm_surge_m:.2f} meters** | Normal: 0.0m, Surge: >1.2m | {'CRITICAL' if state.storm_surge_m >= 1.2 else 'WARNING' if state.storm_surge_m > 0.4 else 'NORMAL'} | `MODELED_SIMULATION` | Hydrodynamic Surge Boundary Condition |
+| **Atmospheric Wind Speed** | **{state.wind_speed_kmh:.1f} km/h** | Normal: <30 km/h, Gale: >60 km/h | {'WARNING' if state.wind_speed_kmh >= 50 else 'NORMAL'} | `LIVE_TELEMETRY` | Open-Meteo Anemometer Ingest |
+| **Wind Direction** | **{state.wind_direction_deg:.0f}° (South-West)** | - | Active Monsoon Flow | `LIVE_TELEMETRY` | Open-Meteo Wind Vector |
+| **River Floodgates** | **{'BREACHED / OVERFLOWING' if state.levee_breached else 'SECURE / HIGH TIDE LOCK'}** | Retaining Wall: 5.5m | {'EMERGENCY' if state.levee_breached else 'NORMAL'} | `MODELED_SIMULATION` | Digital Twin Sluice Model |
+| **Primary Power Grid** | **{'TRIPPED / OFFLINE' if state.substation_tripped else 'OPERATIONAL ONLINE'}** | 220kV Receiving Bus | {'BLACKOUT' if state.substation_tripped else 'NORMAL'} | `MODELED_SIMULATION` | Substation Interdependency Grid |
 
 ---
 
-## 2. 📡 REAL-TIME IoT SENSOR GRID TELEMETRY
+## 2. 📡 IoT SENSOR GRID TELEMETRY
 
 Total Active Telemetry Channels: **{len(state.sensors)} Connected Real-Time Nodes**
 
-| Sensor ID | Sensor Name | Type | Current Value | Warning Level | Critical Level | Condition Status | Trend |
+| Sensor ID | Sensor Name | Type | Current Value | Warning Level | Critical Level | Condition Status | Provenance Mode |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 """
         for s in state.sensors:
-            doc += f"| `{s.sensor_id}` | **{s.name}** | `{s.sensor_type}` | **{s.current_value:.1f} {s.unit}** | {s.threshold_warning} {s.unit} | {s.threshold_critical} {s.unit} | `{s.status.upper()}` | {s.trend.upper()} |\n"
+            doc += f"| `{s.sensor_id}` | **{s.name}** | `{s.sensor_type}` | **{s.current_value:.1f} {s.unit}** | {s.threshold_warning} {s.unit} | {s.threshold_critical} {s.unit} | `{s.status.upper()}` | `CALIBRATED_BASELINE` |\n"
 
         doc += """
 ---
@@ -51,13 +57,12 @@ Total Active Telemetry Channels: **{len(state.sensors)} Connected Real-Time Node
 
 Total Infrastructure Facilities Monitored: **""" + str(len(state.nodes)) + """ Nodes**
 
-| Node ID | Facility Name | Category | Elevation | Flood Depth | Vulnerability | Operational Status | Backup Power | Details / Capacity |
+| Node ID | Facility Name | Category | Elevation | Flood Depth | Vulnerability | Operational Status | Backup Power | Provenance Mode |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 """
         for n in state.nodes:
-            cap_str = f"{n.capacity_used}/{n.capacity_total}" if n.capacity_total > 0 else f"Pop: {n.population_density}"
             power_str = f"⚡ {n.backup_power_hours:.1f}h Fuel (ACTIVE)" if n.backup_power_active else "Grid AC Online"
-            doc += f"| `{n.id}` | **{n.name}** | `{n.node_type}` | {n.elevation_m}m | **{n.flood_depth_m:.2f}m** | {(n.vulnerability_index*100):.0f}% | `{n.status.upper()}` | {power_str} | {cap_str} |\n"
+            doc += f"| `{n.id}` | **{n.name}** | `{n.node_type}` | {n.elevation_m}m | **{n.flood_depth_m:.2f}m** | {(n.vulnerability_index*100):.0f}% | `{n.status.upper()}` | {power_str} | `CALIBRATED_BASELINE` |\n"
 
         doc += """
 ---
@@ -89,7 +94,8 @@ Total Active Cascade Dependency Links: **""" + str(len(state.cascade_links)) + "
                 doc += f"- **Trigger Cause:** `{link.trigger_type}`\n"
                 doc += f"- **Source Node:** `{link.source_id}` $\\rightarrow$ **Impacted Node:** `{link.target_id}`\n"
                 doc += f"- **Time to Onset:** T+{link.time_offset_min} minutes\n"
-                doc += f"- **Operational Description:** {link.description}\n\n"
+                doc += f"- **Operational Description:** {link.description}\n"
+                doc += f"- **Calculation Mode:** `MODELED_PHYSICS_SIMULATION`\n\n"
 
         doc += """---
 
@@ -101,48 +107,20 @@ Total Computed Egress Corridors: **""" + str(len(state.evacuation_routes)) + """
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 """
         for route in state.evacuation_routes:
-            doc += f"| **{route.source_name}** | **{route.target_shelter_name}** | {route.distance_km:.1f} km | **{route.estimated_time_min:.1f} min** | {(route.safety_score*100):.0f}% | `{route.status.upper()}` | {route.assigned_evacuees:,} citizens |\n"
-
-        doc += """
----
-
-## 7. 🚨 FEMA / NDMA INCIDENT ACTION PLAN (ICS-201/202)
-
-- **Incident Name:** """ + state.iap.incident_name + """
-- **Operational Period:** """ + state.iap.operational_period + """
-- **Overall Threat Level:** **""" + state.iap.overall_threat_level + """**
-
-### Executive Situation Report (SITREP):
-> """ + state.iap.incident_commander_summary + """
-
-### Strategic Operational Objectives:
-"""
-        for obj in state.iap.strategic_objectives:
-            doc += f"- {obj}\n"
-
-        doc += "\n### Multi-Agency Operational Directives:\n"
-        for agency, tasks in state.iap.agency_tasks.items():
-            doc += f"#### 🛡️ {agency}\n"
-            for t in tasks:
-                doc += f"- {t}\n"
-
-        doc += "\n### Multi-Lingual Emergency Public Broadcast (CAP Protocol):\n"
-        doc += f"```\n{state.iap.public_emergency_alert}\n```\n"
-
-        doc += """
----
-
-## 8. 🚒 ACTIVE EMERGENCY RESPONSE ASSETS & DISPATCH UNITS
-
-| Unit Callsign | Unit Type | Agency | Current Status | Assigned Location | Operational Mission |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-"""
-        for unit in state.dispatch_units:
-            doc += f"| **{unit.callsign}** | `{unit.unit_type}` | {unit.agency} | `{unit.status.upper()}` | Lat: {unit.lat:.4f}, Lng: {unit.lng:.4f} | {unit.assigned_mission} |\n"
+            doc += f"| **{route.origin_sector}** | **{route.destination_shelter}** | {route.distance_km:.1f} km | **{route.estimated_time_minutes:.0f} min** | {(route.safety_score*100):.0f}% | `{route.route_status.upper()}` | **{route.evacuees_assigned:,} citizens** |\n"
 
         doc += f"""
 ---
-*Report synthesized automatically by **CivicTwin AI Digital Twin Engine** in compliance with NDMA / SDMA & FEMA ICS Standards.*
+
+## 7. 📋 INCIDENT ACTION PLAN (IAP) & TACTICAL DIRECTIVES
+
+- **Operational Priority:** {state.iap.incident_objectives[0] if state.iap.incident_objectives else 'Maintain Life-Safety and Critical Hospital Grid Uptime'}
+- **Evacuation Target Population:** **{state.iap.evacuation_target_population:,} Citizens**
+- **Critical Breaches Identified:** **{len(state.iap.critical_breaches)} Hotspots**
+- **Recommended Pump Allocations:** **{len(state.iap.pump_allocations)} Dewatering Units**
+- **Live NDRF Deployments:** **{len(state.iap.ndrf_deployments)} Field Teams Dispatched**
+
+*Generated by CivicTwin AI Command Infrastructure Engine.*
 """
         return doc
 

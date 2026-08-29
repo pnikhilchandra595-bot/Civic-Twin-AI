@@ -202,11 +202,13 @@ class RealSMSAlertGateway:
                                 "numbers": ",".join(india_numbers)
                             }
                         )
-                        if resp.status_code == 200:
+                        if resp.status_code == 200 and resp.json().get("return") is True:
                             gateways_dispatched.append("Fast2SMS India Live Gateway")
                             for ph in cleaned_numbers:
                                 recipient_statuses[ph]["sms_delivered"] = True
                                 recipient_statuses[ph]["sms_gateway"] = "Fast2SMS (India)"
+                        else:
+                            print(f"Fast2SMS API rejected dispatch: {resp.text}")
             except Exception as e:
                 print(f"Fast2SMS error: {e}")
 

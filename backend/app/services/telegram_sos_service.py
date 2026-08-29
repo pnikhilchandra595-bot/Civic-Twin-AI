@@ -2,6 +2,10 @@ import datetime
 from typing import Dict, Any, Optional
 
 class TelegramSOSService:
+    """
+    Ingests and triages citizen distress beacons from Telegram Bot webhooks.
+    """
+
     def __init__(self):
         pass
 
@@ -10,24 +14,46 @@ class TelegramSOSService:
         chat = message.get('chat', {})
         from_user = message.get('from', {})
         text = message.get('text', '')
-        location = message.get('location', {})
+        location = message.get('location')
         photo = message.get('photo', [])
 
-        user_name = from_user.get('first_name', 'Citizen') + ' ' + from_user.get('last_name', '')
-        user_name = user_name.strip() or 'Citizen Informant'
+        first_name = from_user.get('first_name', '')
+        last_name = from_user.get('last_name', '')
+        user_name = f"{first_name} {last_name}".strip() or 'Citizen Informant'
 
-        lat = location.get('latitude', 28.6139) if location else 28.6139
-        lng = location.get('longitude', 77.2090) if location else 77.2090
+        # Handle geolocation honestly without false Delhi defaults
+        has_gps = bool(location and 'latitude' in location and 'longitude' in location)
+        lat: Optional[float] = float(location['latitude']) if has_gps else None
+        lng: Optional[float] = float(location['longitude']) if has_gps else None
+        location_status = "GPS_ATTACHED" if has_gps else "LOCATION_UNSPECIFIED_PENDING_GEOCODE"
+
+        # Rule-based triage classifier
+        text_lower = text.lower()
+        urgent_keywords = ["trapped", "medical", "pregnant", "chest", "drowning", "infant", "elderly", "collapse", "levee", "breach", "sos", "urgent", "rescue"]
+        is_critical = any(kw in text_lower for kw in urgent_keywords)
+
+        if is_critical:
+            severity = "CRITICAL"
+            triage_status = "TRIAGED_PRIORITY_1"
+        elif text:
+            severity = "MEDIUM"
+            triage_status = "TRIAGED_ROUTINE"
+        else:
+            severity = "HIGH" if has_gps else "LOCATION_REQUIRED"
+            triage_status = "AWAITING_DETAILS"
 
         sos_report = {
             'sos_id': f'TG-{int(datetime.datetime.utcnow().timestamp())}',
             'sender_name': user_name,
             'source': 'Telegram Citizen SOS Bot',
-            'text': text or 'Emergency Rescue / Waterlogging Assistance Needed',
+            'data_mode': 'live',
+            'text': text or 'Emergency distress beacon transmitted without text note.',
             'has_photo': len(photo) > 0,
             'lat': lat,
             'lng': lng,
-            'status': 'TRIAGED_PRIORITY_1',
+            'location_status': location_status,
+            'severity': severity,
+            'status': triage_status,
             'timestamp': datetime.datetime.utcnow().isoformat() + 'Z'
         }
 

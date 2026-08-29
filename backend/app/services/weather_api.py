@@ -6,8 +6,8 @@ import datetime
 class RealWeatherIngestionService:
     """
     Live Weather & Doppler Meteorological Ingestion Service.
-    Connects to IMD (India Meteorological Department) Weather API v3.0.0 and Open-Meteo
-    to fetch real-time atmospheric precipitation, 7-day forecasts, humidity departures, and astronomical tide data.
+    Queries Open-Meteo / ECMWF global satellite & radar models for real-time atmospheric precipitation,
+    and combines it with calibrated regional astronomical and climatological baselines.
     """
 
     def __init__(self):
@@ -64,7 +64,7 @@ class RealWeatherIngestionService:
 
     async def fetch_imd_city_forecast(self, city_name: str = "Mumbai") -> Dict[str, Any]:
         """
-        Fetches official 7-day weather forecast, humidity, and astronomical tide timings from IMD.
+        Synthesizes 7-day weather forecast, humidity, and astronomical tide timings from regional climatological baseline.
         """
         clean_name = city_name.lower().split(" ")[0].split("(")[0].split(":")[0].strip()
         station_id = self.imd_station_map.get(clean_name, "43057")
@@ -84,7 +84,9 @@ class RealWeatherIngestionService:
         return {
             "city": city_name,
             "station_id": station_id,
-            "source": "India Meteorological Department (IMD) National Weather Network",
+            "source": "IMD Regional Weather Climatological Model & Astronomical Baseline",
+            "data_mode": "modeled_meteorological_estimation",
+            "data_note": "⚠️ Regional monsoon forecast envelope and astronomical tide reference baseline.",
             "weather": {
                 "current": {
                     "humidity": {
@@ -111,7 +113,7 @@ class RealWeatherIngestionService:
 
     async def fetch_live_weather(self, lat: float, lng: float, city_name: str = "India") -> Dict[str, Any]:
         """
-        Fetches real-time live weather telemetry from IMD API + Open-Meteo satellite mesh.
+        Fetches real-time live weather telemetry from Open-Meteo global meteorological & radar mesh.
         """
         url = (
             f"https://api.open-meteo.com/v1/forecast"
@@ -148,7 +150,8 @@ class RealWeatherIngestionService:
                     imd_forecast = await self.fetch_imd_city_forecast(city_name)
 
                     return {
-                        "source": "India Meteorological Department (IMD) Live Telemetry",
+                        "source": "Open-Meteo High-Resolution Numerical Weather Model & ECMWF Satellite Ingest",
+                        "data_mode": "live",
                         "status": "LIVE_REALTIME_SYNCED",
                         "city_name": city_name,
                         "lat": lat,
@@ -173,8 +176,9 @@ class RealWeatherIngestionService:
 
         imd_forecast = await self.fetch_imd_city_forecast(city_name)
         return {
-            "source": "IMD Regional Calibrated Model (Offline Cached)",
-            "status": "CACHED_TELEMETRY",
+            "source": "Regional Calibrated Meteorological Baseline (Offline Cache)",
+            "data_mode": "calibrated_baseline",
+            "status": "OFFLINE_FALLBACK_BASELINE",
             "city_name": city_name,
             "lat": lat,
             "lng": lng,
@@ -196,7 +200,7 @@ class RealWeatherIngestionService:
                 {"time": "13:00", "precip_mm": 8.0}
             ],
             "imd_data": imd_forecast,
-            "is_live_satellite": True
+            "is_live_satellite": False
         }
 
 weather_service = RealWeatherIngestionService()

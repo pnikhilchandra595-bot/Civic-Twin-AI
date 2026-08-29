@@ -21,11 +21,18 @@ class EASBroadcastRecord(BaseModel):
     translations: Dict[str, str] = {}
     channels_activated: List[str]
     estimated_citizens_notified: int
+    data_mode: str = "modeled_protocol_simulation"
+    demographic_coverage_basis: str = "Census 2021 urban ward density projection"
+    data_note: str = "⚠️ Simulated Common Alerting Protocol (CAP) multi-channel broadcast simulation."
 
 class AlertSystemHub:
     """
-    Manages Pan-India multi-channel emergency broadcasting,
-    NDRF tactical radio comms, and inter-agency dispatch logs across all Indian zones.
+    Emergency Alert System & Tactical Radio Operations Hub.
+
+    DATA PROVENANCE & ARCHITECTURE NOTE:
+    - Tactical Radio Comms: Simulates multi-channel inter-agency VHF/UHF tactical radio chatter for field coordination drills.
+    - Public Warning Broadcasts: Emulates ITU X.1303 Common Alerting Protocol (CAP) XML broadcast triggers across simulated cell-broadcast, radio, and siren networks.
+    - Data Mode: 'modeled_protocol_simulation'.
     """
 
     def __init__(self):
@@ -146,12 +153,15 @@ class AlertSystemHub:
             message_text=message_text,
             translations=translations or {},
             channels_activated=[
-                "Sachet C-DOT CAP Cell Broadcast",
-                "Doordarshan (DD National) & AIR Radio Overrides",
-                "State Telecom SMS Mesh (Jio/Airtel/Vi/BSNL)",
-                "Local Municipal Siren Towers"
+                "CivicTwin Local Incident Mesh (Dispatched)",
+                "C-DOT CAP Gateway (Simulated CAP Dispatch)",
+                "Doordarshan EAS (Simulated Interrupt)",
+                "State Telecom SMS Mesh (Simulated Trigger)"
             ],
-            estimated_citizens_notified=len(target_zones) * 35000 + 15000
+            estimated_citizens_notified=len(target_zones) * 35000 + 15000,
+            data_mode="modeled_protocol_simulation",
+            demographic_coverage_basis="Census 2021 urban ward density projection",
+            data_note="⚠️ Simulated Common Alerting Protocol (CAP) multi-channel broadcast simulation."
         )
         self.broadcast_history.insert(0, record)
 

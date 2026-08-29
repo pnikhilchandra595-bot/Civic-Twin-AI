@@ -32,6 +32,7 @@ class OpenMeteoFloodService:
 
                     return {
                         "source": "Copernicus ECMWF GloFAS / Open-Meteo Flood API (Real River Discharge)",
+                        "data_mode": "live",
                         "status": "LIVE_REAL_GLOFAS",
                         "latitude": lat,
                         "longitude": lng,
@@ -45,10 +46,12 @@ class OpenMeteoFloodService:
         except Exception as e:
             print(f"Open-Meteo Flood API fallback: {e}")
 
-        # Physics baseline fallback when network is unavailable
+        # Calibrated hydrological reference baseline fallback when network is unavailable
         return {
-            "source": "Copernicus GloFAS River Model (Baseline Cache)",
-            "status": "CACHED_REAL_BASELINE",
+            "source": "Copernicus GloFAS River Model (Calibrated Reference Baseline)",
+            "data_mode": "calibrated_spatial_baseline",
+            "status": "OFFLINE_REFERENCE_BASELINE",
+            "data_note": "⚠️ Calibrated hydrological baseline values for offline simulation fallback.",
             "latitude": lat,
             "longitude": lng,
             "current_river_discharge_cumecs": 18.2,

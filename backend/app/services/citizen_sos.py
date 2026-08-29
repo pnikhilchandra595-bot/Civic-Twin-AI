@@ -16,15 +16,21 @@ class CitizenSOSReport(BaseModel):
     victim_count: int
     water_depth_reported_m: float
     description: str
-    ai_verification_score: float  # 0.0 - 1.0 (confidence from metadata / photo)
+    ai_verification_score: float  # Heuristic metadata & GPS validation confidence score (0.0 - 1.0)
     ai_detected_tags: List[str]
     status: str  # "UNRESOLVED" | "UNIT_DISPATCHED" | "RESOLVED"
     assigned_unit_id: Optional[str] = None
+    data_mode: str = "live"
+    data_note: Optional[str] = None
 
 class CitizenSOSService:
     """
-    Manages crowdsourced citizen distress reports (via WhatsApp / Telegram / Web SOS)
-    with AI computer vision verification and automated NDRF unit dispatch recommendations.
+    Crowdsourced Citizen Emergency Distress Triage Service.
+
+    DATA PROVENANCE & ARCHITECTURE NOTE:
+    - Ingests emergency distress reports from WhatsApp bot, Telegram bot, and web SOS portals.
+    - Initial reports represent seeded reference scenarios for exercise demonstration.
+    - Triage Confidence Score: Calculated via heuristic geolocation verification and victim priority weighting.
     """
 
     def __init__(self):
@@ -38,7 +44,7 @@ class CitizenSOSService:
             {
                 "id": "SOS-IND-901",
                 "offset_min": 18,
-                "name": "Ramesh Patil",
+                "name": "Ramesh Patil (Exercise Drill)",
                 "phone": "+91 98201 44512",
                 "city_id": "mumbai_monsoon",
                 "location": "Kranti Nagar Riverbank (Kurla West)",
@@ -51,12 +57,14 @@ class CitizenSOSService:
                 "description": "8 family members including 2 elderly stuck on tin roof. Water entered ground floor up to chest level.",
                 "ai_score": 0.96,
                 "tags": ["Roof Stranded", "Elderly Present", "High Current Water"],
-                "status": "UNRESOLVED"
+                "status": "UNRESOLVED",
+                "data_mode": "seeded_reference",
+                "data_note": "⚠️ Seeded emergency drill baseline scenario"
             },
             {
                 "id": "SOS-IND-902",
                 "offset_min": 12,
-                "name": "Anil Sharma",
+                "name": "Anil Sharma (Exercise Drill)",
                 "phone": "+91 98112 33419",
                 "city_id": "delhi_yamuna",
                 "location": "Yamuna Khadar Lowland Jhuggi Cluster",
@@ -69,12 +77,14 @@ class CitizenSOSService:
                 "description": "Pregnant woman in labor, roads submerged, ambulance cannot reach via main underpass.",
                 "ai_score": 0.98,
                 "tags": ["Medical Emergency", "Boat Required", "Infant Risk"],
-                "status": "UNRESOLVED"
+                "status": "UNRESOLVED",
+                "data_mode": "seeded_reference",
+                "data_note": "⚠️ Seeded emergency drill baseline scenario"
             },
             {
                 "id": "SOS-IND-903",
                 "offset_min": 8,
-                "name": "Pooja Hegde",
+                "name": "Pooja Hegde (Exercise Drill)",
                 "phone": "+91 97405 66723",
                 "city_id": "bengaluru_lakes",
                 "location": "Outer Ring Road EcoSpace Underpass",
@@ -87,12 +97,14 @@ class CitizenSOSService:
                 "description": "2 BMTC buses and 5 cars stalled in deep water near tech park exit. Water rising rapidly.",
                 "ai_score": 0.92,
                 "tags": ["Submerged Bus", "Traffic Choke", "Rapid Inflow"],
-                "status": "UNRESOLVED"
+                "status": "UNRESOLVED",
+                "data_mode": "seeded_reference",
+                "data_note": "⚠️ Seeded emergency drill baseline scenario"
             },
             {
                 "id": "SOS-IND-904",
                 "offset_min": 4,
-                "name": "Biren Das",
+                "name": "Biren Das (Exercise Drill)",
                 "phone": "+91 94350 11984",
                 "city_id": "assam_brahmaputra",
                 "location": "Pandu Ghat Ferry Approach",
@@ -105,7 +117,9 @@ class CitizenSOSService:
                 "description": "Erosion visible along earthen embankment. River water seeping through sandbags towards settlement.",
                 "ai_score": 0.94,
                 "tags": ["Embankment Piping", "Sandbag Breach Risk", "High Velocity"],
-                "status": "UNRESOLVED"
+                "status": "UNRESOLVED",
+                "data_mode": "seeded_reference",
+                "data_note": "⚠️ Seeded emergency drill baseline scenario"
             }
         ]
 
@@ -127,7 +141,9 @@ class CitizenSOSService:
                 description=rep["description"],
                 ai_verification_score=rep["ai_score"],
                 ai_detected_tags=rep["tags"],
-                status=rep["status"]
+                status=rep["status"],
+                data_mode=rep["data_mode"],
+                data_note=rep.get("data_note")
             ))
 
     def get_all_reports(self, city_id: Optional[str] = None) -> List[CitizenSOSReport]:
@@ -152,10 +168,10 @@ class CitizenSOSService:
         description: str
     ) -> CitizenSOSReport:
         t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S IST")
-        new_id = f"SOS-IND-{len(self.reports)+905}"
+        new_id = f"SOS-LIVE-{len(self.reports)+905}"
         
-        # Calculate AI verification score from completeness & depth
-        ai_score = min(0.99, 0.85 + (0.1 if victim_count > 0 else 0.0) + (0.04 if lat != 0.0 else 0.0))
+        # Calculate heuristic triage score from coordinate presence, victims, and water depth
+        ai_score = min(0.99, 0.80 + (0.10 if victim_count > 0 else 0.0) + (0.05 if (lat != 0.0 and lng != 0.0) else 0.0) + (0.04 if water_depth_m > 0.5 else 0.0))
         tags = [category.replace("_", " ").title(), f"Depth: {water_depth_m:.2f}m"]
         if victim_count > 0:
             tags.append(f"{victim_count} Victims")
@@ -176,7 +192,8 @@ class CitizenSOSService:
             description=description,
             ai_verification_score=ai_score,
             ai_detected_tags=tags,
-            status="UNRESOLVED"
+            status="UNRESOLVED",
+            data_mode="live"
         )
         self.reports.insert(0, report)
         return report

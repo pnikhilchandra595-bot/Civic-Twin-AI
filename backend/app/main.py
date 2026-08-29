@@ -587,7 +587,10 @@ def get_integration_status():
     return integrations_hub.get_config_status()
 
 @app.post("/api/integrations/config")
-def update_integration_config(cfg: IntegrationConfig):
+def update_integration_config(
+    cfg: IntegrationConfig,
+    officer: Dict[str, Any] = Depends(require_clearance(min_level=3))
+):
     return integrations_hub.update_config(cfg)
 
 @app.get("/api/integrations/deployment-manifest")
@@ -595,7 +598,10 @@ def get_deployment_manifest():
     return integrations_hub.generate_deployment_manifest()
 
 @app.post("/api/cctv/add-stream")
-def add_custom_cctv_stream(inp: CustomCameraInput):
+def add_custom_cctv_stream(
+    inp: CustomCameraInput,
+    officer: Dict[str, Any] = Depends(require_clearance(min_level=3))
+):
     new_feed = DroneCameraFeed(
         camera_id=inp.camera_id,
         feed_name=inp.feed_name,
@@ -606,13 +612,15 @@ def add_custom_cctv_stream(inp: CustomCameraInput):
         lat=inp.lat,
         lng=inp.lng,
         video_url=inp.stream_url,
-        status="LIVE_STREAMING",
+        status="SIMULATED_RECON_FEED",
+        data_mode="modeled_benchmark_simulation",
+        stream_source_type="SYNTHESIZED_SIMULATION_LOOP",
         flood_depth_detected_m=0.35,
         stalled_vehicles_count=1,
         stranded_pedestrians_count=2,
         flow_velocity_ms=1.1,
         ai_yolo_detections=[
-            ComputerVisionDetection(label="Custom Stream Object Detection", confidence=0.92, bbox=[20, 30, 50, 40], hazard_severity="WARNING")
+            ComputerVisionDetection(label="Custom Stream Field Surveillance", confidence=0.92, bbox=[20, 30, 50, 40], hazard_severity="WARNING")
         ]
     )
     drone_cctv_service.camera_feeds.insert(0, new_feed)

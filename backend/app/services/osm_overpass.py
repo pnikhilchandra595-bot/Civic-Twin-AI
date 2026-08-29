@@ -45,6 +45,7 @@ class OSMOverpassService:
                             "lat": el.get("lat"),
                             "lng": el.get("lon"),
                             "data_provenance": "OpenStreetMap Live Overpass API",
+                            "data_mode": "live",
                             "tags": tags
                         })
                     if nodes:
@@ -52,13 +53,13 @@ class OSMOverpassService:
         except Exception as e:
             print(f"OSM Overpass live query fallback: {e}")
 
-        # Returns authentic real-world OSM mapped entities for the corridor
+        # Returns calibrated seeded baseline entities when network is offline
         return [
-            {"osm_id": 101, "name": "KEM Hospital & Medical College", "type": "hospital", "lat": 19.002, "lng": 72.842, "data_provenance": "OpenStreetMap Mapped Entity"},
-            {"osm_id": 102, "name": "Lokmanya Tilak Municipal General Hospital", "type": "hospital", "lat": 19.037, "lng": 72.860, "data_provenance": "OpenStreetMap Mapped Entity"},
-            {"osm_id": 103, "name": "Dharavi Tata Power 220kV Substation", "type": "substation", "lat": 19.047, "lng": 72.853, "data_provenance": "OpenStreetMap Mapped Entity"},
-            {"osm_id": 104, "name": "BKC MMRDA Relief Grounds", "type": "shelter", "lat": 19.066, "lng": 72.868, "data_provenance": "OpenStreetMap Mapped Entity"},
-            {"osm_id": 105, "name": "Bandra YMCA High-Ground Complex", "type": "school", "lat": 19.056, "lng": 72.836, "data_provenance": "OpenStreetMap Mapped Entity"}
+            {"osm_id": 101, "name": "KEM Hospital & Medical College", "type": "hospital", "lat": 19.002, "lng": 72.842, "data_provenance": "OpenStreetMap Reference Baseline (Bundled Seed)", "data_mode": "seeded_reference"},
+            {"osm_id": 102, "name": "Lokmanya Tilak Municipal General Hospital", "type": "hospital", "lat": 19.037, "lng": 72.860, "data_provenance": "OpenStreetMap Reference Baseline (Bundled Seed)", "data_mode": "seeded_reference"},
+            {"osm_id": 103, "name": "Dharavi Tata Power 220kV Substation", "type": "substation", "lat": 19.047, "lng": 72.853, "data_provenance": "OpenStreetMap Reference Baseline (Bundled Seed)", "data_mode": "seeded_reference"},
+            {"osm_id": 104, "name": "BKC MMRDA Relief Grounds", "type": "shelter", "lat": 19.066, "lng": 72.868, "data_provenance": "OpenStreetMap Reference Baseline (Bundled Seed)", "data_mode": "seeded_reference"},
+            {"osm_id": 105, "name": "Bandra YMCA High-Ground Complex", "type": "school", "lat": 19.056, "lng": 72.836, "data_provenance": "OpenStreetMap Reference Baseline (Bundled Seed)", "data_mode": "seeded_reference"}
         ]
 
 osm_overpass_service = OSMOverpassService()
