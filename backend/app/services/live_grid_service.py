@@ -3,6 +3,7 @@ import re
 import datetime
 import certifi
 from typing import Dict, Any, Optional
+from app.services.demo_state import demo_state
 
 class LivePowerGridService:
     """
@@ -32,6 +33,23 @@ class LivePowerGridService:
 
     async def fetch_grid_telemetry(self) -> Dict[str, Any]:
         now = datetime.datetime.now()
+        if demo_state.is_on():
+            return {
+                "status": "demo_simulated",
+                "data_mode": "demo_simulated",
+                "source": "Ministry of Power — Vidyut Pravah (National Grid Simulation)",
+                "note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped.",
+                "demand_met_gw": 234.8,
+                "demand_met_yesterday_gw": 231.2,
+                "peak_shortage_mw": 850.0,
+                "energy_shortage_mu": 12.4,
+                "peak_shortage_pct": 0.36,
+                "energy_shortage_pct": 0.28,
+                "grid_state": "Normal / Stable Supply",
+                "color": "#10b981",
+                "timestamp": now.isoformat() + "Z"
+            }
+
         if self._cache and self._last_fetch and (now - self._last_fetch).total_seconds() < self._cache_ttl_sec:
             return self._cache
 

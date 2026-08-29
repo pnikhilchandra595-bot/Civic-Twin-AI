@@ -3,6 +3,7 @@ import httpx
 import json
 import datetime
 from typing import Dict, Any, List, Optional
+from app.services.demo_state import demo_state
 
 MOSDAC_TOKEN_URL = "https://mosdac.gov.in/download_api/gettoken"
 MOSDAC_SEARCH_URL = "https://mosdac.gov.in/apios/datasets.json"
@@ -38,6 +39,29 @@ class MOSDACIntegrationService:
         Searches ISRO MOSDAC dataset catalog. Does not require login credentials.
         Default dataset: INSAT-3DR Imager Standard L1B (3SIMG_L1B_STD)
         """
+        if demo_state.is_on():
+            return {
+                "status": "demo_simulated",
+                "data_mode": "demo_simulated",
+                "source": "ISRO MOSDAC (Space Applications Centre / ISRO)",
+                "note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped.",
+                "dataset_id": dataset_id,
+                "time_range": {"start": "2026-08-22", "end": "2026-08-29"},
+                "bounding_box": bounding_box or "68.0,8.0,97.0,37.0",
+                "total_results": 334,
+                "total_size_mb": 139532.0,
+                "entries": [
+                    {
+                        "identifier": "3SIMG_29AUG2026_1700_L1B_STD_V01R00.h5",
+                        "datasetId": dataset_id,
+                        "startTime": "2026-08-29T17:00:00Z",
+                        "endTime": "2026-08-29T17:29:59Z",
+                        "sizeMB": 418.5,
+                        "productType": "Standard HDF5 Imager Granule"
+                    }
+                ]
+            }
+
         now = datetime.datetime.now()
         if not end_time:
             end_time = now.strftime("%Y-%m-%d")
@@ -99,11 +123,25 @@ class MOSDACIntegrationService:
         """
         Retrieves real-time metadata telemetry for active INSAT-3DR satellite freshness widget.
         """
+        if demo_state.is_on():
+            return {
+                "status": "demo_simulated",
+                "data_mode": "demo_simulated",
+                "satellite": "INSAT-3DR",
+                "sensor": "6-Channel Multispectral Imager",
+                "latest_pass_utc": "17:00 UTC",
+                "latest_granule_id": "3SIMG_29AUG2026_1700_L1B_STD_V01R00.h5",
+                "active_granules_count": 334,
+                "total_volume_gb": 136.2,
+                "live_products": ["Quantitative Precipitation (HEM)", "Sea Surface Temp (SST)", "Land Surface Temp (LST)", "Cloud Top Pressure (CTP)", "Outgoing Longwave Radiation (OLR)"],
+                "agency": "ISRO Space Applications Centre (SAC MOSDAC)",
+                "data_note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped."
+            }
+
         catalog = await self.search_mosdac_catalog(dataset_id="3SIMG_L1B_STD", count=2)
         if catalog.get("status") == "success" and catalog.get("entries"):
             latest = catalog["entries"][0]
             identifier = latest.get("identifier", "")
-            # Extract UTC time from identifier, e.g. "3SIMG_28AUG2026_1700_L1B_STD_V01R00.h5" -> "17:00 UTC"
             time_str = "17:00 UTC"
             import re
             match = re.search(r'_(\d{2})(\d{2})_L', identifier)
@@ -126,15 +164,16 @@ class MOSDACIntegrationService:
 
         return {
             "status": "offline_cached",
-            "data_mode": "live",
+            "data_mode": "calibrated_baseline",
             "satellite": "INSAT-3DR",
             "sensor": "6-Channel Multispectral Imager",
-            "latest_pass_utc": "Live Satellite Pass",
-            "latest_granule_id": "3SIMG_28AUG2026_1700_L1B_STD_V01R00.h5",
+            "latest_pass_utc": "17:00 UTC",
+            "latest_granule_id": "3SIMG_29AUG2026_1700_L1B_STD_V01R00.h5",
             "active_granules_count": 334,
             "total_volume_gb": 136.2,
             "live_products": ["Rainfall (HEM)", "SST", "LST", "CTP", "OLR"],
-            "agency": "ISRO MOSDAC"
+            "agency": "ISRO MOSDAC",
+            "data_note": "⚠️ Reference satellite metadata fallback."
         }
 
 mosdac_service = MOSDACIntegrationService()

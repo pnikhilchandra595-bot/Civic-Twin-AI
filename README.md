@@ -42,7 +42,14 @@
 
 ---
 
-### 3. 🗺️ Sovereign Indian Boundary Locking & 4-Tier Access Control
+### 4. 🎬 Transparent Stage Demo Mode & Offline Resilience
+- **Zero-Deception Demo Architecture**: CivicTwin includes a transparent, global **Demo Mode** (`/api/demo-mode`) that forces all services into their honest simulated/calibrated baseline state on command.
+- **Venue WiFi Resilience**: Allows glitch-free stage presentations on unstable venue WiFi while maintaining complete provenance honesty.
+- **Always-Visible On-Screen Indicators**: When Demo Mode is active, an orange on-screen top banner and header indicator explicitly label all displayed data as `DEMO_SIMULATED` / `CALIBRATED_BASELINE` rather than live telemetry.
+
+---
+
+### 5. 🗺️ Sovereign Indian Boundary Locking & 4-Tier Access Control
 - **Strict Indian Hard Wall**: Map camera bounds locked to `INDIA_BOUNDS = [[6.5, 68.0], [37.5, 97.5]]` with `maxBoundsViscosity: 1.0` forbidding panning outside national territory.
 - **Hierarchical Access Control**:
   - **👑 National Authority (Level 5)**: Full Pan-India command, all 28 states & 8 UTs, national Doppler radar grid, inter-state tactical dispatch.

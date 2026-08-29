@@ -5,8 +5,8 @@ import datetime
 import os
 from typing import Dict, Any, List, Optional
 from dotenv import load_dotenv
-
 import certifi
+from app.services.demo_state import demo_state
 
 # ============================================================================
 # ISRO NRSC BHOONIDHI OPEN SATELLITE DATA ACCESS API SERVICE
@@ -161,6 +161,48 @@ class BhoonidhiNRSCService:
         limit: int = 12
     ) -> Dict[str, Any]:
         """Query Bhoonidhi STAC catalog for satellite assets (NISAR, LISS-4 5.8m, EOS-06 SCAT, Sentinel-1A SAR, CartoDEM)."""
+        if demo_state.is_on():
+            return {
+                "status": "demo_simulated",
+                "data_mode": "demo_simulated",
+                "source": "ISRO National Remote Sensing Centre (Bhoonidhi STAC Simulation)",
+                "note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped.",
+                "authenticated_user": "demo_operator",
+                "target_coords": [lat, lng],
+                "total_returned": 2,
+                "supported_collections": list(BHOONIDHI_COLLECTIONS_REGISTRY.keys()),
+                "assets": [
+                    {
+                        "id": "NISAR_SSAR_GCOV_20260829_061522",
+                        "collection": "NISAR_SSAR_GCOV",
+                        "name": "ISRO-NASA NISAR Synthetic Aperture Radar (Demo Mode)",
+                        "emoji": "📡",
+                        "badge_color": "#a855f7",
+                        "category": "Interferometric SAR Ground Deformation",
+                        "resolution": "6m - 12m Dual-Pol",
+                        "datetime": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                        "bbox": [lng - 0.2, lat - 0.2, lng + 0.2, lat + 0.2],
+                        "cloud_cover": 0.0,
+                        "physics_metric": "Ground Subsidence & Fault Displacement (mm/yr)",
+                        "role": "Earthquake Fault Rupture & Landslide Creep Telemetry"
+                    },
+                    {
+                        "id": "Sentinel-1A_SAR-IW_GRD_20260829_114210",
+                        "collection": "Sentinel-1A_SAR-IW_GRD",
+                        "name": "Sentinel-1A SAR IW GRD (Demo Mode)",
+                        "emoji": "🛰️",
+                        "badge_color": "#3b82f6",
+                        "category": "All-Weather C-Band Radar Water Extraction",
+                        "resolution": "10m SAR Backscatter",
+                        "datetime": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                        "bbox": [lng - 0.3, lat - 0.3, lng + 0.3, lat + 0.3],
+                        "cloud_cover": 0.0,
+                        "physics_metric": "Radar Backscatter σ° (< -16.0 dB Threshold)",
+                        "role": "Cloud-Penetrating Monsoon Flood Inundation Delineation"
+                    }
+                ]
+            }
+
         if selected_collection and selected_collection in BHOONIDHI_COLLECTIONS_REGISTRY:
             collections = [selected_collection]
         else:

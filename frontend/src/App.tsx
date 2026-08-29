@@ -121,10 +121,22 @@ export const App: React.FC = () => {
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isSyncingWeather, setIsSyncingWeather] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false); // true while district synthesis is in progress
+  const [demoMode, setDemoMode] = useState<boolean>(false);
   
   const [radioMessages, setRadioMessages] = useState<RadioMessage[]>([]);
   const [sarReport, setSarReport] = useState<SatelliteSARReport | null>(null);
   const [toastAlert, setToastAlert] = useState<string | null>(null);
+
+  const handleToggleDemoMode = async () => {
+    try {
+      const res = await apiService.setDemoMode(!demoMode);
+      setDemoMode(res.demo_mode);
+      setToastAlert(res.demo_mode ? '🎬 STAGE DEMO MODE ACTIVATED: Live external queries bypassed' : '🛰️ REAL TELEMETRY MODE ACTIVATED: Live external queries enabled');
+      setTimeout(() => setToastAlert(null), 4000);
+    } catch (e) {
+      console.error('Failed to toggle demo mode:', e);
+    }
+  };
 
   // Initialize digital twin state, radio comms, and SAR
   useEffect(() => {
@@ -147,6 +159,8 @@ export const App: React.FC = () => {
         setRadioMessages(comms);
         const sar = await apiService.getSatelliteSARReport();
         setSarReport(sar);
+        const dm = await apiService.getDemoMode();
+        setDemoMode(dm.demo_mode);
       } catch (err) {
         console.error('Failed to fetch initial state:', err);
       }
@@ -286,6 +300,22 @@ export const App: React.FC = () => {
   if (viewMode === 'SCROLLING_PORTAL') {
     return (
       <div className="min-h-screen w-full bg-[#040711] text-slate-100 flex flex-col">
+        {/* Persistent Stage Demo Mode Banner */}
+        {demoMode && (
+          <div className="w-full bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 text-white text-xs font-mono font-bold py-1.5 px-4 text-center flex items-center justify-between shadow-lg border-b border-amber-400/40 z-50 animate-pulse sticky top-0">
+            <div className="flex items-center space-x-2 mx-auto">
+              <span className="text-sm">🎬</span>
+              <span className="tracking-wide">DEMO MODE ACTIVE</span>
+              <span className="hidden md:inline text-amber-100 font-normal">— All live external queries bypassed. Calibrated reference dataset active for offline stage presentation.</span>
+            </div>
+            <button
+              onClick={handleToggleDemoMode}
+              className="px-2.5 py-0.5 rounded bg-black/40 hover:bg-black/60 text-amber-200 hover:text-white text-[10px] uppercase font-mono tracking-wider border border-amber-300/40 transition-all cursor-pointer shrink-0"
+            >
+              Switch to Real Telemetry
+            </button>
+          </div>
+        )}
         <PublicScrollingPortal
           state={state}
           authUser={authUser}
@@ -417,6 +447,24 @@ export const App: React.FC = () => {
           ← Return to Multi-Page Showcase Portal
         </button>
       </div>
+
+      {/* Persistent Stage Demo Mode Banner */}
+      {demoMode && (
+        <div className="w-full bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 text-white text-xs font-mono font-bold py-1.5 px-4 text-center flex items-center justify-between shadow-lg border-b border-amber-400/40 z-50 animate-pulse sticky top-0">
+          <div className="flex items-center space-x-2 mx-auto">
+            <span className="text-sm">🎬</span>
+            <span className="tracking-wide">DEMO MODE ACTIVE</span>
+            <span className="hidden md:inline text-amber-100 font-normal">— All live external queries bypassed. Calibrated reference dataset active for offline stage presentation.</span>
+          </div>
+          <button
+            onClick={handleToggleDemoMode}
+            className="px-2.5 py-0.5 rounded bg-black/40 hover:bg-black/60 text-amber-200 hover:text-white text-[10px] uppercase font-mono tracking-wider border border-amber-300/40 transition-all cursor-pointer shrink-0"
+          >
+            Switch to Real Telemetry
+          </button>
+        </div>
+      )}
+
       {/* Sticky Header */}
       <Header
         state={state}
@@ -451,6 +499,8 @@ export const App: React.FC = () => {
         onSwitchCity={handleSwitchCity}
         activeView="map"
         setActiveView={() => {}}
+        demoMode={demoMode}
+        onToggleDemoMode={handleToggleDemoMode}
       />
 
       {/* Floating Emergency Toast Notification */}

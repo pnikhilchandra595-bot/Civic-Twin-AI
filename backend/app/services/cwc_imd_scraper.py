@@ -1,5 +1,6 @@
 import datetime
 from typing import List, Dict, Any, Optional
+from app.services.demo_state import demo_state
 
 class CWCandIMDScraperService:
     """
@@ -360,6 +361,20 @@ class CWCandIMDScraperService:
         official flood forecasting API (ffs.india-water.gov.in). Falls back to a
         clearly labeled seeded reference dataset if the live call fails.
         """
+        if demo_state.is_on():
+            results = self.major_cwc_gauges
+            if state_filter and state_filter.upper() != "ALL":
+                results = [g for g in results if g["state"].lower() == state_filter.lower()]
+            return {
+                "status": "demo_simulated",
+                "data_mode": "demo_simulated",
+                "source": "Central Water Commission (CWC) River Basin Baseline",
+                "note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped.",
+                "total_stations": len(results),
+                "total_gauges": len(results),
+                "gauges": results
+            }
+
         try:
             import httpx
             import certifi

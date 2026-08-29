@@ -3,6 +3,7 @@ import urllib.request
 import json
 import datetime
 from typing import Dict, Any, List, Optional
+from app.services.demo_state import demo_state
 
 class LiveTomTomTrafficService:
     def __init__(self):
@@ -13,6 +14,43 @@ class LiveTomTomTrafficService:
 
     async def fetch_traffic_incidents(self, lat: float = 28.6139, lng: float = 77.2090, radius_deg: float = 0.3) -> Dict[str, Any]:
         now = datetime.datetime.now()
+        if demo_state.is_on():
+            return {
+                'status': 'demo_simulated',
+                'data_mode': 'demo_simulated',
+                'source': 'TomTom Traffic API (Demo Incident Simulation)',
+                'note': '🎬 Demo Mode active — showing calibrated reference data, live query skipped.',
+                'count': 2,
+                'incidents': [
+                    {
+                        'id': 'TRF-DEMO-01',
+                        'category': 'WATERLOGGING_ROAD_BLOCK',
+                        'severity': 'MAJOR',
+                        'description': 'Waterlogging underpass choke — vehicular speed reduced to 5 km/h',
+                        'from': 'Western Express Highway Flyover',
+                        'to': 'Kurla Link Road Junction',
+                        'length_m': 850,
+                        'delay_sec': 720,
+                        'lat': lat + 0.005,
+                        'lng': lng - 0.004,
+                        'coordinates': [[lng - 0.004, lat + 0.005]]
+                    },
+                    {
+                        'id': 'TRF-DEMO-02',
+                        'category': 'TREE_FALLEN_TRAFFIC_HOLD',
+                        'severity': 'MODERATE',
+                        'description': 'Uprooted tree blocking 2 arterial lanes — traffic diverted to high-ground lane',
+                        'from': 'Ring Road Sector 4',
+                        'to': 'Metro Station Exit',
+                        'length_m': 320,
+                        'delay_sec': 360,
+                        'lat': lat - 0.008,
+                        'lng': lng + 0.006,
+                        'coordinates': [[lng + 0.006, lat - 0.008]]
+                    }
+                ]
+            }
+
         cache_key = f'{round(lat, 2)}_{round(lng, 2)}_{round(radius_deg, 2)}'
 
         if not self.api_key:
@@ -100,3 +138,4 @@ class LiveTomTomTrafficService:
             }
 
 live_tomtom_service = LiveTomTomTrafficService()
+live_traffic_service = live_tomtom_service

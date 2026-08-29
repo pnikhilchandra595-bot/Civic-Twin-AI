@@ -4,6 +4,7 @@ import csv
 import io
 import datetime
 from typing import List, Dict, Any, Optional
+from app.services.demo_state import demo_state
 
 class NASAFIRMSIngestionService:
     """
@@ -24,6 +25,32 @@ class NASAFIRMSIngestionService:
         Fetches live VIIRS 375m thermal anomaly hotspots for India over the last N days.
         Uses 10-minute TTL in-memory cache to prevent NASA API rate limits.
         """
+        if demo_state.is_on():
+            return [
+                {
+                    "lat": 30.7333,
+                    "lng": 76.7794,
+                    "brightness_kelvin": 342.5,
+                    "frp_mw": 38.2,
+                    "confidence": "high",
+                    "acq_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "acq_time": "1130",
+                    "satellite": "VIIRS SNPP (NASA/NOAA - Demo Mode)",
+                    "data_mode": "demo_simulated"
+                },
+                {
+                    "lat": 26.8467,
+                    "lng": 80.9462,
+                    "brightness_kelvin": 331.0,
+                    "frp_mw": 22.4,
+                    "confidence": "nominal",
+                    "acq_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "acq_time": "1130",
+                    "satellite": "VIIRS SNPP (NASA/NOAA - Demo Mode)",
+                    "data_mode": "demo_simulated"
+                }
+            ]
+
         now = datetime.datetime.now()
         if self._cached_hotspots and self._cache_timestamp and (now - self._cache_timestamp).total_seconds() < self._cache_ttl_seconds:
             return self._cached_hotspots

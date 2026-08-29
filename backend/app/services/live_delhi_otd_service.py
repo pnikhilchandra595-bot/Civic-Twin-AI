@@ -3,6 +3,7 @@ import urllib.request
 import datetime
 from typing import Dict, Any, List, Optional
 from google.transit import gtfs_realtime_pb2
+from app.services.demo_state import demo_state
 
 class LiveDelhiOTDService:
     """
@@ -18,6 +19,49 @@ class LiveDelhiOTDService:
 
     async def fetch_live_delhi_vehicles(self, limit: int = 150) -> Dict[str, Any]:
         now = datetime.datetime.now()
+        if demo_state.is_on():
+            demo_vehicles = [
+                {
+                    "vehicle_id": "DL-1PD-4081",
+                    "route_id": "Route 502 (Mehrauli - Kashmere Gate)",
+                    "lat": 28.6139,
+                    "lng": 77.2090,
+                    "speed_kmh": 28.5,
+                    "bearing": 18.0,
+                    "status": "IN_TRANSIT",
+                    "type": "EVACUATION_TRANSIT_BUS"
+                },
+                {
+                    "vehicle_id": "DL-1PB-7712",
+                    "route_id": "Route 419 (Ambedkar Nagar - Delhi Rly Stn)",
+                    "lat": 28.6324,
+                    "lng": 77.2201,
+                    "speed_kmh": 32.0,
+                    "bearing": 45.0,
+                    "status": "IN_TRANSIT",
+                    "type": "EVACUATION_TRANSIT_BUS"
+                },
+                {
+                    "vehicle_id": "DL-1PC-9904",
+                    "route_id": "Route 729 (Kapashera Border - Mori Gate)",
+                    "lat": 28.5982,
+                    "lng": 77.1856,
+                    "speed_kmh": 14.2,
+                    "bearing": 90.0,
+                    "status": "SLOW_WATERLOGGING_CORRIDOR",
+                    "type": "EVACUATION_TRANSIT_BUS"
+                }
+            ]
+            return {
+                "status": "demo_simulated",
+                "data_mode": "demo_simulated",
+                "source": "Delhi Open Transit Data (Demo Fleet Simulation)",
+                "note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped.",
+                "total_tracked": len(demo_vehicles),
+                "timestamp": now.isoformat(),
+                "vehicles": demo_vehicles
+            }
+
         if not self.api_key:
             return {
                 "status": "unauthenticated",

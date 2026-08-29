@@ -43,6 +43,8 @@ interface HeaderProps {
   onSwitchCity: (cityId: string) => void;
   activeView: 'map' | 'cascade' | 'telemetry' | 'iap' | 'radio';
   setActiveView: (view: 'map' | 'cascade' | 'telemetry' | 'iap' | 'radio') => void;
+  demoMode?: boolean;
+  onToggleDemoMode?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -76,6 +78,8 @@ export const Header: React.FC<HeaderProps> = ({
   onSyncLiveWeather,
   isSyncingWeather,
   onSwitchCity,
+  demoMode,
+  onToggleDemoMode,
 }) => {
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
@@ -495,6 +499,22 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
       )}
+
+        {/* 4.5 Global Demo Mode Toggle Pill */}
+        {onToggleDemoMode && (
+          <button
+            onClick={onToggleDemoMode}
+            title={demoMode ? "🎬 Demo Mode is ACTIVE (External API calls skipped, returning calibrated reference data). Click to switch to Real Telemetry." : "🛰️ Real Telemetry is ACTIVE. Click to activate Demo Mode for offline presentation."}
+            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer ${
+              demoMode
+                ? 'bg-amber-950/90 border-amber-400 text-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.3)] animate-pulse'
+                : 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-emerald-400 hover:border-emerald-500'
+            }`}
+          >
+            <span>{demoMode ? '🎬 DEMO' : '🛰️ REAL'}</span>
+            <div className={`w-2 h-2 rounded-full ${demoMode ? 'bg-amber-400' : 'bg-emerald-400'}`} />
+          </button>
+        )}
 
         {/* 5. Live Weather Sync Button (Only for Officers) */}
         {!isCitizen && (

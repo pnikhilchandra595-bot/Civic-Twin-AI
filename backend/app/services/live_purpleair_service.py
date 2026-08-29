@@ -3,6 +3,7 @@ import urllib.request
 import json
 import datetime
 from typing import Dict, Any, List, Optional
+from app.services.demo_state import demo_state
 
 class LivePurpleAirService:
     def __init__(self):
@@ -13,6 +14,41 @@ class LivePurpleAirService:
 
     async def fetch_live_india_air_sensors(self, target_lat: float = 28.6139, target_lng: float = 77.2090, radius_deg: float = 0.8) -> Dict[str, Any]:
         now = datetime.datetime.now()
+        if demo_state.is_on():
+            return {
+                'status': 'demo_simulated',
+                'data_mode': 'demo_simulated',
+                'source': 'PurpleAir Global Physical IoT Network (Demo Mode Simulation)',
+                'note': '🎬 Demo Mode active — showing calibrated reference data, live query skipped.',
+                'count': 2,
+                'sensors': [
+                    {
+                        'sensor_index': 901,
+                        'name': 'Urban Center Air Quality & Humidity Station',
+                        'latitude': target_lat + 0.005,
+                        'longitude': target_lng + 0.004,
+                        'pm2_5': 42.5,
+                        'humidity': 78,
+                        'temperature_f': 84.2,
+                        'aqi_estimate': 118,
+                        'status': 'MODERATE',
+                        'color': '#f59e0b'
+                    },
+                    {
+                        'sensor_index': 902,
+                        'name': 'Industrial Corridor Environmental Node',
+                        'latitude': target_lat - 0.008,
+                        'longitude': target_lng - 0.006,
+                        'pm2_5': 68.0,
+                        'humidity': 82,
+                        'temperature_f': 82.5,
+                        'aqi_estimate': 158,
+                        'status': 'POOR',
+                        'color': '#ef4444'
+                    }
+                ]
+            }
+
         cache_key = f'{round(target_lat, 2)}_{round(target_lng, 2)}_{round(radius_deg, 2)}'
 
         if not self.api_key:

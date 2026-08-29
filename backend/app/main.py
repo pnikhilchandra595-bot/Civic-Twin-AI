@@ -34,6 +34,7 @@ from app.services.mosdac_service import mosdac_service
 from app.services.bhuvan_service import bhuvan_service
 from app.services.copernicus_elevation_service import copernicus_elevation_service
 from app.services.auth_service import auth_service, get_current_officer, require_clearance, require_strict_admin_clearance, Depends
+from app.services.demo_state import demo_state
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -581,6 +582,23 @@ async def websocket_endpoint(websocket: WebSocket):
 # =========================================================================
 # PRODUCTION INTEGRATIONS & FIELD DEPLOYMENT HUB
 # =========================================================================
+
+@app.get("/api/demo-mode")
+def get_demo_mode():
+    return {"demo_mode": demo_state.is_on()}
+
+@app.post("/api/demo-mode")
+def set_demo_mode(
+    payload: Dict[str, Any] = Body(...),
+    officer: Dict[str, Any] = Depends(require_clearance(min_level=1, allow_demo_sandbox=True))
+):
+    enabled = bool(payload.get("enabled", False))
+    demo_state.set(enabled)
+    return {
+        "demo_mode": demo_state.is_on(),
+        "status": "DEMO_MODE_ACTIVE" if enabled else "LIVE_TELEMETRY_ACTIVE",
+        "updated_by": officer.get("officer_name", "Stage Evaluator")
+    }
 
 @app.get("/api/integrations/status")
 def get_integration_status():

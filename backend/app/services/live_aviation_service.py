@@ -3,6 +3,7 @@ import json
 import datetime
 import math
 from typing import Dict, Any, List, Optional
+from app.services.demo_state import demo_state
 
 # ============================================================================
 # VERIFIED TWO-TIER DISASTER-RESPONSE AIRCRAFT REGISTRY (ICAO24 & TAIL NUMBERS)
@@ -133,6 +134,36 @@ class LiveAviationService:
 
     async def fetch_live_aircraft(self, lat: float = 28.6139, lng: float = 77.2090, radius_deg: float = 1.2) -> Dict[str, Any]:
         now = datetime.datetime.now(datetime.timezone.utc)
+        if demo_state.is_on():
+            return {
+                "status": "demo_simulated",
+                "data_mode": "demo_simulated",
+                "source": "OpenSky Network (Demo Sortie Simulation)",
+                "note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped.",
+                "total_airborne": 1,
+                "disaster_assets_active": 1,
+                "timestamp": now.isoformat(),
+                "aircraft": [
+                    {
+                        "icao24": "80026e",
+                        "callsign": "PAWAN-RESCUE-01",
+                        "lat": lat + 0.012,
+                        "lng": lng - 0.008,
+                        "altitude_m": 450,
+                        "velocity_kmh": 185.0,
+                        "heading": 120,
+                        "is_disaster_asset": True,
+                        "tier": 1,
+                        "tail": "VT-PHA",
+                        "operator": "Pawan Hans Disaster Fleet",
+                        "aircraft_type": "Eurocopter Dauphin AS365 N3",
+                        "role": "Air Ambulance / Flood Evacuation Unit",
+                        "emoji": "🚁",
+                        "status": "ACTIVE_AIRBORNE_MISSION"
+                    }
+                ]
+            }
+
         cache_key = f"{round(lat, 2)}_{round(lng, 2)}_{round(radius_deg, 2)}"
 
         if self._last_fetch and (now - self._last_fetch).total_seconds() < self._cache_ttl_sec and cache_key in self._cache:

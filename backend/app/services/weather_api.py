@@ -2,6 +2,7 @@ import os
 import httpx
 from typing import Dict, Any, List, Optional
 import datetime
+from app.services.demo_state import demo_state
 
 class RealWeatherIngestionService:
     """
@@ -115,6 +116,37 @@ class RealWeatherIngestionService:
         """
         Fetches real-time live weather telemetry from Open-Meteo global meteorological & radar mesh.
         """
+        if demo_state.is_on():
+            imd_forecast = await self.fetch_imd_city_forecast(city_name)
+            return {
+                "source": "Open-Meteo High-Resolution Numerical Weather Model (Demo Mode Simulation)",
+                "data_mode": "demo_simulated",
+                "status": "DEMO_SIMULATED_BASELINE",
+                "note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped.",
+                "city_name": city_name,
+                "lat": lat,
+                "lng": lng,
+                "timestamp": datetime.datetime.now().isoformat(),
+                "temperature_c": 28.5,
+                "humidity_pct": 82,
+                "rain_rate_mmhr": 35.0,
+                "surface_pressure_hpa": 1006.5,
+                "wind_speed_kmh": 24.0,
+                "wind_gusts_kmh": 42.0,
+                "wind_direction_deg": 235,
+                "soil_moisture_pct": 74.5,
+                "hourly_forecast": [
+                    {"time": "08:00", "precip_mm": 12.0},
+                    {"time": "09:00", "precip_mm": 25.0},
+                    {"time": "10:00", "precip_mm": 38.0},
+                    {"time": "11:00", "precip_mm": 45.0},
+                    {"time": "12:00", "precip_mm": 20.0},
+                    {"time": "13:00", "precip_mm": 8.0}
+                ],
+                "imd_data": imd_forecast,
+                "is_live_satellite": False
+            }
+
         url = (
             f"https://api.open-meteo.com/v1/forecast"
             f"?latitude={lat}&longitude={lng}"

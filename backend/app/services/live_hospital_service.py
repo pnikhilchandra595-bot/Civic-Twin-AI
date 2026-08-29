@@ -1,6 +1,7 @@
 import httpx
 import asyncio
 from typing import Dict, Any, List, Optional
+from app.services.demo_state import demo_state
 
 class LiveHospitalService:
     """
@@ -13,6 +14,45 @@ class LiveHospitalService:
         self.nominatim_url = "https://nominatim.openstreetmap.org/search"
 
     async def fetch_live_hospitals(self, lat: float, lng: float, radius_m: int = 8000, district_name: Optional[str] = None) -> Dict[str, Any]:
+        if demo_state.is_on():
+            return {
+                "status": "demo_simulated",
+                "data_mode": "demo_simulated",
+                "source": "State Health Department Infrastructure Baseline (Demo Simulation)",
+                "note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped.",
+                "total_facilities": 2,
+                "facilities": [
+                    {
+                        "id": "HOSP-01",
+                        "name": "District Civil Hospital & Trauma Centre",
+                        "type": "EMERGENCY_HOSPITAL",
+                        "lat": round(lat + 0.008, 4),
+                        "lng": round(lng + 0.005, 4),
+                        "capacity_data_mode": "demo_simulated",
+                        "capacity_note": "🎬 Demo Mode active — calibrated reference capacity.",
+                        "general_beds": 450,
+                        "icu_capacity": 40,
+                        "status": "operational",
+                        "operator": "State Health Department",
+                        "emergency_helpline": "108"
+                    },
+                    {
+                        "id": "HOSP-02",
+                        "name": "ESI Regional Emergency Hospital",
+                        "type": "EMERGENCY_HOSPITAL",
+                        "lat": round(lat - 0.012, 4),
+                        "lng": round(lng + 0.009, 4),
+                        "capacity_data_mode": "demo_simulated",
+                        "capacity_note": "🎬 Demo Mode active — calibrated reference capacity.",
+                        "general_beds": 220,
+                        "icu_capacity": 18,
+                        "status": "operational",
+                        "operator": "ESIC Medical Services",
+                        "emergency_helpline": "112"
+                    }
+                ]
+            }
+
         try:
             # Query by district/city name or reverse geocode bounding box
             query = f"hospital in {district_name}" if district_name else "hospital"

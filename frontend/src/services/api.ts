@@ -162,6 +162,22 @@ export class DigitalTwinApiService {
     return null;
   }
 
+  async getDemoMode(): Promise<{ demo_mode: boolean }> {
+    const data = await safeJsonFetch<{ demo_mode: boolean }>(`${API_BASE}/demo-mode`, {
+      headers: this.getAuthHeaders()
+    });
+    return data || { demo_mode: false };
+  }
+
+  async setDemoMode(enabled: boolean): Promise<{ demo_mode: boolean; status?: string }> {
+    const data = await safeJsonFetch<{ demo_mode: boolean; status?: string }>(`${API_BASE}/demo-mode`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({ enabled })
+    });
+    return data || { demo_mode: enabled };
+  }
+
   async getState(): Promise<CityDigitalTwinState> {
     const data = await safeJsonFetch<CityDigitalTwinState>(`${API_BASE}/state`, {
       headers: this.getAuthHeaders()

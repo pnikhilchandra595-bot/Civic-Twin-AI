@@ -3,6 +3,7 @@ import httpx
 import json
 import datetime
 from typing import Dict, Any, List, Optional
+from app.services.demo_state import demo_state
 
 class BhuvanNRSCService:
     """
@@ -37,6 +38,19 @@ class BhuvanNRSCService:
 
     async def fetch_hospitals_and_postal(self, lat: float, lng: float, radius_km: float = 5.0) -> Dict[str, Any]:
         """Queries Bhuvan POI database for hospitals and emergency lifeline facilities."""
+        if demo_state.is_on():
+            return {
+                "status": "demo_simulated",
+                "data_mode": "demo_simulated",
+                "source": "ISRO Bhuvan NRSC Lifeline Asset Database (Demo Mode)",
+                "note": "🎬 Demo Mode active — showing calibrated reference data, live query skipped.",
+                "center": [lat, lng],
+                "hospitals": [
+                    {"name": "District Civil Hospital & Trauma Centre", "lat": lat + 0.008, "lng": lng + 0.005, "beds": 450, "icu": 40, "type": "hospital", "status": "operational", "data_mode": "demo_simulated"},
+                    {"name": "ESI Regional Emergency Hospital", "lat": lat - 0.012, "lng": lng + 0.009, "beds": 220, "icu": 18, "type": "hospital", "status": "operational", "data_mode": "demo_simulated"}
+                ]
+            }
+
         cache_key = f"hosp_{lat:.3f}_{lng:.3f}_{radius_km}"
         if self._is_cached(cache_key):
             return self._cache[cache_key]
