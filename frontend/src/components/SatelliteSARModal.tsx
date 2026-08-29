@@ -53,7 +53,7 @@ export const SatelliteSARModal: React.FC<SatelliteSARModalProps> = ({
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="text-base font-black text-white uppercase tracking-wider">
-                  Copernicus Sentinel-1 SAR Radar & Earth Observation
+                  Copernicus Sentinel-1 C-SAR & Radar Backscatter Model
                 </h2>
                 {isNational ? (
                   <span className="px-2.5 py-0.5 rounded-full bg-blue-950 border border-blue-500 text-[10px] font-mono text-blue-300 font-bold flex items-center space-x-1">
@@ -68,7 +68,7 @@ export const SatelliteSARModal: React.FC<SatelliteSARModalProps> = ({
                 )}
               </div>
               <p className="text-xs text-slate-400 font-mono mt-0.5">
-                All-Weather Synthetic Aperture Radar (SAR) Inundation Ingestion (ESA Copernicus & ISRO EOS)
+                Synthetic Aperture Radar (SAR) Inundation Model (Hydrodynamic C-SAR Simulation & ISRO MOSDAC Metadata)
               </p>
             </div>
           </div>
@@ -100,11 +100,19 @@ export const SatelliteSARModal: React.FC<SatelliteSARModalProps> = ({
           </div>
         )}
 
+        {/* Data Provenance Badge */}
+        <div className="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30 text-[11px] font-mono text-amber-200 flex items-center justify-between">
+          <span>⚠️ <strong>Provenance:</strong> Modeled Physics Simulation (C-Band Radar Backscatter derived from 2D hydrodynamic water depth)</span>
+          <span className="px-2 py-0.5 rounded bg-amber-900/50 border border-amber-500 text-amber-300 text-[10px] font-bold">
+            MODELED_PHYSICS_SIMULATION
+          </span>
+        </div>
+
         {/* Satellite Mission Metrics Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
           <div className="p-3.5 bg-[#090e1c] rounded-2xl border border-slate-800">
             <div className="text-slate-500">Constellation</div>
-            <div className="text-sm font-black text-cyan-300 mt-1">Sentinel-1C (C-Band)</div>
+            <div className="text-sm font-black text-cyan-300 mt-1">Sentinel-1 C-Band Model</div>
           </div>
           <div className="p-3.5 bg-[#090e1c] rounded-2xl border border-slate-800">
             <div className="text-slate-500">Spatial Resolution</div>
@@ -171,7 +179,7 @@ export const SatelliteSARModal: React.FC<SatelliteSARModalProps> = ({
                 <span>🛰️ ISRO MOSDAC (INSAT-3DR Atmospheric & Hydro-Estimator)</span>
               </div>
               <span className="px-2 py-0.5 rounded-md bg-purple-900/60 border border-purple-500 text-[10px] font-mono text-purple-200 font-bold">
-                Live SAC-ISRO
+                ISRO MOSDAC Catalog
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2 text-[11px] font-mono">
@@ -219,46 +227,28 @@ export const SatelliteSARModal: React.FC<SatelliteSARModalProps> = ({
                   className="w-full accent-cyan-400 cursor-pointer"
                 />
               </div>
-
               <div className="flex items-end">
                 <button
                   onClick={handleRetaskPass}
-                  disabled={retaskingTriggered}
-                  className="w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold flex items-center justify-center space-x-1.5 transition-all shadow-md cursor-pointer"
+                  disabled={retaskingTriggered || isSyncing}
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-mono text-xs font-bold transition-all shadow-lg flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50"
                 >
-                  <Send className={`w-3.5 h-3.5 ${retaskingTriggered ? 'animate-spin' : ''}`} />
-                  <span>{retaskingTriggered ? 'Transmitting Orbital Vector...' : '🛰️ Trigger Urgent Satellite Re-Tasking'}</span>
+                  {retaskingTriggered ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                      <span>Transmitting Orbital Uplink...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 text-cyan-200" />
+                      <span>Uplink Re-Tasking Command</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
           </div>
         )}
-
-        {/* Modal Footer */}
-        <div className="flex flex-col sm:flex-row items-center justify-between pt-2 gap-3">
-          <span className="text-xs text-slate-500 font-mono">
-            Synced with European Space Agency (ESA) & Open-Meteo API
-          </span>
-
-          <div className="flex items-center space-x-2.5 w-full sm:w-auto">
-            <button
-              onClick={onSyncLiveWeather}
-              disabled={isSyncing}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold flex items-center justify-center space-x-2 shadow-[0_0_20px_rgba(0,210,255,0.3)] transition-all cursor-pointer"
-            >
-              <Waves className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-              <span>{isSyncing ? 'Ingesting Satellite Telemetry...' : 'Pull Live Satellite & Weather Telemetry'}</span>
-            </button>
-
-            <button
-              onClick={onClose}
-              className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white text-xs font-mono font-bold cursor-pointer"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-
       </div>
     </div>
   );

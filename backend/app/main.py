@@ -33,7 +33,7 @@ from app.services.satellite_hub_service import satellite_hub_service
 from app.services.mosdac_service import mosdac_service
 from app.services.bhuvan_service import bhuvan_service
 from app.services.copernicus_elevation_service import copernicus_elevation_service
-from app.services.auth_service import auth_service, get_current_officer, require_clearance, Depends
+from app.services.auth_service import auth_service, get_current_officer, require_clearance, require_strict_admin_clearance, Depends
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -589,7 +589,7 @@ def get_integration_status():
 @app.post("/api/integrations/config")
 def update_integration_config(
     cfg: IntegrationConfig,
-    officer: Dict[str, Any] = Depends(require_clearance(min_level=3))
+    officer: Dict[str, Any] = Depends(require_strict_admin_clearance(min_level=3))
 ):
     return integrations_hub.update_config(cfg)
 
@@ -600,7 +600,7 @@ def get_deployment_manifest():
 @app.post("/api/cctv/add-stream")
 def add_custom_cctv_stream(
     inp: CustomCameraInput,
-    officer: Dict[str, Any] = Depends(require_clearance(min_level=3))
+    officer: Dict[str, Any] = Depends(require_strict_admin_clearance(min_level=3))
 ):
     new_feed = DroneCameraFeed(
         camera_id=inp.camera_id,

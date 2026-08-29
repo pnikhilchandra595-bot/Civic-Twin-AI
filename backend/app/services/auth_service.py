@@ -115,21 +115,20 @@ def get_current_officer(credentials: Optional[HTTPAuthorizationCredentials] = De
     claims = auth_service.decode_token(token)
     return claims
 
-def require_clearance(min_level: int = 1):
+def require_clearance(min_level: int = 1, allow_demo_sandbox: bool = False):
     """
-    RBAC dependency requiring a minimum clearance level for state mutation / simulation control.
+    RBAC dependency requiring valid authentication and minimum clearance level.
     """
     def clearance_dependency(officer: Dict[str, Any] = Depends(get_current_officer)) -> Dict[str, Any]:
         user_level = officer.get("clearance_level", 0)
         is_auth = officer.get("authenticated", False)
         
-        # In demo sandbox mode, unauthenticated viewers can interact with simulation controls with an audit log
-        allow_demo_controls = os.getenv("ALLOW_UNAUTHENTICATED_DEMO_CONTROLS", "true").lower() == "true"
-        
-        if not is_auth and not allow_demo_controls:
+        # Check if demo sandbox bypass is explicitly requested AND enabled via environment
+        env_demo = os.getenv("ALLOW_UNAUTHENTICATED_DEMO_CONTROLS", "false").lower() == "true"
+        if not is_auth and not (allow_demo_sandbox and env_demo):
             raise HTTPException(
                 status_code=401,
-                detail="Authentication required. Please provide a valid Authorization: Bearer <token> header."
+                detail="Authentication required. Please provide a valid 'Authorization: Bearer <token>' header."
             )
         
         if is_auth and user_level < min_level:
@@ -140,3 +139,24 @@ def require_clearance(min_level: int = 1):
             
         return officer
     return clearance_dependency
+
+def require_strict_admin_clearance(min_level: int = 3):
+    """
+    Strict security dependency for sensitive infrastructure & credential configuration routes.
+    Never permits unauthenticated access under any circumstances.
+    """
+    def admin_dependency(officer: Dict[str, Any] = Depends(get_current_officer)) -> Dict[str, Any]:
+        if not officer.get("authenticated", False):
+            raise HTTPException(
+                status_code=401,
+                detail="Administrative Authentication Required: Missing or invalid Bearer JWT token."
+            )
+        user_level = officer.get("clearance_level", 0)
+        if user_level < min_level:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Administrative Forbidden: Officer clearance level ({user_level}) is below required administrative tier ({min_level})."
+            )
+        return officer
+    return admin_dependency
+

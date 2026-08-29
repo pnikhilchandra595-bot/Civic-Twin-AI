@@ -225,7 +225,7 @@ class DroneCCTVService:
                 stranded_pedestrians_count=0,
                 flow_velocity_ms=8.5,
                 ai_yolo_detections=[
-                    ComputerVisionDetection(label="IMD High Reflectivity Precipitation Core (Live Ingest)", confidence=0.98, bbox=[10, 10, 80, 80], hazard_severity="CRITICAL"),
+                    ComputerVisionDetection(label="Doppler Radar High Reflectivity Core (48 dBZ)", confidence=0.98, bbox=[10, 10, 80, 80], hazard_severity="CRITICAL"),
                     ComputerVisionDetection(label="Konkan Coast Cloud Cluster", confidence=0.93, bbox=[50, 20, 40, 60], hazard_severity="WARNING")
                 ]
             ),
@@ -271,7 +271,7 @@ class DroneCCTVService:
                 stranded_pedestrians_count=0,
                 flow_velocity_ms=6.8,
                 ai_yolo_detections=[
-                    ComputerVisionDetection(label="NCR Radar Reflectivity Front (Live Ingest)", confidence=0.96, bbox=[15, 15, 70, 70], hazard_severity="WARNING")
+                    ComputerVisionDetection(label="NCR Radar Reflectivity Front (dBZ Contour Map)", confidence=0.96, bbox=[15, 15, 70, 70], hazard_severity="WARNING")
                 ]
             )
         ]
