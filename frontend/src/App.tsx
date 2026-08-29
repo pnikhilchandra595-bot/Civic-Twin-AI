@@ -41,10 +41,11 @@ import { CitizenPortalModal } from './components/CitizenPortalModal';
 import { CWCGaugesModal } from './components/CWCGaugesModal';
 import { MOSDACModal } from './components/MOSDACModal';
 import { GLOFModal } from './components/GLOFModal';
+import { CommandToolsHub } from './components/CommandToolsHub';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon,
-  QrCode, TrendingUp
+  QrCode, TrendingUp, Settings
 } from 'lucide-react';
 import { DEFAULT_FALLBACK_STATE } from './data/defaultTwinState';
 
@@ -79,6 +80,7 @@ export const App: React.FC = () => {
 
   // View mode: defaults to public portal on mobile, flexible on desktop
   const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('SCROLLING_PORTAL');
+  const [cockpitView, setCockpitView] = useState<'tools' | 'map' | 'sandbox' | 'all'>('tools');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   // Selected deep analysis sub-tab in Section 4
@@ -502,9 +504,94 @@ export const App: React.FC = () => {
           </div>
         </section>
 
-        {/* ========================================================================= */}
-        {/* SECTION 1: INTERACTIVE GEOGRAPHIC DIGITAL TWIN MAP                         */}
-        {/* ========================================================================= */}
+        {/* MASTER COCKPIT VIEW SWITCHER (TOOLS FIRST) */}
+        <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 bg-slate-950/80 border border-slate-800 rounded-2xl shadow-xl backdrop-blur-md">
+          <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
+            <button
+              onClick={() => setCockpitView('tools')}
+              className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
+                cockpitView === 'tools'
+                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold shadow-lg shadow-cyan-500/25 border border-cyan-400'
+                  : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+              }`}
+            >
+              <Settings className="w-4 h-4 text-cyan-300" />
+              <span>🎛️ COMMAND TOOLKIT HUB</span>
+            </button>
+
+            <button
+              onClick={() => setCockpitView('map')}
+              className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
+                cockpitView === 'map'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-lg shadow-blue-500/25 border border-blue-400'
+                  : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+              }`}
+            >
+              <Compass className="w-4 h-4 text-blue-300" />
+              <span>🗺️ GIS TWIN MAP</span>
+            </button>
+
+            <button
+              onClick={() => setCockpitView('sandbox')}
+              className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
+                cockpitView === 'sandbox'
+                  ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-slate-950 font-bold shadow-lg shadow-amber-500/25 border border-amber-400'
+                  : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+              }`}
+            >
+              <Activity className="w-4 h-4 text-amber-300" />
+              <span>⚡ CRISIS SANDBOX</span>
+            </button>
+
+            <button
+              onClick={() => setCockpitView('all')}
+              className={`px-3 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
+                cockpitView === 'all'
+                  ? 'bg-slate-800 text-white font-bold border border-slate-600'
+                  : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Scrollable View</span>
+            </button>
+          </div>
+
+          <div className="flex items-center space-x-2 text-xs font-mono px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span className="text-slate-400">Region:</span>
+            <strong className="text-cyan-300">{state?.city_name || 'Active Region'}</strong>
+          </div>
+        </div>
+
+        {/* VIEW 1: COMMAND TOOLS HUB (PRIMARY WINDOW VIEW) */}
+        {cockpitView === 'tools' && (
+          <CommandToolsHub
+            state={state}
+            onOpenMap={() => setCockpitView('map')}
+            onOpenSandbox={() => setCockpitView('sandbox')}
+            onOpenGLOF={() => setIsGLOFOpen(true)}
+            onOpenMOSDAC={() => setIsMOSDACOpen(true)}
+            onOpenCWCGauges={() => setIsCWCGaugesOpen(true)}
+            onOpenMultiHazard={() => setIsMultiHazardOpen(true)}
+            onOpenDam={() => setIsDamOpen(true)}
+            onOpenElevation={() => setIsElevationOpen(true)}
+            onOpenHospitalSurge={() => setIsHospitalSurgeOpen(true)}
+            onOpenSAR={() => setIsSAROpen(true)}
+            onOpenCitizenSOS={() => setIsCitizenSOSOpen(true)}
+            onOpenQRCode={() => setIsQRCodeOpen(true)}
+            onOpenDroneCCTV={() => setIsDroneCCTVOpen(true)}
+            onOpenVoiceRadio={() => setIsVoiceRadioOpen(true)}
+            onOpenMesh={() => setIsMeshOpen(true)}
+            onOpenAICopilot={() => setIsAICopilotOpen(true)}
+            onOpenICS201={() => setIsICS201Open(true)}
+            onOpenProvenance={() => setIsProvenanceOpen(true)}
+            onOpenIntegrations={() => setIsIntegrationsOpen(true)}
+            onOpenDataExport={() => setIsDataExportOpen(true)}
+          />
+        )}
+
+        {/* VIEW 2 & ALL: INTERACTIVE GEOGRAPHIC DIGITAL TWIN MAP */}
+        {(cockpitView === 'map' || cockpitView === 'all') && (
         <section className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
@@ -533,10 +620,10 @@ export const App: React.FC = () => {
             isSyncing={isSyncing}
           />
         </section>
+        )}
 
-        {/* ========================================================================= */}
-        {/* SECTION 2: "WHAT-IF" CRISIS SIMULATION SANDBOX & TIMELINE CONTROLLER       */}
-        {/* ========================================================================= */}
+        {/* VIEW 3 & ALL: "WHAT-IF" CRISIS SIMULATION SANDBOX & TIMELINE CONTROLLER */}
+        {(cockpitView === 'sandbox' || cockpitView === 'all') && (
         <section className="space-y-2">
           <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
             <Activity className="w-4 h-4 text-amber-400" />
@@ -553,15 +640,17 @@ export const App: React.FC = () => {
             />
           </div>
         </section>
+        )}
 
-        {/* ========================================================================= */}
-        {/* SECTION 3: REAL-TIME OPERATIONAL INTELLIGENCE GRID (3 SPACIOUS COLUMNS)    */}
-        {/* ========================================================================= */}
-        <section className="space-y-3">
-          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
-            <ShieldAlert className="w-4 h-4 text-rose-400" />
-            <span>3. Real-Time Operations & Inter-Agency Tactical Intelligence</span>
-          </div>
+        {/* EXTRA SECTIONS FOR SCROLLABLE VIEW */}
+        {cockpitView === 'all' && (
+          <>
+            {/* SECTION 3: REAL-TIME OPERATIONAL INTELLIGENCE GRID */}
+            <section className="space-y-3">
+              <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
+                <ShieldAlert className="w-4 h-4 text-rose-400" />
+                <span>3. Real-Time Operations & Inter-Agency Tactical Intelligence</span>
+              </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
             
@@ -775,9 +864,11 @@ export const App: React.FC = () => {
             />
           </div>
         </section>
+      </>
+    )}
 
-      </div>
-      )}
+  </div>
+  )}
 
       {/* Node / Sensor Detail Inspector Drawer */}
       <NodeInspectorModal
