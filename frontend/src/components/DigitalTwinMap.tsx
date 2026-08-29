@@ -129,6 +129,10 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
   const [isSortieSimulating, setIsSortieSimulating] = useState<boolean>(false);
   const [sortieStep, setSortieStep] = useState<number>(0);
 
+  // 🚑 Dynamic Real-Time Simulated 108/NDRF Hospital Emergency Deployment State
+  const [activeDeployment, setActiveDeployment] = useState<any | null>(null);
+  const [deploymentStep, setDeploymentStep] = useState<number>(0);
+
   // Animated flight path ticker for demo sortie
   useEffect(() => {
     if (!isSortieSimulating) return;
@@ -137,6 +141,67 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
     }, 1400);
     return () => clearInterval(interval);
   }, [isSortieSimulating]);
+
+  // Animated trajectory ticker for emergency ambulance/NDRF deployment
+  useEffect(() => {
+    if (!activeDeployment || !activeDeployment.route || activeDeployment.route.length === 0) return;
+    const interval = setInterval(() => {
+      setDeploymentStep(s => {
+        if (s < activeDeployment.route.length - 1) {
+          return s + 1;
+        }
+        return s;
+      });
+    }, 180);
+    return () => clearInterval(interval);
+  }, [activeDeployment]);
+
+  // Handler to trigger simulated 108 ambulance dispatch from real hospital to disaster zone
+  const handleTriggerHospitalDeployment = async (hospital?: any) => {
+    if (!state?.center_coords) return;
+    const [cLat, cLng] = state.center_coords;
+
+    const originHosp = hospital || (liveHospitals && liveHospitals.length > 0 ? liveHospitals[0] : null);
+    const originLat = originHosp ? originHosp.lat : cLat + 0.025;
+    const originLng = originHosp ? originHosp.lng : cLng - 0.025;
+    const originName = originHosp ? originHosp.name : "District Civil Hospital & Trauma Centre";
+
+    const floodedNode = state.nodes?.find(n => n.flood_depth_m > 0.3) || state.nodes?.[0];
+    const destLat = floodedNode ? floodedNode.lat : cLat;
+    const destLng = floodedNode ? floodedNode.lng : cLng;
+    const destName = floodedNode ? `${floodedNode.name} (Critical Inundation Zone)` : `${state.city_name || 'Urban'} Disaster Sector`;
+
+    try {
+      const res = await apiService.triggerEmergencyDeployment({
+        origin_lat: originLat,
+        origin_lng: originLng,
+        origin_name: originName,
+        dest_lat: destLat,
+        dest_lng: destLng,
+        dest_name: destName,
+        unit_type: "AMB",
+        steps: 50
+      });
+
+      if (res && res.route && res.route.length > 0) {
+        setActiveDeployment(res);
+        setDeploymentStep(0);
+        setClickCoordFeedback(`🚑 SIMULATED 108 DISPATCH: Dispatched from "${originName}" → "${destName}" (ETA: ${res.eta_minutes}m)`);
+        setTimeout(() => setClickCoordFeedback(null), 6000);
+      }
+    } catch (err) {
+      console.warn("Failed to trigger simulated emergency deployment:", err);
+    }
+  };
+
+  useEffect(() => {
+    (window as any).dispatchEmergencySim = (name: string, lat: number, lng: number) => {
+      handleTriggerHospitalDeployment({ name, lat, lng });
+    };
+    return () => {
+      delete (window as any).dispatchEmergencySim;
+    };
+  }, [state, liveHospitals]);
 
   // Stream Live Multi-State Satellite GPS Vehicles (Delhi, Mumbai, Bengaluru, Chennai, Kochi)
   useEffect(() => {
@@ -1315,11 +1380,14 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               <span class="text-rose-300 font-bold">${hosp.icu || 36} ICU</span>
             </div>
           </div>
-          <div class="text-[10px] text-slate-400 pt-1">
+          <div class="text-[10px] text-slate-400 pt-1 border-t border-slate-800 space-y-0.5">
             <div><strong>GPS:</strong> [${hosp.lat?.toFixed(4)}°N, ${hosp.lng?.toFixed(4)}°E]</div>
             <div><strong>Operator:</strong> ${hosp.operator || 'State Health / Trust'}</div>
             <div><strong>Helpline:</strong> ${hosp.phone || '108 / 112'}</div>
           </div>
+          <button onclick="window.dispatchEmergencySim && window.dispatchEmergencySim('${hosp.name.replace(/'/g, "\\'")}', ${hosp.lat}, ${hosp.lng})" class="w-full mt-2 py-1.5 px-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold font-mono transition-all flex items-center justify-center space-x-1.5 shadow-lg cursor-pointer">
+            <span>🚑 Simulate 108 Dispatch [DEMO]</span>
+          </button>
         </div>
       `);
     });
@@ -2078,6 +2146,73 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       `);
     }
 
+    // 15c. 🚑 DYNAMIC SIMULATED 108 / NDRF EMERGENCY HOSPITAL DISPATCH
+    if (activeDeployment && activeDeployment.route && activeDeployment.route.length > 0) {
+      const routeCoords: [number, number][] = activeDeployment.route.map((p: any) => [p.lat, p.lng]);
+
+      // Glowing dashed road corridor polyline
+      L.polyline(routeCoords, {
+        color: '#f43f5e',
+        weight: 4,
+        dashArray: '8, 8',
+        opacity: 0.95
+      }).addTo(layerGroup);
+
+      // Destination Target Marker
+      const dest = activeDeployment.destination;
+      const destHtml = `
+        <div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-red-950/90 border-2 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.8)] animate-pulse">
+          <span class="text-sm">🎯</span>
+          <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+        </div>
+      `;
+      L.marker([dest.lat, dest.lng], {
+        icon: L.divIcon({ className: 'custom-div-icon', html: destHtml, iconSize: [32, 32], iconAnchor: [16, 16] }),
+        zIndexOffset: 12000
+      }).addTo(layerGroup);
+
+      // Moving Vehicle Marker along route
+      const curIdx = Math.min(deploymentStep, activeDeployment.route.length - 1);
+      const curPt = activeDeployment.route[curIdx];
+      const isArrived = deploymentStep >= activeDeployment.route.length - 1;
+      const remainingProgress = 1 - (curIdx / (activeDeployment.route.length - 1 || 1));
+      const remainingEta = Math.max(0.1, activeDeployment.eta_minutes * remainingProgress);
+
+      const ambHtml = `
+        <div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-rose-950 border-2 border-rose-400 shadow-[0_0_25px_rgba(244,63,94,0.9)] cursor-pointer transform hover:scale-125 transition-all">
+          <span class="absolute -top-1.5 -right-1.5 px-1 py-0.2 rounded bg-red-600 text-white font-mono text-[7px] font-black uppercase tracking-wider animate-pulse">
+            SIMULATED
+          </span>
+          <span class="text-base animate-bounce">${activeDeployment.icon || '🚑'}</span>
+          <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-mono px-1.5 py-0.5 rounded bg-slate-950 text-rose-300 border border-rose-500 font-bold whitespace-nowrap shadow-lg">
+            ${isArrived ? 'ARRIVED ON SCENE' : `ETA ${remainingEta.toFixed(1)}m`}
+          </div>
+        </div>
+      `;
+
+      const ambMarker = L.marker([curPt.lat, curPt.lng], {
+        icon: L.divIcon({ className: 'custom-div-icon', html: ambHtml, iconSize: [40, 40], iconAnchor: [20, 20] }),
+        zIndexOffset: 16000
+      }).addTo(layerGroup);
+
+      ambMarker.bindPopup(`
+        <div class="text-xs font-mono p-2.5 bg-slate-950 text-slate-100 rounded-xl border border-rose-500/60 shadow-2xl space-y-1.5 min-w-[260px]">
+          <div class="flex items-center space-x-1.5 text-rose-400 font-bold text-xs">
+            <span>${activeDeployment.icon || '🚑'} [SIMULATED] ${activeDeployment.unit_label}</span>
+          </div>
+          <div class="text-[10px] text-amber-300 bg-amber-950/70 border border-amber-500/40 px-2 py-0.5 rounded font-bold">
+            <span>🎬 SIMULATED DISPATCH — Grounded in Real Hospital Data</span>
+          </div>
+          <div class="text-[9px] text-slate-300 space-y-0.5 pt-1 border-t border-slate-800">
+            <div><strong>Origin (Real Hospital):</strong> <span class="text-emerald-300 font-bold">${activeDeployment.origin.name}</span></div>
+            <div><strong>Destination:</strong> <span class="text-red-300 font-bold">${activeDeployment.destination.name}</span></div>
+            <div><strong>Distance:</strong> <span class="text-white">${activeDeployment.distance_km} km</span> • Speed: <span class="text-cyan-300 font-bold">${activeDeployment.speed_kmh} km/h</span></div>
+            <div><strong>Status:</strong> <span class="${isArrived ? 'text-emerald-400' : 'text-amber-400'} font-bold">${isArrived ? '✅ Arrived at Inundation Epicenter' : '🚨 En Route (Priority Corridor)'}</span></div>
+          </div>
+        </div>
+      `);
+    }
+
     // 16. ⛺ Real Live Relief Shelters & Evacuation Camps (OSM + DDMA)
     if (showShelters && Array.isArray(liveShelters)) {
       liveShelters.forEach(s => {
@@ -2463,28 +2598,51 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             </div>
 
             {/* Quick Demo Sortie Simulation Trigger */}
-            <button
-              onClick={() => {
-                setIsSortieSimulating(prev => !prev);
-                setClickCoordFeedback(
-                  !isSortieSimulating
-                    ? "🚁 DEMO SORTIE INJECTED: IAF Mi-17V5 moving across active flood sector (SIMULATED)"
-                    : "⏹️ Demo Sortie Stopped"
-                );
-                setTimeout(() => setClickCoordFeedback(null), 4000);
-              }}
-              className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg border text-[11px] font-mono transition-all cursor-pointer ${
-                isSortieSimulating ? 'bg-orange-600 border-orange-400 text-white font-bold shadow-[0_0_12px_rgba(249,115,22,0.5)] animate-pulse' : 'bg-orange-950/70 border-orange-600/50 text-orange-200 hover:bg-orange-900/70'
-              }`}
-            >
-              <span className="flex items-center space-x-1.5 truncate">
-                <span>🚁</span>
-                <span>{isSortieSimulating ? 'Stop Sortie' : 'Demo Sortie'}</span>
-              </span>
-              <span className="text-[8px] px-1 py-0.2 rounded bg-black/60 font-mono text-orange-300">
-                {isSortieSimulating ? 'ACTIVE' : 'SIMULATED'}
-              </span>
-            </button>
+            <div className="grid grid-cols-2 gap-1 pb-1">
+              <button
+                onClick={() => {
+                  setIsSortieSimulating(prev => !prev);
+                  setClickCoordFeedback(
+                    !isSortieSimulating
+                      ? "🚁 DEMO SORTIE INJECTED: IAF Mi-17V5 moving across active flood sector (SIMULATED)"
+                      : "⏹️ Demo Sortie Stopped"
+                  );
+                  setTimeout(() => setClickCoordFeedback(null), 4000);
+                }}
+                className={`flex items-center justify-between px-2 py-1.5 rounded-lg border text-[10px] font-mono transition-all cursor-pointer ${
+                  isSortieSimulating ? 'bg-orange-600 border-orange-400 text-white font-bold shadow-[0_0_12px_rgba(249,115,22,0.5)] animate-pulse' : 'bg-orange-950/70 border-orange-600/50 text-orange-200 hover:bg-orange-900/70'
+                }`}
+              >
+                <span className="flex items-center space-x-1 truncate">
+                  <span>🚁</span>
+                  <span>{isSortieSimulating ? 'Stop Sortie' : 'IAF Sortie'}</span>
+                </span>
+                <span className="text-[7px] px-1 py-0.2 rounded bg-black/60 font-mono text-orange-300">
+                  {isSortieSimulating ? 'ACTIVE' : 'SIM'}
+                </span>
+              </button>
+
+              <button
+                onClick={() => {
+                  if (activeDeployment) {
+                    setActiveDeployment(null);
+                  } else {
+                    handleTriggerHospitalDeployment();
+                  }
+                }}
+                className={`flex items-center justify-between px-2 py-1.5 rounded-lg border text-[10px] font-mono transition-all cursor-pointer ${
+                  activeDeployment ? 'bg-rose-600 border-rose-400 text-white font-bold shadow-[0_0_12px_rgba(244,63,94,0.5)] animate-pulse' : 'bg-rose-950/70 border-rose-600/50 text-rose-200 hover:bg-rose-900/70'
+                }`}
+              >
+                <span className="flex items-center space-x-1 truncate">
+                  <span>🚑</span>
+                  <span>{activeDeployment ? 'Stop 108' : '108 Dispatch'}</span>
+                </span>
+                <span className="text-[7px] px-1 py-0.2 rounded bg-black/60 font-mono text-rose-300">
+                  {activeDeployment ? 'ACTIVE' : 'SIM'}
+                </span>
+              </button>
+            </div>
 
             <button
               onClick={() => setShowFloodHeatmap(!showFloodHeatmap)}
@@ -2722,6 +2880,36 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           </div>
         )}
       </div>
+
+      {/* Active Simulated 108 Emergency Dispatch Live HUD Status Banner */}
+      {activeDeployment && (
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 hud-panel px-3.5 py-1.5 rounded-2xl border border-rose-500/80 bg-slate-950/95 shadow-[0_0_30px_rgba(244,63,94,0.6)] flex items-center space-x-2.5 text-[11px] font-mono backdrop-blur-md">
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+            <span className="text-rose-300 font-bold uppercase tracking-wider">
+              🚨 108 DISPATCH:
+            </span>
+          </div>
+          <span className="text-slate-300 hidden md:inline truncate max-w-xs">
+            From <strong className="text-emerald-300">{activeDeployment.origin.name}</strong> → <strong className="text-red-300">{activeDeployment.destination.name}</strong>
+          </span>
+          <span className="text-slate-600 hidden md:inline">|</span>
+          <span className="text-amber-300 font-bold">
+            {deploymentStep >= activeDeployment.route.length - 1
+              ? '✅ ARRIVED ON SCENE'
+              : `ETA: ${(Math.max(0.1, activeDeployment.eta_minutes * (1 - deploymentStep / (activeDeployment.route.length - 1 || 1)))).toFixed(1)}m (${activeDeployment.distance_km}km)`}
+          </span>
+          <span className="text-[8px] px-1.5 py-0.2 rounded bg-black/60 font-mono text-amber-300 border border-amber-600/50">
+            SIMULATED
+          </span>
+          <button
+            onClick={() => setActiveDeployment(null)}
+            className="px-2 py-0.5 rounded-lg bg-rose-950 hover:bg-rose-900 border border-rose-600 text-rose-200 text-[10px] font-bold cursor-pointer"
+          >
+            ⏹️ Stop
+          </button>
+        </div>
+      )}
 
       {/* Floating Bottom Left Live Region Indicator */}
       <div className="absolute bottom-3 left-3 z-10 hud-panel px-3 py-1.5 rounded-xl flex items-center space-x-2 text-[11px] font-mono border border-cyan-500/30 bg-slate-950/90 shadow-xl">

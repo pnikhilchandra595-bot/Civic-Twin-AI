@@ -520,6 +520,29 @@ export class DigitalTwinApiService {
     return { status: 'fallback', count: 0, aircraft: [] };
   }
 
+  async triggerEmergencyDeployment(payload: {
+    origin_lat: number;
+    origin_lng: number;
+    origin_name: string;
+    dest_lat: number;
+    dest_lng: number;
+    dest_name: string;
+    unit_type?: string;
+    steps?: number;
+  }): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/simulate/emergency-deployment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Failed to trigger emergency deployment simulation:', e);
+    }
+    return null;
+  }
+
   async getLivePowerGrid(): Promise<any> {
     try {
       const res = await fetch(`${API_BASE}/realtime/power-grid`);

@@ -1264,3 +1264,22 @@ async def get_live_space_weather():
     return await live_multihazard_service.fetch_space_weather()
 
 
+@app.post("/api/simulate/emergency-deployment")
+async def trigger_emergency_deployment(payload: dict):
+    """
+    Simulated Tactical Emergency Response Deployment from Real Hospitals to Disaster Zone.
+    """
+    from app.services.emergency_deployment_service import emergency_deployment_service
+    return emergency_deployment_service.generate_deployment(
+        origin_lat=float(payload["origin_lat"]),
+        origin_lng=float(payload["origin_lng"]),
+        origin_name=str(payload.get("origin_name", "District Hospital")),
+        dest_lat=float(payload["dest_lat"]),
+        dest_lng=float(payload["dest_lng"]),
+        dest_name=str(payload.get("dest_name", "Active Disaster Zone")),
+        unit_type=str(payload.get("unit_type", "AMB")),
+        steps=int(payload.get("steps", 50))
+    )
+
+
+
