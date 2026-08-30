@@ -17,7 +17,14 @@ const WS_BASE = CLEAN_URL.startsWith('https')
  */
 export async function safeJsonFetch<T = any>(url: string, options?: RequestInit): Promise<T | null> {
   try {
-    const res = await fetch(url, options);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const fetchOptions: RequestInit = {
+      ...options,
+      signal: options?.signal || controller.signal
+    };
+    const res = await fetch(url, fetchOptions);
+    clearTimeout(timeoutId);
     if (!res.ok) return null;
     const contentType = res.headers.get('content-type') || '';
     if (!contentType.includes('application/json') && !contentType.includes('text/json')) {

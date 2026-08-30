@@ -265,18 +265,22 @@ export const App: React.FC = () => {
   };
 
   const handleResolveLocation = async (query: string = '', lat?: number, lng?: number) => {
+    const safetyTimer = setTimeout(() => setIsSyncing(false), 2500);
     try {
       setIsSyncing(true);
       setToastAlert(`🔍 Resolving micro-catchment terrain & infrastructure...`);
       const newState = await apiService.resolvePanIndiaLocation(query, lat, lng);
-      setState(newState);
-      setToastAlert(`✅ Digital Twin Synthesized for ${newState.city_name}`);
-      setTimeout(() => setToastAlert(null), 4000);
+      if (newState && newState.city_name) {
+        setState(newState);
+        setToastAlert(`✅ Digital Twin Synthesized for ${newState.city_name}`);
+        setTimeout(() => setToastAlert(null), 3000);
+      }
     } catch (e) {
       console.error('Resolve location error:', e);
-      setToastAlert(`❌ Failed to resolve location. Try another district.`);
-      setTimeout(() => setToastAlert(null), 3500);
+      setToastAlert(`❌ Failed to resolve location. Reverting to regional baseline.`);
+      setTimeout(() => setToastAlert(null), 3000);
     } finally {
+      clearTimeout(safetyTimer);
       setIsSyncing(false);
     }
   };

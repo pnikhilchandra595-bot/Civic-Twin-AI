@@ -2356,10 +2356,10 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
 
       {/* District Synthesis Loading Overlay */}
       {isSyncing && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/75 backdrop-blur-sm rounded-2xl">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
-            <div className="text-cyan-300 text-sm font-mono font-semibold tracking-widest uppercase animate-pulse">
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/40 backdrop-blur-[2px] rounded-2xl pointer-events-none transition-opacity duration-300">
+          <div className="flex flex-col items-center gap-3 px-6 py-4 rounded-2xl bg-slate-950/90 border border-cyan-500/50 shadow-2xl shadow-cyan-500/20">
+            <div className="w-10 h-10 border-3 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
+            <div className="text-cyan-300 text-xs font-mono font-bold tracking-widest uppercase animate-pulse">
               Synthesizing Digital Twin…
             </div>
           </div>
