@@ -1123,7 +1123,7 @@ async def get_himalayan_glof_inventory():
     Himalayan Glacial Lake Outburst Flood (GLOF) Cryosphere Baseline Inventory.
     """
     from app.services.glof_service import glof_engine
-    return glof_engine.get_himalayan_lake_inventory()
+    return await glof_engine.get_himalayan_lake_inventory()
 
 class GLOFBreachSimRequest(BaseModel):
     lake_id: str = "GLOF-SK-01"
