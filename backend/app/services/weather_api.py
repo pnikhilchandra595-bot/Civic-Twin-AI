@@ -163,17 +163,16 @@ class RealWeatherIngestionService:
                     current = data.get("current", {})
                     hourly = data.get("hourly", {})
                     
-                    raw_precip = current.get("precipitation", 0.0)
-                    rain_rate = max(raw_precip * 12.0, current.get("rain", 0.0) * 12.0)
-                    if rain_rate == 0.0 and (current.get("weather_code", 0) in [51, 53, 55, 61, 63, 65, 80, 81, 82]):
-                        rain_rate = 18.0
+                    raw_precip = float(current.get("precipitation", 0.0))
+                    rain_val = float(current.get("rain", 0.0))
+                    rain_rate = round(max(raw_precip, rain_val), 1)
 
-                    temp_c = current.get("temperature_2m", 28.5)
-                    humidity = current.get("relative_humidity_2m", 78)
-                    wind_speed = current.get("wind_speed_10m", 18.0)
-                    wind_gusts = current.get("wind_gusts_10m", 28.0)
-                    wind_dir = current.get("wind_direction_10m", 240)
-                    pressure = current.get("surface_pressure", 1008.0)
+                    temp_c = round(float(current.get("temperature_2m", 28.5)), 1)
+                    humidity = round(float(current.get("relative_humidity_2m", 78)), 1)
+                    wind_speed = round(float(current.get("wind_speed_10m", 18.0)), 1)
+                    wind_gusts = round(float(current.get("wind_gusts_10m", 28.0)), 1)
+                    wind_dir = int(current.get("wind_direction_10m", 240))
+                    pressure = round(float(current.get("surface_pressure", 1008.0)), 1)
                     
                     soil_moisture = (hourly.get("soil_moisture_0_to_1cm", [0.45])[0] * 100.0) if hourly.get("soil_moisture_0_to_1cm") else 65.0
                     hourly_precip = hourly.get("precipitation", [0.0]*6)[:6]
@@ -191,7 +190,7 @@ class RealWeatherIngestionService:
                         "timestamp": current.get("time", datetime.datetime.now().isoformat()),
                         "temperature_c": temp_c,
                         "humidity_pct": humidity,
-                        "rain_rate_mmhr": rain_rate if rain_rate > 0 else 35.0,
+                        "rain_rate_mmhr": rain_rate,
                         "surface_pressure_hpa": pressure,
                         "wind_speed_kmh": wind_speed,
                         "wind_gusts_kmh": wind_gusts,
