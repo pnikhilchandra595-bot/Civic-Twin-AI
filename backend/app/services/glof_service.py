@@ -289,8 +289,6 @@ class HimalayanGLOFEngine:
                                         }
                 except Exception as e:
                     print(f"Copernicus Process API error ({token_url}): {e}")
-            except Exception as e:
-                print(f"Copernicus Process API live query / rasterio error: {e}")
 
         # 3. Honest Calibrated Spatial Baseline (ISRO / NRSC Glacial Lake Atlas)
         return {
