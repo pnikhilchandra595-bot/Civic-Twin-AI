@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CivicTwin AI — Complete Platform Wireframe Blueprint</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+    .hud-border {
+      border: 1px solid rgba(0, 210, 255, 0.35);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border-color: #38bdf8;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-[#070b14] text-slate-100 antialiased min-h-screen p-6 font-sans">
+
+  <!-- Main Container -->
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header Banner -->
+    <header class="glass-card rounded-2xl p-6 border border-cyan-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_0_40px_rgba(6,182,212,0.15)]">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 bg-cyan-950 border border-cyan-500 text-cyan-300 text-xs font-mono font-bold rounded-full">
+            CIVICTWIN-AI v2.0 ARCHITECTURE
+          </span>
+          <span class="px-3 py-1 bg-emerald-950 border border-emerald-500 text-emerald-300 text-xs font-mono font-bold rounded-full">
+            9 COMPLETE WIREFRAMES
+          </span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-black tracking-wide text-white mt-2">
+          Interactive Platform UI & Wireframe Blueprints
+        </h1>
+        <p class="text-sm text-slate-400 font-mono mt-1">
+          Complete structural layout, sensor telemetry feeds, multi-hazard command panels, and mobile citizen portals.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <div class="text-right font-mono text-xs text-slate-400">
+          <div>Resolution: <span class="text-cyan-400 font-bold">1920x1080 (HUD)</span></div>
+          <div>Mobile: <span class="text-cyan-400 font-bold">390x844 (Citizen)</span></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="flex flex-wrap gap-2 p-2 glass-card rounded-xl border border-slate-800 text-xs font-mono">
+      <button onclick="switchTab('screen-main')" id="tab-screen-main" class="tab-btn active px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500 transition-all cursor-pointer font-bold">
+        1. Main Command Map HUD
+      </button>
+      <button onclick="switchTab('screen-glof')" id="tab-screen-glof" class="tab-btn px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500 transition-all cursor-pointer font-bold">
+        2. Himalayan GLOF Sentinel
+      </button>
+      <button onclick="switchTab('screen-weather')" id="tab-screen-weather" class="tab-btn px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500 transition-all cursor-pointer font-bold">
+        3. Real-Time Doppler Weather
+      </button>
+      <button onclick="switchTab('screen-multihazard')" id="tab-screen-multihazard" class="tab-btn px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500 transition-all cursor-pointer font-bold">
+        4. Multi-Hazard Space/Seismic
+      </button>
+      <button onclick="switchTab('screen-sos')" id="tab-screen-sos" class="tab-btn px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500 transition-all cursor-pointer font-bold">
+        5. Citizen SOS & GPS Portal
+      </button>
+      <button onclick="switchTab('screen-broadcast')" id="tab-screen-broadcast" class="tab-btn px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500 transition-all cursor-pointer font-bold">
+        6. CAP Emergency Broadcast
+      </button>
+      <button onclick="switchTab('screen-voice')" id="tab-screen-voice" class="tab-btn px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500 transition-all cursor-pointer font-bold">
+        7. Tactical Voice Radio AI
+      </button>
+      <button onclick="switchTab('screen-cwc')" id="tab-screen-cwc" class="tab-btn px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500 transition-all cursor-pointer font-bold">
+        8. CWC Sovereign Gauges
+      </button>
+      <button onclick="switchTab('screen-provenance')" id="tab-screen-provenance" class="tab-btn px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500 transition-all cursor-pointer font-bold">
+        9. Sensor Provenance Ledger
+      </button>
+    </div>
+
+    <!-- WIREFRAME VIEWPORT CONTAINER -->
+    <div class="glass-card rounded-3xl p-6 border border-slate-800 shadow-2xl relative min-h-[680px]">
+
+      <!-- 1. MAIN COMMAND MAP HUD -->
+      <div id="screen-main" class="wireframe-view space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="h-3 w-3 rounded-full bg-red-500 animate-ping"></span>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Screen 1: Digital Twin Command Map & Incident Action Plan</h2>
+          </div>
+          <span class="text-xs text-cyan-400 font-mono">Primary Operator View (16:9 Desktop HUD)</span>
+        </div>
+
+        <!-- Wireframe Canvas Layout -->
+        <div class="grid grid-cols-12 gap-4">
+          <!-- Top Header Mockup -->
+          <div class="col-span-12 bg-slate-900/90 border border-cyan-500/40 rounded-xl p-3 flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center gap-3">
+              <span class="bg-cyan-950 text-cyan-300 px-2 py-1 rounded border border-cyan-700 font-bold">CIVIC TWIN AI</span>
+              <span class="text-slate-300">Region: <strong>Maharashtra: Mumbai Mithi Basin (19.076°N, 72.877°E)</strong></span>
+              <span class="bg-red-950 text-red-400 px-2 py-0.5 rounded border border-red-600 font-bold animate-pulse">THREAT: CATASTROPHIC</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="bg-blue-950 text-blue-300 px-2 py-1 rounded border border-blue-700">🛰️ INSAT-3DR (Pass 17:00 UTC)</span>
+              <span class="bg-teal-950 text-teal-300 px-2 py-1 rounded border border-teal-700">🌧️ 35.0 mm/h Rain</span>
+              <span class="bg-amber-950 text-amber-300 px-2 py-1 rounded border border-amber-700">🚨 EAS Broadcast</span>
+              <span class="bg-indigo-950 text-indigo-300 px-2 py-1 rounded border border-indigo-700">🎙️ Radio Co-Pilot</span>
+            </div>
+          </div>
+
+          <!-- Left / Center: Interactive Map Simulator -->
+          <div class="col-span-12 lg:col-span-8 bg-[#0b1220] border border-slate-700 rounded-2xl h-[520px] relative overflow-hidden flex flex-col justify-between p-4">
+            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            
+            <!-- Map Top Overlay Tools -->
+            <div class="relative z-10 flex items-center justify-between">
+              <div class="flex items-center gap-2 bg-slate-950/80 backdrop-blur p-1.5 rounded-xl border border-slate-700 text-xs font-mono">
+                <button class="px-2.5 py-1 bg-cyan-600 text-white rounded">📍 Search / District</button>
+                <button class="px-2.5 py-1 bg-slate-800 text-slate-300 hover:text-white rounded">🌊 Flood Extent (SAR)</button>
+                <button class="px-2.5 py-1 bg-slate-800 text-slate-300 hover:text-white rounded">🏥 Trauma Beds</button>
+                <button class="px-2.5 py-1 bg-slate-800 text-slate-300 hover:text-white rounded">🏕️ Evac Shelters</button>
+                <button class="px-2.5 py-1 bg-slate-800 text-slate-300 hover:text-white rounded">📹 Drone / CCTV</button>
+              </div>
+              <div class="bg-slate-950/80 p-1.5 rounded-xl border border-slate-700 text-xs font-mono text-cyan-300">
+                Layer: Sentinel-1A SAR (VV/VH 10m)
+              </div>
+            </div>
+
+            <!-- Central Geospatial Grid Representation -->
+            <div class="relative z-10 my-auto flex flex-col items-center justify-center text-center space-y-3">
+              <div class="relative w-80 h-80 rounded-full border-2 border-dashed border-red-500/40 flex items-center justify-center animate-spin [animation-duration:40s]">
+                <div class="w-56 h-56 rounded-full border border-amber-500/40 flex items-center justify-center">
+                  <div class="w-32 h-32 rounded-full bg-cyan-500/10 border border-cyan-400 flex items-center justify-center text-[11px] font-mono text-cyan-300">
+                    Flood Inundation<br/>Zone (18.4 km²)
+                  </div>
+                </div>
+              </div>
+              <div class="text-xs font-mono text-slate-400 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800">
+                [42,000 Citizens at Risk] • [3 NDRF Rafts Underway] • [14 Critical Culverts Monitored]
+              </div>
+            </div>
+
+            <!-- Map Bottom Bar -->
+            <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-400 bg-slate-950/90 p-2 rounded-xl border border-slate-800">
+              <div class="flex items-center gap-4">
+                <span>Coordinates: <strong>19.0760° N, 72.8777° E</strong></span>
+                <span>Elevation: <strong>14.2m MSL (EGM2008)</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                <span>Telemetry: 100% Real-Time Ingest</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Incident Commander Panel -->
+          <div class="col-span-12 lg:col-span-4 bg-slate-950/90 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between space-y-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <h3 class="text-sm font-bold text-white uppercase font-mono flex items-center gap-2">
+                  <span>🛡️ Incident Commander HUD</span>
+                </h3>
+                <span class="text-[10px] bg-red-950 text-red-400 px-2 py-0.5 rounded border border-red-700 font-mono">PRIORITY 1</span>
+              </div>
+
+              <!-- Quick Metrics Grid -->
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-slate-400 text-[10px]">Inundated Area</div>
+                  <div class="text-base font-black text-cyan-300">18.4 km²</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-slate-400 text-[10px]">Population Exposed</div>
+                  <div class="text-base font-black text-amber-300">42,000</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-slate-400 text-[10px]">Active SOS Calls</div>
+                  <div class="text-base font-black text-red-400">12 High-Triage</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-slate-400 text-[10px]">Hospital Bed Avail</div>
+                  <div class="text-base font-black text-emerald-400">670 / 1400</div>
+                </div>
+              </div>
+
+              <!-- Strategic Objectives -->
+              <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 space-y-1 text-xs font-mono">
+                <div class="text-slate-400 text-[10px] uppercase font-bold text-cyan-400">Tactical Directives</div>
+                <div class="text-slate-300 flex items-start gap-1">1. Deploy NDRF Inflatable Rafts to Mithi River S-Bend.</div>
+                <div class="text-slate-300 flex items-start gap-1">2. Divert traffic from Kurla West Underpass.</div>
+                <div class="text-slate-300 flex items-start gap-1">3. Transmit Grade-1 EAS Broadcast to Zone 4.</div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800 font-mono text-xs">
+              <button class="w-full py-2.5 bg-gradient-to-r from-red-600 to-rose-700 text-white font-bold rounded-xl shadow-lg hover:brightness-110">
+                🚨 Transmit Alert
+              </button>
+              <button class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold rounded-xl shadow-lg hover:brightness-110">
+                🚁 Dispatch Unit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. HIMALAYAN GLOF SENTINEL -->
+      <div id="screen-glof" class="wireframe-view hidden space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🏔️</span>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Screen 2: Himalayan GLOF Sentinel & 1D Muskingum-Cunge Wave Routing</h2>
+          </div>
+          <span class="text-xs text-cyan-400 font-mono">Copernicus Sentinel-2 float32 NDWI + 80km EMSC Seismic Buffer</span>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4 font-mono text-xs">
+          <!-- Lake Selection Left -->
+          <div class="col-span-12 lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+            <div class="text-xs font-bold text-slate-300 uppercase tracking-wider">Monitored Glacial Lakes (ISRO Atlas)</div>
+            <div class="space-y-2">
+              <div class="p-3 rounded-xl bg-blue-950/60 border border-cyan-500 cursor-pointer">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-cyan-300">South Lhonak Glacial Lake</span>
+                  <span class="text-[10px] bg-red-950 text-red-400 px-2 py-0.5 rounded border border-red-700">VERY HIGH</span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-1">Sikkim • Teesta Basin • 5,200m ASL • 65.2M m³</div>
+                <div class="mt-2 text-[10px] text-emerald-300 bg-emerald-950/50 p-1.5 rounded border border-emerald-800">
+                  🛰️ S2 NDWI: 168.4 ha • 80km Seismic Buffer: Quiet (0 Quakes)
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 cursor-pointer">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-slate-200">Chorabari & Vasudhara Tal</span>
+                  <span class="text-[10px] bg-amber-950 text-amber-400 px-2 py-0.5 rounded border border-amber-700">HIGH</span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-1">Uttarakhand • Mandakini Basin • 4,350m • 28.5M m³</div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 cursor-pointer">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-slate-200">Rishi Ganga Upper Glacier</span>
+                  <span class="text-[10px] bg-yellow-950 text-yellow-400 px-2 py-0.5 rounded border border-yellow-700">ELEVATED</span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-1">Uttarakhand • Dhauliganga • 4,850m • 18.2M m³</div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 cursor-pointer">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-slate-200">Gepang Gath Glacial Lake</span>
+                  <span class="text-[10px] bg-amber-950 text-amber-400 px-2 py-0.5 rounded border border-amber-700">HIGH</span>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-1">Himachal • Chenab / Lahaul • 4,120m • 38.0M m³</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hydrodynamic Routing Center & Right -->
+          <div class="col-span-12 lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <div class="grid grid-cols-3 gap-3">
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="text-slate-400 text-[10px]">Froehlich Peak Outflow</div>
+                <div class="text-lg font-black text-cyan-300">14,820 m³/s</div>
+                <div class="text-[10px] text-slate-500">Debris Bulked (1.35x)</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="text-slate-400 text-[10px]">Total Release Volume</div>
+                <div class="text-lg font-black text-blue-400">46.9M m³</div>
+                <div class="text-[10px] text-slate-500">72% Drainage Factor</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="text-slate-400 text-[10px]">Breach Duration</div>
+                <div class="text-lg font-black text-amber-400">1.8 Hours</div>
+                <div class="text-[10px] text-slate-500">Moraine Sieve Velocity</div>
+              </div>
+            </div>
+
+            <!-- Downstream Schedule Table -->
+            <div class="space-y-2">
+              <div class="text-xs font-bold text-slate-300 uppercase">1D Muskingum-Cunge Downstream Impact Timeline</div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-950 border-b border-slate-800 text-slate-400 text-[10px]">
+                      <th class="p-2">Downstream Asset</th>
+                      <th class="p-2">Distance</th>
+                      <th class="p-2">Wave ETA</th>
+                      <th class="p-2">Peak Surge</th>
+                      <th class="p-2">Depth</th>
+                      <th class="p-2">Threat / Tactical Order</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800 text-[11px]">
+                    <tr class="hover:bg-slate-950/40">
+                      <td class="p-2 font-bold text-white">Chungthang Hydro Dam (Teesta-III)</td>
+                      <td class="p-2 text-slate-300">34.0 km</td>
+                      <td class="p-2 font-bold text-red-400">42 min</td>
+                      <td class="p-2 text-cyan-300">11,540 m³/s</td>
+                      <td class="p-2 text-amber-300">14.2 m</td>
+                      <td class="p-2 text-red-400 font-bold">EMERGENCY SLUICE OVERRIDE</td>
+                    </tr>
+                    <tr class="hover:bg-slate-950/40">
+                      <td class="p-2 font-bold text-white">Mangan Valley Settlement</td>
+                      <td class="p-2 text-slate-300">58.0 km</td>
+                      <td class="p-2 font-bold text-amber-400">76 min</td>
+                      <td class="p-2 text-cyan-300">8,920 m³/s</td>
+                      <td class="p-2 text-amber-300">9.8 m</td>
+                      <td class="p-2 text-amber-300 font-bold">EVACUATE RIDGE > 35M</td>
+                    </tr>
+                    <tr class="hover:bg-slate-950/40">
+                      <td class="p-2 font-bold text-white">Singtam Urban Sector</td>
+                      <td class="p-2 text-slate-300">94.0 km</td>
+                      <td class="p-2 font-bold text-yellow-400">128 min</td>
+                      <td class="p-2 text-cyan-300">5,840 m³/s</td>
+                      <td class="p-2 text-yellow-300">5.4 m</td>
+                      <td class="p-2 text-yellow-300 font-bold">RIVERFRONT BARRICADE</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. REAL-TIME DOPPLER WEATHER -->
+      <div id="screen-weather" class="wireframe-view hidden space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🌧️</span>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Screen 3: Live Satellite & Doppler Weather Stream Modal</h2>
+          </div>
+          <span class="text-xs text-cyan-400 font-mono">Open-Meteo High-Resolution Numerical Weather Model & ECMWF Ingest</span>
+        </div>
+
+        <div class="max-w-3xl mx-auto bg-[#070b16] border border-cyan-500/40 rounded-3xl p-6 space-y-5 font-mono shadow-2xl">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <div>
+              <div class="text-xs text-cyan-400 font-bold">Telemetry Source: Open-Meteo High-Resolution ECMWF Radar</div>
+              <div class="text-sm font-bold text-white">District: Mumbai Suburban (19.076°N, 72.877°E)</div>
+            </div>
+            <span class="text-[10px] bg-emerald-950 text-emerald-300 px-3 py-1 rounded-full border border-emerald-600 font-bold">
+              ● 100% REAL LIVE SYNC
+            </span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-[10px]">Rainfall Rate [LIVE]</div>
+              <div class="text-2xl font-black text-cyan-300 mt-1">0.0 <span class="text-xs">mm/h</span></div>
+              <div class="text-[10px] text-slate-500">True Night Radar Reading</div>
+            </div>
+            <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-[10px]">Temperature</div>
+              <div class="text-2xl font-black text-amber-300 mt-1">26.6 <span class="text-xs">°C</span></div>
+              <div class="text-[10px] text-slate-500">Surface Ambient Temp</div>
+            </div>
+            <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-[10px]">Humidity</div>
+              <div class="text-2xl font-black text-blue-300 mt-1">84 <span class="text-xs">%</span></div>
+              <div class="text-[10px] text-slate-500">Atmospheric Saturation</div>
+            </div>
+            <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-[10px]">Wind Velocity</div>
+              <div class="text-2xl font-black text-teal-300 mt-1">14.6 <span class="text-xs">km/h</span></div>
+              <div class="text-[10px] text-slate-500">Gusts up to 22 km/h</div>
+            </div>
+            <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-[10px]">Barometric Pressure</div>
+              <div class="text-2xl font-black text-indigo-300 mt-1">1008.3 <span class="text-xs">hPa</span></div>
+              <div class="text-[10px] text-slate-500">Cyclonic Indicator</div>
+            </div>
+            <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+              <div class="text-slate-400 text-[10px]">Soil Moisture Saturation</div>
+              <div class="text-2xl font-black text-emerald-300 mt-1">32.0 <span class="text-xs">%</span></div>
+              <div class="text-[10px] text-slate-500">0-1cm Infiltration Depth</div>
+            </div>
+          </div>
+
+          <button class="w-full py-3 bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-400 text-white font-bold rounded-2xl shadow-xl flex items-center justify-center gap-2 hover:brightness-110 cursor-pointer">
+            <span>🚀 DEPLOY EXACT LIVE WEATHER DIRECTLY INTO DIGITAL TWIN SIMULATION</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. MULTI-HAZARD SPACE/SEISMIC -->
+      <div id="screen-multihazard" class="wireframe-view hidden space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🛰️</span>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Screen 4: Multi-Hazard Space, Seismic & Maritime Telemetry</h2>
+          </div>
+          <span class="text-xs text-cyan-400 font-mono">EMSC Global Seismometers • NOAA SWPC K-Index • IOC Tide Gauges</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 font-mono text-xs">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+            <div class="flex justify-between items-center text-slate-300 font-bold border-b border-slate-800 pb-2">
+              <span>🌍 EMSC Seismic Network</span>
+              <span class="text-[10px] bg-blue-950 text-blue-400 px-2 py-0.5 rounded">LIVE FDSN</span>
+            </div>
+            <div class="space-y-2">
+              <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-amber-400">
+                  <span>M 4.2 — Hindu Kush Region</span>
+                  <span>Depth: 180 km</span>
+                </div>
+                <div class="text-[10px] text-slate-500 mt-1">28 mins ago • EMSC Seismometer #98214</div>
+              </div>
+              <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-slate-300">
+                  <span>M 2.8 — Andaman Islands</span>
+                  <span>Depth: 12 km</span>
+                </div>
+                <div class="text-[10px] text-slate-500 mt-1">1 hr ago • USGS Ingest #14812</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+            <div class="flex justify-between items-center text-slate-300 font-bold border-b border-slate-800 pb-2">
+              <span>☀️ NOAA Space Weather</span>
+              <span class="text-[10px] bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">G0 QUIET</span>
+            </div>
+            <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-center space-y-2">
+              <div class="text-3xl font-black text-emerald-400">Kp 2.33</div>
+              <div class="text-[11px] text-slate-300">Geomagnetic Activity: Normal</div>
+              <div class="text-[10px] text-slate-500">GPS Constellation Drift: &lt; 3m (Nominal)</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+            <div class="flex justify-between items-center text-slate-300 font-bold border-b border-slate-800 pb-2">
+              <span>🌊 UNESCO IOC Coastal Tide</span>
+              <span class="text-[10px] bg-teal-950 text-teal-400 px-2 py-0.5 rounded">APOLLO BUNDER</span>
+            </div>
+            <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-center space-y-2">
+              <div class="text-3xl font-black text-cyan-400">2.45 m</div>
+              <div class="text-[11px] text-slate-300">Tidal State: High Tide Buffer</div>
+              <div class="text-[10px] text-slate-500">Storm Surge Anomaly: +0.12m</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. CITIZEN SOS & GPS PORTAL -->
+      <div id="screen-sos" class="wireframe-view hidden space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🆘</span>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Screen 5: Citizen Emergency SOS & Crowdsourced Damage Portal</h2>
+          </div>
+          <span class="text-xs text-cyan-400 font-mono">Mobile Responsive Citizen Interface (Bilingual EN / HI)</span>
+        </div>
+
+        <div class="max-w-md mx-auto bg-slate-950 border-2 border-red-500/40 rounded-3xl p-6 font-mono space-y-4 shadow-2xl">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="h-3 w-3 rounded-full bg-red-500 animate-ping"></span>
+              <span class="font-bold text-white text-sm">CIVICTWIN CITIZEN SOS</span>
+            </div>
+            <span class="text-[10px] bg-red-950 text-red-400 px-2 py-0.5 rounded border border-red-700 font-bold">112 LINKED</span>
+          </div>
+
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-1 text-xs">
+            <div class="text-slate-400 text-[10px]">Your Verified GPS Coordinates</div>
+            <div class="text-cyan-300 font-bold">19.0682° N, 72.8690° E (Kurla West)</div>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <label class="text-slate-400 text-[10px]">Emergency Category / आपातकाल प्रकार</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button class="p-2.5 bg-red-950/60 border border-red-600 rounded-xl text-red-300 font-bold text-left">🌊 Flood Trapped</button>
+              <button class="p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-300 text-left">🏥 Medical Need</button>
+              <button class="p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-300 text-left">⚡ Power/Live Wire</button>
+              <button class="p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-300 text-left">🏚️ Building Collapse</button>
+            </div>
+          </div>
+
+          <button class="w-full py-4 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white font-black text-base rounded-2xl shadow-xl hover:brightness-110 flex items-center justify-center gap-2">
+            <span>🚨 SEND IMMEDIATE SOS TO NDMA / 112</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 6. CAP EMERGENCY BROADCAST -->
+      <div id="screen-broadcast" class="wireframe-view hidden space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">📢</span>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Screen 6: CAP Multi-Channel Emergency Alert System (EAS)</h2>
+          </div>
+          <span class="text-xs text-cyan-400 font-mono">Common Alerting Protocol (CAP v1.2) + SMS Gateway Simulator</span>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4 font-mono text-xs">
+          <div class="col-span-12 lg:col-span-6 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <div class="text-sm font-bold text-white uppercase">CAP Alert Constructor</div>
+            <div class="space-y-3">
+              <div>
+                <label class="text-slate-400 text-[10px]">Alert Headline</label>
+                <input type="text" value="GRADE-1 FLASH FLOOD WARNING — EVACUATE MITHI RIVERFRONT" class="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-slate-200 mt-1" readonly/>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-slate-400 text-[10px]">Severity</label>
+                  <input type="text" value="Extreme (Red Alert)" class="w-full bg-slate-950 border border-red-700 p-2 rounded-xl text-red-400 font-bold mt-1" readonly/>
+                </div>
+                <div>
+                  <label class="text-slate-400 text-[10px]">Target Sectors</label>
+                  <input type="text" value="Zones 1, 2, 4 (Kurla, BKC)" class="w-full bg-slate-950 border border-slate-700 p-2 rounded-xl text-cyan-300 mt-1" readonly/>
+                </div>
+              </div>
+            </div>
+            <button class="w-full py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg hover:bg-red-700">
+              🚨 TRANSMIT TO ALL PUBLIC CELL TOWERS & EAS
+            </button>
+          </div>
+
+          <div class="col-span-12 lg:col-span-6 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+            <div class="text-sm font-bold text-white uppercase">Dispatch Distribution Channels</div>
+            <div class="space-y-2">
+              <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+                <span>📱 Wireless Emergency Alerts (WEA Cell-Broadcast)</span>
+                <span class="text-emerald-400 font-bold">148,000 Phones</span>
+              </div>
+              <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+                <span>💬 WhatsApp Official Disaster Broadcast Bot</span>
+                <span class="text-emerald-400 font-bold">24,500 Subscribed</span>
+              </div>
+              <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+                <span>🔊 High-Decibel Mountain / City Sirens</span>
+                <span class="text-emerald-400 font-bold">18 Stations Armed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. TACTICAL VOICE RADIO AI -->
+      <div id="screen-voice" class="wireframe-view hidden space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🎙️</span>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Screen 7: Tactical Voice & Radio Co-Pilot (Gemini AI Powered)</h2>
+          </div>
+          <span class="text-xs text-cyan-400 font-mono">Bilingual Speech-to-Intent Command Execution</span>
+        </div>
+
+        <div class="max-w-2xl mx-auto bg-slate-900 border border-cyan-500/40 rounded-3xl p-6 font-mono space-y-4 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="h-3 w-3 rounded-full bg-cyan-400 animate-pulse"></span>
+              <span class="font-bold text-white text-sm">CO-PILOT TACTICAL RADIO CHANNEL #1</span>
+            </div>
+            <span class="text-xs text-cyan-300">GEMINI PRO AI ACTIVE</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-300">
+              <span class="text-cyan-400 font-bold">[Officer Radio Ingest]:</span> "Commander, water level rising near Kurla railway culvert, request 2 inflatable rescue boats."
+            </div>
+            <div class="p-3 bg-cyan-950/40 rounded-xl border border-cyan-700 text-cyan-200">
+              <span class="text-emerald-400 font-bold">[AI Tactical Response]:</span> "Acknowledged. Dispatching NDRF Boat Column #2 from BKC staging depot. Estimated arrival: 11 minutes. Barricade order transmitted to local traffic police."
+            </div>
+          </div>
+
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-slate-400">Voice Input Active: Hold PTT to Speak</span>
+            <button class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl shadow">🎙️ PUSH TO TALK</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. CWC SOVEREIGN GAUGES -->
+      <div id="screen-cwc" class="wireframe-view hidden space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🌊</span>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Screen 8: Central Water Commission (CWC) Flood Hydrographs</h2>
+          </div>
+          <span class="text-xs text-cyan-400 font-mono">Official Indian River Gauge Telemetry across 6 Major River Basins</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 font-mono text-xs">
+          <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+            <div class="flex justify-between font-bold text-white">
+              <span>Ganga Basin — Rishikesh Gauge</span>
+              <span class="text-amber-400">WARNING STAGE</span>
+            </div>
+            <div class="text-2xl font-black text-cyan-300">339.40 m <span class="text-xs text-slate-400">/ DL: 340.00m</span></div>
+            <div class="text-[10px] text-slate-500">Discharge: 8,400 m³/s • Trend: Rising (+0.12m/hr)</div>
+          </div>
+
+          <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+            <div class="flex justify-between font-bold text-white">
+              <span>Yamuna Basin — Old Railway Bridge (Delhi)</span>
+              <span class="text-red-400 font-bold">ABOVE DANGER LEVEL</span>
+            </div>
+            <div class="text-2xl font-black text-red-400">206.12 m <span class="text-xs text-slate-400">/ DL: 205.33m</span></div>
+            <div class="text-[10px] text-slate-500">Discharge: 12,800 m³/s • Trend: Peak Inundation</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. SENSOR PROVENANCE LEDGER -->
+      <div id="screen-provenance" class="wireframe-view hidden space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🛡️</span>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Screen 9: Sovereign Data Provenance & Sensor Reliability Ledger</h2>
+          </div>
+          <span class="text-xs text-cyan-400 font-mono">100% Verified Ingestion Manifest & Audit Certificates</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 font-mono text-xs">
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+            <div class="text-cyan-400 font-bold">ISRO SAC MOSDAC</div>
+            <div class="text-[10px] text-slate-400 mt-1">INSAT-3DR Multispectral Imager</div>
+            <div class="text-emerald-400 font-bold text-[10px] mt-2">● LIVE PASS 17:00 UTC</div>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+            <div class="text-cyan-400 font-bold">Copernicus CDSE</div>
+            <div class="text-[10px] text-slate-400 mt-1">Sentinel-2 L2A float32 GeoTIFF</div>
+            <div class="text-emerald-400 font-bold text-[10px] mt-2">● RASTERIO PARSED</div>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+            <div class="text-cyan-400 font-bold">EMSC & USGS</div>
+            <div class="text-[10px] text-slate-400 mt-1">FDSN Global Seismometers</div>
+            <div class="text-emerald-400 font-bold text-[10px] mt-2">● 80KM BUFFER ACTIVE</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(screenId) {
+      document.querySelectorAll('.wireframe-view').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      const targetScreen = document.getElementById(screenId);
+      const targetTab = document.getElementById('tab-' + screenId);
+      if (targetScreen) targetScreen.classList.remove('hidden');
+      if (targetTab) targetTab.classList.add('active');
+    }
+  </script>
+</body>
+</html>
