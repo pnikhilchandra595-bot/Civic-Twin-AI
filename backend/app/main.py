@@ -1130,6 +1130,8 @@ class GLOFBreachSimRequest(BaseModel):
     breach_depth_m: float = 24.0
     breach_width_m: float = 65.0
     moraine_soil_erosion_rate: float = 1.8
+    cloudburst_inflow_mmh: float = 0.0
+    dam_sluice_opened: bool = False
 
 @app.post("/api/simulation/glof-cascade")
 async def simulate_himalayan_glof_breach(payload: GLOFBreachSimRequest):
@@ -1141,7 +1143,9 @@ async def simulate_himalayan_glof_breach(payload: GLOFBreachSimRequest):
         lake_id=payload.lake_id,
         breach_depth_m=payload.breach_depth_m,
         breach_width_m=payload.breach_width_m,
-        moraine_soil_erosion_rate=payload.moraine_soil_erosion_rate
+        moraine_soil_erosion_rate=payload.moraine_soil_erosion_rate,
+        cloudburst_inflow_mmh=payload.cloudburst_inflow_mmh,
+        dam_sluice_opened=payload.dam_sluice_opened
     )
 
 @app.get("/api/satellite/bhoonidhi/live-assets")
