@@ -2,19 +2,22 @@ services:
   - type: web
     name: civictwin-api
     runtime: python
-    region: singapore
-    plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.8
+        value: 3.11.9
       - key: JWT_SECRET
         generateValue: true
+      - key: DELHI_OTD_API_KEY
+        sync: false
       - key: MOSDAC_USERNAME
         sync: false
       - key: MOSDAC_PASSWORD
         sync: false
-      - key: DELHI_OTD_API_KEY
+      - key: COPERNICUS_CLIENT_ID
+        sync: false
+      - key: COPERNICUS_CLIENT_SECRET
         sync: false
