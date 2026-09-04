@@ -15,5 +15,6 @@ pyjwt>=2.8.0
 requests>=2.31.0
 rasterio>=1.4.0
 affine>=3.0.0
+psycopg2-binary>=2.9.9
 
 

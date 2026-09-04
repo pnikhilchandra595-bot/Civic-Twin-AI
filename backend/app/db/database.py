@@ -9,23 +9,27 @@ DB_FILE = os.path.join(os.path.dirname(__file__), "civictwin.db")
 class CivicTwinDatabase:
     """
     Persistent Relational Database & PostGIS-Compatible Geospatial Storage.
-    Implements all 9 Core ER Tables:
-    1. zones
-    2. risk_assessments
-    3. infrastructure_assets
-    4. incidents
-    5. resources
-    6. incident_resources
-    7. alerts
-    8. shelters
-    9. users
+    Supports Dual Engines:
+    - Neon Serverless PostgreSQL (when DATABASE_URL is configured)
+    - SQLite WAL (fallback for local development/offline)
     """
 
     def __init__(self, db_path: str = DB_FILE):
         self.db_path = db_path
+        self.database_url = os.getenv("DATABASE_URL")
+        self.is_postgres = bool(self.database_url and ("postgres" in self.database_url))
         self._init_db()
 
     def get_connection(self):
+        if self.is_postgres:
+            try:
+                import psycopg2
+                import psycopg2.extras
+                conn = psycopg2.connect(self.database_url)
+                return conn
+            except Exception as e:
+                print(f"Neon PostgreSQL connection error, falling back to SQLite: {e}")
+        
         conn = sqlite3.connect(self.db_path, timeout=10.0)
         conn.row_factory = sqlite3.Row
         # Enable Write-Ahead Logging (WAL) for high concurrency
@@ -34,8 +38,50 @@ class CivicTwinDatabase:
         conn.execute("PRAGMA busy_timeout=5000;")
         return conn
 
+    def get_api_key(self, key_name: str) -> Optional[str]:
+        """Retrieves stored API key from Neon PostgreSQL or environment variable."""
+        env_val = os.getenv(key_name)
+        if env_val:
+            return env_val
+            
+        if self.is_postgres:
+            try:
+                with self.get_connection() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute("SELECT key_value FROM system_api_keys WHERE key_name = %s AND is_active = TRUE;", (key_name,))
+                        row = cur.fetchone()
+                        if row:
+                            return row[0]
+            except Exception as e:
+                print(f"Error reading API key from Neon: {e}")
+        return None
+
+    def get_all_stored_api_keys(self) -> Dict[str, Any]:
+        """Returns metadata of all API keys configured in Neon PostgreSQL."""
+        if self.is_postgres:
+            try:
+                with self.get_connection() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute("SELECT key_name, service_name, description, is_active, updated_at FROM system_api_keys ORDER BY key_name;")
+                        rows = cur.fetchall()
+                        return {
+                            r[0]: {
+                                "service": r[1],
+                                "description": r[2],
+                                "is_active": r[3],
+                                "updated_at": str(r[4])
+                            }
+                            for r in rows
+                        }
+            except Exception as e:
+                print(f"Error fetching API keys metadata from Neon: {e}")
+        return {}
+
     def _init_db(self):
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        if self.is_postgres:
+            return  # Already migrated schema directly to Neon PostgreSQL
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
 
