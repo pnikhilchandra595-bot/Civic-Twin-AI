@@ -25,7 +25,8 @@ import {
   ShieldCheck,
   Zap,
   Flame,
-  ThermometerSnowflake
+  ThermometerSnowflake,
+  FlaskConical
 } from 'lucide-react';
 import { CityDigitalTwinState } from '../types/digital_twin';
 
@@ -33,6 +34,7 @@ interface CommandToolsHubProps {
   state: CityDigitalTwinState | null;
   onOpenMap: () => void;
   onOpenSandbox: () => void;
+  onOpenCalibratedSim?: () => void;
   onOpenGLOF: () => void;
   onOpenMOSDAC: () => void;
   onOpenCWCGauges: () => void;
@@ -57,6 +59,7 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
   state,
   onOpenMap,
   onOpenSandbox,
+  onOpenCalibratedSim,
   onOpenGLOF,
   onOpenMOSDAC,
   onOpenCWCGauges,
@@ -143,6 +146,34 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
             >
               <Activity className="w-3.5 h-3.5" />
               <span>Open Crisis Sandbox</span>
+            </button>
+          </div>
+
+          {/* Tool 2.5: Calibrated Scientific Benchmark Suite */}
+          <div className="p-4 rounded-2xl bg-[#091224]/90 border border-teal-500/30 hover:border-teal-400 transition-all flex flex-col justify-between space-y-3 shadow-lg group">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-teal-500/10 rounded-xl text-teal-400 border border-teal-500/20">
+                  <FlaskConical className="w-5 h-5 animate-pulse" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/30 font-bold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
+                  CALIBRATED DATA
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white font-hud mt-2.5">
+                Sovereign Calibrated Benchmark Suite
+              </h3>
+              <p className="text-xs text-slate-400 font-sans mt-1">
+                Real-world calibrated historical catastrophe simulations (Sikkim 2023, Mumbai 2005, Delhi 2023, Kedarnath 2013) with ISRO & CWC ground-truth datasets.
+              </p>
+            </div>
+            <button
+              onClick={onOpenCalibratedSim}
+              className="w-full py-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+            >
+              <FlaskConical className="w-3.5 h-3.5" />
+              <span>Launch Calibrated Sim</span>
             </button>
           </div>
 

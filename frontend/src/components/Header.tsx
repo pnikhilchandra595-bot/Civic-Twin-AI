@@ -7,7 +7,8 @@ import {
   CloudRain, Radar, BookOpen, MessageSquare, PhoneCall, 
   FileText, LogOut, UserCheck, Globe, Video, Mic, Skull, AlertOctagon, Settings, Database,
   TrendingUp, Waves, HeartPulse, WifiOff, Smartphone, QrCode, Bot, Sparkles, Building2, Lock, User,
-  ChevronDown, Grid, Shield, Flame, Sun, Moon, Satellite, Mountain
+  ChevronDown, Grid, Shield, Flame, Sun, Moon, Satellite, Mountain,
+  FlaskConical
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -45,6 +46,7 @@ interface HeaderProps {
   setActiveView: (view: 'map' | 'cascade' | 'telemetry' | 'iap' | 'radio') => void;
   demoMode?: boolean;
   onToggleDemoMode?: () => void;
+  onOpenCalibratedSim?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -80,6 +82,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSwitchCity,
   demoMode,
   onToggleDemoMode,
+  onOpenCalibratedSim,
 }) => {
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
@@ -513,6 +516,19 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <span>{demoMode ? '🎬 DEMO' : '🛰️ REAL'}</span>
             <div className={`w-2 h-2 rounded-full ${demoMode ? 'bg-amber-400' : 'bg-emerald-400'}`} />
+          </button>
+        )}
+
+        {/* 4.6 Calibrated Simulation Quick Trigger */}
+        {onOpenCalibratedSim && (
+          <button
+            onClick={onOpenCalibratedSim}
+            title="🔬 Open Sovereign Calibrated Benchmark Simulation (ISRO, CWC, IMD, USGS Data)"
+            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer bg-slate-900 hover:bg-slate-800 border-teal-500/40 text-teal-300 hover:border-teal-400 hover:text-teal-200 shadow-sm"
+          >
+            <FlaskConical className="w-3.5 h-3.5 text-teal-400 animate-pulse" />
+            <span className="hidden md:inline">CALIBRATED</span>
+            <span className="md:hidden">SIM</span>
           </button>
         )}
 

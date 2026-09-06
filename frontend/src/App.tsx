@@ -42,10 +42,12 @@ import { CWCGaugesModal } from './components/CWCGaugesModal';
 import { MOSDACModal } from './components/MOSDACModal';
 import { GLOFModal } from './components/GLOFModal';
 import { CommandToolsHub } from './components/CommandToolsHub';
+import { CalibratedSimulationPanel } from './components/CalibratedSimulationPanel';
+import { CalibratedScenario } from './data/calibratedSimulationScenarios';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon,
-  QrCode, TrendingUp, Settings
+  QrCode, TrendingUp, Settings, FlaskConical
 } from 'lucide-react';
 import { DEFAULT_FALLBACK_STATE } from './data/defaultTwinState';
 
@@ -80,7 +82,7 @@ export const App: React.FC = () => {
 
   // View mode: defaults to public portal on mobile, flexible on desktop
   const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('SCROLLING_PORTAL');
-  const [cockpitView, setCockpitView] = useState<'tools' | 'map' | 'sandbox' | 'all'>('tools');
+  const [cockpitView, setCockpitView] = useState<'tools' | 'map' | 'sandbox' | 'calibrated' | 'all'>('tools');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   // Selected deep analysis sub-tab in Section 4
@@ -260,6 +262,83 @@ export const App: React.FC = () => {
     } catch (e) {
       console.error('City switch error:', e);
     }
+  };
+
+  const handleInjectCalibratedState = (scenario: CalibratedScenario, multiplier: number) => {
+    const adjustedDischarge = Math.round(scenario.peakDischargeCumecs * multiplier);
+    const adjustedSurge = Number((scenario.peakSurgeDepthM * (0.8 + 0.2 * multiplier)).toFixed(2));
+    const adjustedRain = Math.round(scenario.peakRainfallRateMmh * multiplier);
+
+    setState(prev => {
+      const calibratedNodes: InfrastructureNode[] = scenario.keyInundatedNodes.map((kn, idx) => {
+        const latOffset = (idx * 0.012) * (idx % 2 === 0 ? 1 : -1);
+        const lngOffset = (idx * 0.015);
+        return {
+          id: `calib-node-${scenario.id}-${idx}`,
+          name: kn.name,
+          node_type: (kn.type as any) || 'dam_levee',
+          lat: scenario.coordinates[0] + latOffset,
+          lng: scenario.coordinates[1] + lngOffset,
+          elevation_m: Math.max(10, 500 - idx * 60),
+          status: kn.status,
+          vulnerability_index: kn.status === 'submerged' ? 0.98 : kn.status === 'critical' ? 0.85 : 0.65,
+          capacity_total: 1000,
+          capacity_used: kn.status === 'submerged' ? 0 : 650,
+          backup_power_hours: kn.status === 'submerged' ? 0 : 4,
+          backup_power_active: kn.status !== 'submerged',
+          flood_depth_m: Number((kn.depthM * (0.8 + 0.2 * multiplier)).toFixed(2)),
+          structural_integrity: kn.status === 'submerged' ? 15 : kn.status === 'critical' ? 45 : 75,
+          population_density: 800,
+          details: {
+            calibratedScenario: scenario.name,
+            historicalEvent: scenario.historicalEvent,
+            arrivalMinutes: kn.arrivalMinutes,
+            surgeDepthM: kn.depthM
+          }
+        };
+      });
+
+      const calibratedSensors: SensorReading[] = scenario.sensorCalibration.map((sc, idx) => {
+        return {
+          sensor_id: sc.sensorId,
+          sensor_type: 'water_level_gauge',
+          name: `${sc.sensorId} (${sc.metric})`,
+          lat: scenario.coordinates[0] + (idx * 0.008),
+          lng: scenario.coordinates[1] + (idx * 0.009),
+          current_value: adjustedDischarge,
+          unit: sc.calibratedValue,
+          threshold_warning: 50,
+          threshold_critical: 80,
+          status: sc.status === 'DANGER' ? 'critical' : 'warning',
+          trend: 'rising',
+          history: [40, 55, 70, 85, 95]
+        };
+      });
+
+      return {
+        ...prev,
+        city_name: `${scenario.name}`,
+        center_coords: scenario.coordinates,
+        rain_intensity_mmhr: adjustedRain,
+        storm_surge_m: adjustedSurge,
+        levee_breached: true,
+        substation_tripped: true,
+        nodes: [...calibratedNodes, ...prev.nodes.slice(calibratedNodes.length)],
+        sensors: calibratedSensors.length > 0 ? calibratedSensors : prev.sensors,
+        iap: {
+          ...prev.iap,
+          incident_name: `[CALIBRATED BENCHMARK] ${scenario.name}`,
+          operational_period: scenario.eventDate,
+          overall_threat_level: 'CATASTROPHIC',
+          incident_commander_summary: `Sovereign historical benchmark active: ${scenario.historicalEvent}. Calibrated methodology: ${scenario.methodology}. Peak discharge: ${adjustedDischarge.toLocaleString()} m³/s (${multiplier}x multiplier). Surge depth: ${adjustedSurge}m. Celerity: ${scenario.celerityKmh} km/h.`,
+          strategic_objectives: scenario.tacticalMitigation,
+          public_emergency_alert: `🚨 SOVEREIGN BENCHMARK SIMULATION ACTIVE: ${scenario.name}. Calibrated hydraulic crest propagating downstream.`
+        }
+      };
+    });
+
+    setToastAlert(`🔬 Injected Sovereign Calibrated Scenario: ${scenario.name} (Discharge: ${adjustedDischarge.toLocaleString()} m³/s, Surge: ${adjustedSurge}m)`);
+    setTimeout(() => setToastAlert(null), 6000);
   };
 
   const handleSyncLiveWeather = async () => {
@@ -539,6 +618,7 @@ export const App: React.FC = () => {
         setActiveView={() => {}}
         demoMode={demoMode}
         onToggleDemoMode={handleToggleDemoMode}
+        onOpenCalibratedSim={() => setCockpitView('calibrated')}
       />
 
       {/* Floating Emergency Toast Notification */}
@@ -646,6 +726,18 @@ export const App: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setCockpitView('calibrated')}
+              className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
+                cockpitView === 'calibrated'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold shadow-lg shadow-teal-500/25 border border-teal-400'
+                  : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+              }`}
+            >
+              <FlaskConical className="w-4 h-4 text-emerald-300" />
+              <span>🔬 CALIBRATED SIM</span>
+            </button>
+
+            <button
               onClick={() => setCockpitView('all')}
               className={`px-3 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
                 cockpitView === 'all'
@@ -671,6 +763,7 @@ export const App: React.FC = () => {
             state={state}
             onOpenMap={() => setCockpitView('map')}
             onOpenSandbox={() => setCockpitView('sandbox')}
+            onOpenCalibratedSim={() => setCockpitView('calibrated')}
             onOpenGLOF={() => setIsGLOFOpen(true)}
             onOpenMOSDAC={() => setIsMOSDACOpen(true)}
             onOpenCWCGauges={() => setIsCWCGaugesOpen(true)}
@@ -743,6 +836,23 @@ export const App: React.FC = () => {
               playbackSpeed={playbackSpeed}
               onTogglePlayback={handleTogglePlayback}
               onSetSpeed={handleSetSpeed}
+            />
+          </div>
+        </section>
+        )}
+
+        {/* VIEW 4 & ALL: SOVEREIGN CALIBRATED BENCHMARK SIMULATION SUITE */}
+        {(cockpitView === 'calibrated' || cockpitView === 'all') && (
+        <section className="space-y-2">
+          <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
+            <FlaskConical className="w-4 h-4 text-emerald-400" />
+            <span>3. Sovereign Calibrated Benchmark Crisis Simulation Suite</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#091224]/85 border border-teal-500/25 shadow-xl text-slate-100">
+            <CalibratedSimulationPanel
+              onInjectCalibratedState={handleInjectCalibratedState}
+              onOpenMap={() => setCockpitView('map')}
             />
           </div>
         </section>
