@@ -20,6 +20,10 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 700,
     rollupOptions: {
+      input: {
+        main: 'index.html',
+        calibrated: 'calibrated.html'
+      },
       output: {
         manualChunks: {
           // Core React

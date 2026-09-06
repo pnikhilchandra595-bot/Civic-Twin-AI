@@ -47,7 +47,7 @@ import { CalibratedScenario } from './data/calibratedSimulationScenarios';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon,
-  QrCode, TrendingUp, Settings, FlaskConical
+  QrCode, TrendingUp, Settings, FlaskConical, ExternalLink
 } from 'lucide-react';
 import { DEFAULT_FALLBACK_STATE } from './data/defaultTwinState';
 
@@ -464,27 +464,40 @@ export const App: React.FC = () => {
           </button>
 
           {/* Tab 3: Calibrated Benchmark Simulation */}
-          <button
-            onClick={() => {
-              setViewMode('COCKPIT');
-              setCockpitView('calibrated');
-            }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
-              cockpitView === 'calibrated'
-                ? 'bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 text-white shadow-md shadow-teal-500/30 border border-cyan-300 font-black'
-                : 'text-cyan-300 hover:text-white bg-cyan-950/70 hover:bg-cyan-900 border border-teal-500/40'
-            }`}
-          >
-            <FlaskConical className="w-4 h-4 text-cyan-300 animate-bounce" />
-            <span>🔬 CALIBRATED DATA SIMULATION</span>
-            {cockpitView === 'calibrated' ? (
-              <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-            ) : (
-              <span className="px-1.5 py-0.2 rounded text-[9px] bg-teal-400/25 text-teal-300 border border-teal-400/40 font-black">
-                ACTIVE
-              </span>
-            )}
-          </button>
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={() => {
+                setViewMode('COCKPIT');
+                setCockpitView('calibrated');
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                cockpitView === 'calibrated'
+                  ? 'bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 text-white shadow-md shadow-teal-500/30 border border-cyan-300 font-black'
+                  : 'text-cyan-300 hover:text-white bg-cyan-950/70 hover:bg-cyan-900 border border-teal-500/40'
+              }`}
+            >
+              <FlaskConical className="w-4 h-4 text-cyan-300 animate-bounce" />
+              <span>🔬 CALIBRATED DATA SIMULATION</span>
+              {cockpitView === 'calibrated' ? (
+                <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+              ) : (
+                <span className="px-1.5 py-0.2 rounded text-[9px] bg-teal-400/25 text-teal-300 border border-teal-400/40 font-black">
+                  ACTIVE
+                </span>
+              )}
+            </button>
+
+            <a
+              href="/calibrated"
+              target="_blank"
+              rel="noreferrer"
+              title="Launch Dedicated Standalone Jury Platform (New Tab)"
+              className="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 flex items-center space-x-1 shadow-md shadow-teal-500/30 transition-transform active:scale-95 cursor-pointer"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">STANDALONE SITE ↗</span>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -908,7 +921,34 @@ export const App: React.FC = () => {
 
         {/* VIEW 4 & ALL: SOVEREIGN CALIBRATED BENCHMARK SIMULATION SUITE */}
         {(cockpitView === 'calibrated' || cockpitView === 'all') && (
-        <section className="space-y-2">
+        <section className="space-y-3">
+          {/* Standalone Jury Website Banner */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-teal-950/90 via-[#0a182d] to-cyan-950/90 border border-cyan-400/40 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center space-x-2">
+                <span className="px-2 py-0.5 rounded text-[10px] font-black bg-teal-400/20 text-teal-300 border border-teal-400/40 font-mono">
+                  🏛️ STANDALONE JURY EDITION WEBSITE ACTIVE
+                </span>
+                <span className="text-[11px] text-cyan-300 font-mono">7 World-Class Scientific Pillars</span>
+              </div>
+              <h3 className="text-base font-bold text-white font-hud">
+                CivicTwin AI – Sovereign Calibrated Digital Twin
+              </h3>
+              <p className="text-xs text-slate-300 font-sans">
+                Dedicated website featuring 3D Topographic Terrain tilt, Explainable Physics XAI (Froehlich Dam Breach, Manning's Roughness), Tactical Soundscape & Audio TTS, Helicopter Landing Zone Evaluator, and SHA-256 Sovereign Provenance.
+              </p>
+            </div>
+            <a
+              href="/calibrated"
+              target="_blank"
+              rel="noreferrer"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500 hover:brightness-110 text-slate-950 font-black font-mono text-xs flex items-center space-x-2 shadow-xl shadow-cyan-500/30 transition-transform active:scale-95 shrink-0 cursor-pointer"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span>LAUNCH STANDALONE JURY SITE ↗</span>
+            </a>
+          </div>
+
           <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
             <FlaskConical className="w-4 h-4 text-emerald-400" />
             <span>3. Sovereign Calibrated Benchmark Crisis Simulation Suite</span>
