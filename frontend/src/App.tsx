@@ -117,7 +117,7 @@ export const App: React.FC = () => {
   const [isMOSDACOpen, setIsMOSDACOpen] = useState<boolean>(false);
   const [isGLOFOpen, setIsGLOFOpen] = useState<boolean>(false);
 
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isSyncingWeather, setIsSyncingWeather] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false); // true while district synthesis is in progress
@@ -126,6 +126,38 @@ export const App: React.FC = () => {
   const [radioMessages, setRadioMessages] = useState<RadioMessage[]>([]);
   const [sarReport, setSarReport] = useState<SatelliteSARReport | null>(null);
   const [toastAlert, setToastAlert] = useState<string | null>(null);
+
+  // Active continuous digital twin simulation loop
+  useEffect(() => {
+    if (!isPlaying) return;
+    const intervalMs = Math.max(400, Math.floor(1200 / playbackSpeed));
+    const timer = setInterval(() => {
+      setState((prevState) => {
+        if (!prevState || !prevState.nodes || prevState.nodes.length === 0) return prevState;
+        const newTimeline = Number((prevState.timeline_hour + 0.05 * playbackSpeed).toFixed(2));
+        const updatedNodes = prevState.nodes.map(node => {
+          const depthShift = Math.sin(newTimeline * 2 + (node.lat * 10)) * 0.03;
+          const newDepth = Math.max(0, Number((node.flood_depth_m + depthShift * (node.vulnerability_index || 0.5)).toFixed(2)));
+          let status: any = 'operational';
+          if (newDepth > 0.8) status = 'submerged';
+          else if (newDepth > 0.3) status = 'critical';
+          else if (newDepth > 0.1) status = 'warning';
+          return {
+            ...node,
+            flood_depth_m: newDepth,
+            water_level_m: Number((node.elevation_m + newDepth).toFixed(2)),
+            status
+          };
+        });
+        return {
+          ...prevState,
+          timeline_hour: newTimeline,
+          nodes: updatedNodes
+        };
+      });
+    }, intervalMs);
+    return () => clearInterval(timer);
+  }, [isPlaying, playbackSpeed]);
 
   const handleToggleDemoMode = async () => {
     try {

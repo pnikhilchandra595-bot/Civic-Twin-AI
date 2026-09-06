@@ -25,7 +25,7 @@ class DigitalTwinStateManager:
         self.cascade = CascadeFailureEngine()
         self.router = DynamicEvacuationRouter()
         self.ai_cmd = AIIncidentCommander()
-        self.is_playing = False
+        self.is_playing = True
         self.playback_speed = 1.0
 
     def get_current_state(self) -> CityDigitalTwinState:
