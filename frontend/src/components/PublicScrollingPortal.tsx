@@ -4,9 +4,10 @@ import { AuthUser } from './LoginPage';
 import { 
   Activity, Sparkles, Smartphone, ShieldCheck, 
   ShieldAlert, ArrowRight, Phone, MapPin, 
-  CloudRain, Wind, Droplets, Lock, 
-  CheckCircle2, AlertTriangle, Waves, MessageSquare, 
-  Send, HelpCircle, Compass, ChevronRight, Zap
+  CloudRain, Wind, Droplets, Lock,
+  Send, HelpCircle, Compass, ChevronRight, Zap,
+  MessageSquare, CheckCircle2, AlertTriangle, Waves,
+  FlaskConical
 } from 'lucide-react';
 
 interface PublicScrollingPortalProps {
@@ -14,6 +15,7 @@ interface PublicScrollingPortalProps {
   authUser: AuthUser | null;
   onSwitchCity: (cityId: string) => void;
   onLaunchFullCockpit: () => void;
+  onOpenCalibratedSim?: () => void;
   onOpenGemini: () => void;
   onOpenSatelliteSAR?: () => void;
   onOpenDroneCCTV?: () => void;
@@ -33,6 +35,7 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
   authUser,
   onSwitchCity,
   onLaunchFullCockpit,
+  onOpenCalibratedSim,
   onOpenGemini,
   onOpenWeather,
   onOpenCitizenSOS,
@@ -113,13 +116,31 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
         </div>
 
         {/* Right Action Buttons */}
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center space-x-2">
+          {onOpenCalibratedSim && (
+            <button
+              onClick={onOpenCalibratedSim}
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-teal-700 to-cyan-700 hover:from-teal-600 hover:to-cyan-600 text-white font-mono text-xs font-bold transition-all shadow-md shadow-cyan-500/20 flex items-center space-x-1.5 cursor-pointer border border-cyan-400/40"
+            >
+              <FlaskConical className="w-3.5 h-3.5 text-cyan-300 animate-pulse" />
+              <span>🔬 CALIBRATED SIM</span>
+            </button>
+          )}
+
+          <button
+            onClick={onLaunchFullCockpit}
+            className="hidden sm:flex px-3 py-1.5 rounded-xl bg-emerald-950 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-mono text-xs font-bold transition-all items-center space-x-1 cursor-pointer"
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>Cockpit</span>
+          </button>
+
           <button
             onClick={onOpenGPSLocationSOS || onOpenCitizenSOS}
             className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-mono text-xs font-bold transition-all shadow-[0_0_20px_rgba(244,63,94,0.4)] flex items-center space-x-1.5 cursor-pointer animate-pulse"
           >
             <ShieldAlert className="w-3.5 h-3.5" />
-            <span>🚨 1-Click SOS</span>
+            <span>🚨 SOS</span>
           </button>
 
           {authUser ? (
@@ -193,6 +214,15 @@ export const PublicScrollingPortal: React.FC<PublicScrollingPortalProps> = ({
             >
               <span>ACCESS DASHBOARD 🎛️</span>
             </button>
+            {onOpenCalibratedSim && (
+              <button
+                onClick={onOpenCalibratedSim}
+                className="font-pixel px-5 py-3 rounded-xl bg-gradient-to-r from-teal-900 via-cyan-900 to-blue-900 hover:from-teal-800 hover:to-cyan-800 border-2 border-cyan-400 text-cyan-100 text-xs font-black transition-all flex items-center space-x-2 cursor-pointer shadow-[0_0_25px_rgba(6,182,212,0.4)] transform hover:scale-105"
+              >
+                <FlaskConical className="w-4 h-4 text-cyan-300 animate-bounce" />
+                <span>🔬 CALIBRATED SIMULATION</span>
+              </button>
+            )}
             <button
               onClick={onOpenWeather}
               className="font-pixel px-5 py-3 rounded-xl bg-[#0d2822]/90 hover:bg-[#133d34] border border-emerald-500/50 text-emerald-200 text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shadow-md"

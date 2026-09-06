@@ -503,34 +503,49 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       )}
 
-        {/* 4.5 Global Demo Mode Toggle Pill */}
-        {onToggleDemoMode && (
-          <button
-            onClick={onToggleDemoMode}
-            title={demoMode ? "🎬 Demo Mode is ACTIVE (External API calls skipped, returning calibrated reference data). Click to switch to Real Telemetry." : "🛰️ Real Telemetry is ACTIVE. Click to activate Demo Mode for offline presentation."}
-            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer ${
-              demoMode
-                ? 'bg-amber-950/90 border-amber-400 text-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.3)] animate-pulse'
-                : 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-emerald-400 hover:border-emerald-500'
-            }`}
-          >
-            <span>{demoMode ? '🎬 DEMO' : '🛰️ REAL'}</span>
-            <div className={`w-2 h-2 rounded-full ${demoMode ? 'bg-amber-400' : 'bg-emerald-400'}`} />
-          </button>
-        )}
+        {/* 4.5 Global Simulation Mode Segmented Tabs */}
+        <div className="flex items-center rounded-xl bg-slate-900 border border-slate-750 p-0.5 shadow-md">
+          {onToggleDemoMode && (
+            <>
+              <button
+                onClick={demoMode ? onToggleDemoMode : undefined}
+                title={!demoMode ? "🛰️ Real Telemetry Active (Live external feeds)" : "Click to switch to Real Telemetry"}
+                className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  !demoMode
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <span>🛰️ REAL</span>
+                {!demoMode && <div className="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-pulse" />}
+              </button>
 
-        {/* 4.6 Calibrated Simulation Quick Trigger */}
-        {onOpenCalibratedSim && (
-          <button
-            onClick={onOpenCalibratedSim}
-            title="🔬 Open Sovereign Calibrated Benchmark Simulation (ISRO, CWC, IMD, USGS Data)"
-            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer bg-slate-900 hover:bg-slate-800 border-teal-500/40 text-teal-300 hover:border-teal-400 hover:text-teal-200 shadow-sm"
-          >
-            <FlaskConical className="w-3.5 h-3.5 text-teal-400 animate-pulse" />
-            <span className="hidden md:inline">CALIBRATED</span>
-            <span className="md:hidden">SIM</span>
-          </button>
-        )}
+              <button
+                onClick={!demoMode ? onToggleDemoMode : undefined}
+                title={demoMode ? "🎬 Demo Mode Active (Stage simulation reference data)" : "Click to switch to Demo Mode"}
+                className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  demoMode
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <span>🎬 DEMO</span>
+                {demoMode && <div className="w-1.5 h-1.5 rounded-full bg-amber-200 animate-pulse" />}
+              </button>
+            </>
+          )}
+
+          {onOpenCalibratedSim && (
+            <button
+              onClick={onOpenCalibratedSim}
+              title="🔬 Open Sovereign Calibrated Benchmark Simulation (ISRO, CWC, IMD, USGS Data)"
+              className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer bg-gradient-to-r from-teal-800 to-cyan-800 hover:from-teal-700 hover:to-cyan-700 text-cyan-200 border border-teal-500/40 shadow-sm ml-0.5"
+            >
+              <FlaskConical className="w-3.5 h-3.5 text-cyan-300 animate-pulse" />
+              <span>🔬 CALIBRATED</span>
+            </button>
+          )}
+        </div>
 
         {/* 5. Live Weather Sync Button (Only for Officers) */}
         {!isCitizen && (

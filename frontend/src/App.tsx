@@ -80,8 +80,8 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // View mode: defaults to public portal on mobile, flexible on desktop
-  const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('SCROLLING_PORTAL');
+  // View mode: defaults to full cockpit for direct access to digital twin & simulation tabs
+  const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('COCKPIT');
   const [cockpitView, setCockpitView] = useState<'tools' | 'map' | 'sandbox' | 'calibrated' | 'all'>('tools');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
@@ -413,26 +413,113 @@ export const App: React.FC = () => {
     return <LoginPage onLogin={(user) => { handleLogin(user); setIsLoginModalOpen(false); if (user.userType !== 'citizen') setViewMode('COCKPIT'); }} />;
   }
 
+  // Persistent 3-Mode Simulation Control Bar (Always visible at the top of both Cockpit and Portal)
+  const renderSimulationModeBar = () => (
+    <div className="w-full bg-[#060e1d] border-b border-cyan-500/30 py-2 px-3 sm:px-6 sticky top-0 z-50 shadow-2xl flex flex-wrap items-center justify-between gap-2.5 backdrop-blur-xl">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center space-x-1.5 mr-1">
+          <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
+          <span className="text-xs font-mono font-black text-cyan-200 uppercase tracking-wider">
+            SIMULATION ENGINE:
+          </span>
+        </div>
+
+        <div className="inline-flex flex-wrap items-center rounded-xl bg-slate-950/90 p-1 border border-slate-800 shadow-inner gap-1">
+          {/* Tab 1: Real Telemetry */}
+          <button
+            onClick={async () => {
+              if (demoMode) await handleToggleDemoMode();
+              if (cockpitView === 'calibrated') setCockpitView('tools');
+              if (viewMode === 'SCROLLING_PORTAL') setViewMode('COCKPIT');
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+              !demoMode && cockpitView !== 'calibrated'
+                ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md shadow-emerald-500/25 border border-emerald-400'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+            }`}
+          >
+            <span>🛰️ REAL TELEMETRY</span>
+            {!demoMode && cockpitView !== 'calibrated' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            )}
+          </button>
+
+          {/* Tab 2: Demo Simulated */}
+          <button
+            onClick={async () => {
+              if (!demoMode) await handleToggleDemoMode();
+              if (cockpitView === 'calibrated') setCockpitView('tools');
+              if (viewMode === 'SCROLLING_PORTAL') setViewMode('COCKPIT');
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+              demoMode && cockpitView !== 'calibrated'
+                ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md shadow-amber-500/25 border border-amber-400 animate-pulse'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+            }`}
+          >
+            <span>🎬 DEMO SIMULATED</span>
+            {demoMode && cockpitView !== 'calibrated' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            )}
+          </button>
+
+          {/* Tab 3: Calibrated Benchmark Simulation */}
+          <button
+            onClick={() => {
+              setViewMode('COCKPIT');
+              setCockpitView('calibrated');
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+              cockpitView === 'calibrated'
+                ? 'bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 text-white shadow-md shadow-teal-500/30 border border-cyan-300 font-black'
+                : 'text-cyan-300 hover:text-white bg-cyan-950/70 hover:bg-cyan-900 border border-teal-500/40'
+            }`}
+          >
+            <FlaskConical className="w-4 h-4 text-cyan-300 animate-bounce" />
+            <span>🔬 CALIBRATED DATA SIMULATION</span>
+            {cockpitView === 'calibrated' ? (
+              <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+            ) : (
+              <span className="px-1.5 py-0.2 rounded text-[9px] bg-teal-400/25 text-teal-300 border border-teal-400/40 font-black">
+                ACTIVE
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* View Switcher & Region */}
+      <div className="flex items-center space-x-2 text-xs font-mono">
+        <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
+          <span className="text-slate-500">Region:</span>
+          <span className="text-cyan-300 font-bold">{state?.city_name || 'Active Region'}</span>
+        </div>
+
+        {viewMode === 'SCROLLING_PORTAL' ? (
+          <button
+            onClick={() => setViewMode('COCKPIT')}
+            className="px-3 py-1.5 rounded-xl bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-200 font-bold transition-all flex items-center space-x-1.5 cursor-pointer shadow-md"
+          >
+            <Compass className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Enter Cockpit 🎛️</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => setViewMode('SCROLLING_PORTAL')}
+            className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 text-slate-300 transition-all flex items-center space-x-1.5 cursor-pointer"
+          >
+            <span>Public Safety Portal 🌐</span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
   // If user is in SCROLLING_PORTAL mode
   if (viewMode === 'SCROLLING_PORTAL') {
     return (
       <div className="min-h-screen w-full bg-[#040711] text-slate-100 flex flex-col">
-        {/* Persistent Stage Demo Mode Banner */}
-        {demoMode && (
-          <div className="w-full bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 text-white text-xs font-mono font-bold py-1.5 px-4 text-center flex items-center justify-between shadow-lg border-b border-amber-400/40 z-50 animate-pulse sticky top-0">
-            <div className="flex items-center space-x-2 mx-auto">
-              <span className="text-sm">🎬</span>
-              <span className="tracking-wide">DEMO MODE ACTIVE</span>
-              <span className="hidden md:inline text-amber-100 font-normal">— All live external queries bypassed. Calibrated reference dataset active for offline stage presentation.</span>
-            </div>
-            <button
-              onClick={handleToggleDemoMode}
-              className="px-2.5 py-0.5 rounded bg-black/40 hover:bg-black/60 text-amber-200 hover:text-white text-[10px] uppercase font-mono tracking-wider border border-amber-300/40 transition-all cursor-pointer shrink-0"
-            >
-              Switch to Real Telemetry
-            </button>
-          </div>
-        )}
+        {renderSimulationModeBar()}
         <PublicScrollingPortal
           state={state}
           authUser={authUser}
@@ -444,6 +531,10 @@ export const App: React.FC = () => {
             } else {
               setViewMode('COCKPIT');
             }
+          }}
+          onOpenCalibratedSim={() => {
+            setViewMode('COCKPIT');
+            setCockpitView('calibrated');
           }}
           onOpenGemini={() => setIsAICopilotOpen(true)}
           onOpenSatelliteSAR={() => setIsSAROpen(true)}
@@ -554,33 +645,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#080c14] text-slate-100 flex flex-col select-none overflow-y-auto">
-      {/* Return to Portal Banner Button */}
-      <div className="bg-slate-950/90 border-b border-slate-800 px-4 py-1.5 flex items-center justify-between text-xs font-mono">
-        <span className="text-slate-400">Full-Screen Digital Twin Cockpit View</span>
-        <button
-          onClick={() => setViewMode('SCROLLING_PORTAL')}
-          className="text-cyan-400 hover:text-cyan-300 underline cursor-pointer"
-        >
-          ← Return to Multi-Page Showcase Portal
-        </button>
-      </div>
-
-      {/* Persistent Stage Demo Mode Banner */}
-      {demoMode && (
-        <div className="w-full bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 text-white text-xs font-mono font-bold py-1.5 px-4 text-center flex items-center justify-between shadow-lg border-b border-amber-400/40 z-50 animate-pulse sticky top-0">
-          <div className="flex items-center space-x-2 mx-auto">
-            <span className="text-sm">🎬</span>
-            <span className="tracking-wide">DEMO MODE ACTIVE</span>
-            <span className="hidden md:inline text-amber-100 font-normal">— All live external queries bypassed. Calibrated reference dataset active for offline stage presentation.</span>
-          </div>
-          <button
-            onClick={handleToggleDemoMode}
-            className="px-2.5 py-0.5 rounded bg-black/40 hover:bg-black/60 text-amber-200 hover:text-white text-[10px] uppercase font-mono tracking-wider border border-amber-300/40 transition-all cursor-pointer shrink-0"
-          >
-            Switch to Real Telemetry
-          </button>
-        </div>
-      )}
+      {renderSimulationModeBar()}
 
       {/* Sticky Header */}
       <Header
