@@ -234,8 +234,10 @@ export const App: React.FC = () => {
     try {
       setIsSyncingWeather(true);
       const res = await apiService.syncLiveWeather();
-      setState(res.state);
-      setToastAlert(`🌧️ Synced live IMD telemetry: ${res.weather.precipitation_mmhr} mm/h rain, ${res.weather.wind_speed_kmh} km/h wind`);
+      if (res?.state) setState(res.state);
+      const rain = res.weather?.rain_rate_mmhr ?? res.weather?.precipitation_mmhr ?? 0;
+      const wind = res.weather?.wind_speed_kmh ?? 0;
+      setToastAlert(`🌧️ Synced live IMD telemetry: ${rain} mm/h rain, ${wind} km/h wind`);
       setTimeout(() => setToastAlert(null), 5000);
     } catch (e) {
       console.error('Weather sync error:', e);
