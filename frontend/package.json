@@ -29,5 +29,12 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
     "vite": "^6.2.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.62.5",
+    "@rollup/rollup-linux-x64-musl": "4.62.5"
+  },
+  "engines": {
+    "node": ">=20.0.0 <23.0.0"
   }
 }

@@ -12,5 +12,12 @@
   "devDependencies": {
     "@neon/config": "^1.2.0",
     "@neon/env": "^1.2.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.62.5",
+    "@rollup/rollup-linux-x64-musl": "4.62.5"
+  },
+  "engines": {
+    "node": ">=20.0.0 <23.0.0"
   }
 }
