@@ -113,6 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Close tools dropdown when clicking outside
   useEffect(() => {
+    if (!isToolsMenuOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
       if (toolsMenuRef.current && !toolsMenuRef.current.contains(event.target as Node)) {
         setIsToolsMenuOpen(false);
@@ -120,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isToolsMenuOpen]);
 
   const allCities = [
     { id: 'mumbai_monsoon', state: 'Maharashtra', label: 'Maharashtra: Mumbai Mithi Basin (MH)' },
@@ -168,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="w-full h-14 bg-[#080e1b]/95 border-b border-cyan-500/25 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-40 backdrop-blur-xl font-sans relative shadow-xl shrink-0 flex-nowrap overflow-x-auto no-scrollbar">
+    <header className="w-full h-14 bg-[#080e1b]/95 border-b border-cyan-500/25 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-50 backdrop-blur-xl font-sans relative shadow-xl shrink-0 flex-nowrap overflow-visible">
       
       {/* LEFT SECTION: Logo + Region Switcher + 18 Feeds Badge + Theme Toggle */}
       <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0 flex-nowrap">
@@ -310,7 +311,11 @@ export const Header: React.FC<HeaderProps> = ({
         {!isCitizen && (
           <div className="relative shrink-0" ref={toolsMenuRef}>
             <button
-              onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsToolsMenuOpen(prev => !prev);
+              }}
               title="Command Deck: Surveillance, Hydrology, Physics, Hospital, and Operations Tools"
               className="flex items-center space-x-1 px-2 py-1 rounded-xl bg-[#091224] hover:bg-[#0f1d38] border border-cyan-500/40 hover:border-cyan-400 text-cyan-200 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
             >
@@ -321,7 +326,10 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Expanded Modular Tools Menu */}
           {isToolsMenuOpen && (
-            <div className="absolute right-0 top-12 w-80 sm:w-96 rounded-2xl bg-[#080d1a] border border-cyan-500/40 p-4 shadow-[0_10px_40px_rgba(0,0,0,0.8)] z-50 space-y-3.5 backdrop-blur-2xl">
+            <div 
+              onClick={(e) => e.stopPropagation()} 
+              className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[80vh] overflow-y-auto rounded-2xl bg-[#080d1a] border border-cyan-500/40 p-4 shadow-[0_10px_40px_rgba(0,0,0,0.9)] z-[200] space-y-3.5 backdrop-blur-2xl"
+            >
               <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 flex items-center space-x-1.5">
                   <Grid className="w-3.5 h-3.5" />

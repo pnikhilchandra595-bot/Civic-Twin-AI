@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   CALIBRATED_COMPREHENSIVE_TWIN_STATES, 
   CalibratedComprehensiveTwinState,
@@ -134,6 +134,18 @@ export const CalibratedTwinApp: React.FC = () => {
   const [sarReport, setSarReport] = useState<SatelliteSARReport>(DEFAULT_SAR_REPORT);
   const [isHeaderToolsMenuOpen, setIsHeaderToolsMenuOpen] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<string>(() => new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }));
+  const headerToolsMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isHeaderToolsMenuOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (headerToolsMenuRef.current && !headerToolsMenuRef.current.contains(event.target as Node)) {
+        setIsHeaderToolsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isHeaderToolsMenuOpen]);
 
   // Modals state (All Production Engines + Improvisations + Presentation Desk)
   const [isPresentationDeskOpen, setIsPresentationDeskOpen] = useState<boolean>(false);
@@ -661,9 +673,13 @@ export const CalibratedTwinApp: React.FC = () => {
               </button>
 
               {/* ALL 16 COMMAND TOOLS DROPDOWN MENU */}
-              <div className="relative">
+              <div className="relative" ref={headerToolsMenuRef}>
                 <button
-                  onClick={() => setIsHeaderToolsMenuOpen(!isHeaderToolsMenuOpen)}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsHeaderToolsMenuOpen(prev => !prev);
+                  }}
                   className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-200 font-bold text-xs flex items-center space-x-1 cursor-pointer transition-all"
                 >
                   <Layers className="w-3.5 h-3.5 text-cyan-400" />
@@ -672,7 +688,10 @@ export const CalibratedTwinApp: React.FC = () => {
                 </button>
 
                 {isHeaderToolsMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-72 sm:w-80 p-2 rounded-2xl bg-slate-900/98 border border-cyan-500/40 shadow-2xl z-50 grid grid-cols-2 gap-1.5 text-xs backdrop-blur-2xl">
+                  <div 
+                    onClick={(e) => e.stopPropagation()} 
+                    className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-h-[80vh] overflow-y-auto p-2 rounded-2xl bg-slate-900/98 border border-cyan-500/40 shadow-2xl z-[200] grid grid-cols-2 gap-1.5 text-xs backdrop-blur-2xl"
+                  >
                     <button onClick={() => { setIsGLOFOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
                       <Mountain className="w-3.5 h-3.5 text-cyan-400" />
                       <span>GLOF Early Warning</span>
