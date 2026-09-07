@@ -51,6 +51,8 @@ import {
   Play, Pause, RotateCcw, Clock, Waves, CloudRain, Sliders
 } from 'lucide-react';
 import { DEFAULT_FALLBACK_STATE } from './data/defaultTwinState';
+import { computeSimulationStep } from './services/simulationPhysics';
+import { tacticalAudio } from './services/tacticalAudioEngine';
 
 export const App: React.FC = () => {
   // Authentication state
@@ -157,15 +159,8 @@ export const App: React.FC = () => {
     setIsPlaying(false);
     setState((prevState) => {
       if (!prevState) return prevState;
-      return {
-        ...prevState,
-        timeline_hour: 0.0,
-        nodes: prevState.nodes.map(n => ({
-          ...n,
-          flood_depth_m: (n as any).base_flood_depth ?? 0.0,
-          status: 'operational'
-        }))
-      };
+      const res = computeSimulationStep(prevState, 0.0, 1.0);
+      return res.updatedState;
     });
     setToastAlert(`🔄 Simulation reset to T+0.0h Baseline`);
     setTimeout(() => setToastAlert(null), 3000);
@@ -174,21 +169,37 @@ export const App: React.FC = () => {
   const handleStepSimulation = (deltaHours: number) => {
     setState((prevState) => {
       if (!prevState) return prevState;
-      const newTimeline = Math.max(0, Math.min(12, Number((prevState.timeline_hour + deltaHours).toFixed(2))));
-      return {
-        ...prevState,
-        timeline_hour: newTimeline
-      };
+      const target = Math.max(0, Math.min(12, Number((prevState.timeline_hour + deltaHours).toFixed(2))));
+      const res = computeSimulationStep(prevState, target, 1.0);
+      res.events.forEach(evt => {
+        if (evt.type === 'radio') {
+          setRadioMessages(prev => [{
+            id: `sim-radio-${Date.now()}`,
+            channel: 'TAC-1 NDMA Command',
+            sender_callsign: 'EOC-AUTOMATION',
+            recipient_callsign: 'ALL-UNITS',
+            priority: evt.priority || 'PRIORITY',
+            message: evt.message,
+            timestamp: new Date().toLocaleTimeString('en-US', { hour12: false })
+          }, ...prev]);
+          tacticalAudio.playRadioChirp();
+        } else if (evt.type === 'siren') {
+          tacticalAudio.playWarningSiren();
+          setToastAlert(`🚨 ${evt.message}`);
+          setTimeout(() => setToastAlert(null), 5000);
+        } else if (evt.type === 'chirp') {
+          tacticalAudio.playRadioChirp();
+        }
+      });
+      return res.updatedState;
     });
   };
 
   const handleScrubTimeline = (hour: number) => {
     setState((prevState) => {
       if (!prevState) return prevState;
-      return {
-        ...prevState,
-        timeline_hour: hour
-      };
+      const res = computeSimulationStep(prevState, hour, 1.0);
+      return res.updatedState;
     });
   };
 
@@ -200,25 +211,28 @@ export const App: React.FC = () => {
       setState((prevState) => {
         if (!prevState || !prevState.nodes || prevState.nodes.length === 0) return prevState;
         const newTimeline = Number((prevState.timeline_hour + 0.05 * playbackSpeed).toFixed(2));
-        const updatedNodes = prevState.nodes.map(node => {
-          const depthShift = Math.sin(newTimeline * 2 + (node.lat * 10)) * 0.03;
-          const newDepth = Math.max(0, Number((node.flood_depth_m + depthShift * (node.vulnerability_index || 0.5)).toFixed(2)));
-          let status: any = 'operational';
-          if (newDepth > 0.8) status = 'submerged';
-          else if (newDepth > 0.3) status = 'critical';
-          else if (newDepth > 0.1) status = 'warning';
-          return {
-            ...node,
-            flood_depth_m: newDepth,
-            water_level_m: Number((node.elevation_m + newDepth).toFixed(2)),
-            status
-          };
+        const res = computeSimulationStep(prevState, newTimeline, 1.0);
+        res.events.forEach(evt => {
+          if (evt.type === 'radio') {
+            setRadioMessages(prev => [{
+              id: `sim-radio-${Date.now()}`,
+              channel: 'TAC-1 NDMA Command',
+              sender_callsign: 'EOC-AUTOMATION',
+              recipient_callsign: 'ALL-UNITS',
+              priority: evt.priority || 'PRIORITY',
+              message: evt.message,
+              timestamp: new Date().toLocaleTimeString('en-US', { hour12: false })
+            }, ...prev]);
+            tacticalAudio.playRadioChirp();
+          } else if (evt.type === 'siren') {
+            tacticalAudio.playWarningSiren();
+            setToastAlert(`🚨 ${evt.message}`);
+            setTimeout(() => setToastAlert(null), 5000);
+          } else if (evt.type === 'chirp') {
+            tacticalAudio.playRadioChirp();
+          }
         });
-        return {
-          ...prevState,
-          timeline_hour: newTimeline,
-          nodes: updatedNodes
-        };
+        return res.updatedState;
       });
     }, intervalMs);
     return () => clearInterval(timer);

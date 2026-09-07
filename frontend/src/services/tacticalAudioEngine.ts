@@ -143,6 +143,37 @@ class TacticalAudioEngine {
   }
 
   /**
+   * Loud emergency evacuation / civil defense siren
+   */
+  public playWarningSiren() {
+    if (this.isMuted) return;
+    try {
+      this.initCtx();
+      if (!this.audioCtx) return;
+
+      const now = this.audioCtx.currentTime;
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(400, now);
+      osc.frequency.linearRampToValueAtTime(800, now + 0.4);
+      osc.frequency.linearRampToValueAtTime(400, now + 0.8);
+      osc.frequency.linearRampToValueAtTime(800, now + 1.2);
+      osc.frequency.linearRampToValueAtTime(400, now + 1.6);
+
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + 1.8);
+    } catch (e) {}
+  }
+
+  /**
    * Text-to-Speech (TTS) Tactical SitRep voice
    */
   public speakSitrep(text: string, lang: 'en' | 'hi' = 'en') {

@@ -66,8 +66,10 @@ import {
   Layers, MapPin, CheckCircle2, ChevronRight, ExternalLink, Globe, Car, Truck, Ship,
   Printer, Waves, Mountain, Flame, Zap, ShieldCheck, HelpCircle, Terminal, Cpu,
   Sliders, MessageSquare, Video, AlertOctagon, HeartPulse, Satellite, Users,
-  ArrowRight, Phone, Lock, Eye, AlertTriangle, TrendingUp, Radar, PhoneCall, QrCode, WifiOff, CloudRain
+  ArrowRight, Phone, Lock, Eye, AlertTriangle, TrendingUp, Radar, PhoneCall, QrCode, WifiOff, CloudRain,
+  Sun, Moon, LogOut, UserCheck, Shield
 } from 'lucide-react';
+import { computeSimulationStep } from './services/simulationPhysics';
 
 const DEFAULT_AUTH_OFFICER: AuthUser = {
   name: 'Commandant (Jury Evaluation Edition)',
@@ -118,6 +120,26 @@ export const CalibratedTwinApp: React.FC = () => {
   const [activeLang, setActiveLang] = useState<'en' | 'hi' | 'mr' | 'bn' | 'ta' | 'te'>('en');
   const [mapRenderMode, setMapRenderMode] = useState<'calibrated_vector' | 'satellite_gis'>('calibrated_vector');
   const [demoMode, setDemoMode] = useState<boolean>(false);
+
+  // Light / Dark Theme State
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('civictwin_theme') as 'dark' | 'light') || 'dark';
+  });
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
+    }
+    localStorage.setItem('civictwin_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   // Active view inside Cockpit
   const [activeView, setActiveView] = useState<
@@ -248,16 +270,8 @@ export const CalibratedTwinApp: React.FC = () => {
     setIsPlaying(false);
     setCurrentTwinState((prevState) => {
       if (!prevState) return prevState;
-      const initialNodes = comprehensiveState.state.nodes || prevState.nodes;
-      return {
-        ...prevState,
-        timeline_hour: 0.0,
-        nodes: initialNodes.map(n => ({
-          ...n,
-          flood_depth_m: (n as any).base_flood_depth ?? n.flood_depth_m,
-          status: ((n as any).base_flood_depth ?? n.flood_depth_m) > 0.8 ? 'submerged' : ((n as any).base_flood_depth ?? n.flood_depth_m) > 0.3 ? 'critical' : 'operational'
-        }))
-      };
+      const res = computeSimulationStep(prevState, 0.0, sensitivityMultiplier);
+      return res.updatedState;
     });
     triggerAudioChirp();
     showToast('🔄 Simulation Reset: T+0.0h (Standby Baseline Calibration)');
@@ -267,59 +281,39 @@ export const CalibratedTwinApp: React.FC = () => {
   const handleStepSimulation = (deltaHours: number) => {
     setCurrentTwinState((prevState) => {
       if (!prevState) return prevState;
-      const targetHour = Math.max(0, Number((prevState.timeline_hour + deltaHours).toFixed(2)));
-      const updatedNodes = prevState.nodes.map(node => {
-        const base = (node as any).base_flood_depth ?? node.flood_depth_m;
-        const wave = Math.sin(targetHour * 1.5 + (node.lat * 10)) * 0.15 * (node.vulnerability_index || 0.5);
-        const crest = targetHour > 1.0 ? Math.min(1.2, (targetHour - 1.0) * 0.15) : 0;
-        const newDepth = Math.max(0, Number((base + wave + crest).toFixed(2)));
-        let status: any = 'operational';
-        if (newDepth > 0.8) status = 'submerged';
-        else if (newDepth > 0.3) status = 'critical';
-        else if (newDepth > 0.1) status = 'warning';
-        return {
-          ...node,
-          flood_depth_m: newDepth,
-          water_level_m: Number((node.elevation_m + newDepth).toFixed(2)),
-          status
-        };
+      const targetHour = Math.max(0, Math.min(12, Number((prevState.timeline_hour + deltaHours).toFixed(2))));
+      const res = computeSimulationStep(prevState, targetHour, sensitivityMultiplier);
+      res.events.forEach(evt => {
+        if (evt.type === 'radio') {
+          setRadioMessages(prev => [{
+            id: `sim-radio-${Date.now()}`,
+            channel: 'TAC-1 NDMA Command',
+            sender_callsign: 'EOC-AUTOMATION',
+            recipient_callsign: 'ALL-UNITS',
+            priority: evt.priority || 'PRIORITY',
+            message: evt.message,
+            timestamp: new Date().toLocaleTimeString('en-US', { hour12: false })
+          }, ...prev]);
+          triggerAudioChirp();
+        } else if (evt.type === 'siren') {
+          if (!isAudioMuted) tacticalAudio.playWarningSiren();
+          showToast(`🚨 ${evt.message}`);
+        } else if (evt.type === 'chirp') {
+          triggerAudioChirp();
+        }
       });
-      return {
-        ...prevState,
-        timeline_hour: targetHour,
-        nodes: updatedNodes
-      };
+      return res.updatedState;
     });
-    triggerAudioChirp();
     showToast(`⏱️ Timeline Stepped to T+${Math.max(0, (currentTwinState.timeline_hour + deltaHours)).toFixed(1)}h`);
   };
 
   // Simulation Controls: Direct scrub on timeline slider
   const handleScrubTimeline = (targetHour: number) => {
     setCurrentTwinState((prevState) => {
-      if (!prevState || !prevState.nodes) return prevState;
-      const hour = Math.max(0, Number(targetHour.toFixed(2)));
-      const updatedNodes = prevState.nodes.map(node => {
-        const base = (node as any).base_flood_depth ?? node.flood_depth_m;
-        const wave = Math.sin(hour * 1.5 + (node.lat * 10)) * 0.15 * (node.vulnerability_index || 0.5);
-        const crest = hour > 1.0 ? Math.min(1.2, (hour - 1.0) * 0.15) : 0;
-        const newDepth = Math.max(0, Number((base + wave + crest).toFixed(2)));
-        let status: any = 'operational';
-        if (newDepth > 0.8) status = 'submerged';
-        else if (newDepth > 0.3) status = 'critical';
-        else if (newDepth > 0.1) status = 'warning';
-        return {
-          ...node,
-          flood_depth_m: newDepth,
-          water_level_m: Number((node.elevation_m + newDepth).toFixed(2)),
-          status
-        };
-      });
-      return {
-        ...prevState,
-        timeline_hour: hour,
-        nodes: updatedNodes
-      };
+      if (!prevState) return prevState;
+      const hour = Math.max(0, Math.min(12, Number(targetHour.toFixed(2))));
+      const res = computeSimulationStep(prevState, hour, sensitivityMultiplier);
+      return res.updatedState;
     });
   };
 
@@ -331,29 +325,31 @@ export const CalibratedTwinApp: React.FC = () => {
       setCurrentTwinState((prevState) => {
         if (!prevState || !prevState.nodes || prevState.nodes.length === 0) return prevState;
         const newTimeline = Number((prevState.timeline_hour + 0.05 * playbackSpeed).toFixed(2));
-        const updatedNodes = prevState.nodes.map(node => {
-          const depthShift = Math.sin(newTimeline * 2 + (node.lat * 10)) * 0.03;
-          const newDepth = Math.max(0, Number((node.flood_depth_m + depthShift * (node.vulnerability_index || 0.5)).toFixed(2)));
-          let status: any = 'operational';
-          if (newDepth > 0.8) status = 'submerged';
-          else if (newDepth > 0.3) status = 'critical';
-          else if (newDepth > 0.1) status = 'warning';
-          return {
-            ...node,
-            flood_depth_m: newDepth,
-            water_level_m: Number((node.elevation_m + newDepth).toFixed(2)),
-            status
-          };
+        const res = computeSimulationStep(prevState, newTimeline, sensitivityMultiplier);
+        res.events.forEach(evt => {
+          if (evt.type === 'radio') {
+            setRadioMessages(prev => [{
+              id: `sim-radio-${Date.now()}`,
+              channel: 'TAC-1 NDMA Command',
+              sender_callsign: 'EOC-AUTOMATION',
+              recipient_callsign: 'ALL-UNITS',
+              priority: evt.priority || 'PRIORITY',
+              message: evt.message,
+              timestamp: new Date().toLocaleTimeString('en-US', { hour12: false })
+            }, ...prev]);
+            triggerAudioChirp();
+          } else if (evt.type === 'siren') {
+            if (!isAudioMuted) tacticalAudio.playWarningSiren();
+            showToast(`🚨 ${evt.message}`);
+          } else if (evt.type === 'chirp') {
+            triggerAudioChirp();
+          }
         });
-        return {
-          ...prevState,
-          timeline_hour: newTimeline,
-          nodes: updatedNodes
-        };
+        return res.updatedState;
       });
     }, intervalMs);
     return () => clearInterval(timer);
-  }, [isPlaying, playbackSpeed]);
+  }, [isPlaying, playbackSpeed, sensitivityMultiplier, isAudioMuted]);
 
   // Switch City across all Indian States & Corridors (Multi-City Model)
   const handleSwitchCity = async (cityId: string) => {
@@ -580,8 +576,79 @@ export const CalibratedTwinApp: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-transparent text-slate-100 font-mono select-none flex flex-col">
       
+      {/* 0. PERSISTENT MASTER SIMULATION MODE BAR */}
+      <div className="w-full bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 border-b border-cyan-500/35 py-1.5 px-3 sm:px-5 sticky top-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.95)] flex items-center justify-between gap-2.5 backdrop-blur-2xl flex-nowrap overflow-x-auto no-scrollbar shrink-0 text-xs ring-1 ring-cyan-500/20 cyber-scanner-border">
+        <div className="flex items-center space-x-2 shrink-0">
+          <div className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-lg bg-cyan-950/80 border border-cyan-500/50 shadow-[0_0_12px_rgba(6,182,212,0.25)] shrink-0">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping shrink-0" />
+            <span className="text-[10px] font-mono font-black text-cyan-200 uppercase tracking-widest hidden sm:inline shrink-0 text-glow-cyan">
+              ENGINE C2:
+            </span>
+          </div>
+
+          <div className="inline-flex items-center rounded-xl bg-slate-950/90 p-0.5 border border-cyan-500/30 shadow-inner space-x-1 shrink-0">
+            {/* Tab 1: Real Platform */}
+            <a
+              href="/"
+              className="px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+              title="Switch to Real Telemetry Platform"
+            >
+              <span>🛰️ REAL TELEMETRY</span>
+            </a>
+
+            {/* Tab 2: Stage Demo */}
+            <a
+              href="/?demo=true"
+              className="px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+              title="Launch Stage Demo Mode"
+            >
+              <span>🎬 STAGE DEMO</span>
+            </a>
+
+            {/* Tab 3: Calibrated Benchmark Simulation (ACTIVE) */}
+            <div className="flex items-center space-x-1 shrink-0">
+              <button
+                onClick={() => setViewMode('COCKPIT')}
+                className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-md shadow-cyan-500/30 border border-cyan-300 font-black ring-1 ring-cyan-400/30"
+              >
+                <FlaskConical className="w-3.5 h-3.5 text-cyan-200 animate-pulse" />
+                <span>🔬 CALIBRATED TWIN</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-200 animate-pulse" />
+              </button>
+              <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 hidden md:inline">
+                JURY EDITION
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* View Switcher & Region */}
+        <div className="flex items-center space-x-2 text-xs font-mono shrink-0">
+          <div className="hidden 2xl:flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-slate-800 text-slate-300 text-[11px] shrink-0">
+            <span className="text-slate-500">Region:</span>
+            <span className="text-cyan-300 font-bold">{currentTwinState.city_name}</span>
+          </div>
+
+          {viewMode === 'SCROLLING_PORTAL' ? (
+            <button
+              onClick={() => setViewMode('COCKPIT')}
+              className="px-2.5 py-1 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-500 text-white border border-cyan-400 text-[11px] transition-all cursor-pointer flex items-center space-x-1 shadow-sm"
+            >
+              <span>← Command Cockpit</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setViewMode('SCROLLING_PORTAL')}
+              className="px-2.5 py-1 rounded-xl font-bold bg-[#0c1833] hover:bg-[#132652] text-teal-300 border border-teal-500/40 text-[11px] transition-all cursor-pointer flex items-center space-x-1 shadow-sm"
+            >
+              <span>Citizen Portal →</span>
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* 1. UNIFIED SOVEREIGN COMMAND & DEFENSE HEADER */}
-      <header className="sticky top-0 z-40 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 backdrop-blur-2xl border-b border-cyan-500/35 shadow-2xl cyber-scanner-border">
+      <header className="sticky top-[38px] z-40 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 backdrop-blur-2xl border-b border-cyan-500/35 shadow-2xl cyber-scanner-border">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2">
           
           {/* TOP ROW: BRAND, LOCATION SELECTOR, PRESENTATION, TOOLS & PROFILE */}
@@ -666,10 +733,50 @@ export const CalibratedTwinApp: React.FC = () => {
                   setIsPresentationDeskOpen(true);
                   tacticalAudio.playRadioChirp();
                 }}
-                className="px-3 py-1.5 rounded-xl font-bold font-mono text-xs bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:brightness-110 text-slate-950 shadow-lg shadow-amber-500/30 border border-yellow-300 flex items-center space-x-1.5 cursor-pointer transition-transform active:scale-95"
+                className="px-3 py-1.5 rounded-xl font-bold font-mono text-xs bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:brightness-110 text-slate-950 shadow-lg shadow-amber-500/30 border border-yellow-300 flex items-center space-x-1.5 cursor-pointer transition-transform active:scale-95 shrink-0"
               >
                 <Award className="w-3.5 h-3.5 text-slate-950" />
                 <span>🎤 PRESENTATION DESK</span>
+              </button>
+
+              {/* 1. Citizen SOS Distress Queue Button */}
+              <button
+                onClick={() => setIsCitizenSOSOpen(true)}
+                title="Citizen SOS Distress Queue"
+                className="hidden sm:flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-rose-950/90 hover:bg-rose-900 border border-rose-600/70 text-rose-200 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
+              >
+                <AlertOctagon className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+                <span>SOS</span>
+              </button>
+
+              {/* 2. Direct 3D Elevation Slicing Button */}
+              <button
+                onClick={() => setIsElevationOpen(true)}
+                title="3D Topographic Elevation & Levee Spillover Slicing"
+                className="hidden xl:flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-[#091224] hover:bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
+              >
+                <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
+                <span>3D Elevation</span>
+              </button>
+
+              {/* 3. Signature Google Gemini AI Button */}
+              <button
+                onClick={() => setIsAICopilotOpen(true)}
+                title="Google Gemini AI Incident Commander"
+                className="flex items-center space-x-1 px-2 sm:px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-hud font-black transition-all shadow-md border border-cyan-300/40 cursor-pointer shrink-0"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
+                <span className="hidden lg:inline">Gemini AI</span>
+              </button>
+
+              {/* 4. Real Alert / Helpline Button */}
+              <button
+                onClick={() => setIsBroadcastOpen(true)}
+                title="Send Real Mobile SMS / Siren Warning"
+                className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white text-xs font-bold font-hud shadow-md transition-all cursor-pointer shrink-0"
+              >
+                <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
+                <span className="hidden xl:inline">Alert</span>
               </button>
 
               {/* ALL 16 COMMAND TOOLS DROPDOWN MENU */}
@@ -970,6 +1077,34 @@ export const CalibratedTwinApp: React.FC = () => {
               >
                 {isAudioMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-400 animate-pulse" />}
               </button>
+
+              {/* Light / Dark Mode Toggle Button */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-400 text-amber-400 hover:scale-105 transition-all shadow-md cursor-pointer"
+                title={theme === 'dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                ) : (
+                  <Moon className="w-4 h-4 text-indigo-400" />
+                )}
+              </button>
+
+              {/* Officer Profile & Logout Button */}
+              {authUser && (
+                <button
+                  onClick={() => {
+                    setAuthUser(null);
+                    localStorage.removeItem('civictwin_officer');
+                    showToast('Officer logged out');
+                  }}
+                  title={`Logged in as ${authUser.name} (${authUser.role}) - Click to Logout`}
+                  className="p-2 rounded-xl bg-slate-900 hover:bg-red-950/80 border border-slate-800 hover:border-red-600 text-slate-300 hover:text-red-300 transition-all cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              )}
 
               {/* Return to Live Telemetry App */}
               <a
@@ -1651,6 +1786,118 @@ export const CalibratedTwinApp: React.FC = () => {
                   />
                 </div>
               )}
+
+              {/* REAL-TIME OPERATIONAL INTELLIGENCE GRID */}
+              <div className="space-y-2.5 pt-1">
+                <div className="flex items-center space-x-2 text-xs font-mono font-bold text-slate-100 uppercase tracking-wider">
+                  <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Real-Time Operations & Inter-Agency Tactical Intelligence</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                  
+                  {/* Card 1: Citizen SOS Live Feed Card */}
+                  <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                      <div className="flex items-center space-x-1.5">
+                        <AlertOctagon className="w-4 h-4 text-rose-400" />
+                        <span className="text-xs font-bold font-mono text-slate-100">Citizen SOS Queue</span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                      Crowdsourced WhatsApp & Telegram distress signals with AI confidence triage scoring.
+                    </p>
+                    <button
+                      onClick={() => setIsCitizenSOSOpen(true)}
+                      className="w-full py-2 bg-rose-600 hover:bg-rose-500 border border-rose-600 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                    >
+                      <AlertOctagon className="w-3.5 h-3.5" />
+                      <span>Open SOS Triage</span>
+                    </button>
+                  </div>
+
+                  {/* Card 2: Citizen Smartphone QR Beacon Card */}
+                  <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                      <div className="flex items-center space-x-1.5">
+                        <QrCode className="w-4 h-4 text-rose-400 animate-pulse" />
+                        <span className="text-xs font-bold font-mono text-rose-300">Citizen QR Beacon</span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                      Shareable mobile QR code for instant zero-download hardware GPS locking and 112 SMS dispatch.
+                    </p>
+                    <button
+                      onClick={() => setIsQRCodeOpen(true)}
+                      className="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                    >
+                      <QrCode className="w-3.5 h-3.5" />
+                      <span>Open QR Beacon</span>
+                    </button>
+                  </div>
+
+                  {/* Card 3: 3D Topographic Elevation Slicing Card */}
+                  <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                      <div className="flex items-center space-x-1.5">
+                        <TrendingUp className="w-4 h-4 text-cyan-400 animate-pulse" />
+                        <span className="text-xs font-bold font-mono text-cyan-300">3D Elevation Cut</span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                      2D/3D cutaway terrain bathymetry analyzing riverbed, levee crest, and flood spillover points.
+                    </p>
+                    <button
+                      onClick={() => setIsElevationOpen(true)}
+                      className="w-full py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                    >
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      <span>Open Elevation Cut</span>
+                    </button>
+                  </div>
+
+                  {/* Card 4: CCTV & Drone Video Recon Card */}
+                  <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                      <div className="flex items-center space-x-1.5">
+                        <Video className="w-4 h-4 text-cyan-400" />
+                        <span className="text-xs font-bold font-mono text-slate-100">CCTV & Drone Matrix</span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                      Municipal subway cameras and UAV survey drone feeds with real-time vehicle detection.
+                    </p>
+                    <button
+                      onClick={() => setIsDroneCCTVOpen(true)}
+                      className="w-full py-2 bg-[#0e1b36] hover:bg-[#14264c] border border-cyan-500/40 text-cyan-200 font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                    >
+                      <Video className="w-3.5 h-3.5" />
+                      <span>Launch CCTV Matrix</span>
+                    </button>
+                  </div>
+
+                  {/* Card 5: Push-to-Talk Voice AI Radio Card */}
+                  <div className="p-3.5 rounded-2xl bg-[#091224]/85 border border-cyan-500/25 flex flex-col justify-between space-y-2.5 shadow-lg">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                      <div className="flex items-center space-x-1.5">
+                        <MessageSquare className="w-4 h-4 text-purple-400" />
+                        <span className="text-xs font-bold font-mono text-slate-100">Voice Radio Co-Pilot</span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-300 font-sans leading-snug">
+                      Tactical walkie-talkie voice radio with authentic squelch static SFX and AI SITREP responses.
+                    </p>
+                    <button
+                      onClick={() => setIsVoiceRadioOpen(true)}
+                      className="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Push-To-Talk Radio</span>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
             </div>
           )}
 
