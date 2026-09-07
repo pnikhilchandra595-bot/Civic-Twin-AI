@@ -168,27 +168,27 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="w-full h-14 sm:h-16 bg-[#080e1b]/95 border-b border-cyan-500/25 px-2.5 sm:px-4 lg:px-6 flex items-center justify-between gap-2 text-slate-100 z-40 backdrop-blur-xl font-sans relative shadow-xl shrink-0">
+    <header className="w-full h-14 bg-[#080e1b]/95 border-b border-cyan-500/25 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-40 backdrop-blur-xl font-sans relative shadow-xl shrink-0 flex-nowrap overflow-x-auto no-scrollbar">
       
       {/* LEFT SECTION: Logo + Region Switcher + 18 Feeds Badge + Theme Toggle */}
-      <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+      <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0 flex-nowrap">
         {/* Animated Brand Icon */}
-        <div className="relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-[#0b162c] border border-cyan-400/60 shadow-[0_0_15px_rgba(56,189,248,0.3)]">
-          <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 animate-pulse" />
+        <div className="relative flex items-center justify-center p-1.5 rounded-xl bg-[#0b162c] border border-cyan-400/60 shadow-[0_0_15px_rgba(56,189,248,0.3)] shrink-0">
+          <Activity className="w-4 h-4 text-cyan-400 animate-pulse" />
           <div className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
         </div>
 
-        <div className="flex items-center space-x-2 sm:space-x-2.5">
-          <span className="font-hud text-base sm:text-lg font-black tracking-wider bg-gradient-to-r from-amber-300 via-cyan-200 to-emerald-400 bg-clip-text text-transparent truncate">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+          <span className="font-hud text-sm sm:text-base font-black tracking-wider bg-gradient-to-r from-amber-300 via-cyan-200 to-emerald-400 bg-clip-text text-transparent truncate hidden xs:inline">
             CIVICTWIN AI
           </span>
 
           {/* Region Dropdown */}
-          <div className="flex items-center space-x-1.5">
+          <div className="flex items-center space-x-1 shrink-0">
             <select
               value={state?.city_id || 'mumbai_monsoon'}
               onChange={(e) => onSwitchCity(e.target.value)}
-              className={`text-xs font-mono px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border focus:outline-none cursor-pointer max-w-[140px] sm:max-w-[190px] lg:max-w-[220px] truncate font-bold transition-all ${
+              className={`text-xs font-mono px-2 py-1 rounded-xl border focus:outline-none cursor-pointer max-w-[120px] sm:max-w-[170px] lg:max-w-[200px] truncate font-bold transition-all ${
                 isDistrictOfficer
                   ? 'bg-amber-950/90 border-amber-500 text-amber-200'
                   : isStateOfficer
@@ -207,21 +207,21 @@ export const Header: React.FC<HeaderProps> = ({
               </optgroup>
             </select>
 
-            {/* 18 Live Sovereign, Maritime, Aerospace, Grid & Traffic Feeds Inspector Button */}
+            {/* 18 Live Sovereign Feeds Inspector Button */}
             <button
               onClick={onOpenProvenance}
-              className="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg bg-emerald-950/90 border border-emerald-400/80 text-emerald-300 hover:bg-emerald-900 text-[11px] sm:text-xs font-mono font-bold flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)] cursor-pointer shrink-0"
-              title="Inspect 18 Real-Time Live Sovereign, Maritime, Aerospace, Grid, Traffic & Physical IoT Feeds"
+              className="px-2 py-1 rounded-lg bg-emerald-950/90 border border-emerald-400/80 text-emerald-300 hover:bg-emerald-900 text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)] cursor-pointer shrink-0"
+              title="Inspect 18 Real-Time Live Sovereign Feeds"
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span className="font-hud hidden md:inline">18 Live Feeds</span>
-              <span className="font-hud md:hidden">18 Feeds</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <span className="font-hud hidden md:inline">18 Feeds</span>
+              <span className="font-hud md:hidden">18</span>
             </button>
 
             {/* Light / Dark Mode Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-1.5 rounded-xl bg-[#091224] border border-slate-700 hover:border-amber-400 text-amber-400 hover:scale-105 transition-all shadow-md cursor-pointer shrink-0"
+              className="p-1 rounded-xl bg-[#091224] border border-slate-700 hover:border-amber-400 text-amber-400 hover:scale-105 transition-all shadow-md cursor-pointer shrink-0"
               title={theme === 'dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
             >
               {theme === 'dark' ? (
@@ -235,12 +235,12 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* CENTER SECTION: Live Telemetry Pill */}
-      <div className="hidden 2xl:flex items-center space-x-2 px-3 py-1 rounded-xl bg-[#091224]/90 border border-cyan-500/30 text-xs font-mono shrink-0">
+      <div className="hidden 2xl:flex items-center space-x-2 px-2.5 py-0.5 rounded-xl bg-[#091224]/90 border border-cyan-500/30 text-xs font-mono shrink-0">
         <span className="text-cyan-400 font-bold">T+{state?.timeline_hour.toFixed(1) || '0.0'}h</span>
         <span className="text-slate-600">•</span>
         <span className="text-slate-300">IMD: <strong className="text-cyan-300">{state?.rain_intensity_mmhr.toFixed(0) || 0} mm/h</strong></span>
         <span className="text-slate-600">•</span>
-        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+        <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
           state?.iap?.overall_threat_level === 'CRITICAL' || state?.iap?.overall_threat_level === 'CATASTROPHIC'
             ? 'bg-red-500/20 text-red-400 border border-red-500/40'
             : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
@@ -250,26 +250,25 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* RIGHT SECTION: Quick Action Buttons + Categorized Command Tools Dropdown */}
-      <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+      <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0 flex-nowrap">
         
         {/* 1. Citizen SOS Distress Queue Button */}
         {!isCitizen && (
           <button
             onClick={onOpenCitizenSOS}
             title="Citizen SOS Distress Queue"
-            className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-rose-950/90 hover:bg-rose-900 border border-rose-600/70 text-rose-200 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
+            className="hidden sm:flex items-center space-x-1 px-2 py-1 rounded-xl bg-rose-950/90 hover:bg-rose-900 border border-rose-600/70 text-rose-200 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
           >
             <AlertOctagon className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
-            <span className="hidden sm:inline">Citizen SOS</span>
-            <span className="sm:hidden">SOS</span>
+            <span className="hidden xl:inline">SOS</span>
           </button>
         )}
 
-        {/* 2. Direct 3D Elevation Slicing Button (Widescreen only) */}
+        {/* 2. Direct 3D Elevation Slicing Button (Ultra widescreen only) */}
         <button
           onClick={onOpenElevation}
           title="3D Topographic Elevation & Levee Spillover Slicing"
-          className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-[#091224] hover:bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
+          className="hidden 2xl:flex items-center space-x-1 px-2 py-1 rounded-xl bg-[#091224] hover:bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
         >
           <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
           <span>3D Elevation</span>
@@ -279,21 +278,20 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onOpenAICopilot}
           title="Google Gemini AI Incident Commander"
-          className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-xs font-hud font-black transition-all shadow-[0_0_20px_rgba(59,130,246,0.35)] animate-pulse border border-cyan-300/40 cursor-pointer shrink-0"
+          className="flex items-center space-x-1 px-2 sm:px-2.5 py-1 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-hud font-black transition-all shadow-md border border-cyan-300/40 cursor-pointer shrink-0"
         >
           <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
-          <span>Gemini AI</span>
+          <span className="hidden lg:inline">Gemini AI</span>
         </button>
 
         {/* 4. Real Alert / Helpline Button */}
         <button
           onClick={onOpenBroadcast}
           title={isCitizen ? "National Emergency Helpline Directory" : "Send Real Mobile SMS / Siren Warning"}
-          className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white text-xs font-bold font-hud shadow-md transition-all cursor-pointer shrink-0"
+          className="flex items-center space-x-1 px-2 py-1 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white text-xs font-bold font-hud shadow-md transition-all cursor-pointer shrink-0"
         >
           <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
-          <span className="hidden sm:inline">{isCitizen ? "Helplines" : "Real Alert"}</span>
-          <span className="sm:hidden">Alert</span>
+          <span className="hidden xl:inline">{isCitizen ? "Helplines" : "Alert"}</span>
         </button>
 
         {/* 4b. Citizen Safety & Disaster Assistant Portal Button */}
@@ -301,25 +299,25 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenCitizenPortal}
             title="Open Citizen Safety & Disaster Assistant Portal"
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-hud font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)] animate-pulse border border-emerald-300/50 cursor-pointer shrink-0"
+            className="hidden sm:flex items-center space-x-1 px-2 py-1 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-hud font-bold transition-all shadow-sm border border-emerald-300/50 cursor-pointer shrink-0"
           >
-            <ShieldCheck className="w-4 h-4 text-emerald-200" />
-            <span>Citizen Safety Portal</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-200" />
+            <span className="hidden md:inline">Portal</span>
           </button>
         )}
 
-        {/* 5. CATEGORIZED COMMAND DECK TOOLS DROPDOWN (Hidden from Citizens) */}
+        {/* 5. CATEGORIZED COMMAND DECK TOOLS DROPDOWN */}
         {!isCitizen && (
           <div className="relative shrink-0" ref={toolsMenuRef}>
             <button
               onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)}
               title="Command Deck: Surveillance, Hydrology, Physics, Hospital, and Operations Tools"
-              className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#091224] hover:bg-[#0f1d38] border border-cyan-500/40 hover:border-cyan-400 text-cyan-200 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
+              className="flex items-center space-x-1 px-2 py-1 rounded-xl bg-[#091224] hover:bg-[#0f1d38] border border-cyan-500/40 hover:border-cyan-400 text-cyan-200 text-xs font-hud font-bold transition-all shadow-md cursor-pointer shrink-0"
             >
-            <Grid className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Tools</span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
-          </button>
+              <Grid className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden md:inline">Tools</span>
+              <ChevronDown className={`w-3 h-3 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
 
           {/* Expanded Modular Tools Menu */}
           {isToolsMenuOpen && (
@@ -503,49 +501,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       )}
 
-        {/* 4.5 Global Simulation Mode Segmented Tabs */}
-        <div className="flex items-center rounded-xl bg-slate-900 border border-slate-750 p-0.5 shadow-md">
-          {onToggleDemoMode && (
-            <>
-              <button
-                onClick={demoMode ? onToggleDemoMode : undefined}
-                title={!demoMode ? "🛰️ Real Telemetry Active (Live external feeds)" : "Click to switch to Real Telemetry"}
-                className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                  !demoMode
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <span>🛰️ REAL</span>
-                {!demoMode && <div className="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-pulse" />}
-              </button>
 
-              <button
-                onClick={!demoMode ? onToggleDemoMode : undefined}
-                title={demoMode ? "🎬 Demo Mode Active (Stage simulation reference data)" : "Click to switch to Demo Mode"}
-                className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                  demoMode
-                    ? 'bg-amber-600 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <span>🎬 DEMO</span>
-                {demoMode && <div className="w-1.5 h-1.5 rounded-full bg-amber-200 animate-pulse" />}
-              </button>
-            </>
-          )}
-
-          {onOpenCalibratedSim && (
-            <button
-              onClick={onOpenCalibratedSim}
-              title="🔬 Open Sovereign Calibrated Benchmark Simulation (ISRO, CWC, IMD, USGS Data)"
-              className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer bg-gradient-to-r from-teal-800 to-cyan-800 hover:from-teal-700 hover:to-cyan-700 text-cyan-200 border border-teal-500/40 shadow-sm ml-0.5"
-            >
-              <FlaskConical className="w-3.5 h-3.5 text-cyan-300 animate-pulse" />
-              <span>🔬 CALIBRATED</span>
-            </button>
-          )}
-        </div>
 
         {/* 5. Live Weather Sync Button (Only for Officers) */}
         {!isCitizen && (
