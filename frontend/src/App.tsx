@@ -47,7 +47,8 @@ import { CalibratedScenario } from './data/calibratedSimulationScenarios';
 import { 
   Bell, Compass, Layers, Activity, ShieldAlert, MessageSquare, 
   Video, AlertOctagon, Skull, Radar, Sparkles, ChevronDown, Radio as RadioIcon,
-  QrCode, TrendingUp, Settings, FlaskConical, ExternalLink
+  QrCode, TrendingUp, Settings, FlaskConical, ExternalLink,
+  Play, Pause, RotateCcw, Clock, Waves, CloudRain, Sliders
 } from 'lucide-react';
 import { DEFAULT_FALLBACK_STATE } from './data/defaultTwinState';
 
@@ -82,7 +83,7 @@ export const App: React.FC = () => {
 
   // View mode: defaults to full cockpit for direct access to digital twin & simulation tabs
   const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('COCKPIT');
-  const [cockpitView, setCockpitView] = useState<'tools' | 'map' | 'sandbox' | 'calibrated' | 'all'>('tools');
+  const [cockpitView, setCockpitView] = useState<'tools' | 'map' | 'sandbox' | 'calibrated' | 'all'>('map');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   // Selected deep analysis sub-tab in Section 4
@@ -119,7 +120,8 @@ export const App: React.FC = () => {
   const [isMOSDACOpen, setIsMOSDACOpen] = useState<boolean>(false);
   const [isGLOFOpen, setIsGLOFOpen] = useState<boolean>(false);
 
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  // Active continuous simulation loop state (STOPPED BY DEFAULT - only starts when operator turns it on)
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isSyncingWeather, setIsSyncingWeather] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false); // true while district synthesis is in progress
@@ -128,6 +130,67 @@ export const App: React.FC = () => {
   const [radioMessages, setRadioMessages] = useState<RadioMessage[]>([]);
   const [sarReport, setSarReport] = useState<SatelliteSARReport | null>(null);
   const [toastAlert, setToastAlert] = useState<string | null>(null);
+
+  // Live IST Clock
+  const [currentTime, setCurrentTime] = useState<string>(() => new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }));
+  useEffect(() => {
+    const t = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }));
+    }, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Simulation controls
+  const handleToggleSimulation = async () => {
+    const nextState = !isPlaying;
+    setIsPlaying(nextState);
+    try {
+      await apiService.setPlayback(nextState ? 'play' : 'pause', playbackSpeed);
+    } catch (e) {
+      console.error('Playback toggle error:', e);
+    }
+    setToastAlert(nextState ? `▶️ Simulation RUNNING (${playbackSpeed}x)` : `⏸️ Simulation PAUSED (Standby at T+${state?.timeline_hour.toFixed(2) || '0.00'}h)`);
+    setTimeout(() => setToastAlert(null), 3000);
+  };
+
+  const handleResetSimulation = () => {
+    setIsPlaying(false);
+    setState((prevState) => {
+      if (!prevState) return prevState;
+      return {
+        ...prevState,
+        timeline_hour: 0.0,
+        nodes: prevState.nodes.map(n => ({
+          ...n,
+          flood_depth_m: (n as any).base_flood_depth ?? 0.0,
+          status: 'operational'
+        }))
+      };
+    });
+    setToastAlert(`🔄 Simulation reset to T+0.0h Baseline`);
+    setTimeout(() => setToastAlert(null), 3000);
+  };
+
+  const handleStepSimulation = (deltaHours: number) => {
+    setState((prevState) => {
+      if (!prevState) return prevState;
+      const newTimeline = Math.max(0, Math.min(12, Number((prevState.timeline_hour + deltaHours).toFixed(2))));
+      return {
+        ...prevState,
+        timeline_hour: newTimeline
+      };
+    });
+  };
+
+  const handleScrubTimeline = (hour: number) => {
+    setState((prevState) => {
+      if (!prevState) return prevState;
+      return {
+        ...prevState,
+        timeline_hour: hour
+      };
+    });
+  };
 
   // Active continuous digital twin simulation loop
   useEffect(() => {
@@ -713,6 +776,181 @@ export const App: React.FC = () => {
       ) : (
         /* Main Executive Dashboard Content (For National & State Officers) */
         <div className={`flex-1 w-full ${cockpitView === 'map' ? 'max-w-[99vw] px-2 sm:px-3 py-2 space-y-3' : 'max-w-7xl mx-auto px-4 py-5 space-y-6'}`}>
+        
+        {/* 0. MASTER SIMULATION CONTROLLER & TIMELINE HUD (STOPPED BY DEFAULT) */}
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#050c1b]/98 via-[#0b1b38]/95 to-[#050c1b]/98 border border-cyan-500/40 shadow-[0_12px_40px_rgba(0,0,0,0.85)] ring-1 ring-cyan-500/20 backdrop-blur-xl p-3.5 sm:p-4 text-xs space-y-3">
+          
+          {/* Top Telemetry & Status HUD Header Strip */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-cyan-500/20 text-[11px] font-mono">
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 px-2 py-0.5 rounded-lg bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-bold">
+                <Activity className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                <span className="tracking-wider uppercase font-hud">MASTER SIMULATION C2 HUD</span>
+              </div>
+              <span className="text-slate-500 hidden sm:inline">•</span>
+              <span className="text-slate-300 font-bold truncate max-w-[220px] sm:max-w-xs">
+                {state?.city_name || 'Active Region'}
+              </span>
+            </div>
+
+            {/* Dynamic Readouts: Discharge, Rain, Threat Level, IST Clock */}
+            <div className="flex items-center space-x-2 text-[10px] sm:text-[11px]">
+              <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-lg bg-slate-900/90 border border-slate-700/80 text-slate-300">
+                <Waves className="w-3 h-3 text-cyan-400" />
+                <span>Inflow:</span>
+                <strong className="text-cyan-300">
+                  {state?.metrics?.peakDischargeCumecs ? `${Math.round(state.metrics.peakDischargeCumecs).toLocaleString()} m³/s` : '8,450 m³/s'}
+                </strong>
+              </div>
+
+              <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-lg bg-slate-900/90 border border-slate-700/80 text-slate-300">
+                <CloudRain className="w-3 h-3 text-blue-400" />
+                <span>Rain:</span>
+                <strong className="text-blue-300">
+                  {state?.rain_intensity_mmhr?.toFixed(0) || 0} mm/h
+                </strong>
+              </div>
+
+              <div className="hidden sm:flex items-center space-x-1 px-2 py-0.5 rounded-lg bg-slate-900/90 border border-slate-700/80 text-slate-300">
+                <span className="text-slate-400">Threat:</span>
+                <strong className={`font-bold ${
+                  state?.iap?.overall_threat_level === 'CRITICAL' || state?.iap?.overall_threat_level === 'CATASTROPHIC'
+                    ? 'text-red-400'
+                    : 'text-emerald-400'
+                }`}>
+                  {state?.iap?.overall_threat_level || 'ELEVATED'}
+                </strong>
+              </div>
+
+              <div className="hidden md:flex items-center space-x-1 text-slate-400 px-2 py-0.5 rounded-lg bg-slate-950/60 border border-slate-800">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <span>{currentTime} IST</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Controls Deck: Playback Controls + Interactive Timeline Scrubber */}
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-3.5">
+            
+            {/* Left: Big Play/Pause Toggle + Status Pill + Reset + Step Buttons + Speed */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full lg:w-auto">
+              
+              {/* START / PAUSE BUTTON */}
+              <button
+                onClick={handleToggleSimulation}
+                className={`px-4 py-2 rounded-xl font-bold font-mono text-xs flex items-center space-x-2 transition-all cursor-pointer shadow-lg active:scale-95 border ${
+                  isPlaying
+                    ? 'bg-gradient-to-r from-amber-600 via-rose-600 to-red-600 hover:from-amber-500 hover:to-red-500 text-white shadow-rose-500/30 border-rose-400 ring-1 ring-rose-400/40'
+                    : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white shadow-emerald-500/40 border-emerald-400 ring-1 ring-emerald-400/40 animate-pulse'
+                }`}
+                title={isPlaying ? "Pause simulation progression" : "Start real-time digital twin simulation"}
+              >
+                {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
+                <span className="tracking-wide uppercase font-black font-hud">
+                  {isPlaying ? 'PAUSE SIMULATION' : 'START SIMULATION'}
+                </span>
+              </button>
+
+              {/* Simulation Status Indicator Pill */}
+              <div className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border font-mono text-[11px] backdrop-blur-md ${
+                isPlaying 
+                  ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.2)]' 
+                  : 'bg-amber-950/80 border-amber-500/50 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.2)]'
+              }`}>
+                <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
+                <span className="font-black tracking-wider">{isPlaying ? 'LIVE ADVANCING' : 'STANDBY (PAUSED)'}</span>
+              </div>
+
+              {/* Reset to T+0.0h */}
+              <button
+                onClick={handleResetSimulation}
+                className="px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/90 text-slate-300 hover:text-white font-mono text-[11px] flex items-center space-x-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+                title="Reset timeline to T+0.0h (Standby Baseline)"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Reset (T+0.0h)</span>
+              </button>
+
+              {/* Time Step Buttons */}
+              <div className="flex items-center space-x-1 bg-slate-950/90 p-1 rounded-xl border border-slate-800 shadow-inner">
+                <button
+                  onClick={() => handleStepSimulation(-0.5)}
+                  className="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-[10px] font-mono font-bold cursor-pointer transition-all"
+                  title="Step back 30 minutes"
+                >
+                  -0.5h
+                </button>
+                <div className="w-[1px] h-3 bg-slate-800" />
+                <button
+                  onClick={() => handleStepSimulation(0.5)}
+                  className="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-[10px] font-mono font-bold cursor-pointer transition-all"
+                  title="Step forward 30 minutes"
+                >
+                  +0.5h
+                </button>
+              </div>
+
+              {/* Playback Speed Multiplier */}
+              <div className="flex items-center space-x-1 bg-slate-950/90 p-1 rounded-xl border border-slate-800 shadow-inner">
+                <span className="text-[10px] text-slate-500 font-bold px-1 uppercase">Speed:</span>
+                {[1.0, 2.0, 5.0].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => handleSetSpeed(s)}
+                    className={`px-1.5 py-0.5 rounded-lg font-mono text-[10px] font-bold cursor-pointer transition-all ${
+                      playbackSpeed === s
+                        ? 'bg-cyan-600 text-white shadow-md shadow-cyan-500/30'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {s}x
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Interactive Timeline Scrubbing Slider + Milestone Markers + Submerged Pill */}
+            <div className="flex flex-col space-y-1 w-full lg:w-auto">
+              <div className="flex items-center justify-between space-x-3">
+                <div className="flex items-center space-x-1.5 shrink-0 px-2 py-1 rounded-lg bg-cyan-950/70 border border-cyan-500/40">
+                  <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="font-mono text-cyan-300 font-black text-xs tracking-wider">
+                    T + {state?.timeline_hour.toFixed(2) || '0.00'}h
+                  </span>
+                </div>
+
+                <input
+                  type="range"
+                  min="0"
+                  max="12"
+                  step="0.1"
+                  value={state?.timeline_hour || 0}
+                  onChange={(e) => handleScrubTimeline(parseFloat(e.target.value))}
+                  className="w-32 sm:w-48 md:w-56 accent-cyan-400 cursor-pointer h-2 bg-slate-800 rounded-lg"
+                  title="Scrub timeline from T+0.0h to T+12.0h"
+                />
+
+                <div className="flex items-center space-x-1.5 text-[11px] font-mono shrink-0">
+                  <span className="px-2.5 py-1 rounded-xl bg-rose-950/90 text-rose-300 font-bold border border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.25)] flex items-center space-x-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
+                    <span>{state?.nodes?.filter(n => n.status === 'submerged').length || 0} Submerged</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Timeline Milestone Markers */}
+              <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 px-1 pt-0.5">
+                <button onClick={() => handleScrubTimeline(0)} className="hover:text-cyan-300 cursor-pointer transition-colors">0h (Base)</button>
+                <button onClick={() => handleScrubTimeline(3)} className="hover:text-cyan-300 cursor-pointer transition-colors">3h (Surge)</button>
+                <button onClick={() => handleScrubTimeline(6)} className="hover:text-cyan-300 cursor-pointer transition-colors font-bold text-amber-400">6h (Peak)</button>
+                <button onClick={() => handleScrubTimeline(9)} className="hover:text-cyan-300 cursor-pointer transition-colors">9h (Recede)</button>
+                <button onClick={() => handleScrubTimeline(12)} className="hover:text-cyan-300 cursor-pointer transition-colors">12h (Stable)</button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
         
         {/* RETRO HUD OVERVIEW BANNER (Hidden in dedicated map view for maximum viewing size) */}
         {cockpitView !== 'map' && (
