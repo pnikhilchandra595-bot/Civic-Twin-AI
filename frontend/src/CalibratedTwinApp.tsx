@@ -66,7 +66,7 @@ import {
   Layers, MapPin, CheckCircle2, ChevronRight, ExternalLink, Globe, Car, Truck, Ship,
   Printer, Waves, Mountain, Flame, Zap, ShieldCheck, HelpCircle, Terminal, Cpu,
   Sliders, MessageSquare, Video, AlertOctagon, HeartPulse, Satellite, Users,
-  ArrowRight, Phone, Lock, Eye
+  ArrowRight, Phone, Lock, Eye, AlertTriangle, TrendingUp, Radar, PhoneCall, QrCode, WifiOff, CloudRain
 } from 'lucide-react';
 
 const DEFAULT_AUTH_OFFICER: AuthUser = {
@@ -127,11 +127,13 @@ export const CalibratedTwinApp: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<InfrastructureNode | null>(null);
   const [selectedSensor, setSelectedSensor] = useState<SensorReading | null>(null);
 
-  // Active continuous simulation loop state
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  // Active continuous simulation loop state (STOPPED by default - starts only when user toggles ON)
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isSyncingWeather, setIsSyncingWeather] = useState<boolean>(false);
   const [sarReport, setSarReport] = useState<SatelliteSARReport>(DEFAULT_SAR_REPORT);
+  const [isHeaderToolsMenuOpen, setIsHeaderToolsMenuOpen] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<string>(() => new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }));
 
   // Modals state (All Production Engines + Improvisations + Presentation Desk)
   const [isPresentationDeskOpen, setIsPresentationDeskOpen] = useState<boolean>(false);
@@ -206,6 +208,107 @@ export const CalibratedTwinApp: React.FC = () => {
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 5000);
+  };
+
+  // Keep live Indian Standard Time clock updated
+  useEffect(() => {
+    const t = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' }));
+    }, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Simulation Controls: Toggle Play / Pause
+  const handleToggleSimulation = () => {
+    if (isPlaying) {
+      setIsPlaying(false);
+      triggerAudioChirp();
+      showToast(`⏸️ Simulation PAUSED (Standby Mode at T+${currentTwinState.timeline_hour.toFixed(2)}h)`);
+    } else {
+      setIsPlaying(true);
+      triggerRadarPing();
+      showToast(`▶️ Simulation RUNNING: Advancing hydraulic time-steps at ${playbackSpeed}x`);
+    }
+  };
+
+  // Simulation Controls: Reset to Baseline T+0.0h
+  const handleResetSimulation = () => {
+    setIsPlaying(false);
+    setCurrentTwinState((prevState) => {
+      if (!prevState) return prevState;
+      const initialNodes = comprehensiveState.state.nodes || prevState.nodes;
+      return {
+        ...prevState,
+        timeline_hour: 0.0,
+        nodes: initialNodes.map(n => ({
+          ...n,
+          flood_depth_m: (n as any).base_flood_depth ?? n.flood_depth_m,
+          status: ((n as any).base_flood_depth ?? n.flood_depth_m) > 0.8 ? 'submerged' : ((n as any).base_flood_depth ?? n.flood_depth_m) > 0.3 ? 'critical' : 'operational'
+        }))
+      };
+    });
+    triggerAudioChirp();
+    showToast('🔄 Simulation Reset: T+0.0h (Standby Baseline Calibration)');
+  };
+
+  // Simulation Controls: Jump/Step time forward or backward
+  const handleStepSimulation = (deltaHours: number) => {
+    setCurrentTwinState((prevState) => {
+      if (!prevState) return prevState;
+      const targetHour = Math.max(0, Number((prevState.timeline_hour + deltaHours).toFixed(2)));
+      const updatedNodes = prevState.nodes.map(node => {
+        const base = (node as any).base_flood_depth ?? node.flood_depth_m;
+        const wave = Math.sin(targetHour * 1.5 + (node.lat * 10)) * 0.15 * (node.vulnerability_index || 0.5);
+        const crest = targetHour > 1.0 ? Math.min(1.2, (targetHour - 1.0) * 0.15) : 0;
+        const newDepth = Math.max(0, Number((base + wave + crest).toFixed(2)));
+        let status: any = 'operational';
+        if (newDepth > 0.8) status = 'submerged';
+        else if (newDepth > 0.3) status = 'critical';
+        else if (newDepth > 0.1) status = 'warning';
+        return {
+          ...node,
+          flood_depth_m: newDepth,
+          water_level_m: Number((node.elevation_m + newDepth).toFixed(2)),
+          status
+        };
+      });
+      return {
+        ...prevState,
+        timeline_hour: targetHour,
+        nodes: updatedNodes
+      };
+    });
+    triggerAudioChirp();
+    showToast(`⏱️ Timeline Stepped to T+${Math.max(0, (currentTwinState.timeline_hour + deltaHours)).toFixed(1)}h`);
+  };
+
+  // Simulation Controls: Direct scrub on timeline slider
+  const handleScrubTimeline = (targetHour: number) => {
+    setCurrentTwinState((prevState) => {
+      if (!prevState || !prevState.nodes) return prevState;
+      const hour = Math.max(0, Number(targetHour.toFixed(2)));
+      const updatedNodes = prevState.nodes.map(node => {
+        const base = (node as any).base_flood_depth ?? node.flood_depth_m;
+        const wave = Math.sin(hour * 1.5 + (node.lat * 10)) * 0.15 * (node.vulnerability_index || 0.5);
+        const crest = hour > 1.0 ? Math.min(1.2, (hour - 1.0) * 0.15) : 0;
+        const newDepth = Math.max(0, Number((base + wave + crest).toFixed(2)));
+        let status: any = 'operational';
+        if (newDepth > 0.8) status = 'submerged';
+        else if (newDepth > 0.3) status = 'critical';
+        else if (newDepth > 0.1) status = 'warning';
+        return {
+          ...node,
+          flood_depth_m: newDepth,
+          water_level_m: Number((node.elevation_m + newDepth).toFixed(2)),
+          status
+        };
+      });
+      return {
+        ...prevState,
+        timeline_hour: hour,
+        nodes: updatedNodes
+      };
+    });
   };
 
   // Active continuous digital twin simulation loop
@@ -465,178 +568,264 @@ export const CalibratedTwinApp: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-[#050b16] text-slate-100 font-mono select-none flex flex-col">
       
-      {/* 1. TOP SOVEREIGN JURY BANNER & HEADER */}
+      {/* 1. UNIFIED SOVEREIGN COMMAND & DEFENSE HEADER */}
       <header className="sticky top-0 z-40 bg-[#060d1d]/95 backdrop-blur-xl border-b border-cyan-500/30 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2">
           
-          {/* Sovereign Seal & Title */}
-          <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/10 border border-cyan-400/50 text-cyan-300 shadow-lg shadow-cyan-500/20">
-              <FlaskConical className="w-5 h-5 animate-pulse text-cyan-300" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-black tracking-widest text-cyan-400 uppercase bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/30">
-                  🇮🇳 SOVEREIGN CALIBRATED TWIN
-                </span>
-                <span className="text-[10px] text-teal-300 font-bold hidden sm:inline border border-teal-500/30 px-1.5 py-0.2 rounded bg-teal-950/40">
-                  MULTI-CITY PAN-INDIA MODEL
-                </span>
+          {/* TOP ROW: BRAND, LOCATION SELECTOR, PRESENTATION, TOOLS & PROFILE */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-slate-800/80">
+            
+            {/* Left: Brand + Badges + City Selector */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-cyan-500/20 to-teal-500/10 border border-cyan-400/50 text-cyan-300 shadow-lg shadow-cyan-500/20 flex items-center justify-center">
+                <FlaskConical className="w-5 h-5 animate-pulse text-cyan-300" />
               </div>
-              <h1 className="text-sm sm:text-base font-bold text-white font-hud tracking-wide mt-0.5">
-                CIVICTWIN AI • DEFENSE, JURY & MULTI-CITY SUITE
-              </h1>
+              
+              <div>
+                <div className="flex items-center space-x-1.5">
+                  <span className="text-[10px] font-black tracking-widest text-cyan-400 uppercase bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/30">
+                    🇮🇳 SOVEREIGN CALIBRATED TWIN
+                  </span>
+                  <span className="text-[10px] text-teal-300 font-bold hidden sm:inline border border-teal-500/30 px-1.5 py-0.2 rounded bg-teal-950/40">
+                    MULTI-CITY PAN-INDIA MODEL
+                  </span>
+                </div>
+                <h1 className="text-sm sm:text-base font-bold text-white font-hud tracking-wide mt-0.5">
+                  CIVICTWIN AI • DEFENSE & JURY EVALUATION PLATFORM
+                </h1>
+              </div>
+
+              {/* City / Benchmark Selector */}
+              <div className="flex items-center space-x-1.5 bg-slate-900 border border-cyan-500/40 rounded-xl px-2.5 py-1.5">
+                <span className="text-slate-400 text-[10px] uppercase font-bold hidden sm:inline">Active Model:</span>
+                <select
+                  value={activeScenarioId}
+                  onChange={(e) => handleSwitchCity(e.target.value)}
+                  className="bg-transparent text-cyan-300 font-bold outline-none cursor-pointer text-xs max-w-[170px] sm:max-w-[210px] truncate"
+                >
+                  <optgroup label="🔬 Sovereign Historical Calibrated Benchmarks">
+                    <option value="sikkim_lhonak_glof_2023">Sikkim: Teesta GLOF 2023 (Moraine Burst)</option>
+                    <option value="mumbai_deluge_2005">Maharashtra: Mumbai Deluge 2005 (944mm Mithi)</option>
+                  </optgroup>
+                  <optgroup label="🇮🇳 Pan-India State Corridors (Multi-City Model)">
+                    <option value="delhi_yamuna">Delhi: Yamuna Flood Basin (DL)</option>
+                    <option value="mumbai_monsoon">Maharashtra: Mumbai Coastal Surge (MH)</option>
+                    <option value="tamil_nadu_adyar">Tamil Nadu: Chennai Adyar Basin (TN)</option>
+                    <option value="karnataka_bengaluru">Karnataka: Bengaluru Stormwater (KA)</option>
+                    <option value="kolkata_hooghly">West Bengal: Kolkata Hooghly Surge (WB)</option>
+                    <option value="assam_brahmaputra">Assam: Guwahati Brahmaputra (AS)</option>
+                    <option value="uttarakhand_cloudburst">Uttarakhand: Rishikesh Kedarnath (UK)</option>
+                    <option value="kerala_periyar">Kerala: Kochi Periyar Dam (KL)</option>
+                    <option value="odisha_mahanadi">Odisha: Bhubaneswar Mahanadi (OD)</option>
+                    <option value="gujarat_tapi">Gujarat: Surat Tapi Surge (GJ)</option>
+                    <option value="bihar_kosi">Bihar: Patna Kosi Basin (BR)</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              {/* 780+ Districts Atlas Launcher */}
+              <button
+                onClick={() => setIsDistrictAtlasOpen(true)}
+                className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-teal-500/40 text-teal-300 font-bold text-xs flex items-center space-x-1 cursor-pointer transition-all hover:scale-105"
+                title="Search Pan-India 780+ Districts & Micro-Catchments"
+              >
+                <Globe className="w-3.5 h-3.5 text-teal-400" />
+                <span>780+ Districts</span>
+              </button>
+
+              {/* 18 Live Feeds Inspector */}
+              <button
+                onClick={() => setIsProvenanceOpen(true)}
+                className="px-2.5 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 font-bold text-xs flex items-center space-x-1.5 cursor-pointer shadow-sm transition-all"
+                title="Inspect 18 Real-Time Sovereign Feeds (MOSDAC, CWC, SAR, Doppler)"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span className="hidden md:inline">18 Live Feeds</span>
+                <span className="md:hidden">18 Feeds</span>
+              </button>
+            </div>
+
+            {/* Right: Presentation Desk, Tools Menu, View Mode, Language, Audio & Real Platform */}
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              
+              {/* PRESENTATION DESK BUTTON (GOLDEN) */}
+              <button
+                onClick={() => {
+                  setIsPresentationDeskOpen(true);
+                  tacticalAudio.playRadioChirp();
+                }}
+                className="px-3 py-1.5 rounded-xl font-bold font-mono text-xs bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:brightness-110 text-slate-950 shadow-lg shadow-amber-500/30 border border-yellow-300 flex items-center space-x-1.5 cursor-pointer transition-transform active:scale-95"
+              >
+                <Award className="w-3.5 h-3.5 text-slate-950" />
+                <span>🎤 PRESENTATION DESK</span>
+              </button>
+
+              {/* ALL 16 COMMAND TOOLS DROPDOWN MENU */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsHeaderToolsMenuOpen(!isHeaderToolsMenuOpen)}
+                  className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-200 font-bold text-xs flex items-center space-x-1 cursor-pointer transition-all"
+                >
+                  <Layers className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="hidden sm:inline">16 Engines Hub ▾</span>
+                  <span className="sm:hidden">Tools ▾</span>
+                </button>
+
+                {isHeaderToolsMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-72 sm:w-80 p-2 rounded-2xl bg-slate-900/98 border border-cyan-500/40 shadow-2xl z-50 grid grid-cols-2 gap-1.5 text-xs backdrop-blur-2xl">
+                    <button onClick={() => { setIsGLOFOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <Mountain className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>GLOF Early Warning</span>
+                    </button>
+                    <button onClick={() => { setIsMOSDACOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <Satellite className="w-3.5 h-3.5 text-blue-400" />
+                      <span>MOSDAC Satellite</span>
+                    </button>
+                    <button onClick={() => { setIsCWCGaugesOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <Waves className="w-3.5 h-3.5 text-teal-400" />
+                      <span>CWC Gauges</span>
+                    </button>
+                    <button onClick={() => { setIsMultiHazardOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Multi-Hazard</span>
+                    </button>
+                    <button onClick={() => { setIsDamOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <Activity className="w-3.5 h-3.5 text-rose-400" />
+                      <span>Dam Hydrograph</span>
+                    </button>
+                    <button onClick={() => { setIsElevationOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Elevation DEM</span>
+                    </button>
+                    <button onClick={() => { setIsHospitalSurgeOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <HeartPulse className="w-3.5 h-3.5 text-rose-400" />
+                      <span>Hospital Surge</span>
+                    </button>
+                    <button onClick={() => { setIsSAROpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <Radar className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>SAR Radar</span>
+                    </button>
+                    <button onClick={() => { setIsCitizenSOSOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-rose-300 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <PhoneCall className="w-3.5 h-3.5 text-rose-400" />
+                      <span>Citizen SOS</span>
+                    </button>
+                    <button onClick={() => { setIsQRCodeOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-teal-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <QrCode className="w-3.5 h-3.5 text-teal-400" />
+                      <span>Citizen QR Pack</span>
+                    </button>
+                    <button onClick={() => { setIsDroneCCTVOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-purple-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <Video className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Drone & CCTV</span>
+                    </button>
+                    <button onClick={() => { setIsVoiceRadioOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-purple-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <Radio className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Voice Radio</span>
+                    </button>
+                    <button onClick={() => { setIsMeshOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-amber-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <WifiOff className="w-3.5 h-3.5 text-amber-400" />
+                      <span>LoRa Mesh Net</span>
+                    </button>
+                    <button onClick={() => { setIsAICopilotOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-teal-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+                      <span>Gemini Copilot</span>
+                    </button>
+                    <button onClick={() => { setIsICS201Open(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-emerald-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>NDMA ICS-201</span>
+                    </button>
+                    <button onClick={() => { setIsLiveWeatherOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
+                      <CloudRain className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Live Weather</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* View Mode Switcher */}
+              <div className="flex items-center space-x-1 bg-slate-900 border border-slate-800 rounded-xl p-1 text-[11px]">
+                <button
+                  onClick={() => setViewMode('COCKPIT')}
+                  className={`px-2.5 py-0.5 rounded-lg transition-all cursor-pointer font-bold ${
+                    viewMode === 'COCKPIT' ? 'bg-cyan-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Cockpit
+                </button>
+                <button
+                  onClick={() => setViewMode('SCROLLING_PORTAL')}
+                  className={`px-2.5 py-0.5 rounded-lg transition-all cursor-pointer font-bold ${
+                    viewMode === 'SCROLLING_PORTAL' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Citizen Portal
+                </button>
+              </div>
+
+              {/* Language Switcher (6 Indian Languages) */}
+              <div className="hidden lg:flex items-center space-x-0.5 bg-slate-900 border border-slate-800 rounded-xl p-1 text-[11px]">
+                {(['en', 'hi', 'mr', 'bn', 'ta', 'te'] as const).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => setActiveLang(lang)}
+                    className={`px-1.5 py-0.5 rounded-lg transition-all cursor-pointer font-bold ${
+                      activeLang === lang ? 'bg-cyan-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {lang === 'en' ? 'EN' : lang === 'hi' ? 'हिं' : lang === 'mr' ? 'मरा' : lang === 'bn' ? 'বাং' : lang === 'ta' ? 'தமி' : 'తెలు'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Audio Toggle */}
+              <button
+                onClick={toggleAudio}
+                title={isAudioMuted ? 'Unmute tactical audio soundscape' : 'Mute audio soundscape'}
+                className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-cyan-300 transition-all cursor-pointer"
+              >
+                {isAudioMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-400 animate-pulse" />}
+              </button>
+
+              {/* Return to Live Telemetry App */}
+              <a
+                href="/"
+                className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-bold transition-all flex items-center space-x-1 cursor-pointer"
+              >
+                <span>← Real Platform</span>
+              </a>
             </div>
           </div>
 
-          {/* Multi-City / Benchmark Selector, View Mode & Presentation Desk */}
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            
-            {/* Unified Benchmark / City Selector */}
-            <div className="flex items-center space-x-1.5 bg-slate-900 border border-cyan-500/40 rounded-xl px-2.5 py-1.5">
-              <span className="text-slate-400 text-[10px] uppercase font-bold hidden sm:inline">Active Model:</span>
-              <select
-                value={activeScenarioId}
-                onChange={(e) => handleSwitchCity(e.target.value)}
-                className="bg-transparent text-cyan-300 font-bold outline-none cursor-pointer text-xs"
-              >
-                <optgroup label="🔬 Sovereign Historical Calibrated Benchmarks">
-                  <option value="sikkim_lhonak_glof_2023">Sikkim: Teesta GLOF 2023 (Moraine Burst)</option>
-                  <option value="mumbai_deluge_2005">Maharashtra: Mumbai Deluge 2005 (944mm Mithi)</option>
-                </optgroup>
-                <optgroup label="🇮🇳 Pan-India State Corridors (Multi-City Model)">
-                  <option value="delhi_yamuna">Delhi: Yamuna Flood Basin (DL)</option>
-                  <option value="mumbai_monsoon">Maharashtra: Mumbai Coastal Surge (MH)</option>
-                  <option value="tamil_nadu_adyar">Tamil Nadu: Chennai Adyar Basin (TN)</option>
-                  <option value="karnataka_bengaluru">Karnataka: Bengaluru Stormwater (KA)</option>
-                  <option value="kolkata_hooghly">West Bengal: Kolkata Hooghly Surge (WB)</option>
-                  <option value="assam_brahmaputra">Assam: Guwahati Brahmaputra (AS)</option>
-                  <option value="uttarakhand_cloudburst">Uttarakhand: Rishikesh Kedarnath (UK)</option>
-                  <option value="kerala_periyar">Kerala: Kochi Periyar Dam (KL)</option>
-                  <option value="odisha_mahanadi">Odisha: Bhubaneswar Mahanadi (OD)</option>
-                  <option value="gujarat_tapi">Gujarat: Surat Tapi Surge (GJ)</option>
-                  <option value="bihar_kosi">Bihar: Patna Kosi Basin (BR)</option>
-                </optgroup>
-              </select>
+          {/* BOTTOM ROW: EMERGENCY BROADCAST MARQUEE & LIVE CLOCK */}
+          <div className="flex items-center justify-between gap-3 pt-1.5 text-xs text-slate-300">
+            <div className="flex items-center space-x-2 truncate">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0" />
+              <span className="px-2 py-0.5 rounded font-black text-[10px] uppercase bg-rose-950 text-rose-300 border border-rose-500/50 shrink-0">
+                ⚠️ EAS BROADCAST
+              </span>
+              <span className="truncate text-slate-300 text-[11px] font-sans">
+                <strong>{currentTwinState.city_name}:</strong> Severe hydro-dynamic surge detected. Peak discharge: {Math.round((currentTwinState.metrics?.peakDischargeCumecs || comprehensiveState.state.metrics.peakDischargeCumecs) * sensitivityMultiplier).toLocaleString()} m³/s. Inundation modeling active.
+              </span>
             </div>
 
-            {/* 780+ Districts Atlas Launcher */}
-            <button
-              onClick={() => setIsDistrictAtlasOpen(true)}
-              className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-teal-500/40 text-teal-300 font-bold text-xs flex items-center space-x-1 cursor-pointer"
-              title="Search Pan-India 780+ Districts & Micro-Catchments"
-            >
-              <Globe className="w-3.5 h-3.5 text-teal-400" />
-              <span className="hidden sm:inline">780+ Districts</span>
-            </button>
-
-            {/* PRESENTATION DESK BUTTON (GOLDEN) */}
-            <button
-              onClick={() => {
-                setIsPresentationDeskOpen(true);
-                tacticalAudio.playRadioChirp();
-              }}
-              className="px-3 py-1.5 rounded-xl font-bold font-mono text-xs bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:brightness-110 text-slate-950 shadow-lg shadow-amber-500/30 border border-yellow-300 flex items-center space-x-1.5 cursor-pointer transition-transform active:scale-95"
-            >
-              <Award className="w-3.5 h-3.5 text-slate-950" />
-              <span>🎤 PRESENTATION DESK</span>
-            </button>
-
-            {/* View Mode Switcher (Cockpit vs Public Portal) */}
-            <div className="flex items-center space-x-1 bg-slate-900 border border-slate-800 rounded-xl p-1 text-[11px]">
+            <div className="hidden sm:flex items-center space-x-3 shrink-0 text-[11px] font-mono text-slate-400">
               <button
-                onClick={() => setViewMode('COCKPIT')}
-                className={`px-2.5 py-0.5 rounded-lg transition-all cursor-pointer font-bold ${
-                  viewMode === 'COCKPIT' ? 'bg-cyan-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
+                onClick={handleSyncLiveWeather}
+                disabled={isSyncingWeather}
+                className="hover:text-cyan-300 flex items-center space-x-1 cursor-pointer transition-colors"
+                title="Sync IMD Doppler Weather Radar"
               >
-                Cockpit
+                <CloudRain className={`w-3.5 h-3.5 ${isSyncingWeather ? 'animate-spin text-cyan-400' : 'text-slate-400'}`} />
+                <span>{isSyncingWeather ? 'Syncing...' : 'IMD Doppler'}</span>
               </button>
-              <button
-                onClick={() => setViewMode('SCROLLING_PORTAL')}
-                className={`px-2.5 py-0.5 rounded-lg transition-all cursor-pointer font-bold ${
-                  viewMode === 'SCROLLING_PORTAL' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Citizen Portal
-              </button>
+              <div className="flex items-center space-x-1 text-cyan-400">
+                <Clock className="w-3.5 h-3.5" />
+                <span>{currentTime} IST</span>
+              </div>
             </div>
-
-            {/* Language Switcher (6 Indian Languages) */}
-            <div className="hidden md:flex items-center space-x-1 bg-slate-900 border border-slate-800 rounded-xl p-1 text-[11px]">
-              {(['en', 'hi', 'mr', 'bn', 'ta', 'te'] as const).map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => setActiveLang(lang)}
-                  className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer font-bold ${
-                    activeLang === lang ? 'bg-cyan-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  {lang === 'en' ? 'EN' : lang === 'hi' ? 'हिं' : lang === 'mr' ? 'मरा' : lang === 'bn' ? 'বাংলা' : lang === 'ta' ? 'தமிழ்' : 'తెలుగు'}
-                </button>
-              ))}
-            </div>
-
-            {/* Audio Toggle */}
-            <button
-              onClick={toggleAudio}
-              title={isAudioMuted ? 'Unmute tactical audio soundscape' : 'Mute audio soundscape'}
-              className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-cyan-300 transition-all cursor-pointer"
-            >
-              {isAudioMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-400 animate-pulse" />}
-            </button>
-
-            {/* Return to Live Telemetry App */}
-            <a
-              href="/"
-              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-bold transition-all flex items-center space-x-1 cursor-pointer"
-            >
-              <span>← Real Telemetry</span>
-            </a>
           </div>
 
         </div>
       </header>
-
-      {/* 1b. FULL STICKY COMMAND HEADER (REPLICATED FROM REAL PLATFORM) */}
-      {viewMode === 'COCKPIT' && (
-        <Header
-          state={currentTwinState}
-          authUser={authUser}
-          onLogout={() => setAuthUser(null)}
-          onReset={() => setCurrentTwinState(comprehensiveState.state)}
-          onOpenBroadcast={() => setIsBroadcastOpen(true)}
-          onOpenSAR={() => setIsSAROpen(true)}
-          onOpenTutorial={() => setIsTutorialOpen(true)}
-          onOpenDataExport={() => setIsDataExportOpen(true)}
-          onOpenCitizenSOS={() => setIsCitizenSOSOpen(true)}
-          onOpenDroneCCTV={() => setIsDroneCCTVOpen(true)}
-          onOpenVoiceRadio={() => setIsVoiceRadioOpen(true)}
-          onOpenIntegrations={() => setIsIntegrationsOpen(true)}
-          onOpenProvenance={() => setIsProvenanceOpen(true)}
-          onOpenICS201={() => setIsICS201Open(true)}
-          onOpenMobileCompanion={() => setIsMobileCompanionOpen(true)}
-          onOpenElevation={() => setIsElevationOpen(true)}
-          onOpenDam={() => setIsDamOpen(true)}
-          onOpenHospitalSurge={() => setIsHospitalSurgeOpen(true)}
-          onOpenMesh={() => setIsMeshOpen(true)}
-          onOpenAICopilot={() => setIsAICopilotOpen(true)}
-          onOpenMultiHazard={() => setIsMultiHazardOpen(true)}
-          onOpenCWCGauges={() => setIsCWCGaugesOpen(true)}
-          onOpenMOSDAC={() => setIsMOSDACOpen(true)}
-          onOpenGLOF={() => setIsGLOFOpen(true)}
-          onOpenDistrictAtlas={() => setIsDistrictAtlasOpen(true)}
-          onOpenQRCode={() => setIsQRCodeOpen(true)}
-          onOpenCitizenPortal={() => setIsCitizenPortalOpen(true)}
-          onSyncLiveWeather={handleSyncLiveWeather}
-          isSyncingWeather={isSyncingWeather}
-          onSwitchCity={handleSwitchCity}
-          activeView="map"
-          setActiveView={() => {}}
-          demoMode={demoMode}
-          onToggleDemoMode={() => setDemoMode(!demoMode)}
-        />
-      )}
 
       {/* 2. QUANTITATIVE IMPACT & ROI TICKER RIBBON (Pillar 7) */}
       <div className="w-full bg-[#040813] border-b border-cyan-500/20 py-2 px-3 sm:px-6">
@@ -715,6 +904,115 @@ export const CalibratedTwinApp: React.FC = () => {
       ) : (
         /* COMMAND COCKPIT VIEW */
         <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 space-y-4">
+          
+          {/* 0. MASTER SIMULATION CONTROLLER & TIMELINE HUD (STOPPED BY DEFAULT) */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#071329] via-[#0c1f3d] to-[#071329] border border-cyan-500/30 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-3.5 text-xs">
+            
+            {/* Left: Big Play/Pause Toggle + Status Pill + Reset + Step Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+              
+              {/* START / PAUSE BUTTON */}
+              <button
+                onClick={handleToggleSimulation}
+                className={`px-4 py-2 rounded-xl font-bold font-mono text-xs flex items-center space-x-2 transition-all cursor-pointer shadow-lg active:scale-95 ${
+                  isPlaying
+                    ? 'bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white shadow-amber-500/30 border border-amber-400'
+                    : 'bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white shadow-emerald-500/40 border border-emerald-400 animate-pulse'
+                }`}
+                title={isPlaying ? "Pause simulation progression" : "Start real-time digital twin simulation"}
+              >
+                {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
+                <span className="tracking-wide uppercase font-black">
+                  {isPlaying ? 'PAUSE SIMULATION' : 'START SIMULATION'}
+                </span>
+              </button>
+
+              {/* Simulation Status Indicator Pill */}
+              <div className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border font-mono text-[11px] ${
+                isPlaying 
+                  ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 shadow-sm' 
+                  : 'bg-amber-950/80 border-amber-500/50 text-amber-300 shadow-sm'
+              }`}>
+                <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
+                <span className="font-black tracking-wider">{isPlaying ? 'LIVE SIMULATION ADVANCING' : 'STANDBY (PAUSED)'}</span>
+              </div>
+
+              {/* Reset to T+0.0h */}
+              <button
+                onClick={handleResetSimulation}
+                className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-mono text-[11px] flex items-center space-x-1.5 transition-all cursor-pointer"
+                title="Reset timeline to T+0.0h (Standby Baseline)"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Reset (T+0.0h)</span>
+              </button>
+
+              {/* Time Step Buttons */}
+              <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                <button
+                  onClick={() => handleStepSimulation(-0.5)}
+                  className="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-[10px] font-mono font-bold cursor-pointer transition-all"
+                  title="Step back 30 minutes"
+                >
+                  -0.5h
+                </button>
+                <button
+                  onClick={() => handleStepSimulation(0.5)}
+                  className="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-[10px] font-mono font-bold cursor-pointer transition-all"
+                  title="Step forward 30 minutes"
+                >
+                  +0.5h
+                </button>
+              </div>
+
+              {/* Playback Speed Multiplier */}
+              <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                <span className="text-[10px] text-slate-500 font-bold px-1 uppercase">Speed:</span>
+                {[1.0, 2.0, 5.0].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => { setPlaybackSpeed(s); triggerAudioChirp(); }}
+                    className={`px-1.5 py-0.5 rounded font-mono text-[10px] font-bold cursor-pointer transition-all ${
+                      playbackSpeed === s
+                        ? 'bg-cyan-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {s}x
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Interactive Timeline Scrubbing Slider + Node Counters */}
+            <div className="flex items-center space-x-3 w-full lg:w-auto justify-between lg:justify-end">
+              <div className="flex items-center space-x-2 shrink-0">
+                <Clock className="w-4 h-4 text-cyan-400" />
+                <span className="font-mono text-cyan-300 font-bold text-xs">
+                  T + {currentTwinState.timeline_hour.toFixed(2)}h
+                </span>
+              </div>
+
+              <input
+                type="range"
+                min="0"
+                max="12"
+                step="0.1"
+                value={currentTwinState.timeline_hour}
+                onChange={(e) => handleScrubTimeline(parseFloat(e.target.value))}
+                className="w-28 sm:w-44 md:w-56 accent-cyan-400 cursor-pointer"
+                title="Scrub timeline from T+0.0h to T+12.0h"
+              />
+
+              <div className="flex items-center space-x-1.5 text-[11px] font-mono text-slate-400 shrink-0">
+                <span>Submerged:</span>
+                <span className="px-2 py-0.5 rounded bg-rose-950/80 text-rose-300 font-bold border border-rose-500/40">
+                  {currentTwinState.nodes?.filter(n => n.status === 'submerged').length || 0} Nodes
+                </span>
+              </div>
+            </div>
+
+          </div>
           
           {/* INTERACTIVE CALIBRATION & SENSITIVITY CONTROLS */}
           <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-3 text-xs">
