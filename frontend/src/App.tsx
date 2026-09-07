@@ -478,16 +478,16 @@ export const App: React.FC = () => {
 
   // Persistent 3-Mode Simulation Control Bar (Fits 100% Zoom On All Screens)
   const renderSimulationModeBar = () => (
-    <div className="w-full bg-[#050b18]/98 border-b border-cyan-500/30 py-1.5 px-3 sm:px-5 sticky top-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.9)] flex items-center justify-between gap-2.5 backdrop-blur-2xl flex-nowrap overflow-x-auto no-scrollbar shrink-0 text-xs ring-1 ring-cyan-500/10">
+    <div className="w-full bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 border-b border-cyan-500/35 py-1.5 px-3 sm:px-5 sticky top-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.95)] flex items-center justify-between gap-2.5 backdrop-blur-2xl flex-nowrap overflow-x-auto no-scrollbar shrink-0 text-xs ring-1 ring-cyan-500/20 cyber-scanner-border">
       <div className="flex items-center space-x-2 shrink-0">
-        <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-lg bg-cyan-950/70 border border-cyan-500/40 shadow-inner shrink-0">
+        <div className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-lg bg-cyan-950/80 border border-cyan-500/50 shadow-[0_0_12px_rgba(6,182,212,0.25)] shrink-0">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping shrink-0" />
-          <span className="text-[10px] font-mono font-black text-cyan-200 uppercase tracking-widest hidden sm:inline shrink-0">
+          <span className="text-[10px] font-mono font-black text-cyan-200 uppercase tracking-widest hidden sm:inline shrink-0 text-glow-cyan">
             ENGINE C2:
           </span>
         </div>
 
-        <div className="inline-flex items-center rounded-xl bg-slate-950/90 p-0.5 border border-slate-800/80 shadow-inner space-x-1 shrink-0">
+        <div className="inline-flex items-center rounded-xl bg-slate-950/90 p-0.5 border border-cyan-500/30 shadow-inner space-x-1 shrink-0">
           {/* Tab 1: Real Telemetry */}
           <button
             onClick={async () => {
@@ -495,9 +495,9 @@ export const App: React.FC = () => {
               if (cockpitView === 'calibrated') setCockpitView('tools');
               if (viewMode === 'SCROLLING_PORTAL') setViewMode('COCKPIT');
             }}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 ${
+            className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 ${
               !demoMode && cockpitView !== 'calibrated'
-                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 border border-emerald-400'
+                ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-md shadow-emerald-500/30 border border-emerald-400 text-glow-emerald ring-1 ring-emerald-400/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
             }`}
           >
@@ -514,9 +514,9 @@ export const App: React.FC = () => {
               if (cockpitView === 'calibrated') setCockpitView('tools');
               if (viewMode === 'SCROLLING_PORTAL') setViewMode('COCKPIT');
             }}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 ${
+            className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 ${
               demoMode && cockpitView !== 'calibrated'
-                ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md shadow-amber-500/25 border border-amber-400 animate-pulse'
+                ? 'bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 text-white shadow-md shadow-amber-500/30 border border-amber-400 text-glow-amber ring-1 ring-amber-400/30 animate-pulse'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
             }`}
           >
@@ -713,7 +713,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#080c14] text-slate-100 flex flex-col select-none overflow-y-auto">
+    <div className="min-h-screen w-full bg-transparent text-slate-100 flex flex-col select-none overflow-y-auto">
       {renderSimulationModeBar()}
 
       {/* Sticky Header */}
@@ -995,15 +995,27 @@ export const App: React.FC = () => {
         </section>
         )}
 
-        {/* MASTER COCKPIT VIEW SWITCHER (TOOLS FIRST) */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 bg-slate-950/80 border border-slate-800 rounded-2xl shadow-xl backdrop-blur-md">
+        {/* MASTER COCKPIT VIEW SWITCHER */}
+        <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 bg-gradient-to-r from-[#060e1d]/95 via-[#0a1832]/95 to-[#060e1d]/95 border border-cyan-500/30 rounded-2xl shadow-xl backdrop-blur-xl ring-1 ring-cyan-500/15">
           <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
+            <button
+              onClick={() => setCockpitView('map')}
+              className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
+                cockpitView === 'map'
+                  ? 'bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 text-white font-black shadow-lg shadow-cyan-500/30 border border-cyan-400 ring-1 ring-cyan-400/40 text-glow-cyan'
+                  : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800/90 border border-slate-800'
+              }`}
+            >
+              <Compass className="w-4 h-4 text-cyan-300" />
+              <span>🗺️ GIS TWIN MAP</span>
+            </button>
+
             <button
               onClick={() => setCockpitView('tools')}
               className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
                 cockpitView === 'tools'
-                  ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold shadow-lg shadow-cyan-500/25 border border-cyan-400'
-                  : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+                  ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white font-black shadow-lg shadow-blue-500/30 border border-blue-400 ring-1 ring-blue-400/40'
+                  : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800/90 border border-slate-800'
               }`}
             >
               <Settings className="w-4 h-4 text-cyan-300" />
@@ -1011,23 +1023,11 @@ export const App: React.FC = () => {
             </button>
 
             <button
-              onClick={() => setCockpitView('map')}
-              className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
-                cockpitView === 'map'
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-lg shadow-blue-500/25 border border-blue-400'
-                  : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
-              }`}
-            >
-              <Compass className="w-4 h-4 text-blue-300" />
-              <span>🗺️ GIS TWIN MAP</span>
-            </button>
-
-            <button
               onClick={() => setCockpitView('sandbox')}
               className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
                 cockpitView === 'sandbox'
-                  ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-slate-950 font-bold shadow-lg shadow-amber-500/25 border border-amber-400'
-                  : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+                  ? 'bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 text-white font-black shadow-lg shadow-amber-500/30 border border-amber-400 ring-1 ring-amber-400/40 text-glow-amber'
+                  : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800/90 border border-slate-800'
               }`}
             >
               <Activity className="w-4 h-4 text-amber-300" />
@@ -1038,8 +1038,8 @@ export const App: React.FC = () => {
               onClick={() => setCockpitView('calibrated')}
               className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
                 cockpitView === 'calibrated'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold shadow-lg shadow-teal-500/25 border border-teal-400'
-                  : 'bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800'
+                  ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white font-black shadow-lg shadow-teal-500/30 border border-teal-400 ring-1 ring-teal-400/40 text-glow-emerald'
+                  : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800/90 border border-slate-800'
               }`}
             >
               <FlaskConical className="w-4 h-4 text-emerald-300" />
@@ -1050,8 +1050,8 @@ export const App: React.FC = () => {
               onClick={() => setCockpitView('all')}
               className={`px-3 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
                 cockpitView === 'all'
-                  ? 'bg-slate-800 text-white font-bold border border-slate-600'
-                  : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800'
+                  ? 'bg-slate-800 text-white font-bold border border-cyan-500/50 shadow-md'
+                  : 'bg-slate-900/90 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -1059,10 +1059,10 @@ export const App: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex items-center space-x-2 text-xs font-mono px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
+          <div className="flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-slate-300 shadow-md shadow-cyan-500/10">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             <span className="text-slate-400">Region:</span>
-            <strong className="text-cyan-300">{state?.city_name || 'Active Region'}</strong>
+            <strong className="text-cyan-300 font-bold text-glow-cyan">{state?.city_name || 'Active Region'}</strong>
           </div>
         </div>
 

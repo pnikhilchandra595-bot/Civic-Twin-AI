@@ -169,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="w-full h-14 bg-[#080e1b]/95 border-b border-cyan-500/25 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-50 backdrop-blur-xl font-sans relative shadow-xl shrink-0 flex-nowrap overflow-visible">
+    <header className="w-full h-14 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 border-b border-cyan-500/35 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-50 backdrop-blur-2xl font-sans relative shadow-[0_4px_30px_rgba(0,0,0,0.95)] ring-1 ring-cyan-500/20 shrink-0 flex-nowrap overflow-visible cyber-scanner-border">
       
       {/* LEFT SECTION: Logo + Region Switcher + 18 Feeds Badge + Theme Toggle */}
       <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0 flex-nowrap">
@@ -180,7 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
-          <span className="font-hud text-sm sm:text-base font-black tracking-wider bg-gradient-to-r from-amber-300 via-cyan-200 to-emerald-400 bg-clip-text text-transparent truncate hidden xs:inline">
+          <span className="font-hud text-sm sm:text-base font-black tracking-wider bg-gradient-to-r from-amber-300 via-cyan-200 to-emerald-400 bg-clip-text text-transparent truncate hidden xs:inline text-glow-cyan">
             CIVICTWIN AI
           </span>
 
@@ -211,7 +211,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* 18 Live Sovereign Feeds Inspector Button */}
             <button
               onClick={onOpenProvenance}
-              className="px-2 py-1 rounded-lg bg-emerald-950/90 border border-emerald-400/80 text-emerald-300 hover:bg-emerald-900 text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(16,185,129,0.25)] cursor-pointer shrink-0"
+              className="px-2 py-1 rounded-lg bg-emerald-950/90 border border-emerald-400/80 text-emerald-300 hover:bg-emerald-900 text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(16,185,129,0.35)] ring-1 ring-emerald-400/30 cursor-pointer shrink-0"
               title="Inspect 18 Real-Time Live Sovereign Feeds"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
@@ -222,7 +222,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Light / Dark Mode Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-1 rounded-xl bg-[#091224] border border-slate-700 hover:border-amber-400 text-amber-400 hover:scale-105 transition-all shadow-md cursor-pointer shrink-0"
+              className="p-1 rounded-xl bg-[#091224] border border-slate-700/80 hover:border-amber-400 text-amber-400 hover:scale-105 transition-all shadow-md cursor-pointer shrink-0"
               title={theme === 'dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
             >
               {theme === 'dark' ? (
@@ -236,15 +236,15 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* CENTER SECTION: Live Telemetry Pill */}
-      <div className="hidden 2xl:flex items-center space-x-2 px-2.5 py-0.5 rounded-xl bg-[#091224]/90 border border-cyan-500/30 text-xs font-mono shrink-0">
-        <span className="text-cyan-400 font-bold">T+{state?.timeline_hour.toFixed(1) || '0.0'}h</span>
+      <div className="hidden 2xl:flex items-center space-x-2 px-3 py-1 rounded-xl bg-[#09152e]/90 border border-cyan-500/40 text-xs font-mono shrink-0 shadow-[0_0_15px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/20">
+        <span className="text-cyan-400 font-bold text-glow-cyan">T+{state?.timeline_hour.toFixed(1) || '0.0'}h</span>
         <span className="text-slate-600">•</span>
         <span className="text-slate-300">IMD: <strong className="text-cyan-300">{state?.rain_intensity_mmhr.toFixed(0) || 0} mm/h</strong></span>
         <span className="text-slate-600">•</span>
-        <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${
           state?.iap?.overall_threat_level === 'CRITICAL' || state?.iap?.overall_threat_level === 'CATASTROPHIC'
-            ? 'bg-red-500/20 text-red-400 border border-red-500/40'
-            : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+            ? 'bg-red-500/20 text-red-400 border border-red-500/60 shadow-[0_0_10px_rgba(244,63,94,0.3)]'
+            : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/60 shadow-[0_0_10px_rgba(16,185,129,0.3)]'
         }`}>
           {state?.iap?.overall_threat_level || 'ELEVATED'}
         </span>

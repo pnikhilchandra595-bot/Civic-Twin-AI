@@ -578,10 +578,10 @@ export const CalibratedTwinApp: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#050b16] text-slate-100 font-mono select-none flex flex-col">
+    <div className="min-h-screen w-full bg-transparent text-slate-100 font-mono select-none flex flex-col">
       
       {/* 1. UNIFIED SOVEREIGN COMMAND & DEFENSE HEADER */}
-      <header className="sticky top-0 z-40 bg-[#060d1d]/95 backdrop-blur-xl border-b border-cyan-500/30 shadow-2xl">
+      <header className="sticky top-0 z-40 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 backdrop-blur-2xl border-b border-cyan-500/35 shadow-2xl cyber-scanner-border">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2">
           
           {/* TOP ROW: BRAND, LOCATION SELECTOR, PRESENTATION, TOOLS & PROFILE */}
@@ -602,7 +602,7 @@ export const CalibratedTwinApp: React.FC = () => {
                     MULTI-CITY PAN-INDIA MODEL
                   </span>
                 </div>
-                <h1 className="text-sm sm:text-base font-bold text-white font-hud tracking-wide mt-0.5">
+                <h1 className="text-sm sm:text-base font-bold text-white font-hud tracking-wide mt-0.5 text-glow-cyan">
                   CIVICTWIN AI • DEFENSE & JURY EVALUATION PLATFORM
                 </h1>
               </div>
