@@ -690,7 +690,8 @@ export const CalibratedTwinApp: React.FC = () => {
                 {isHeaderToolsMenuOpen && (
                   <div 
                     onClick={(e) => e.stopPropagation()} 
-                    className="absolute right-0 top-full mt-2.5 w-80 sm:w-[480px] md:w-[540px] max-h-[82vh] overflow-y-auto rounded-3xl bg-[#070e1d]/98 border border-cyan-500/40 p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.95)] z-[200] space-y-4 backdrop-blur-2xl ring-1 ring-cyan-500/20"
+                    style={{ backgroundColor: '#070e1d' }}
+                    className="absolute right-0 top-full mt-2.5 w-80 sm:w-[480px] md:w-[540px] max-h-[82vh] overflow-y-auto rounded-3xl bg-[#070e1d] border border-cyan-500/50 p-4 sm:p-5 shadow-[0_25px_80px_rgba(0,0,0,0.99)] z-[200] space-y-4 ring-1 ring-cyan-500/30"
                   >
                     {/* Deck Header */}
                     <div className="flex items-center justify-between pb-3 border-b border-cyan-500/20">
@@ -722,7 +723,7 @@ export const CalibratedTwinApp: React.FC = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
                         <button
                           onClick={() => { setIsDroneCCTVOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-purple-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-purple-500/25 hover:border-purple-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-purple-950/80 border border-purple-500/40 text-purple-400 group-hover:scale-110 transition-transform shrink-0">
                             <Video className="w-4 h-4" />
@@ -735,7 +736,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsVoiceRadioOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-purple-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-purple-500/25 hover:border-purple-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-purple-950/80 border border-purple-500/40 text-purple-400 group-hover:scale-110 transition-transform shrink-0">
                             <Radio className="w-4 h-4" />
@@ -748,7 +749,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsMeshOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-amber-500/25 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
                             <WifiOff className="w-4 h-4" />
@@ -761,7 +762,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsQRCodeOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-teal-500/25 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
                             <QrCode className="w-4 h-4" />
@@ -783,7 +784,7 @@ export const CalibratedTwinApp: React.FC = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
                         <button
                           onClick={() => { setIsGLOFOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-cyan-500/25 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
                             <Mountain className="w-4 h-4" />
@@ -796,7 +797,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsMOSDACOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-blue-500/25 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-blue-950/80 border border-blue-500/40 text-blue-400 group-hover:scale-110 transition-transform shrink-0">
                             <Satellite className="w-4 h-4" />
@@ -809,7 +810,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsCWCGaugesOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-teal-500/25 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
                             <Waves className="w-4 h-4" />
@@ -822,7 +823,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsDamOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-rose-500/25 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-400 group-hover:scale-110 transition-transform shrink-0">
                             <Activity className="w-4 h-4" />
@@ -835,7 +836,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsElevationOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-emerald-500/25 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 group-hover:scale-110 transition-transform shrink-0">
                             <TrendingUp className="w-4 h-4" />
@@ -848,7 +849,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsSAROpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-cyan-500/25 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
                             <Radar className="w-4 h-4" />
@@ -870,7 +871,7 @@ export const CalibratedTwinApp: React.FC = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
                         <button
                           onClick={() => { setIsHospitalSurgeOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-rose-500/25 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-400 group-hover:scale-110 transition-transform shrink-0">
                             <HeartPulse className="w-4 h-4" />
@@ -883,7 +884,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsAICopilotOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-teal-500/25 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
                             <Sparkles className="w-4 h-4" />
@@ -896,7 +897,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsICS201Open(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-emerald-500/25 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 group-hover:scale-110 transition-transform shrink-0">
                             <ShieldCheck className="w-4 h-4" />
@@ -909,7 +910,7 @@ export const CalibratedTwinApp: React.FC = () => {
 
                         <button
                           onClick={() => { setIsMultiHazardOpen(true); setIsHeaderToolsMenuOpen(false); }}
-                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                          className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-amber-500/25 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
                         >
                           <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
                             <AlertTriangle className="w-4 h-4" />

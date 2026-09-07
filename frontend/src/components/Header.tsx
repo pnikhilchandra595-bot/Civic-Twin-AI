@@ -328,7 +328,8 @@ export const Header: React.FC<HeaderProps> = ({
           {isToolsMenuOpen && (
             <div 
               onClick={(e) => e.stopPropagation()} 
-              className="absolute right-0 top-full mt-2.5 w-80 sm:w-[480px] md:w-[540px] max-h-[82vh] overflow-y-auto rounded-3xl bg-[#070e1d]/98 border border-cyan-500/40 p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.95)] z-[200] space-y-4 backdrop-blur-2xl ring-1 ring-cyan-500/20"
+              style={{ backgroundColor: '#070e1d' }}
+              className="absolute right-0 top-full mt-2.5 w-80 sm:w-[480px] md:w-[540px] max-h-[82vh] overflow-y-auto rounded-3xl bg-[#070e1d] border border-cyan-500/50 p-4 sm:p-5 shadow-[0_25px_80px_rgba(0,0,0,0.99)] z-[200] space-y-4 ring-1 ring-cyan-500/30"
             >
               {/* Deck Header */}
               <div className="flex items-center justify-between pb-3 border-b border-cyan-500/20">
@@ -364,7 +365,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* CCTV / Drones */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenDroneCCTV(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-cyan-500/25 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
                       <Video className="w-4 h-4" />
@@ -378,7 +379,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Voice Radio */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenVoiceRadio(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-purple-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-purple-500/25 hover:border-purple-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-purple-950/80 border border-purple-500/40 text-purple-400 group-hover:scale-110 transition-transform shrink-0">
                       <Mic className="w-4 h-4" />
@@ -392,7 +393,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* LoRa Mesh Net */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenMesh(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-amber-500/25 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
                       <WifiOff className="w-4 h-4" />
@@ -406,7 +407,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Citizen QR Beacon */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); if (onOpenQRCode) onOpenQRCode(); else onOpenMobileCompanion(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-rose-500/25 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-400 group-hover:scale-110 transition-transform shrink-0">
                       <QrCode className="w-4 h-4" />
@@ -431,7 +432,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Dam Sluice */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenDam(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-blue-500/25 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-blue-950/80 border border-blue-500/40 text-blue-400 group-hover:scale-110 transition-transform shrink-0">
                       <Waves className="w-4 h-4" />
@@ -445,7 +446,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* 3D Elevation Cut */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenElevation(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-cyan-500/25 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
                       <TrendingUp className="w-4 h-4" />
@@ -459,7 +460,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Hazmat Sim */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenMultiHazard(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-amber-500/25 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
                       <Skull className="w-4 h-4" />
@@ -473,7 +474,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* CWC River Gauges */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); if (onOpenCWCGauges) onOpenCWCGauges(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-teal-500/25 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
                       <Waves className="w-4 h-4 animate-pulse" />
@@ -487,7 +488,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* MOSDAC Satellites */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); if (onOpenMOSDAC) onOpenMOSDAC(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-blue-500/25 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-blue-950/80 border border-blue-500/40 text-blue-400 group-hover:scale-110 transition-transform shrink-0">
                       <Satellite className="w-4 h-4 animate-pulse" />
@@ -501,7 +502,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Himalayan GLOF */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); if (onOpenGLOF) onOpenGLOF(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-cyan-500/25 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
                       <Mountain className="w-4 h-4 animate-pulse" />
@@ -515,7 +516,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* SAR Radar */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenSAR(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-emerald-500/25 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 group-hover:scale-110 transition-transform shrink-0">
                       <Radar className="w-4 h-4" />
@@ -540,7 +541,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Hospital Surge */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenHospitalSurge(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-rose-500/25 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-400 group-hover:scale-110 transition-transform shrink-0">
                       <HeartPulse className="w-4 h-4" />
@@ -554,7 +555,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* ICS-201 Plan */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenICS201(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-emerald-500/25 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 group-hover:scale-110 transition-transform shrink-0">
                       <FileText className="w-4 h-4" />
@@ -568,7 +569,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Live APIs */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenProvenance(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-teal-500/25 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
                       <Database className="w-4 h-4" />
@@ -582,7 +583,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Gateways */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenIntegrations(); }}
-                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                    className="group p-2.5 rounded-2xl bg-[#0c1833] hover:bg-[#132652] border border-cyan-500/25 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                   >
                     <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
                       <Settings className="w-4 h-4" />
