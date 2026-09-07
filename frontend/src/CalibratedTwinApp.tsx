@@ -690,72 +690,238 @@ export const CalibratedTwinApp: React.FC = () => {
                 {isHeaderToolsMenuOpen && (
                   <div 
                     onClick={(e) => e.stopPropagation()} 
-                    className="absolute right-0 top-full mt-2 w-72 sm:w-80 max-h-[80vh] overflow-y-auto p-2 rounded-2xl bg-slate-900/98 border border-cyan-500/40 shadow-2xl z-[200] grid grid-cols-2 gap-1.5 text-xs backdrop-blur-2xl"
+                    className="absolute right-0 top-full mt-2.5 w-80 sm:w-[480px] md:w-[540px] max-h-[82vh] overflow-y-auto rounded-3xl bg-[#070e1d]/98 border border-cyan-500/40 p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.95)] z-[200] space-y-4 backdrop-blur-2xl ring-1 ring-cyan-500/20"
                   >
-                    <button onClick={() => { setIsGLOFOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <Mountain className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>GLOF Early Warning</span>
-                    </button>
-                    <button onClick={() => { setIsMOSDACOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <Satellite className="w-3.5 h-3.5 text-blue-400" />
-                      <span>MOSDAC Satellite</span>
-                    </button>
-                    <button onClick={() => { setIsCWCGaugesOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <Waves className="w-3.5 h-3.5 text-teal-400" />
-                      <span>CWC Gauges</span>
-                    </button>
-                    <button onClick={() => { setIsMultiHazardOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Multi-Hazard</span>
-                    </button>
-                    <button onClick={() => { setIsDamOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <Activity className="w-3.5 h-3.5 text-rose-400" />
-                      <span>Dam Hydrograph</span>
-                    </button>
-                    <button onClick={() => { setIsElevationOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Elevation DEM</span>
-                    </button>
-                    <button onClick={() => { setIsHospitalSurgeOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <HeartPulse className="w-3.5 h-3.5 text-rose-400" />
-                      <span>Hospital Surge</span>
-                    </button>
-                    <button onClick={() => { setIsSAROpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <Radar className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>SAR Radar</span>
-                    </button>
-                    <button onClick={() => { setIsCitizenSOSOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-rose-300 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <PhoneCall className="w-3.5 h-3.5 text-rose-400" />
-                      <span>Citizen SOS</span>
-                    </button>
-                    <button onClick={() => { setIsQRCodeOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-teal-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <QrCode className="w-3.5 h-3.5 text-teal-400" />
-                      <span>Citizen QR Pack</span>
-                    </button>
-                    <button onClick={() => { setIsDroneCCTVOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-purple-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <Video className="w-3.5 h-3.5 text-purple-400" />
-                      <span>Drone & CCTV</span>
-                    </button>
-                    <button onClick={() => { setIsVoiceRadioOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-purple-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <Radio className="w-3.5 h-3.5 text-purple-400" />
-                      <span>Voice Radio</span>
-                    </button>
-                    <button onClick={() => { setIsMeshOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-amber-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <WifiOff className="w-3.5 h-3.5 text-amber-400" />
-                      <span>LoRa Mesh Net</span>
-                    </button>
-                    <button onClick={() => { setIsAICopilotOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-teal-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <Sparkles className="w-3.5 h-3.5 text-teal-400" />
-                      <span>Gemini Copilot</span>
-                    </button>
-                    <button onClick={() => { setIsICS201Open(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-emerald-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>NDMA ICS-201</span>
-                    </button>
-                    <button onClick={() => { setIsLiveWeatherOpen(true); setIsHeaderToolsMenuOpen(false); }} className="p-2 rounded-lg bg-slate-950 hover:bg-cyan-950/80 border border-slate-800 text-left text-cyan-200 font-bold flex items-center space-x-1.5 cursor-pointer">
-                      <CloudRain className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Live Weather</span>
-                    </button>
+                    {/* Deck Header */}
+                    <div className="flex items-center justify-between pb-3 border-b border-cyan-500/20">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-1.5 rounded-lg bg-cyan-950/80 border border-cyan-500/50 text-cyan-300">
+                          <Layers className="w-4 h-4 text-cyan-400 animate-pulse" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-hud font-black uppercase tracking-wider text-cyan-300">
+                            16 SOVEREIGN C2 ENGINES HUB
+                          </div>
+                          <div className="text-[10px] font-mono text-slate-400 flex items-center space-x-1.5 mt-0.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                            <span className="text-emerald-300 font-bold">CALIBRATED BENCHMARKS READY</span>
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-cyan-200">
+                        {authUser?.role || 'Defense Jury'}
+                      </span>
+                    </div>
+
+                    {/* Section 1: Surveillance & Comms */}
+                    <div className="space-y-2">
+                      <div className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-wider flex items-center space-x-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                        <span>📡 Surveillance, Drone AI & Comms</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                        <button
+                          onClick={() => { setIsDroneCCTVOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-purple-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-purple-950/80 border border-purple-500/40 text-purple-400 group-hover:scale-110 transition-transform shrink-0">
+                            <Video className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-purple-200 truncate">Drone & CCTV Fleet</div>
+                            <div className="text-[10px] text-slate-400 truncate">FLIR & Optical Feeds</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsVoiceRadioOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-purple-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-purple-950/80 border border-purple-500/40 text-purple-400 group-hover:scale-110 transition-transform shrink-0">
+                            <Radio className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-purple-200 truncate">Voice Radio SITREPs</div>
+                            <div className="text-[10px] text-slate-400 truncate">Tactical Audio TTS</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsMeshOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
+                            <WifiOff className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-amber-200 truncate">LoRa Mesh Network</div>
+                            <div className="text-[10px] text-slate-400 truncate">Offline P2P Telemetry</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsQRCodeOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
+                            <QrCode className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-teal-200 truncate">Citizen QR Pack</div>
+                            <div className="text-[10px] text-slate-400 truncate">Geo-Location Evacuation</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Section 2: Physics & Satellites */}
+                    <div className="space-y-2">
+                      <div className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-wider flex items-center space-x-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                        <span>🌊 Hydrodynamic Physics & Satellites</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                        <button
+                          onClick={() => { setIsGLOFOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
+                            <Mountain className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-cyan-200 truncate">GLOF Early Warning</div>
+                            <div className="text-[10px] text-slate-400 truncate">Moraine Burst Hydrograph</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsMOSDACOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-blue-950/80 border border-blue-500/40 text-blue-400 group-hover:scale-110 transition-transform shrink-0">
+                            <Satellite className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-blue-200 truncate">MOSDAC Satellites</div>
+                            <div className="text-[10px] text-slate-400 truncate">ISRO Rainfall Telemetry</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsCWCGaugesOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
+                            <Waves className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-teal-200 truncate">CWC River Gauges</div>
+                            <div className="text-[10px] text-slate-400 truncate">Water Stage Telemetry</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsDamOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-400 group-hover:scale-110 transition-transform shrink-0">
+                            <Activity className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-rose-200 truncate">Dam Hydrograph</div>
+                            <div className="text-[10px] text-slate-400 truncate">Sluice Discharge Rates</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsElevationOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 group-hover:scale-110 transition-transform shrink-0">
+                            <TrendingUp className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-emerald-200 truncate">Elevation DEM Slicing</div>
+                            <div className="text-[10px] text-slate-400 truncate">LiDAR Topo Contours</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsSAROpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
+                            <Radar className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-cyan-200 truncate">Satellite SAR Radar</div>
+                            <div className="text-[10px] text-slate-400 truncate">InSAR Flood Extent</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Section 3: Relief & AI */}
+                    <div className="space-y-2">
+                      <div className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-wider flex items-center space-x-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                        <span>🏥 Relief Coordination & Incident AI</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                        <button
+                          onClick={() => { setIsHospitalSurgeOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-400 group-hover:scale-110 transition-transform shrink-0">
+                            <HeartPulse className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-rose-200 truncate">Hospital Surge</div>
+                            <div className="text-[10px] text-slate-400 truncate">ICU Beds & Ambulances</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsAICopilotOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
+                            <Sparkles className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-teal-200 truncate">Google Gemini Copilot</div>
+                            <div className="text-[10px] text-slate-400 truncate">Incident Action AI</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsICS201Open(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 group-hover:scale-110 transition-transform shrink-0">
+                            <ShieldCheck className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-emerald-200 truncate">NDMA ICS-201 Form</div>
+                            <div className="text-[10px] text-slate-400 truncate">Action Plan Document</div>
+                          </div>
+                        </button>
+
+                        <button
+                          onClick={() => { setIsMultiHazardOpen(true); setIsHeaderToolsMenuOpen(false); }}
+                          className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                        >
+                          <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
+                            <AlertTriangle className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-slate-100 group-hover:text-amber-200 truncate">Multi-Hazard Simulation</div>
+                            <div className="text-[10px] text-slate-400 truncate">Hazmat Plumes & Fire</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
                   </div>
                 )}
               </div>
@@ -925,121 +1091,177 @@ export const CalibratedTwinApp: React.FC = () => {
         <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 space-y-4">
           
           {/* 0. MASTER SIMULATION CONTROLLER & TIMELINE HUD (STOPPED BY DEFAULT) */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#071329] via-[#0c1f3d] to-[#071329] border border-cyan-500/30 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-3.5 text-xs">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#050c1b]/98 via-[#0b1b38]/95 to-[#050c1b]/98 border border-cyan-500/40 shadow-[0_12px_40px_rgba(0,0,0,0.85)] ring-1 ring-cyan-500/20 backdrop-blur-xl p-3.5 sm:p-4 text-xs space-y-3">
             
-            {/* Left: Big Play/Pause Toggle + Status Pill + Reset + Step Buttons */}
-            <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-              
-              {/* START / PAUSE BUTTON */}
-              <button
-                onClick={handleToggleSimulation}
-                className={`px-4 py-2 rounded-xl font-bold font-mono text-xs flex items-center space-x-2 transition-all cursor-pointer shadow-lg active:scale-95 ${
-                  isPlaying
-                    ? 'bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white shadow-amber-500/30 border border-amber-400'
-                    : 'bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white shadow-emerald-500/40 border border-emerald-400 animate-pulse'
-                }`}
-                title={isPlaying ? "Pause simulation progression" : "Start real-time digital twin simulation"}
-              >
-                {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
-                <span className="tracking-wide uppercase font-black">
-                  {isPlaying ? 'PAUSE SIMULATION' : 'START SIMULATION'}
+            {/* Top Telemetry & Status HUD Header Strip */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-cyan-500/20 text-[11px] font-mono">
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 px-2 py-0.5 rounded-lg bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-bold">
+                  <Activity className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                  <span className="tracking-wider uppercase font-hud">HYDRO-TWIN C2 CONTROLLER</span>
+                </div>
+                <span className="text-slate-500 hidden sm:inline">•</span>
+                <span className="text-slate-300 font-bold truncate max-w-[200px] sm:max-w-xs">
+                  {baseScenario.name} ({baseScenario.state})
                 </span>
-              </button>
-
-              {/* Simulation Status Indicator Pill */}
-              <div className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border font-mono text-[11px] ${
-                isPlaying 
-                  ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 shadow-sm' 
-                  : 'bg-amber-950/80 border-amber-500/50 text-amber-300 shadow-sm'
-              }`}>
-                <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
-                <span className="font-black tracking-wider">{isPlaying ? 'LIVE SIMULATION ADVANCING' : 'STANDBY (PAUSED)'}</span>
               </div>
 
-              {/* Reset to T+0.0h */}
-              <button
-                onClick={handleResetSimulation}
-                className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white font-mono text-[11px] flex items-center space-x-1.5 transition-all cursor-pointer"
-                title="Reset timeline to T+0.0h (Standby Baseline)"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Reset (T+0.0h)</span>
-              </button>
+              {/* Dynamic Readouts: Discharge, Rain, IST Clock */}
+              <div className="flex items-center space-x-2 text-[10px] sm:text-[11px]">
+                <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-lg bg-slate-900/90 border border-slate-700/80 text-slate-300">
+                  <Waves className="w-3 h-3 text-cyan-400" />
+                  <span>Peak Inflow:</span>
+                  <strong className="text-cyan-300">
+                    {Math.round((currentTwinState.metrics?.peakDischargeCumecs || comprehensiveState.state.metrics.peakDischargeCumecs) * sensitivityMultiplier).toLocaleString()} m³/s
+                  </strong>
+                </div>
 
-              {/* Time Step Buttons */}
-              <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                <button
-                  onClick={() => handleStepSimulation(-0.5)}
-                  className="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-[10px] font-mono font-bold cursor-pointer transition-all"
-                  title="Step back 30 minutes"
-                >
-                  -0.5h
-                </button>
-                <button
-                  onClick={() => handleStepSimulation(0.5)}
-                  className="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-[10px] font-mono font-bold cursor-pointer transition-all"
-                  title="Step forward 30 minutes"
-                >
-                  +0.5h
-                </button>
-              </div>
+                <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-lg bg-slate-900/90 border border-slate-700/80 text-slate-300">
+                  <CloudRain className="w-3 h-3 text-blue-400" />
+                  <span>Rain:</span>
+                  <strong className="text-blue-300">
+                    {currentTwinState.rain_intensity_mmhr?.toFixed(0) || 0} mm/h
+                  </strong>
+                </div>
 
-              {/* Playback Speed Multiplier */}
-              <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                <span className="text-[10px] text-slate-500 font-bold px-1 uppercase">Speed:</span>
-                {[1.0, 2.0, 5.0].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => { setPlaybackSpeed(s); triggerAudioChirp(); }}
-                    className={`px-1.5 py-0.5 rounded font-mono text-[10px] font-bold cursor-pointer transition-all ${
-                      playbackSpeed === s
-                        ? 'bg-cyan-600 text-white shadow-sm'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    {s}x
-                  </button>
-                ))}
+                <div className="hidden md:flex items-center space-x-1 text-slate-400 px-2 py-0.5 rounded-lg bg-slate-950/60 border border-slate-800">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  <span>{currentTime} IST</span>
+                </div>
               </div>
             </div>
 
-            {/* Right: Interactive Timeline Scrubbing Slider + Node Counters */}
-            <div className="flex items-center space-x-3 w-full lg:w-auto justify-between lg:justify-end">
-              <div className="flex items-center space-x-2 shrink-0">
-                <Clock className="w-4 h-4 text-cyan-400" />
-                <span className="font-mono text-cyan-300 font-bold text-xs">
-                  T + {currentTwinState.timeline_hour.toFixed(2)}h
-                </span>
+            {/* Bottom Controls Deck: Playback Controls + Interactive Timeline Scrubber */}
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-3.5">
+              
+              {/* Left: Big Play/Pause Toggle + Status Pill + Reset + Step Buttons + Speed */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full lg:w-auto">
+                
+                {/* START / PAUSE BUTTON */}
+                <button
+                  onClick={handleToggleSimulation}
+                  className={`px-4 py-2 rounded-xl font-bold font-mono text-xs flex items-center space-x-2 transition-all cursor-pointer shadow-lg active:scale-95 border ${
+                    isPlaying
+                      ? 'bg-gradient-to-r from-amber-600 via-rose-600 to-red-600 hover:from-amber-500 hover:to-red-500 text-white shadow-rose-500/30 border-rose-400 ring-1 ring-rose-400/40'
+                      : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white shadow-emerald-500/40 border-emerald-400 ring-1 ring-emerald-400/40 animate-pulse'
+                  }`}
+                  title={isPlaying ? "Pause simulation progression" : "Start real-time digital twin simulation"}
+                >
+                  {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
+                  <span className="tracking-wide uppercase font-black font-hud">
+                    {isPlaying ? 'PAUSE SIMULATION' : 'START SIMULATION'}
+                  </span>
+                </button>
+
+                {/* Simulation Status Indicator Pill */}
+                <div className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border font-mono text-[11px] backdrop-blur-md ${
+                  isPlaying 
+                    ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.2)]' 
+                    : 'bg-amber-950/80 border-amber-500/50 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.2)]'
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`} />
+                  <span className="font-black tracking-wider">{isPlaying ? 'LIVE ADVANCING' : 'STANDBY (PAUSED)'}</span>
+                </div>
+
+                {/* Reset to T+0.0h */}
+                <button
+                  onClick={handleResetSimulation}
+                  className="px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/90 text-slate-300 hover:text-white font-mono text-[11px] flex items-center space-x-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+                  title="Reset timeline to T+0.0h (Standby Baseline)"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Reset (T+0.0h)</span>
+                </button>
+
+                {/* Time Step Buttons */}
+                <div className="flex items-center space-x-1 bg-slate-950/90 p-1 rounded-xl border border-slate-800 shadow-inner">
+                  <button
+                    onClick={() => handleStepSimulation(-0.5)}
+                    className="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-[10px] font-mono font-bold cursor-pointer transition-all"
+                    title="Step back 30 minutes"
+                  >
+                    -0.5h
+                  </button>
+                  <div className="w-[1px] h-3 bg-slate-800" />
+                  <button
+                    onClick={() => handleStepSimulation(0.5)}
+                    className="px-2 py-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-[10px] font-mono font-bold cursor-pointer transition-all"
+                    title="Step forward 30 minutes"
+                  >
+                    +0.5h
+                  </button>
+                </div>
+
+                {/* Playback Speed Multiplier */}
+                <div className="flex items-center space-x-1 bg-slate-950/90 p-1 rounded-xl border border-slate-800 shadow-inner">
+                  <span className="text-[10px] text-slate-500 font-bold px-1 uppercase">Speed:</span>
+                  {[1.0, 2.0, 5.0].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => { setPlaybackSpeed(s); triggerAudioChirp(); }}
+                      className={`px-1.5 py-0.5 rounded-lg font-mono text-[10px] font-bold cursor-pointer transition-all ${
+                        playbackSpeed === s
+                          ? 'bg-cyan-600 text-white shadow-md shadow-cyan-500/30'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {s}x
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <input
-                type="range"
-                min="0"
-                max="12"
-                step="0.1"
-                value={currentTwinState.timeline_hour}
-                onChange={(e) => handleScrubTimeline(parseFloat(e.target.value))}
-                className="w-28 sm:w-44 md:w-56 accent-cyan-400 cursor-pointer"
-                title="Scrub timeline from T+0.0h to T+12.0h"
-              />
+              {/* Right: Interactive Timeline Scrubbing Slider + Milestone Markers + Submerged Pill */}
+              <div className="flex flex-col space-y-1 w-full lg:w-auto">
+                <div className="flex items-center justify-between space-x-3">
+                  <div className="flex items-center space-x-1.5 shrink-0 px-2 py-1 rounded-lg bg-cyan-950/70 border border-cyan-500/40">
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                    <span className="font-mono text-cyan-300 font-black text-xs tracking-wider">
+                      T + {currentTwinState.timeline_hour.toFixed(2)}h
+                    </span>
+                  </div>
 
-              <div className="flex items-center space-x-1.5 text-[11px] font-mono text-slate-400 shrink-0">
-                <span>Submerged:</span>
-                <span className="px-2 py-0.5 rounded bg-rose-950/80 text-rose-300 font-bold border border-rose-500/40">
-                  {currentTwinState.nodes?.filter(n => n.status === 'submerged').length || 0} Nodes
-                </span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="12"
+                    step="0.1"
+                    value={currentTwinState.timeline_hour}
+                    onChange={(e) => handleScrubTimeline(parseFloat(e.target.value))}
+                    className="w-32 sm:w-48 md:w-56 accent-cyan-400 cursor-pointer h-2 bg-slate-800 rounded-lg"
+                    title="Scrub timeline from T+0.0h to T+12.0h"
+                  />
+
+                  <div className="flex items-center space-x-1.5 text-[11px] font-mono shrink-0">
+                    <span className="px-2.5 py-1 rounded-xl bg-rose-950/90 text-rose-300 font-bold border border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.25)] flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
+                      <span>{currentTwinState.nodes?.filter(n => n.status === 'submerged').length || 0} Submerged</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Timeline Milestone Markers */}
+                <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 px-1 pt-0.5">
+                  <button onClick={() => handleScrubTimeline(0)} className="hover:text-cyan-300 cursor-pointer transition-colors">0h (Base)</button>
+                  <button onClick={() => handleScrubTimeline(3)} className="hover:text-cyan-300 cursor-pointer transition-colors">3h (Surge)</button>
+                  <button onClick={() => handleScrubTimeline(6)} className="hover:text-cyan-300 cursor-pointer transition-colors font-bold text-amber-400">6h (Peak)</button>
+                  <button onClick={() => handleScrubTimeline(9)} className="hover:text-cyan-300 cursor-pointer transition-colors">9h (Recede)</button>
+                  <button onClick={() => handleScrubTimeline(12)} className="hover:text-cyan-300 cursor-pointer transition-colors">12h (Stable)</button>
+                </div>
               </div>
+
             </div>
 
           </div>
           
           {/* INTERACTIVE CALIBRATION & SENSITIVITY CONTROLS */}
-          <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-[#060e1d]/95 via-[#0b1b36]/90 to-[#060e1d]/95 border border-cyan-500/25 shadow-xl flex flex-wrap items-center justify-between gap-3 text-xs backdrop-blur-md">
             
             {/* Sensitivity Multiplier Slider */}
             <div className="flex items-center space-x-3">
-              <span className="text-slate-400 font-bold uppercase text-[11px]">
-                Hydraulic Sensitivity:
+              <span className="text-cyan-400 font-bold uppercase text-[11px] font-mono flex items-center space-x-1">
+                <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Hydraulic Sensitivity:</span>
               </span>
               <input 
                 type="range"
@@ -1051,31 +1273,31 @@ export const CalibratedTwinApp: React.FC = () => {
                   setSensitivityMultiplier(parseFloat(e.target.value));
                   triggerAudioChirp();
                 }}
-                className="w-28 sm:w-36 accent-cyan-400 cursor-pointer"
+                className="w-28 sm:w-36 accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
               />
-              <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-bold border border-cyan-500/40">
-                {sensitivityMultiplier}x Multiplier
+              <span className="px-2 py-0.5 rounded-lg bg-cyan-950/90 text-cyan-300 font-mono font-bold border border-cyan-500/40 shadow-sm">
+                {sensitivityMultiplier.toFixed(1)}x Multiplier
               </span>
-              <span className="text-[11px] text-slate-400 hidden md:inline">
-                (Peak Inflow: {Math.round((currentTwinState.metrics?.peakDischargeCumecs || comprehensiveState.state.metrics.peakDischargeCumecs) * sensitivityMultiplier).toLocaleString()} m³/s)
+              <span className="text-[11px] font-mono text-slate-400 hidden md:inline">
+                (Peak Inflow: <span className="text-cyan-300 font-bold">{Math.round((currentTwinState.metrics?.peakDischargeCumecs || comprehensiveState.state.metrics.peakDischargeCumecs) * sensitivityMultiplier).toLocaleString()} m³/s</span>)
               </span>
             </div>
 
             {/* Vehicle Wading Clearance Filter (Pillar 4) */}
-            <div className="flex items-center space-x-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-              <span className="text-slate-500 text-[10px] uppercase font-bold px-1.5">Wading Clearance:</span>
+            <div className="flex items-center space-x-1 bg-slate-950/90 p-1 rounded-xl border border-slate-800 shadow-inner">
+              <span className="text-slate-400 text-[10px] uppercase font-bold px-1.5 font-mono">Clearance:</span>
               <button
                 onClick={() => setVehicleWadingFilter('all')}
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer font-bold ${
-                  vehicleWadingFilter === 'all' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white'
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer font-mono font-bold text-xs ${
+                  vehicleWadingFilter === 'all' ? 'bg-cyan-950 border border-cyan-500/50 text-cyan-200 shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 All
               </button>
               <button
                 onClick={() => setVehicleWadingFilter('car')}
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer font-bold flex items-center space-x-1 ${
-                  vehicleWadingFilter === 'car' ? 'bg-amber-600 text-white' : 'text-slate-400 hover:text-white'
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer font-mono font-bold text-xs flex items-center space-x-1 ${
+                  vehicleWadingFilter === 'car' ? 'bg-amber-600 text-white shadow-md shadow-amber-500/30' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <Car className="w-3 h-3" />
@@ -1083,8 +1305,8 @@ export const CalibratedTwinApp: React.FC = () => {
               </button>
               <button
                 onClick={() => setVehicleWadingFilter('truck')}
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer font-bold flex items-center space-x-1 ${
-                  vehicleWadingFilter === 'truck' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer font-mono font-bold text-xs flex items-center space-x-1 ${
+                  vehicleWadingFilter === 'truck' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <Truck className="w-3 h-3" />
@@ -1092,8 +1314,8 @@ export const CalibratedTwinApp: React.FC = () => {
               </button>
               <button
                 onClick={() => setVehicleWadingFilter('boat')}
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer font-bold flex items-center space-x-1 ${
-                  vehicleWadingFilter === 'boat' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer font-mono font-bold text-xs flex items-center space-x-1 ${
+                  vehicleWadingFilter === 'boat' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-500/30' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <Ship className="w-3 h-3" />
@@ -1105,22 +1327,22 @@ export const CalibratedTwinApp: React.FC = () => {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setIs3DTiltActive(!is3DTiltActive)}
-                className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center space-x-1.5 cursor-pointer border ${
+                className={`px-3 py-1.5 rounded-xl font-bold font-mono transition-all flex items-center space-x-1.5 cursor-pointer border ${
                   is3DTiltActive
                     ? 'bg-cyan-600 text-white border-cyan-400 shadow-md shadow-cyan-500/30'
-                    : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                    : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-slate-700/80'
                 }`}
               >
-                <Mountain className="w-3.5 h-3.5" />
-                <span>{is3DTiltActive ? '3D Topo: ACTIVE (25° Tilt)' : 'Enable 3D Topo Tilt'}</span>
+                <Mountain className="w-3.5 h-3.5 text-cyan-300" />
+                <span>{is3DTiltActive ? '3D Topo: ACTIVE (25°)' : 'Enable 3D Topo'}</span>
               </button>
 
               <button
                 onClick={() => setMapRenderMode(prev => prev === 'calibrated_vector' ? 'satellite_gis' : 'calibrated_vector')}
-                className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold transition-all cursor-pointer flex items-center space-x-1"
+                className="px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-mono font-bold transition-all cursor-pointer flex items-center space-x-1.5 shadow-sm"
               >
                 <Globe className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{mapRenderMode === 'calibrated_vector' ? 'GIS Satellite View' : 'Vector Flood Contours'}</span>
+                <span>{mapRenderMode === 'calibrated_vector' ? 'GIS Satellite View' : 'Vector Contours'}</span>
               </button>
             </div>
 

@@ -324,182 +324,294 @@ export const Header: React.FC<HeaderProps> = ({
               <ChevronDown className={`w-3 h-3 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
-          {/* Expanded Modular Tools Menu */}
+          {/* Expanded Modular Tools Menu (Defense-Grade Command Deck) */}
           {isToolsMenuOpen && (
             <div 
               onClick={(e) => e.stopPropagation()} 
-              className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[80vh] overflow-y-auto rounded-2xl bg-[#080d1a] border border-cyan-500/40 p-4 shadow-[0_10px_40px_rgba(0,0,0,0.9)] z-[200] space-y-3.5 backdrop-blur-2xl"
+              className="absolute right-0 top-full mt-2.5 w-80 sm:w-[480px] md:w-[540px] max-h-[82vh] overflow-y-auto rounded-3xl bg-[#070e1d]/98 border border-cyan-500/40 p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.95)] z-[200] space-y-4 backdrop-blur-2xl ring-1 ring-cyan-500/20"
             >
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 flex items-center space-x-1.5">
-                  <Grid className="w-3.5 h-3.5" />
-                  <span>Command Center Modules</span>
-                </span>
-                <span className="text-[10px] font-mono text-slate-500">
-                  {authUser?.role || 'Operator'}
+              {/* Deck Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-cyan-500/20">
+                <div className="flex items-center space-x-2">
+                  <div className="p-1.5 rounded-lg bg-cyan-950/80 border border-cyan-500/50 text-cyan-300">
+                    <Grid className="w-4 h-4 text-cyan-400 animate-pulse" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-hud font-black uppercase tracking-wider text-cyan-300 flex items-center space-x-2">
+                      <span>COMMAND DECK • 16 MISSION ENGINES</span>
+                    </div>
+                    <div className="text-[10px] font-mono text-slate-400 flex items-center space-x-1.5 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      <span className="text-emerald-300 font-bold">ALL SYSTEMS NOMINAL</span>
+                      <span className="text-slate-600">•</span>
+                      <span>18 LIVE FEEDS ACTIVE</span>
+                    </div>
+                  </div>
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-cyan-200">
+                  {authUser?.role || 'Incident Commander'}
                 </span>
               </div>
 
               {/* Group 1: Surveillance & Comms */}
-              <div className="space-y-1.5">
-                <div className="text-[10px] font-mono font-bold text-slate-400 uppercase">
-                  📡 Surveillance & Communications
+              <div className="space-y-2">
+                <div className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-wider flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  <span>📡 Surveillance & Tactical Communications</span>
                 </div>
-                <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                  
+                  {/* CCTV / Drones */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenDroneCCTV(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                   >
-                    <Video className="w-4 h-4 text-cyan-400" />
-                    <span>CCTV/Drones</span>
+                    <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Video className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-cyan-200 transition-colors truncate">CCTV & Drones</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">FLIR & Optical Feeds</div>
+                    </div>
                   </button>
 
+                  {/* Voice Radio */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenVoiceRadio(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-purple-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-purple-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
                   >
-                    <Mic className="w-4 h-4 text-purple-400" />
-                    <span>Voice Radio</span>
+                    <div className="p-2 rounded-xl bg-purple-950/80 border border-purple-500/40 text-purple-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Mic className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-purple-200 transition-colors truncate">Voice Radio</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Tactical SITREP Audio</div>
+                    </div>
                   </button>
 
+                  {/* LoRa Mesh Net */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenMesh(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
                   >
-                    <WifiOff className="w-4 h-4 text-amber-400" />
-                    <span>Mesh SOS</span>
+                    <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
+                      <WifiOff className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-amber-200 transition-colors truncate">Mesh Network</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Offline P2P Packets</div>
+                    </div>
                   </button>
 
+                  {/* Citizen QR Beacon */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); if (onOpenQRCode) onOpenQRCode(); else onOpenMobileCompanion(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-rose-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
                   >
-                    <QrCode className="w-4 h-4 text-rose-400" />
-                    <span>Citizen QR Beacon</span>
+                    <div className="p-2 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-400 group-hover:scale-110 transition-transform shrink-0">
+                      <QrCode className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-rose-200 transition-colors truncate">Citizen QR Beacon</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Geo-Location Evacuation</div>
+                    </div>
                   </button>
+
                 </div>
               </div>
 
               {/* Group 2: Hydrology & Multi-Hazard Physics */}
-              <div className="space-y-1.5">
-                <div className="text-[10px] font-mono font-bold text-slate-400 uppercase">
-                  🌊 Hydrology & Physics Engines
+              <div className="space-y-2">
+                <div className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-wider flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  <span>🌊 Hydrology & Physics Simulators</span>
                 </div>
-                <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+
+                  {/* Dam Sluice */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenDam(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-blue-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
                   >
-                    <Waves className="w-4 h-4 text-blue-400" />
-                    <span>Dam Sluice</span>
+                    <div className="p-2 rounded-xl bg-blue-950/80 border border-blue-500/40 text-blue-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Waves className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-blue-200 transition-colors truncate">Dam Hydrograph</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Spillway Sluice Release</div>
+                    </div>
                   </button>
 
+                  {/* 3D Elevation Cut */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenElevation(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                   >
-                    <TrendingUp className="w-4 h-4 text-cyan-400" />
-                    <span>3D Elevation Cut</span>
+                    <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
+                      <TrendingUp className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-cyan-200 transition-colors truncate">3D Elevation Profile</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">LiDAR Topo Slicing</div>
+                    </div>
                   </button>
 
+                  {/* Hazmat Sim */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenMultiHazard(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
                   >
-                    <Skull className="w-4 h-4 text-amber-400" />
-                    <span>Hazmat Sim</span>
+                    <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Skull className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-amber-200 transition-colors truncate">Hazmat Multi-Hazard</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Toxic Plume Dynamics</div>
+                    </div>
                   </button>
 
+                  {/* CWC River Gauges */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); if (onOpenCWCGauges) onOpenCWCGauges(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-blue-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
                   >
-                    <Waves className="w-4 h-4 text-cyan-300 animate-pulse" />
-                    <span>CWC River Gauges</span>
+                    <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Waves className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-teal-200 transition-colors truncate">CWC River Gauges</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Water Stage Telemetry</div>
+                    </div>
                   </button>
 
+                  {/* MOSDAC Satellites */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); if (onOpenMOSDAC) onOpenMOSDAC(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-blue-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
                   >
-                    <Satellite className="w-4 h-4 text-blue-400 animate-pulse" />
-                    <span>MOSDAC Satellites</span>
+                    <div className="p-2 rounded-xl bg-blue-950/80 border border-blue-500/40 text-blue-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Satellite className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-blue-200 transition-colors truncate">MOSDAC Satellites</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">ISRO Weather Feeds</div>
+                    </div>
                   </button>
 
+                  {/* Himalayan GLOF */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); if (onOpenGLOF) onOpenGLOF(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                   >
-                    <Mountain className="w-4 h-4 text-cyan-400 animate-pulse" />
-                    <span>Himalayan GLOF</span>
+                    <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Mountain className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-cyan-200 transition-colors truncate">Himalayan GLOF</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Glacial Moraine Burst</div>
+                    </div>
                   </button>
 
+                  {/* SAR Radar */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenSAR(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                   >
-                    <Radar className="w-4 h-4 text-cyan-400" />
-                    <span>SAR Radar</span>
+                    <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Radar className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-emerald-200 transition-colors truncate">Satellite SAR Radar</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Cloud-Penetrating InSAR</div>
+                    </div>
                   </button>
+
                 </div>
               </div>
 
               {/* Group 3: Operations & System Data */}
-              <div className="space-y-1.5">
-                <div className="text-[10px] font-mono font-bold text-slate-400 uppercase">
-                  🏥 Relief & System Controls
+              <div className="space-y-2">
+                <div className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-wider flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  <span>🏥 Relief Logistics & Command Protocols</span>
                 </div>
-                <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+
+                  {/* Hospital Surge */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenHospitalSurge(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-rose-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-rose-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.2)]"
                   >
-                    <HeartPulse className="w-4 h-4 text-rose-400" />
-                    <span>Hospital Surge</span>
+                    <div className="p-2 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-400 group-hover:scale-110 transition-transform shrink-0">
+                      <HeartPulse className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-rose-200 transition-colors truncate">Hospital Surge</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">ICU Beds & Ambulances</div>
+                    </div>
                   </button>
 
+                  {/* ICS-201 Plan */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenICS201(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-red-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                   >
-                    <FileText className="w-4 h-4 text-red-400" />
-                    <span>ICS-201 Plan</span>
+                    <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 group-hover:scale-110 transition-transform shrink-0">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-emerald-200 transition-colors truncate">NDMA ICS-201</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Incident Action Plan</div>
+                    </div>
                   </button>
 
+                  {/* Live APIs */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenProvenance(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-teal-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(20,184,166,0.2)]"
                   >
-                    <Database className="w-4 h-4 text-emerald-400" />
-                    <span>Live APIs</span>
+                    <div className="p-2 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Database className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-teal-200 transition-colors truncate">Live Sovereign Feeds</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">18 Provenance Feeds</div>
+                    </div>
                   </button>
 
+                  {/* Gateways */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); onOpenIntegrations(); }}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500 text-left flex items-center space-x-2 transition-all cursor-pointer"
+                    className="group p-2.5 rounded-2xl bg-slate-900/90 hover:bg-[#0c1833] border border-slate-800 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]"
                   >
-                    <Settings className="w-4 h-4 text-cyan-400" />
-                    <span>Gateways</span>
+                    <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Settings className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-100 group-hover:text-cyan-200 transition-colors truncate">Alert Gateways</div>
+                      <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">CAP-India & SMS APIs</div>
+                    </div>
                   </button>
+
                 </div>
               </div>
 
               {/* Bottom Quick Bar: Weather Sync & Reset */}
-              <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs font-mono">
+              <div className="flex items-center justify-between pt-3 border-t border-cyan-500/20 text-xs font-mono">
                 <button
                   onClick={() => { onSyncLiveWeather(); }}
                   disabled={isSyncingWeather}
-                  className="flex items-center space-x-1.5 text-blue-300 hover:text-blue-200 transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-blue-950/70 hover:bg-blue-900 border border-blue-500/40 flex items-center space-x-1.5 text-blue-300 hover:text-blue-200 transition-all cursor-pointer shadow-sm"
                 >
-                  <CloudRain className={`w-3.5 h-3.5 ${isSyncingWeather ? 'animate-spin' : ''}`} />
-                  <span>Sync IMD Weather</span>
+                  <CloudRain className={`w-3.5 h-3.5 ${isSyncingWeather ? 'animate-spin text-blue-300' : 'text-blue-400'}`} />
+                  <span>Sync IMD Doppler</span>
                 </button>
 
                 <button
                   onClick={() => { setIsToolsMenuOpen(false); onReset(); }}
-                  className="flex items-center space-x-1.5 text-slate-400 hover:text-rose-300 transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-500/40 flex items-center space-x-1.5 text-rose-300 hover:text-white transition-all cursor-pointer shadow-sm"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
+                  <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
                   <span>Reset Twin</span>
                 </button>
               </div>

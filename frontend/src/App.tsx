@@ -415,14 +415,16 @@ export const App: React.FC = () => {
 
   // Persistent 3-Mode Simulation Control Bar (Fits 100% Zoom On All Screens)
   const renderSimulationModeBar = () => (
-    <div className="w-full bg-[#060e1d] border-b border-cyan-500/30 py-1 px-2.5 sm:px-4 sticky top-0 z-50 shadow-2xl flex items-center justify-between gap-2 backdrop-blur-xl flex-nowrap overflow-x-auto no-scrollbar shrink-0 text-xs">
-      <div className="flex items-center space-x-1.5 shrink-0">
-        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping shrink-0" />
-        <span className="text-[10px] font-mono font-black text-cyan-200 uppercase tracking-wider hidden sm:inline shrink-0">
-          ENGINE:
-        </span>
+    <div className="w-full bg-[#050b18]/98 border-b border-cyan-500/30 py-1.5 px-3 sm:px-5 sticky top-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.9)] flex items-center justify-between gap-2.5 backdrop-blur-2xl flex-nowrap overflow-x-auto no-scrollbar shrink-0 text-xs ring-1 ring-cyan-500/10">
+      <div className="flex items-center space-x-2 shrink-0">
+        <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-lg bg-cyan-950/70 border border-cyan-500/40 shadow-inner shrink-0">
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping shrink-0" />
+          <span className="text-[10px] font-mono font-black text-cyan-200 uppercase tracking-widest hidden sm:inline shrink-0">
+            ENGINE C2:
+          </span>
+        </div>
 
-        <div className="inline-flex items-center rounded-xl bg-slate-950/90 p-0.5 border border-slate-800 shadow-inner space-x-0.5 shrink-0">
+        <div className="inline-flex items-center rounded-xl bg-slate-950/90 p-0.5 border border-slate-800/80 shadow-inner space-x-1 shrink-0">
           {/* Tab 1: Real Telemetry */}
           <button
             onClick={async () => {
@@ -430,15 +432,15 @@ export const App: React.FC = () => {
               if (cockpitView === 'calibrated') setCockpitView('tools');
               if (viewMode === 'SCROLLING_PORTAL') setViewMode('COCKPIT');
             }}
-            className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0 ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 ${
               !demoMode && cockpitView !== 'calibrated'
-                ? 'bg-emerald-600 text-white shadow-sm border border-emerald-400'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25 border border-emerald-400'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
             }`}
           >
-            <span>🛰️ REAL</span>
+            <span>🛰️ REAL TELEMETRY</span>
             {!demoMode && cockpitView !== 'calibrated' && (
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-pulse" />
             )}
           </button>
 
@@ -449,15 +451,15 @@ export const App: React.FC = () => {
               if (cockpitView === 'calibrated') setCockpitView('tools');
               if (viewMode === 'SCROLLING_PORTAL') setViewMode('COCKPIT');
             }}
-            className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0 ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 ${
               demoMode && cockpitView !== 'calibrated'
-                ? 'bg-amber-600 text-white shadow-sm border border-amber-400 animate-pulse'
+                ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md shadow-amber-500/25 border border-amber-400 animate-pulse'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
             }`}
           >
-            <span>🎬 DEMO</span>
+            <span>🎬 STAGE DEMO</span>
             {demoMode && cockpitView !== 'calibrated' && (
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-200 animate-pulse" />
             )}
           </button>
 
@@ -468,9 +470,9 @@ export const App: React.FC = () => {
                 setViewMode('COCKPIT');
                 setCockpitView('calibrated');
               }}
-              className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1 cursor-pointer shrink-0 ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center space-x-1.5 cursor-pointer shrink-0 ${
                 cockpitView === 'calibrated'
-                  ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-sm border border-cyan-300 font-black'
+                  ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-md shadow-cyan-500/30 border border-cyan-300 font-black'
                   : 'text-cyan-300 hover:text-white bg-cyan-950/70 hover:bg-cyan-900 border border-teal-500/40'
               }`}
             >
@@ -483,7 +485,7 @@ export const App: React.FC = () => {
               target="_blank"
               rel="noreferrer"
               title="Launch Dedicated Standalone Jury Platform (New Tab)"
-              className="px-2 py-0.5 sm:py-1 rounded-lg text-[10px] sm:text-[11px] font-mono font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 flex items-center space-x-1 shrink-0 transition-all cursor-pointer"
+              className="px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-mono font-bold bg-amber-500/15 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 flex items-center space-x-1 shrink-0 transition-all cursor-pointer shadow-sm hover:scale-105"
             >
               <ExternalLink className="w-3 h-3" />
               <span className="hidden sm:inline">STANDALONE ↗</span>
@@ -493,8 +495,8 @@ export const App: React.FC = () => {
       </div>
 
       {/* View Switcher & Region */}
-      <div className="flex items-center space-x-1.5 text-xs font-mono shrink-0">
-        <div className="hidden 2xl:flex items-center space-x-1 px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-[11px] shrink-0">
+      <div className="flex items-center space-x-2 text-xs font-mono shrink-0">
+        <div className="hidden 2xl:flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-slate-800 text-slate-300 text-[11px] shrink-0">
           <span className="text-slate-500">Region:</span>
           <span className="text-cyan-300 font-bold">{state?.city_name || 'Active Region'}</span>
         </div>
@@ -502,17 +504,17 @@ export const App: React.FC = () => {
         {viewMode === 'SCROLLING_PORTAL' ? (
           <button
             onClick={() => setViewMode('COCKPIT')}
-            className="px-2.5 py-1 rounded-xl bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-200 font-bold transition-all flex items-center space-x-1 cursor-pointer shadow-sm text-xs shrink-0"
+            className="px-3 py-1 rounded-xl bg-gradient-to-r from-cyan-950 to-blue-950 hover:from-cyan-900 hover:to-blue-900 border border-cyan-500/50 text-cyan-200 font-hud font-bold transition-all flex items-center space-x-1.5 cursor-pointer shadow-md text-xs shrink-0 hover:scale-105"
           >
             <Compass className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Cockpit 🎛️</span>
+            <span>ENTER COCKPIT 🎛️</span>
           </button>
         ) : (
           <button
             onClick={() => setViewMode('SCROLLING_PORTAL')}
-            className="px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 text-slate-300 transition-all flex items-center space-x-1 cursor-pointer text-xs shrink-0"
+            className="px-3 py-1 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 text-slate-300 hover:text-white transition-all flex items-center space-x-1.5 cursor-pointer text-xs shrink-0 shadow-sm hover:scale-105"
           >
-            <span>Safety Portal 🌐</span>
+            <span>CITIZEN PORTAL 🌐</span>
           </button>
         )}
       </div>
