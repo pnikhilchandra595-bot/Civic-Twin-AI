@@ -383,13 +383,14 @@ export const CalibratedTwinApp: React.FC = () => {
   };
 
   // Pan-India 780+ District Micro-Catchment Resolution
-  const handleResolveLocation = async (districtName: string, lat?: number, lng?: number) => {
+  const handleResolveLocation = async (districtName?: string, lat?: number, lng?: number) => {
+    const target = districtName || 'Selected Region';
     try {
-      showToast(`🔍 Resolving micro-catchment terrain & sensors for ${districtName}...`);
-      const resolved = await apiService.resolvePanIndiaLocation(districtName, lat, lng);
+      showToast(`🔍 Resolving micro-catchment terrain & sensors for ${target}...`);
+      const resolved = await apiService.resolvePanIndiaLocation(target, lat, lng);
       if (resolved && resolved.city_name) {
         setCurrentTwinState(resolved);
-        setActiveScenarioId(resolved.city_id || districtName.toLowerCase().replace(/\s+/g, '_'));
+        setActiveScenarioId(resolved.city_id || target.toLowerCase().replace(/\s+/g, '_'));
         setSelectedNode(null);
         setSelectedSensor(null);
         triggerRadarPing();
@@ -1769,17 +1770,27 @@ export const CalibratedTwinApp: React.FC = () => {
                   sensitivityMultiplier={sensitivityMultiplier}
                   vehicleWadingFilter={vehicleWadingFilter}
                   is3DTiltActive={is3DTiltActive}
+                  timelineHour={currentTwinState.timeline_hour}
+                  isPlaying={isPlaying}
+                  playbackSpeed={playbackSpeed}
                   onSelectNode={(node) => {
                     setSelectedNode(node);
                     setSelectedSensor(null);
                     triggerAudioChirp();
                   }}
+                  highlightedNodeId={selectedNode?.id}
                 />
               ) : (
                 <div className="rounded-2xl overflow-hidden border border-cyan-500/30 shadow-2xl h-[560px]">
                   <DigitalTwinMap
                     state={currentTwinState}
                     authUser={authUser}
+                    isPlaying={isPlaying}
+                    playbackSpeed={playbackSpeed}
+                    onTogglePlayback={handleToggleSimulation}
+                    onSetSpeed={(speed) => setPlaybackSpeed(speed)}
+                    onSwitchCity={handleSwitchCity}
+                    onResolveLocation={handleResolveLocation}
                     onSelectNode={(n) => { setSelectedNode(n); setSelectedSensor(null); }}
                     onSelectSensor={(s) => { setSelectedSensor(s); setSelectedNode(null); }}
                     onSelectRoute={(r) => console.log('Route selected:', r)}
