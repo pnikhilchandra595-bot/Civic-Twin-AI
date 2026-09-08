@@ -4,6 +4,7 @@ import datetime
 import math
 import ssl
 import certifi
+from typing import Dict, Any, List, Optional
 
 ctx = ssl.create_default_context(cafile=certifi.where())
 

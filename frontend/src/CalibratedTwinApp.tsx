@@ -107,10 +107,18 @@ export const CalibratedTwinApp: React.FC = () => {
   const [viewMode, setViewMode] = useState<'COCKPIT' | 'SCROLLING_PORTAL' | 'PRESENTATION'>('COCKPIT');
 
   // Dynamic Multi-City Digital Twin State
-  const [currentTwinState, setCurrentTwinState] = useState<CityDigitalTwinState>(
-    CALIBRATED_COMPREHENSIVE_TWIN_STATES['sikkim_lhonak_glof_2023'].state
-  );
-  const [activeScenarioId, setActiveScenarioId] = useState<string>('sikkim_lhonak_glof_2023');
+  const [activeScenarioId, setActiveScenarioId] = useState<string>(() => {
+    return localStorage.getItem('civictwin_calibrated_scenario') || 'sikkim_lhonak_glof_2023';
+  });
+
+  const [currentTwinState, setCurrentTwinState] = useState<CityDigitalTwinState>(() => {
+    const saved = localStorage.getItem('civictwin_calibrated_scenario') || 'sikkim_lhonak_glof_2023';
+    return (CALIBRATED_COMPREHENSIVE_TWIN_STATES[saved] || CALIBRATED_COMPREHENSIVE_TWIN_STATES['sikkim_lhonak_glof_2023']).state;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('civictwin_calibrated_scenario', activeScenarioId);
+  }, [activeScenarioId]);
 
   // Multi-City Inundation & Benchmark Controls
   const [sensitivityMultiplier, setSensitivityMultiplier] = useState<number>(1.0);
