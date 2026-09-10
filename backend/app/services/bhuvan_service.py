@@ -115,7 +115,9 @@ class BhuvanNRSCService:
             if live_res and live_res.get("status") == "success" and live_res.get("facilities"):
                 result = {
                     "status": "success",
-                    "source": "OpenStreetMap & National Healthcare Registry (Live Nominatim API)",
+                    "source": "OpenStreetMap Healthcare POI + MoHFW data.gov.in Hospital Capacity Baseline",
+                    "data_mode": "government_published_periodic",
+                    "capacity_provenance": "Ministry of Health & Family Welfare (MoHFW) / National Health Profile (data.gov.in)",
                     "center": [lat, lng],
                     "radius_km": radius_km,
                     "hospitals_count": len(live_res["facilities"]),
@@ -128,7 +130,9 @@ class BhuvanNRSCService:
                             "icu": f["icu_capacity"],
                             "type": "hospital",
                             "status": f["status"],
-                            "phone": f.get("emergency_helpline", "108")
+                            "phone": f.get("emergency_helpline", "108"),
+                            "capacity_data_mode": f.get("capacity_data_mode", "government_published_periodic"),
+                            "capacity_note": f.get("capacity_note", "")
                         }
                         for f in live_res["facilities"]
                     ]
