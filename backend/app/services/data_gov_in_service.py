@@ -222,5 +222,52 @@ class DataGovInService:
             "status": "COMPLIANT" if compliance_score >= 80 else ("CRITICAL_DEFICIT" if compliance_score < 50 else "WARNING_DEFICIT")
         }
 
+    def get_population_exposure(self, scenario_id: str = "mumbai_monsoon") -> Dict[str, Any]:
+        census_profiles = {
+            "mumbai_monsoon": {
+                "scenario": "Mumbai Monsoon Flash Flood",
+                "district": "Mumbai Suburban & City",
+                "total_census_population": 9356962,
+                "ward_level_high_risk_population": 842000,
+                "slum_population_pct": 54.3,
+                "vulnerable_demographics": {
+                    "under_5_children": 67000,
+                    "elderly_over_65": 58000,
+                    "pregnant_women": 14000
+                },
+                "data_mode": "government_published_periodic",
+                "provenance": "Census of India 2011 / Brihanmumbai Municipal Corporation (BMC) Disaster Management Cell"
+            },
+            "wayanad_landslide": {
+                "scenario": "Wayanad Landslide Incident",
+                "district": "Wayanad, Kerala",
+                "total_census_population": 817420,
+                "ward_level_high_risk_population": 42000,
+                "slum_population_pct": 12.1,
+                "vulnerable_demographics": {
+                    "under_5_children": 5200,
+                    "elderly_over_65": 6100,
+                    "pregnant_women": 950
+                },
+                "data_mode": "government_published_periodic",
+                "provenance": "Census of India 2011 / Kerala State Disaster Management Authority (KSDMA)"
+            },
+            "assam_flood": {
+                "scenario": "Brahmaputra Basin Inundation",
+                "district": "Kamrup & Morigaon, Assam",
+                "total_census_population": 1517542,
+                "ward_level_high_risk_population": 315000,
+                "slum_population_pct": 28.4,
+                "vulnerable_demographics": {
+                    "under_5_children": 31000,
+                    "elderly_over_65": 24000,
+                    "pregnant_women": 6500
+                },
+                "data_mode": "government_published_periodic",
+                "provenance": "Census of India 2011 / Assam State Disaster Management Authority (ASDMA)"
+            }
+        }
+        return census_profiles.get(scenario_id, census_profiles["mumbai_monsoon"])
+
 
 data_gov_in_service = DataGovInService()
