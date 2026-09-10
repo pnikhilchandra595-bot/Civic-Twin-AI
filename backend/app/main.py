@@ -33,6 +33,7 @@ from app.services.satellite_hub_service import satellite_hub_service
 from app.services.mosdac_service import mosdac_service
 from app.services.bhuvan_service import bhuvan_service
 from app.services.copernicus_elevation_service import copernicus_elevation_service
+from app.services.data_gov_in_service import data_gov_in_service
 from app.services.auth_service import auth_service, get_current_officer, require_clearance, require_strict_admin_clearance, Depends
 from app.services.demo_state import demo_state
 
@@ -750,6 +751,37 @@ async def get_real_nasa_firms_hotspots(
 ):
     """Real Live NASA FIRMS Thermal Anomaly Fire Hotspots across India"""
     return await nasa_firms_service.fetch_live_india_hotspots(day_range=day_range, lat=lat, lng=lng, radius_km=radius_km)
+
+# 🏛️ Open Government Data (data.gov.in) Official Periodic Ministry Feeds
+@app.get("/api/data-gov/health-infrastructure")
+def get_data_gov_health_infrastructure(state: str = "Maharashtra"):
+    """
+    MoHFW National Health Profile (data.gov.in) Official Hospital Bed Capacity Baseline.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_state_hospital_bed_capacity(state)
+
+@app.get("/api/data-gov/cwc-network")
+def get_data_gov_cwc_network(basin: Optional[str] = None, state: Optional[str] = None):
+    """
+    Central Water Commission (CWC) 36-station hydrological gauge master network.
+    Tag: government_published_periodic
+    """
+    stations = data_gov_in_service.get_expanded_cwc_gauges(basin=basin, state=state)
+    return {
+        "source": "Central Water Commission (CWC) / India-WRIS (data.gov.in)",
+        "data_mode": "government_published_periodic",
+        "total_stations": len(stations),
+        "stations": stations
+    }
+
+@app.get("/api/data-gov/population-exposure")
+def get_data_gov_population_exposure(scenario_id: str = "mumbai_monsoon"):
+    """
+    Census of India / State Disaster Management Authority Official Population Exposure Baseline.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_population_exposure(scenario_id)
 
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(

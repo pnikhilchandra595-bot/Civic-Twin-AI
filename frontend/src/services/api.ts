@@ -1128,6 +1128,20 @@ export class DigitalTwinApiService {
     return { status: "calibrated_baseline", mean_ndwi: 0.38 };
   }
 
+  // 🏛️ Open Government Data (data.gov.in) Official Periodic Ministry Baselines
+  async getDataGovHealthInfrastructure(stateName: string = "Maharashtra"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/health-infrastructure?state=${encodeURIComponent(stateName)}`);
+  }
+
+  async getDataGovCWCNetwork(basin?: string): Promise<any> {
+    const url = basin ? `${API_BASE}/data-gov/cwc-network?basin=${encodeURIComponent(basin)}` : `${API_BASE}/data-gov/cwc-network`;
+    return safeJsonFetch<any>(url);
+  }
+
+  async getDataGovPopulationExposure(scenarioId: string = "mumbai_monsoon"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/population-exposure?scenario_id=${encodeURIComponent(scenarioId)}`);
+  }
+
   async getMOSDACCatalog(datasetId: string = "3SIMG_L1B_STD", count: number = 10): Promise<any> {
     const data = await safeJsonFetch<any>(`${API_BASE}/real-data/mosdac-catalog?dataset_id=${encodeURIComponent(datasetId)}&count=${count}`);
     if (data && data.status === 'success' && data.entries && data.entries.length > 0) {
