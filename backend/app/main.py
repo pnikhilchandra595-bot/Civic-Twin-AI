@@ -742,9 +742,14 @@ def get_feature_store_table():
     return geospatial_feature_store.get_national_feature_store_table()
 
 @app.get("/api/real-data/firms-hotspots")
-async def get_real_nasa_firms_hotspots(day_range: int = 1):
+async def get_real_nasa_firms_hotspots(
+    day_range: int = 1,
+    lat: Optional[float] = None,
+    lng: Optional[float] = None,
+    radius_km: Optional[float] = None
+):
     """Real Live NASA FIRMS Thermal Anomaly Fire Hotspots across India"""
-    return await nasa_firms_service.fetch_live_india_hotspots(day_range)
+    return await nasa_firms_service.fetch_live_india_hotspots(day_range=day_range, lat=lat, lng=lng, radius_km=radius_km)
 
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(

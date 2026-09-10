@@ -1107,10 +1107,19 @@ export class DigitalTwinApiService {
     return { status: "success", data_mode: "seeded_reference" };
   }
 
-  async getRealNASAFIRMSHotspots(dayRange: number = 1): Promise<any> {
-    const data = await safeJsonFetch<any>(`${API_BASE}/real-data/firms-hotspots?day_range=${dayRange}`);
-    if (data && data.fires) return data;
-    return { status: "success", count: 0, fires: [] };
+  async getRealNASAFIRMSHotspots(dayRange: number = 1, lat?: number, lng?: number, radiusKm?: number): Promise<any[]> {
+    let url = `${API_BASE}/real-data/firms-hotspots?day_range=${dayRange}`;
+    if (lat !== undefined && lng !== undefined) {
+      url += `&lat=${lat}&lng=${lng}`;
+    }
+    if (radiusKm !== undefined) {
+      url += `&radius_km=${radiusKm}`;
+    }
+    const data = await safeJsonFetch<any>(url);
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.hotspots)) return data.hotspots;
+    if (data && Array.isArray(data.fires)) return data.fires;
+    return [];
   }
 
   async getRealCopernicusNDWI(west: number = 72.82, south: number = 18.95, east: number = 72.95, north: number = 19.15): Promise<any> {
