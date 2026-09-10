@@ -1142,6 +1142,36 @@ export class DigitalTwinApiService {
     return safeJsonFetch<any>(`${API_BASE}/data-gov/population-exposure?scenario_id=${encodeURIComponent(scenarioId)}`);
   }
 
+  async getDataGovReservoirs(state?: string): Promise<any> {
+    const url = state ? `${API_BASE}/data-gov/reservoirs?state=${encodeURIComponent(state)}` : `${API_BASE}/data-gov/reservoirs`;
+    return safeJsonFetch<any>(url);
+  }
+
+  async getDataGovFoodWarehouses(state?: string): Promise<any> {
+    const url = state ? `${API_BASE}/data-gov/food-warehouses?state=${encodeURIComponent(state)}` : `${API_BASE}/data-gov/food-warehouses`;
+    return safeJsonFetch<any>(url);
+  }
+
+  async getDataGovPowerGrid(stateName: string = "Maharashtra"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/power-grid?state=${encodeURIComponent(stateName)}`);
+  }
+
+  async getDataGovEvacuationFleet(stateName: string = "Maharashtra"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/evacuation-fleet?state=${encodeURIComponent(stateName)}`);
+  }
+
+  async getDataGovUrbanDrainage(cityId: string = "mumbai_monsoon"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/urban-drainage?city_id=${encodeURIComponent(cityId)}`);
+  }
+
+  async getDataGovTelecomReach(stateName: string = "Maharashtra"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/telecom-reach?state=${encodeURIComponent(stateName)}`);
+  }
+
+  async getDataGovNDMAAudit(evacuees: number = 1500, waterLitres: number = 5000, toilets: number = 40, doctors: number = 1): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/ndma-audit?evacuees=${evacuees}&water_litres=${waterLitres}&toilets=${toilets}&doctors=${doctors}`);
+  }
+
   async getMOSDACCatalog(datasetId: string = "3SIMG_L1B_STD", count: number = 10): Promise<any> {
     const data = await safeJsonFetch<any>(`${API_BASE}/real-data/mosdac-catalog?dataset_id=${encodeURIComponent(datasetId)}&count=${count}`);
     if (data && data.status === 'success' && data.entries && data.entries.length > 0) {

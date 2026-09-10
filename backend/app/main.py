@@ -783,6 +783,79 @@ def get_data_gov_population_exposure(scenario_id: str = "mumbai_monsoon"):
     """
     return data_gov_in_service.get_population_exposure(scenario_id)
 
+@app.get("/api/data-gov/reservoirs")
+def get_data_gov_reservoirs(state: Optional[str] = None):
+    """
+    CWC / Ministry of Jal Shakti National Major Reservoirs & Dam Spillway Discharge Alerts.
+    Tag: government_published_periodic
+    """
+    dams = data_gov_in_service.get_major_reservoirs(state=state)
+    return {
+        "source": "Central Water Commission / National Dam Safety Authority (data.gov.in)",
+        "data_mode": "government_published_periodic",
+        "count": len(dams),
+        "reservoirs": dams
+    }
+
+@app.get("/api/data-gov/food-warehouses")
+def get_data_gov_food_warehouses(state: Optional[str] = None):
+    """
+    Food Corporation of India (FCI) / CWC Relief Grain Silos & Emergency Camp Sustenance.
+    Tag: government_published_periodic
+    """
+    depots = data_gov_in_service.get_fci_food_depots(state=state)
+    return {
+        "source": "Food Corporation of India (FCI) / Dept of Food & Public Distribution (data.gov.in)",
+        "data_mode": "government_published_periodic",
+        "count": len(depots),
+        "depots": depots
+    }
+
+@app.get("/api/data-gov/power-grid")
+def get_data_gov_power_grid(state: str = "Maharashtra"):
+    """
+    Central Electricity Authority (CEA) Substation Transformation & Grid Cascading Blackout Resilience.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_cea_power_grid(state)
+
+@app.get("/api/data-gov/evacuation-fleet")
+def get_data_gov_evacuation_fleet(state: str = "Maharashtra"):
+    """
+    MoRTH / State Transport Emergency Evacuation Fleet Under Section 65 DMA 2005.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_morth_fleet(state)
+
+@app.get("/api/data-gov/urban-drainage")
+def get_data_gov_urban_drainage(city_id: str = "mumbai_monsoon"):
+    """
+    MoHUA / AMRUT Municipal Stormwater Covered Drainage Deficit & Runoff Coefficients.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_mohua_drainage(city_id)
+
+@app.get("/api/data-gov/telecom-reach")
+def get_data_gov_telecom_reach(state: str = "Maharashtra"):
+    """
+    DoT / TRAI Cellular BTS Tower Density & Common Alerting Protocol (CAP) Broadcast Reach.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_telecom_reach(state)
+
+@app.get("/api/data-gov/ndma-audit")
+def get_data_gov_ndma_audit(
+    evacuees: int = 1500,
+    water_litres: float = 5000.0,
+    toilets: int = 40,
+    doctors: int = 1
+):
+    """
+    NDMA Statutory Relief Camp Minimum Standard Audit (Section 12 DMA 2005).
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.audit_relief_shelter_standards(evacuees, water_litres, toilets, doctors)
+
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(
     west: float = 72.82,
