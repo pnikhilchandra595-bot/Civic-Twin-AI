@@ -1172,6 +1172,36 @@ export class DigitalTwinApiService {
     return safeJsonFetch<any>(`${API_BASE}/data-gov/ndma-audit?evacuees=${evacuees}&water_litres=${waterLitres}&toilets=${toilets}&doctors=${doctors}`);
   }
 
+  async getDataGovBloodBanks(stateName: string = "Maharashtra"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/blood-banks?state=${encodeURIComponent(stateName)}`);
+  }
+
+  async getDataGovFireServices(stateName: string = "Maharashtra"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/fire-services?state=${encodeURIComponent(stateName)}`);
+  }
+
+  async getDataGovBridgeInventory(state?: string, river?: string): Promise<any> {
+    let url = `${API_BASE}/data-gov/bridge-inventory`;
+    const params = new URLSearchParams();
+    if (state) params.append('state', state);
+    if (river) params.append('river', river);
+    if (params.toString()) url += `?${params.toString()}`;
+    return safeJsonFetch<any>(url);
+  }
+
+  async getDataGovNDRFBattalions(state?: string): Promise<any> {
+    const url = state ? `${API_BASE}/data-gov/ndrf-battalions?state=${encodeURIComponent(state)}` : `${API_BASE}/data-gov/ndrf-battalions`;
+    return safeJsonFetch<any>(url);
+  }
+
+  async getDataGovCoastalTides(coastalCity: string = "mumbai"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/coastal-tides?coastal_city=${encodeURIComponent(coastalCity)}`);
+  }
+
+  async getDataGovIMDExtremes(district: string = "mumbai"): Promise<any> {
+    return safeJsonFetch<any>(`${API_BASE}/data-gov/imd-historical-extremes?district=${encodeURIComponent(district)}`);
+  }
+
   async getMOSDACCatalog(datasetId: string = "3SIMG_L1B_STD", count: number = 10): Promise<any> {
     const data = await safeJsonFetch<any>(`${API_BASE}/real-data/mosdac-catalog?dataset_id=${encodeURIComponent(datasetId)}&count=${count}`);
     if (data && data.status === 'success' && data.entries && data.entries.length > 0) {

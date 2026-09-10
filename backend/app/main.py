@@ -856,6 +856,66 @@ def get_data_gov_ndma_audit(
     """
     return data_gov_in_service.audit_relief_shelter_standards(evacuees, water_litres, toilets, doctors)
 
+@app.get("/api/data-gov/blood-banks")
+def get_data_gov_blood_banks(state: str = "Maharashtra"):
+    """
+    e-RaktKosh / MoHFW District Blood Bank & Critical Trauma Reserve Registry.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_blood_bank_reserves(state)
+
+@app.get("/api/data-gov/fire-services")
+def get_data_gov_fire_services(state: str = "Maharashtra"):
+    """
+    DG Fire Services, Civil Defence & Home Guards (MHA) Mobile Pumping & Rescue Fleet.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_fire_services_fleet(state)
+
+@app.get("/api/data-gov/bridge-inventory")
+def get_data_gov_bridge_inventory(state: Optional[str] = None, river: Optional[str] = None):
+    """
+    MoRTH / Indian Bridge Management System (IBMS) Bridge Scour & Clearance Registry.
+    Tag: government_published_periodic
+    """
+    bridges = data_gov_in_service.get_bridge_scour_inventory(state=state, river=river)
+    return {
+        "source": "MoRTH / Indian Bridge Management System (IBMS) (data.gov.in)",
+        "data_mode": "government_published_periodic",
+        "count": len(bridges),
+        "bridges": bridges
+    }
+
+@app.get("/api/data-gov/ndrf-battalions")
+def get_data_gov_ndrf_battalions(state: Optional[str] = None):
+    """
+    NDRF / NDMA 16 Battalions & RRCs Rapid Deployment & Specialized Equipment Registry.
+    Tag: government_published_periodic
+    """
+    battalions = data_gov_in_service.get_ndrf_battalions(state=state)
+    return {
+        "source": "National Disaster Response Force (NDRF) / NDMA / MHA (data.gov.in)",
+        "data_mode": "government_published_periodic",
+        "count": len(battalions),
+        "battalions": battalions
+    }
+
+@app.get("/api/data-gov/coastal-tides")
+def get_data_gov_coastal_tides(coastal_city: str = "mumbai"):
+    """
+    INCOIS / Survey of India Coastal High Tide Baselines & Sea Outfall Sluice Gate Lockouts.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_coastal_tide_baselines(coastal_city)
+
+@app.get("/api/data-gov/imd-historical-extremes")
+def get_data_gov_imd_historical_extremes(district: str = "mumbai"):
+    """
+    IMD / MoES All-Time 100-Year Historical Extreme Weather & 24h Rain Record Baselines.
+    Tag: government_published_periodic
+    """
+    return data_gov_in_service.get_imd_extreme_weather_baselines(district)
+
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(
     west: float = 72.82,
