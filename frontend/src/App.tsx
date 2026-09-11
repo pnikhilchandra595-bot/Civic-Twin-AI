@@ -1353,6 +1353,7 @@ export const App: React.FC = () => {
             <CalibratedSimulationPanel
               onInjectCalibratedState={handleInjectCalibratedState}
               onOpenMap={() => setCockpitView('map')}
+              onOpenCrownJewels={() => setIsCrownJewelsOpen(true)}
             />
           </div>
         </section>

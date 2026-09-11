@@ -12,11 +12,13 @@ import {
 interface CalibratedSimulationPanelProps {
   onInjectCalibratedState?: (scenario: CalibratedScenario, multiplier: number) => void;
   onOpenMap?: () => void;
+  onOpenCrownJewels?: () => void;
 }
 
 export const CalibratedSimulationPanel: React.FC<CalibratedSimulationPanelProps> = ({
   onInjectCalibratedState,
-  onOpenMap
+  onOpenMap,
+  onOpenCrownJewels
 }) => {
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>(CALIBRATED_BENCHMARK_SCENARIOS[0].id);
   const [severityMultiplier, setSeverityMultiplier] = useState<number>(1.0);
@@ -81,10 +83,21 @@ export const CalibratedSimulationPanel: React.FC<CalibratedSimulationPanelProps>
             )}
           </button>
 
+          {onOpenCrownJewels && (
+            <button
+              onClick={onOpenCrownJewels}
+              className="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-mono text-xs font-black flex items-center space-x-1.5 transition-all shadow-lg shadow-amber-500/20 cursor-pointer shrink-0"
+              title="View The 7 Crown Jewels of CivicTwin AI"
+            >
+              <span>💎</span>
+              <span className="hidden sm:inline">7 Crown Jewels</span>
+            </button>
+          )}
+
           {onOpenMap && (
             <button
               onClick={onOpenMap}
-              className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-mono text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer shrink-0"
+              className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-850 border border-slate-700 text-slate-200 font-mono text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer shrink-0"
               title="View on Digital Twin Map"
             >
               <Compass className="w-4 h-4 text-cyan-400" />
