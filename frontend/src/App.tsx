@@ -24,6 +24,7 @@ import { IntegrationsModal } from './components/IntegrationsModal';
 import { DataProvenanceModal } from './components/DataProvenanceModal';
 import { DisasterIntelligenceModal } from './components/DisasterIntelligenceModal';
 import { GoogleFloodHubModal } from './components/GoogleFloodHubModal';
+import { FuturePredictionsModal } from './components/FuturePredictionsModal';
 import { ICS201ActionPlanModal } from './components/ICS201ActionPlanModal';
 import { MobileCompanionModal } from './components/MobileCompanionModal';
 import { ElevationProfileModal } from './components/ElevationProfileModal';
@@ -125,6 +126,7 @@ export const App: React.FC = () => {
   const [isGLOFOpen, setIsGLOFOpen] = useState<boolean>(false);
   const [isDisasterIntelligenceOpen, setIsDisasterIntelligenceOpen] = useState<boolean>(false);
   const [isGoogleFloodHubOpen, setIsGoogleFloodHubOpen] = useState<boolean>(false);
+  const [isFuturePredictionsOpen, setIsFuturePredictionsOpen] = useState<boolean>(false);
 
   // Active continuous simulation loop state (STOPPED BY DEFAULT - only starts when operator turns it on)
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -773,6 +775,7 @@ export const App: React.FC = () => {
         onOpenCalibratedSim={() => setCockpitView('calibrated')}
         onOpenDisasterIntelligence={() => setIsDisasterIntelligenceOpen(true)}
         onOpenGoogleFloodHub={() => setIsGoogleFloodHubOpen(true)}
+        onOpenFuturePredictions={() => setIsFuturePredictionsOpen(true)}
       />
 
       {/* Floating Emergency Toast Notification */}
@@ -1114,6 +1117,15 @@ export const App: React.FC = () => {
               <span>AI SUITE</span>
             </button>
 
+            <button
+              onClick={() => setIsFuturePredictionsOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-900 via-orange-900 to-amber-950 hover:from-amber-800 hover:to-orange-800 border border-amber-400/80 text-amber-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(245,158,11,0.35)] cursor-pointer ring-1 ring-amber-400/30"
+              title="Launch What Happens Next: 72-Hour Cascade Impact Predictor"
+            >
+              <span>🔮</span>
+              <span>WHAT NEXT</span>
+            </button>
+
             <div className="flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-slate-300 shadow-md shadow-cyan-500/10">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               <span className="text-slate-400">Region:</span>
@@ -1149,6 +1161,7 @@ export const App: React.FC = () => {
             onOpenDataExport={() => setIsDataExportOpen(true)}
             onOpenDisasterIntelligence={() => setIsDisasterIntelligenceOpen(true)}
             onOpenGoogleFloodHub={() => setIsGoogleFloodHubOpen(true)}
+            onOpenFuturePredictions={() => setIsFuturePredictionsOpen(true)}
           />
         )}
 
@@ -1592,6 +1605,14 @@ export const App: React.FC = () => {
       <GoogleFloodHubModal
         isOpen={isGoogleFloodHubOpen}
         onClose={() => setIsGoogleFloodHubOpen(false)}
+        cityId={state?.city_id || 'mumbai_monsoon'}
+      />
+
+      {/* What Happens Next: 72-Hour Cascade Impact Predictor */}
+      <FuturePredictionsModal
+        isOpen={isFuturePredictionsOpen}
+        onClose={() => setIsFuturePredictionsOpen(false)}
+        cityName={state?.city_name || 'Mumbai'}
         cityId={state?.city_id || 'mumbai_monsoon'}
       />
 

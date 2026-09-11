@@ -55,6 +55,7 @@ interface CommandToolsHubProps {
   onOpenDataExport: () => void;
   onOpenDisasterIntelligence?: () => void;
   onOpenGoogleFloodHub?: () => void;
+  onOpenFuturePredictions?: () => void;
 }
 
 export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
@@ -82,6 +83,7 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
   onOpenDataExport,
   onOpenDisasterIntelligence,
   onOpenGoogleFloodHub,
+  onOpenFuturePredictions,
 }) => {
   return (
     <div className="space-y-6">
@@ -632,6 +634,59 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
             >
               <Activity className="w-3.5 h-3.5" />
               <span>Launch Intelligence Suite 🧠</span>
+            </button>
+          </div>
+
+          {/* Tool 18: Google Flood Hub AI Streamflow */}
+          <div className="p-4 rounded-2xl bg-[#091224]/90 border border-blue-500/40 hover:border-blue-300 transition-all flex flex-col justify-between space-y-3 shadow-lg ring-1 ring-blue-500/20">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-blue-500/10 rounded-xl text-blue-400 border border-blue-500/20">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold">
+                  GOOGLE AI + GloFAS
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white font-hud mt-2.5">
+                Google Flood Hub (AI Streamflow)
+              </h3>
+              <p className="text-xs text-slate-400 font-sans mt-1">
+                7-day upstream river discharge forecasts ($m^3/s$) powered by GRU hydrological AI coupled directly into 2D urban street flood micro-physics.
+              </p>
+            </div>
+            <button
+              onClick={onOpenGoogleFloodHub}
+              className="w-full py-2 bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-600 hover:to-indigo-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+            >
+              <span>🌊 Launch Google Flood Hub</span>
+            </button>
+          </div>
+
+          {/* Tool 19: What Happens Next - 72-Hour Cascade Predictor */}
+          <div className="p-4 rounded-2xl bg-[#091224]/90 border border-amber-500/50 hover:border-amber-300 transition-all flex flex-col justify-between space-y-3 shadow-lg ring-1 ring-amber-500/30">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                  PREDICTIVE HORIZON
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white font-hud mt-2.5">
+                What Happens Next (Future Predictions)
+              </h3>
+              <p className="text-xs text-slate-400 font-sans mt-1">
+                Interactive fast-forward time scrubber (T+1h to 7 days), infrastructure domino failure chain, water depth growth, and preemptive NDMA ICS action checklists.
+              </p>
+            </div>
+            <button
+              onClick={onOpenFuturePredictions}
+              className="w-full py-2 bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 hover:from-amber-500 hover:to-orange-500 text-slate-950 font-black font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+            >
+              <span>🔮 What Happens Next Predictor</span>
             </button>
           </div>
 

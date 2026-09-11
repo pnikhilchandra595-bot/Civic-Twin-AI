@@ -39,6 +39,7 @@ from app.services.disaster_rag_service import disaster_rag_service
 from app.services.auth_service import auth_service, get_current_officer, require_clearance, require_strict_admin_clearance, Depends
 from app.services.demo_state import demo_state
 from app.services.google_flood_hub_service import google_flood_hub_service
+from app.services.future_predictions_service import future_predictions_service
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -1043,6 +1044,15 @@ async def get_google_flood_hub_forecast(
 ):
     """Google Flood Hub (AI Flood Forecasting Initiative) Ingestion API coupled with CivicTwin Micro-Physics"""
     return await google_flood_hub_service.get_basin_forecast(city_id=city_id, lat=lat, lng=lng)
+
+@app.get("/api/real-data/future-predictions")
+async def get_future_cascade_predictions(
+    city_id: str = "mumbai_monsoon",
+    lat: Optional[float] = None,
+    lng: Optional[float] = None
+):
+    """Real-Time Cascade Horizon and 'What Happens Next' Predictive Horizon API"""
+    return future_predictions_service.generate_future_predictions(city_id=city_id, lat=lat, lng=lng)
 
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(

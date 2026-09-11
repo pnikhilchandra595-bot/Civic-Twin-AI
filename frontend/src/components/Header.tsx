@@ -8,7 +8,7 @@ import {
   FileText, LogOut, UserCheck, Globe, Video, Mic, Skull, AlertOctagon, Settings, Database,
   TrendingUp, Waves, HeartPulse, WifiOff, Smartphone, QrCode, Bot, Sparkles, Building2, Lock, User,
   ChevronDown, Grid, Shield, Flame, Sun, Moon, Satellite, Mountain,
-  FlaskConical
+  FlaskConical, Clock
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -49,6 +49,7 @@ interface HeaderProps {
   onOpenCalibratedSim?: () => void;
   onOpenDisasterIntelligence?: () => void;
   onOpenGoogleFloodHub?: () => void;
+  onOpenFuturePredictions?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -87,6 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCalibratedSim,
   onOpenDisasterIntelligence,
   onOpenGoogleFloodHub,
+  onOpenFuturePredictions,
 }) => {
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
@@ -244,6 +246,18 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <span>🧠</span>
                 <span className="font-hud hidden md:inline">AI Suite</span>
+              </button>
+            )}
+
+            {/* Direct What Happens Next Predictor Button */}
+            {onOpenFuturePredictions && (
+              <button
+                onClick={onOpenFuturePredictions}
+                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-900 via-orange-900 to-amber-950 border border-amber-400/80 text-amber-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(245,158,11,0.35)] ring-1 ring-amber-400/40 cursor-pointer shrink-0"
+                title="Launch What Happens Next: 72-Hour Cascade Impact Predictor"
+              >
+                <span>🔮</span>
+                <span className="font-hud hidden md:inline">What Next</span>
               </button>
             )}
 
@@ -552,6 +566,59 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="min-w-0 flex-1">
                       <div className="font-bold text-slate-100 group-hover:text-emerald-200 transition-colors truncate">Satellite SAR Radar</div>
                       <div className="text-[10px] text-slate-400 group-hover:text-slate-300 truncate">Cloud-Penetrating InSAR</div>
+                    </div>
+                  </button>
+
+                </div>
+              </div>
+
+              {/* Group 2.5: Disaster AI, Flood Hub & Future Cascade Horizons */}
+              <div className="space-y-2">
+                <div className="text-[10px] font-mono font-black text-amber-400 uppercase tracking-wider flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  <span>🔮 Disaster AI, Streamflow & Cascade Horizons</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+
+                  {/* What Happens Next Predictor */}
+                  <button
+                    onClick={() => { setIsToolsMenuOpen(false); if (onOpenFuturePredictions) onOpenFuturePredictions(); }}
+                    className="group p-2.5 rounded-2xl bg-gradient-to-r from-[#1a1205] to-[#0c1833] hover:from-[#2a1c08] hover:to-[#132652] border border-amber-500/40 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(245,158,11,0.25)]"
+                  >
+                    <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Clock className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-amber-200 group-hover:text-amber-100 transition-colors truncate">What Happens Next</div>
+                      <div className="text-[10px] text-amber-400/80 truncate">72h Cascade Predictor</div>
+                    </div>
+                  </button>
+
+                  {/* Google Flood Hub */}
+                  <button
+                    onClick={() => { setIsToolsMenuOpen(false); if (onOpenGoogleFloodHub) onOpenGoogleFloodHub(); }}
+                    className="group p-2.5 rounded-2xl bg-gradient-to-r from-[#07132b] to-[#0c1833] hover:from-[#0d224d] hover:to-[#132652] border border-blue-500/40 hover:border-blue-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(59,130,246,0.25)]"
+                  >
+                    <div className="p-2 rounded-xl bg-blue-950/80 border border-blue-500/40 text-blue-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Waves className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-blue-200 group-hover:text-blue-100 transition-colors truncate">Google Flood Hub</div>
+                      <div className="text-[10px] text-blue-400/80 truncate">AI Streamflow Ingestion</div>
+                    </div>
+                  </button>
+
+                  {/* Disaster Intelligence Suite */}
+                  <button
+                    onClick={() => { setIsToolsMenuOpen(false); if (onOpenDisasterIntelligence) onOpenDisasterIntelligence(); }}
+                    className="group p-2.5 rounded-2xl bg-gradient-to-r from-[#061822] to-[#0c1833] hover:from-[#0b2b3d] hover:to-[#132652] border border-cyan-500/40 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.25)] sm:col-span-2"
+                  >
+                    <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-cyan-200 group-hover:text-cyan-100 transition-colors truncate">National Disaster Intelligence Suite</div>
+                      <div className="text-[10px] text-cyan-400/80 truncate">Historical Memory RAG (Option A) & Colab Fine-Tuned Llama-3.2 (Option B)</div>
                     </div>
                   </button>
 
