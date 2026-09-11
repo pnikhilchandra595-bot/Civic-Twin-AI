@@ -27,7 +27,7 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
   onClose,
   onApplyExtractedSITREP
 }) => {
-  const [activeTab, setActiveTab] = useState<'nlp' | 'cyclone' | 'recession' | 'satellite' | 'anomaly' | 'benchmarks' | 'carbon' | 'rag'>('nlp');
+  const [activeTab, setActiveTab] = useState<'nlp' | 'cyclone' | 'recession' | 'satellite' | 'anomaly' | 'benchmarks' | 'carbon' | 'rag' | 'colab_llm'>('nlp');
   
   // NLP Parser State
   const [sitrepText, setSitrepText] = useState(PRESET_BULLETINS[0].text);
@@ -63,6 +63,13 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
   const [ragResult, setRagResult] = useState<any>(null);
   const [loadingRAG, setLoadingRAG] = useState(false);
   const [ragCaseStudies, setRagCaseStudies] = useState<any[]>([]);
+
+  // Option B: Dedicated Indian Civil Defense Colab LLM State
+  const [colabUrl, setColabUrl] = useState("https://physiology-effectiveness-bios-sorted.trycloudflare.com");
+  const [colabPrompt, setColabPrompt] = useState("What emergency requisitioning and evacuation powers does the District Magistrate possess under Section 34 of the Disaster Management Act, 2005?");
+  const [colabResponse, setColabResponse] = useState<any>(null);
+  const [loadingColab, setLoadingColab] = useState(false);
+  const [colabSavedSuccess, setColabSavedSuccess] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -160,6 +167,30 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
     }
   };
 
+  const handleSaveColabUrl = async () => {
+    try {
+      await apiService.setColabConfig(colabUrl);
+      setColabSavedSuccess(true);
+      setTimeout(() => setColabSavedSuccess(false), 3000);
+    } catch (e) {
+      console.error("Failed to save Colab URL:", e);
+    }
+  };
+
+  const handleQueryColab = async (customPrompt?: string) => {
+    const p = customPrompt || colabPrompt;
+    if (!p.trim()) return;
+    setLoadingColab(true);
+    try {
+      const res = await apiService.queryColabLLM(p);
+      setColabResponse(res);
+    } catch (e) {
+      console.error("Failed to query Colab LLM:", e);
+    } finally {
+      setLoadingColab(false);
+    }
+  };
+
   const handleApplyToTwin = () => {
     if (!extractedData) return;
     if (onApplyExtractedSITREP) {
@@ -216,7 +247,8 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
             { id: 'anomaly', label: '📊 Sensor Anomaly Engine', tag: 'statistical_ml_anomaly' },
             { id: 'benchmarks', label: '📈 Disaster Benchmarks', tag: 'cross_disaster_benchmark' },
             { id: 'carbon', label: '🌱 Sortie Carbon Accounting', tag: 'operational_energy_accounting' },
-            { id: 'rag', label: '🏛️ Disaster Memory (RAG)', tag: 'historical_disaster_rag' }
+            { id: 'rag', label: '🏛️ Disaster Memory (Option A)', tag: 'historical_disaster_rag' },
+            { id: 'colab_llm', label: '⚡ Civil Defense LLM (Option B)', tag: 'fine_tuned_colab_llm' }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -1084,6 +1116,210 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 9: OPTION B - SPECIALIZED INDIAN CIVIL DEFENSE FINE-TUNED MODEL */}
+          {activeTab === 'colab_llm' && (
+            <div className="space-y-6">
+              {/* Top Banner */}
+              <div className="bg-gradient-to-r from-purple-950/40 via-indigo-950/30 to-slate-900 border border-purple-500/40 rounded-xl p-4 flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">⚡</span>
+                    <h3 className="text-sm font-bold text-purple-300 uppercase tracking-wide">
+                      Option B: Indian Civil Defense SFT Model (Llama-3.2-3B QLoRA)
+                    </h3>
+                    <span className="px-2 py-0.5 text-[9px] font-mono uppercase bg-purple-900/50 text-purple-200 border border-purple-400/40 rounded">
+                      Google Colab T4 GPU Bridge
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                    Fine-tuned on 50+ official Indian Civil Defense & Disaster Command instructions. Grounded in the statutory <strong>Disaster Management Act, 2005 (Sections 12, 34 & 35)</strong>, Central Water Commission (CWC) warning stages vs Highest Flood Level (HFL), IMD 4-tier alert protocols, Incident Command System (ICS-201/204), and Post-Disaster Needs Assessment (PDNA).
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 text-[10px] font-mono uppercase bg-purple-900/40 text-purple-300 border border-purple-500/40 rounded shrink-0">
+                  fine_tuned_colab_llm
+                </span>
+              </div>
+
+              {/* Cloudflare Tunnel Status & Live GPU Config Card */}
+              <div className="bg-slate-950 border border-purple-500/30 rounded-xl p-4 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-xs font-mono font-bold text-purple-300 uppercase">
+                      Cloudflare Live Tunnel Bridge Configuration:
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 text-[10px] font-mono bg-purple-950 text-purple-300 border border-purple-800 rounded">
+                      Free Colab GPU • 0 MB Local VRAM
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={colabUrl}
+                    onChange={(e) => setColabUrl(e.target.value)}
+                    placeholder="https://xxxx.trycloudflare.com"
+                    className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-purple-500 transition"
+                  />
+                  <button
+                    onClick={handleSaveColabUrl}
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs font-bold rounded-lg transition shrink-0 cursor-pointer"
+                  >
+                    {colabSavedSuccess ? '✓ Saved!' : 'Save Tunnel URL'}
+                  </button>
+                </div>
+
+                <p className="text-[11px] text-slate-400">
+                  💡 <strong>Tip:</strong> The public Cloudflare tunnel connects directly to Cell 7 in your Google Colab notebook (<code>train_indian_civil_defense_colab.ipynb</code>). If the Colab tab disconnects, queries seamlessly auto-fallback to the Local Grounded Disaster RAG Engine without interruption.
+                </p>
+              </div>
+
+              {/* Curated SFT Command Prompts (1-Click Run) */}
+              <div>
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">
+                  Select Curated Civil Defense Command Query (SFT Ground-Truth):
+                </span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                  {[
+                    {
+                      label: "⚖️ DM Act Section 34 Powers",
+                      q: "What emergency requisitioning and evacuation powers does the District Magistrate possess under Section 34 of the Disaster Management Act, 2005?",
+                      tag: "Statutory Law • Section 34"
+                    },
+                    {
+                      label: "🌊 CWC Dam Spillway Rules",
+                      q: "What is the mandatory CWC rule curve protocol before opening reservoir spillway gates during an IMD Red Alert?",
+                      tag: "CWC SOP • FRL Threshold"
+                    },
+                    {
+                      label: "🌀 IMD Color Code Protocols",
+                      q: "Differentiate between IMD Orange Alert (48h) and Red Alert (24h) with required ICS mobilization mandates.",
+                      tag: "IMD 4-Tier Alert • ICS Prep"
+                    },
+                    {
+                      label: "⛺ Section 12 Relief Standards",
+                      q: "What are the statutory minimum standards of relief for shelter, food, and ex-gratia under Section 12 of the DM Act?",
+                      tag: "Section 12 • Relief Camps"
+                    },
+                    {
+                      label: "📋 NDRF ICS-204 Deployment",
+                      q: "Draft an Incident Command System (ICS-204) tactical assignment list for 3 NDRF search & rescue battalions.",
+                      tag: "ICS-204 • Tactical Order"
+                    },
+                    {
+                      label: "🔎 Forensic PDNA Assessment",
+                      q: "How does the Post-Disaster Needs Assessment (PDNA) framework quantify infrastructure damage vs economic loss?",
+                      tag: "PDNA • Forensic Audit"
+                    }
+                  ].map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setColabPrompt(item.q);
+                        handleQueryColab(item.q);
+                      }}
+                      className="p-3 text-left rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 transition group cursor-pointer"
+                    >
+                      <div className="text-xs font-bold text-slate-200 group-hover:text-purple-300 transition">
+                        {item.label}
+                      </div>
+                      <div className="text-[10px] text-slate-400 mt-1 line-clamp-1">
+                        {item.q}
+                      </div>
+                      <span className="inline-block mt-2 px-2 py-0.5 text-[9px] font-mono rounded bg-slate-950 text-purple-400/90 border border-purple-500/30">
+                        {item.tag}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Search Bar Input */}
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={colabPrompt}
+                    onChange={(e) => setColabPrompt(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleQueryColab()}
+                    placeholder="Ask the Indian Civil Defense Fine-Tuned Model (e.g., 'What is Section 35 of the DM Act?' or 'Explain CWC Danger Level')..."
+                    className="flex-1 bg-slate-900 border border-slate-700/80 rounded-lg px-3.5 py-2 text-xs text-slate-200 font-sans focus:outline-none focus:border-purple-500 transition"
+                  />
+                  <button
+                    onClick={() => handleQueryColab()}
+                    disabled={loadingColab || !colabPrompt.trim()}
+                    className="px-4 py-2 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold font-mono text-xs rounded-lg shadow-md transition flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shrink-0"
+                  >
+                    {loadingColab ? 'Generating via Cloud GPU...' : '⚡ Query Model (Option B)'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Colab Output Stream Display */}
+              {loadingColab ? (
+                <div className="text-center py-12 text-slate-400 text-xs font-mono animate-pulse">
+                  Querying fine-tuned Llama-3.2-3B-Instruct model on Google Colab T4 GPU...
+                </div>
+              ) : colabResponse ? (
+                <div className="border border-purple-500/40 bg-slate-950/90 rounded-xl p-5 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3 gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-purple-400">
+                        Model Output:
+                      </span>
+                      <span className="text-xs font-bold text-white">
+                        {colabResponse.model || "CivicTwin-Llama-3.2-3B-CivilDefense-SFT"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2.5 py-1 text-[10px] font-mono font-bold rounded ${
+                        colabResponse.status === 'success'
+                          ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                          : 'bg-amber-950 text-amber-300 border border-amber-800'
+                      }`}>
+                        {colabResponse.status === 'success' ? '⚡ 100% Live Colab T4 GPU' : '🛡️ Resilient Local RAG Fallback'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-200 font-mono whitespace-pre-wrap leading-relaxed">
+                    {colabResponse.response}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Training Specs & Dataset Dossier Table */}
+              <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden text-xs">
+                <div className="px-4 py-2.5 bg-slate-900/60 border-b border-slate-800 font-semibold text-slate-300 flex items-center justify-between">
+                  <span>Option B Architecture & Fine-Tuning Hyperparameters</span>
+                  <span className="text-[10px] font-mono text-purple-400">Unsloth + Llama-3.2-3B</span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4">
+                  <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
+                    <div className="text-[10px] uppercase text-slate-400">Base Architecture</div>
+                    <div className="text-xs font-bold text-purple-300 font-mono mt-1">Llama-3.2-3B-Instruct</div>
+                  </div>
+                  <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
+                    <div className="text-[10px] uppercase text-slate-400">Quantization</div>
+                    <div className="text-xs font-bold text-cyan-300 font-mono mt-1">4-Bit NF4 (QLoRA)</div>
+                  </div>
+                  <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
+                    <div className="text-[10px] uppercase text-slate-400">LoRA Adapter</div>
+                    <div className="text-xs font-bold text-emerald-300 font-mono mt-1">r=16, alpha=32, target: q,k,v,o</div>
+                  </div>
+                  <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
+                    <div className="text-[10px] uppercase text-slate-400">Training VRAM / Host</div>
+                    <div className="text-xs font-bold text-amber-300 font-mono mt-1">Colab T4 (Free Cloud)</div>
+                  </div>
                 </div>
               </div>
             </div>
