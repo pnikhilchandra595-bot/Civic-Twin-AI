@@ -27,6 +27,7 @@ import { GoogleFloodHubModal } from './components/GoogleFloodHubModal';
 import { FuturePredictionsModal } from './components/FuturePredictionsModal';
 import { AccuracyAuditModal } from './components/AccuracyAuditModal';
 import { AdvancedCommandSuiteModal } from './components/AdvancedCommandSuiteModal';
+import { ThreeDimensionalTwinMap } from './components/ThreeDimensionalTwinMap';
 import { ICS201ActionPlanModal } from './components/ICS201ActionPlanModal';
 import { MobileCompanionModal } from './components/MobileCompanionModal';
 import { ElevationProfileModal } from './components/ElevationProfileModal';
@@ -91,6 +92,7 @@ export const App: React.FC = () => {
   // View mode: defaults to full cockpit for direct access to digital twin & simulation tabs
   const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('COCKPIT');
   const [cockpitView, setCockpitView] = useState<'tools' | 'map' | 'sandbox' | 'calibrated' | 'all'>('map');
+  const [mapMode, setMapMode] = useState<'2d' | '3d'>('2d');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   // Selected deep analysis sub-tab in Section 4
@@ -1150,6 +1152,22 @@ export const App: React.FC = () => {
               <span>COMMAND SUITE</span>
             </button>
 
+            <button
+              onClick={() => {
+                setCockpitView('map');
+                setMapMode(prev => prev === '2d' ? '3d' : '2d');
+              }}
+              className={`px-3 py-1.5 rounded-xl border font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] cursor-pointer ring-1 ${
+                mapMode === '3d'
+                  ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 text-slate-950 border-cyan-200 ring-cyan-300 shadow-[0_0_25px_rgba(6,182,212,0.6)] font-extrabold'
+                  : 'bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950 hover:from-blue-900 hover:to-indigo-900 border-blue-400/80 text-blue-200 hover:text-white ring-blue-400/30'
+              }`}
+              title="Toggle 3D Volumetric Digital Twin Map (Extruded Buildings, Rising Water Plane, Drone Trajectories)"
+            >
+              <span>{mapMode === '3d' ? '🗺️' : '🌐'}</span>
+              <span>{mapMode === '3d' ? '2D TACTICAL' : '3D DIGITAL TWIN'}</span>
+            </button>
+
             <div className="flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-slate-300 shadow-md shadow-cyan-500/10">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               <span className="text-slate-400">Region:</span>
@@ -1194,10 +1212,35 @@ export const App: React.FC = () => {
         {/* VIEW 2 & ALL: INTERACTIVE GEOGRAPHIC DIGITAL TWIN MAP */}
         {(cockpitView === 'map' || cockpitView === 'all') && (
         <section className="space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center space-x-3 text-sm font-mono font-bold text-slate-100 uppercase tracking-wider">
               <Compass className="w-4 h-4 text-cyan-400" />
               <span>1. Geographic Digital Twin Simulation Map</span>
+              {/* 2D Tactical / 3D Volumetric Mode Switcher */}
+              <div className="flex items-center p-0.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 shadow-inner">
+                <button
+                  onClick={() => setMapMode('2d')}
+                  className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all flex items-center space-x-1 ${
+                    mapMode === '2d'
+                      ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/50'
+                      : 'text-slate-400 hover:text-cyan-300'
+                  }`}
+                >
+                  <span>🗺️</span>
+                  <span>2D TACTICAL MAP</span>
+                </button>
+                <button
+                  onClick={() => setMapMode('3d')}
+                  className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all flex items-center space-x-1 ${
+                    mapMode === '3d'
+                      ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 text-slate-950 shadow-md shadow-cyan-500/60 font-extrabold'
+                      : 'text-slate-400 hover:text-cyan-300'
+                  }`}
+                >
+                  <span>🌐</span>
+                  <span>3D VOLUMETRIC TWIN</span>
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center space-x-2 text-xs font-mono">
@@ -1210,20 +1253,30 @@ export const App: React.FC = () => {
             </div>
           </div>
 
-          <DigitalTwinMap
-            state={state}
-            authUser={authUser}
-            onSelectNode={(n) => { setSelectedNode(n); setSelectedSensor(null); }}
-            onSelectSensor={(s: SensorReading) => { setSelectedSensor(s); setSelectedNode(null); }}
-            onSelectRoute={(r) => console.log('Selected route:', r)}
-            onSwitchCity={handleSwitchCity}
-            onResolveLocation={handleResolveLocation}
-            isSyncing={isSyncing}
-            isPlaying={isPlaying}
-            playbackSpeed={playbackSpeed}
-            onTogglePlayback={handleTogglePlayback}
-            onSetSpeed={handleSetSpeed}
-          />
+          {mapMode === '3d' ? (
+            <ThreeDimensionalTwinMap
+              state={state}
+              onSelectNode={(n) => { setSelectedNode(n); setSelectedSensor(null); }}
+              onSwitchTo2D={() => setMapMode('2d')}
+              onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
+              onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
+            />
+          ) : (
+            <DigitalTwinMap
+              state={state}
+              authUser={authUser}
+              onSelectNode={(n) => { setSelectedNode(n); setSelectedSensor(null); }}
+              onSelectSensor={(s: SensorReading) => { setSelectedSensor(s); setSelectedNode(null); }}
+              onSelectRoute={(r) => console.log('Selected route:', r)}
+              onSwitchCity={handleSwitchCity}
+              onResolveLocation={handleResolveLocation}
+              isSyncing={isSyncing}
+              isPlaying={isPlaying}
+              playbackSpeed={playbackSpeed}
+              onTogglePlayback={handleTogglePlayback}
+              onSetSpeed={handleSetSpeed}
+            />
+          )}
         </section>
         )}
 
