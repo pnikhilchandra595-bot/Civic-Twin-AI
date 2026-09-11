@@ -1006,6 +1006,14 @@ export const App: React.FC = () => {
               >
                 <span>ICS-201 PLAN 📋</span>
               </button>
+              <button
+                onClick={() => setIsDisasterIntelligenceOpen(true)}
+                className="font-hud px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 via-teal-500 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-black transition-all shadow-[0_0_20px_rgba(6,182,212,0.45)] cursor-pointer transform hover:scale-105 flex items-center space-x-1.5 ring-1 ring-cyan-300"
+                title="Open National Disaster Intelligence Suite (NLP SITREPs, Cyclone Cones, 72h Inundation, Historical Disaster Memory RAG)"
+              >
+                <span className="text-sm">🧠</span>
+                <span>INTELLIGENCE SUITE</span>
+              </button>
             </div>
           </div>
         </section>

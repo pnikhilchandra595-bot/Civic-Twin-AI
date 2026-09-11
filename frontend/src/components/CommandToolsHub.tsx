@@ -579,6 +579,33 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
             </button>
           </div>
 
+          {/* Tool 17: Disaster Intelligence & Memory Suite (Option A RAG & Option B Colab) */}
+          <div className="p-4 rounded-2xl bg-[#091224]/90 border border-cyan-500/40 hover:border-cyan-300 transition-all flex flex-col justify-between space-y-3 shadow-lg ring-1 ring-cyan-500/20">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-cyan-500/10 rounded-xl text-cyan-400 border border-cyan-500/20">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">
+                  RAG + SFT
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white font-hud mt-2.5">
+                Disaster Memory & Intelligence Suite
+              </h3>
+              <p className="text-xs text-slate-400 font-sans mt-1">
+                Historical institutional memory RAG engine across 6 major Indian catastrophes, NLP SITREP parser, cyclone cones, and Colab GPU bridge.
+              </p>
+            </div>
+            <button
+              onClick={onOpenDisasterIntelligence}
+              className="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+            >
+              <Activity className="w-3.5 h-3.5" />
+              <span>Launch Intelligence Suite 🧠</span>
+            </button>
+          </div>
+
         </div>
       </div>
 
