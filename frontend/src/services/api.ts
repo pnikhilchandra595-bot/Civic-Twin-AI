@@ -1457,6 +1457,44 @@ export class DigitalTwinApiService {
     };
   }
 
+  // =========================================================================
+  // OPTION B: Cloud-Trained Colab Fine-Tuned Llama-3.2 Model Bridge
+  // =========================================================================
+  async getColabStatus(): Promise<{ status: string; endpoint_url: string | null }> {
+    const data = await safeJsonFetch<any>(`${API_BASE}/intelligence/colab-llm/status`);
+    if (data && data.status === 'success') return data;
+    return { status: "local", endpoint_url: null };
+  }
+
+  async setColabConfig(endpointUrl: string): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/intelligence/colab-llm/config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint_url: endpointUrl })
+      });
+      return await res.json();
+    } catch (e) {
+      console.error("Failed to set Colab LLM config:", e);
+      return { status: "error", message: String(e) };
+    }
+  }
+
+  async queryColabLLM(prompt: string): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE}/intelligence/colab-llm/query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn("Colab query fallback to local RAG:", e);
+    }
+    return this.queryDisasterRAG(prompt);
+  }
+
+
   async getMOSDACCatalog(datasetId: string = "3SIMG_L1B_STD", count: number = 10): Promise<any> {
     const data = await safeJsonFetch<any>(`${API_BASE}/real-data/mosdac-catalog?dataset_id=${encodeURIComponent(datasetId)}&count=${count}`);
     if (data && data.status === 'success' && data.entries && data.entries.length > 0) {
