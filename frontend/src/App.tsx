@@ -771,6 +771,8 @@ export const App: React.FC = () => {
         demoMode={demoMode}
         onToggleDemoMode={handleToggleDemoMode}
         onOpenCalibratedSim={() => setCockpitView('calibrated')}
+        onOpenDisasterIntelligence={() => setIsDisasterIntelligenceOpen(true)}
+        onOpenGoogleFloodHub={() => setIsGoogleFloodHubOpen(true)}
       />
 
       {/* Floating Emergency Toast Notification */}
@@ -1092,10 +1094,31 @@ export const App: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-slate-300 shadow-md shadow-cyan-500/10">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-slate-400">Region:</span>
-            <strong className="text-cyan-300 font-bold text-glow-cyan">{state?.city_name || 'Active Region'}</strong>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Direct Instant Action Buttons (Always Visible on Screen in All Cockpit Views) */}
+            <button
+              onClick={() => setIsGoogleFloodHubOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-950 hover:from-blue-800 hover:to-indigo-800 border border-blue-400/80 text-blue-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(59,130,246,0.35)] cursor-pointer ring-1 ring-blue-400/30"
+              title="Launch Google Flood Hub (AI Streamflow Ingestion)"
+            >
+              <span>🌊</span>
+              <span>FLOOD HUB</span>
+            </button>
+
+            <button
+              onClick={() => setIsDisasterIntelligenceOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-900 via-teal-900 to-blue-950 hover:from-cyan-800 hover:to-teal-800 border border-cyan-400/80 text-cyan-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(6,182,212,0.35)] cursor-pointer ring-1 ring-cyan-400/30"
+              title="Launch National Disaster Intelligence Suite (RAG & Colab LLM)"
+            >
+              <span>🧠</span>
+              <span>AI SUITE</span>
+            </button>
+
+            <div className="flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-slate-300 shadow-md shadow-cyan-500/10">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="text-slate-400">Region:</span>
+              <strong className="text-cyan-300 font-bold text-glow-cyan">{state?.city_name || 'Active Region'}</strong>
+            </div>
           </div>
         </div>
 

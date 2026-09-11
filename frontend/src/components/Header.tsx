@@ -47,6 +47,8 @@ interface HeaderProps {
   demoMode?: boolean;
   onToggleDemoMode?: () => void;
   onOpenCalibratedSim?: () => void;
+  onOpenDisasterIntelligence?: () => void;
+  onOpenGoogleFloodHub?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -83,6 +85,8 @@ export const Header: React.FC<HeaderProps> = ({
   demoMode,
   onToggleDemoMode,
   onOpenCalibratedSim,
+  onOpenDisasterIntelligence,
+  onOpenGoogleFloodHub,
 }) => {
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
@@ -208,16 +212,40 @@ export const Header: React.FC<HeaderProps> = ({
               </optgroup>
             </select>
 
-            {/* 18 Live Sovereign Feeds Inspector Button */}
+            {/* 19 Live Sovereign Feeds Inspector Button */}
             <button
               onClick={onOpenProvenance}
               className="px-2 py-1 rounded-lg bg-emerald-950/90 border border-emerald-400/80 text-emerald-300 hover:bg-emerald-900 text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(16,185,129,0.35)] ring-1 ring-emerald-400/30 cursor-pointer shrink-0"
-              title="Inspect 18 Real-Time Live Sovereign Feeds"
+              title="Inspect 19 Real-Time Live Sovereign Feeds"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-              <span className="font-hud hidden md:inline">18 Feeds</span>
-              <span className="font-hud md:hidden">18</span>
+              <span className="font-hud hidden md:inline">19 Feeds</span>
+              <span className="font-hud md:hidden">19</span>
             </button>
+
+            {/* Direct Google Flood Hub Button */}
+            {onOpenGoogleFloodHub && (
+              <button
+                onClick={onOpenGoogleFloodHub}
+                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-900 to-indigo-900 border border-blue-400/80 text-blue-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(59,130,246,0.35)] ring-1 ring-blue-400/40 cursor-pointer shrink-0"
+                title="Launch Google Flood Hub (AI Streamflow Inflow Ingestion)"
+              >
+                <span>🌊</span>
+                <span className="font-hud hidden md:inline">Flood Hub</span>
+              </button>
+            )}
+
+            {/* Direct National Disaster Intelligence Suite Button */}
+            {onOpenDisasterIntelligence && (
+              <button
+                onClick={onOpenDisasterIntelligence}
+                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-cyan-900 via-teal-900 to-blue-950 border border-cyan-400/80 text-cyan-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(6,182,212,0.35)] ring-1 ring-cyan-400/40 cursor-pointer shrink-0"
+                title="Launch National Disaster Intelligence Suite (RAG & Colab LLM)"
+              >
+                <span>🧠</span>
+                <span className="font-hud hidden md:inline">AI Suite</span>
+              </button>
+            )}
 
             {/* Light / Dark Mode Toggle Button */}
             <button
