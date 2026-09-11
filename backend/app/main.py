@@ -40,6 +40,7 @@ from app.services.auth_service import auth_service, get_current_officer, require
 from app.services.demo_state import demo_state
 from app.services.google_flood_hub_service import google_flood_hub_service
 from app.services.future_predictions_service import future_predictions_service
+from app.services.accuracy_audit_service import accuracy_audit_service
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -1053,6 +1054,11 @@ async def get_future_cascade_predictions(
 ):
     """Real-Time Cascade Horizon and 'What Happens Next' Predictive Horizon API"""
     return future_predictions_service.generate_future_predictions(city_id=city_id, lat=lat, lng=lng)
+
+@app.get("/api/real-data/accuracy-audit")
+async def get_forensic_accuracy_audit():
+    """Scientific Validation and Forensic Accuracy Audit API (42 Surveyed HWM Benchmarks + Sentinel-1 SAR)"""
+    return accuracy_audit_service.get_audit_summary()
 
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(

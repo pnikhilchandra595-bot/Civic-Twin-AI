@@ -8,7 +8,7 @@ import {
   FileText, LogOut, UserCheck, Globe, Video, Mic, Skull, AlertOctagon, Settings, Database,
   TrendingUp, Waves, HeartPulse, WifiOff, Smartphone, QrCode, Bot, Sparkles, Building2, Lock, User,
   ChevronDown, Grid, Shield, Flame, Sun, Moon, Satellite, Mountain,
-  FlaskConical, Clock
+  FlaskConical, Clock, Award
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -50,6 +50,7 @@ interface HeaderProps {
   onOpenDisasterIntelligence?: () => void;
   onOpenGoogleFloodHub?: () => void;
   onOpenFuturePredictions?: () => void;
+  onOpenAccuracyAudit?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -89,6 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenDisasterIntelligence,
   onOpenGoogleFloodHub,
   onOpenFuturePredictions,
+  onOpenAccuracyAudit,
 }) => {
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
@@ -258,6 +260,18 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <span>🔮</span>
                 <span className="font-hud hidden md:inline">What Next</span>
+              </button>
+            )}
+
+            {/* Direct Accuracy & Forensic Audit Button */}
+            {onOpenAccuracyAudit && (
+              <button
+                onClick={onOpenAccuracyAudit}
+                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-emerald-950 via-teal-950 to-cyan-950 border border-emerald-400/80 text-emerald-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(16,185,129,0.35)] ring-1 ring-emerald-400/40 cursor-pointer shrink-0"
+                title="Launch Scientific Validation & Forensic Accuracy Audit (42 Surveyed Benchmarks)"
+              >
+                <span>🔬</span>
+                <span className="font-hud hidden md:inline">Audit</span>
               </button>
             )}
 
@@ -611,14 +625,28 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* Disaster Intelligence Suite */}
                   <button
                     onClick={() => { setIsToolsMenuOpen(false); if (onOpenDisasterIntelligence) onOpenDisasterIntelligence(); }}
-                    className="group p-2.5 rounded-2xl bg-gradient-to-r from-[#061822] to-[#0c1833] hover:from-[#0b2b3d] hover:to-[#132652] border border-cyan-500/40 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.25)] sm:col-span-2"
+                    className="group p-2.5 rounded-2xl bg-gradient-to-r from-[#061822] to-[#0c1833] hover:from-[#0b2b3d] hover:to-[#132652] border border-cyan-500/40 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(6,182,212,0.25)]"
                   >
                     <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
                       <Sparkles className="w-4 h-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="font-bold text-cyan-200 group-hover:text-cyan-100 transition-colors truncate">National Disaster Intelligence Suite</div>
-                      <div className="text-[10px] text-cyan-400/80 truncate">Historical Memory RAG (Option A) & Colab Fine-Tuned Llama-3.2 (Option B)</div>
+                      <div className="font-bold text-cyan-200 group-hover:text-cyan-100 transition-colors truncate">Disaster Intelligence Suite</div>
+                      <div className="text-[10px] text-cyan-400/80 truncate">Historical Memory RAG & Colab LLM</div>
+                    </div>
+                  </button>
+
+                  {/* Accuracy & Forensic Audit */}
+                  <button
+                    onClick={() => { setIsToolsMenuOpen(false); if (onOpenAccuracyAudit) onOpenAccuracyAudit(); }}
+                    className="group p-2.5 rounded-2xl bg-gradient-to-r from-[#041a13] to-[#0c1833] hover:from-[#082b20] hover:to-[#132652] border border-emerald-500/40 hover:border-emerald-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.25)]"
+                  >
+                    <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Award className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-emerald-200 group-hover:text-emerald-100 transition-colors truncate">Forensic Accuracy Audit</div>
+                      <div className="text-[10px] text-emerald-400/80 truncate">42 Benchmarks & Sentinel-1 SAR</div>
                     </div>
                   </button>
 

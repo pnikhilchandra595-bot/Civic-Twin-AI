@@ -25,6 +25,7 @@ import { DataProvenanceModal } from './components/DataProvenanceModal';
 import { DisasterIntelligenceModal } from './components/DisasterIntelligenceModal';
 import { GoogleFloodHubModal } from './components/GoogleFloodHubModal';
 import { FuturePredictionsModal } from './components/FuturePredictionsModal';
+import { AccuracyAuditModal } from './components/AccuracyAuditModal';
 import { ICS201ActionPlanModal } from './components/ICS201ActionPlanModal';
 import { MobileCompanionModal } from './components/MobileCompanionModal';
 import { ElevationProfileModal } from './components/ElevationProfileModal';
@@ -127,6 +128,7 @@ export const App: React.FC = () => {
   const [isDisasterIntelligenceOpen, setIsDisasterIntelligenceOpen] = useState<boolean>(false);
   const [isGoogleFloodHubOpen, setIsGoogleFloodHubOpen] = useState<boolean>(false);
   const [isFuturePredictionsOpen, setIsFuturePredictionsOpen] = useState<boolean>(false);
+  const [isAccuracyAuditOpen, setIsAccuracyAuditOpen] = useState<boolean>(false);
 
   // Active continuous simulation loop state (STOPPED BY DEFAULT - only starts when operator turns it on)
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -776,6 +778,7 @@ export const App: React.FC = () => {
         onOpenDisasterIntelligence={() => setIsDisasterIntelligenceOpen(true)}
         onOpenGoogleFloodHub={() => setIsGoogleFloodHubOpen(true)}
         onOpenFuturePredictions={() => setIsFuturePredictionsOpen(true)}
+        onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
       />
 
       {/* Floating Emergency Toast Notification */}
@@ -1126,6 +1129,15 @@ export const App: React.FC = () => {
               <span>WHAT NEXT</span>
             </button>
 
+            <button
+              onClick={() => setIsAccuracyAuditOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-950 via-teal-950 to-cyan-950 hover:from-emerald-900 hover:to-teal-900 border border-emerald-400/80 text-emerald-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(16,185,129,0.35)] cursor-pointer ring-1 ring-emerald-400/30"
+              title="Launch Scientific Validation & Forensic Accuracy Audit (42 Surveyed Benchmarks)"
+            >
+              <span>🔬</span>
+              <span>ACCURACY AUDIT</span>
+            </button>
+
             <div className="flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-slate-300 shadow-md shadow-cyan-500/10">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               <span className="text-slate-400">Region:</span>
@@ -1162,6 +1174,7 @@ export const App: React.FC = () => {
             onOpenDisasterIntelligence={() => setIsDisasterIntelligenceOpen(true)}
             onOpenGoogleFloodHub={() => setIsGoogleFloodHubOpen(true)}
             onOpenFuturePredictions={() => setIsFuturePredictionsOpen(true)}
+            onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
           />
         )}
 
@@ -1614,6 +1627,12 @@ export const App: React.FC = () => {
         onClose={() => setIsFuturePredictionsOpen(false)}
         cityName={state?.city_name || 'Mumbai'}
         cityId={state?.city_id || 'mumbai_monsoon'}
+      />
+
+      {/* Scientific Validation & Forensic Accuracy Audit */}
+      <AccuracyAuditModal
+        isOpen={isAccuracyAuditOpen}
+        onClose={() => setIsAccuracyAuditOpen(false)}
       />
 
       {/* NDMA ICS-201 Official Action Plan */}
