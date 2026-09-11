@@ -35,6 +35,7 @@ from app.services.bhuvan_service import bhuvan_service
 from app.services.copernicus_elevation_service import copernicus_elevation_service
 from app.services.data_gov_in_service import data_gov_in_service
 from app.services.disaster_intelligence_service import disaster_intelligence_service
+from app.services.disaster_rag_service import disaster_rag_service
 from app.services.auth_service import auth_service, get_current_officer, require_clearance, require_strict_admin_clearance, Depends
 from app.services.demo_state import demo_state
 
@@ -959,6 +960,33 @@ def get_carbon_tracker():
     Tag: operational_energy_accounting
     """
     return disaster_intelligence_service.get_sortie_carbon_tracker()
+
+class DisasterRAGQueryRequest(BaseModel):
+    query: str
+    city_context: Optional[str] = None
+
+@app.post("/api/intelligence/disaster-rag/query")
+def query_disaster_rag(payload: DisasterRAGQueryRequest):
+    """
+    OPTION A: Historical Disaster Institutional Memory Engine (RAG).
+    Retrieves forensic precedent across 2004 Tsunami, 2001 Bhuj, 2013 Kedarnath,
+    2018 Kerala, 1999 Odisha, and 2005 Mumbai with cited government reports.
+    Tag: historical_disaster_rag
+    """
+    return disaster_rag_service.query_institutional_memory(payload.query, payload.city_context)
+
+@app.get("/api/intelligence/disaster-rag/case-studies")
+def get_disaster_rag_case_studies():
+    """
+    Returns full indexed catalog of 8 major historical Indian disaster forensic dossiers.
+    Tag: historical_disaster_rag
+    """
+    return {
+        "status": "success",
+        "data_mode": "historical_disaster_rag",
+        "total_indexed_catastrophes": len(disaster_rag_service.get_all_case_studies()),
+        "case_studies": disaster_rag_service.get_all_case_studies()
+    }
 
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(

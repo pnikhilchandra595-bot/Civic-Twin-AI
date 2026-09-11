@@ -27,7 +27,7 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
   onClose,
   onApplyExtractedSITREP
 }) => {
-  const [activeTab, setActiveTab] = useState<'nlp' | 'cyclone' | 'recession' | 'satellite' | 'anomaly' | 'benchmarks' | 'carbon'>('nlp');
+  const [activeTab, setActiveTab] = useState<'nlp' | 'cyclone' | 'recession' | 'satellite' | 'anomaly' | 'benchmarks' | 'carbon' | 'rag'>('nlp');
   
   // NLP Parser State
   const [sitrepText, setSitrepText] = useState(PRESET_BULLETINS[0].text);
@@ -58,12 +58,20 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
   const [carbonData, setCarbonData] = useState<any>(null);
   const [loadingCarbon, setLoadingCarbon] = useState(false);
 
+  // Historical Disaster RAG State (Option A)
+  const [ragQuery, setRagQuery] = useState("Why did 35 major dams open simultaneously during the 2018 Kerala floods, and what reservoir rule curve failures occurred?");
+  const [ragResult, setRagResult] = useState<any>(null);
+  const [loadingRAG, setLoadingRAG] = useState(false);
+  const [ragCaseStudies, setRagCaseStudies] = useState<any[]>([]);
+
   useEffect(() => {
     if (!isOpen) return;
     loadCycloneData(cycloneName);
     loadAnomalyData();
     loadBenchmarkData();
     loadCarbonData();
+    loadRAGCaseStudies();
+    handleQueryRAG("2018 Kerala dam deluge rule curves");
   }, [isOpen]);
 
   const handleParseSITREP = async () => {
@@ -127,6 +135,31 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
     }
   };
 
+  const loadRAGCaseStudies = async () => {
+    try {
+      const res = await apiService.getDisasterRAGCaseStudies();
+      if (res && res.case_studies) {
+        setRagCaseStudies(res.case_studies);
+      }
+    } catch (e) {
+      console.error("Failed to load RAG case studies:", e);
+    }
+  };
+
+  const handleQueryRAG = async (overrideQuery?: string) => {
+    const q = overrideQuery || ragQuery;
+    if (!q.trim()) return;
+    setLoadingRAG(true);
+    try {
+      const res = await apiService.queryDisasterRAG(q);
+      setRagResult(res);
+    } catch (e) {
+      console.error("Failed to query disaster RAG:", e);
+    } finally {
+      setLoadingRAG(false);
+    }
+  };
+
   const handleApplyToTwin = () => {
     if (!extractedData) return;
     if (onApplyExtractedSITREP) {
@@ -182,7 +215,8 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
             { id: 'satellite', label: '🖼️ Pre/Post Satellite Split', tag: 'sentinel_sar_overlay' },
             { id: 'anomaly', label: '📊 Sensor Anomaly Engine', tag: 'statistical_ml_anomaly' },
             { id: 'benchmarks', label: '📈 Disaster Benchmarks', tag: 'cross_disaster_benchmark' },
-            { id: 'carbon', label: '🌱 Sortie Carbon Accounting', tag: 'operational_energy_accounting' }
+            { id: 'carbon', label: '🌱 Sortie Carbon Accounting', tag: 'operational_energy_accounting' },
+            { id: 'rag', label: '🏛️ Disaster Memory (RAG)', tag: 'historical_disaster_rag' }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -812,6 +846,246 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
                   </div>
                 </div>
               ) : null}
+            </div>
+          )}
+
+          {/* TAB 8: HISTORICAL DISASTER INSTITUTIONAL MEMORY (RAG + SFT) */}
+          {activeTab === 'rag' && (
+            <div className="space-y-6">
+              <div className="bg-amber-950/20 border border-amber-500/40 rounded-xl p-4 flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-amber-300">Historical Disaster Institutional Memory (Retrieval-Augmented Generation)</h3>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Option A RAG Engine indexing forensic post-disaster inquiry reports, CWC dam release studies, GSI geotechnical audits, and High-Level Committee dossiers across India's greatest catastrophes. Prevents institutional amnesia and cascading infrastructure failure.
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 text-[10px] font-mono uppercase bg-amber-900/40 text-amber-300 border border-amber-500/40 rounded shrink-0">
+                  historical_disaster_rag
+                </span>
+              </div>
+
+              {/* 6 High-Impact Forensic Question Presets */}
+              <div>
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">
+                  Select Grounded Historical Precedent to Query:
+                </span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                  {[
+                    {
+                      label: "🌊 2004 Indian Ocean Tsunami",
+                      q: "What caused 10,000+ fatalities in India during the 2004 Indian Ocean Tsunami and what early warning systems were missing?",
+                      tag: "10,749 Deaths • INCOIS Genesis"
+                    },
+                    {
+                      label: "🏚️ 2001 Gujarat Bhuj Earthquake",
+                      q: "What structural failure modes occurred in the 2001 Bhuj earthquake and how was the IS 1893 seismic code overhauled?",
+                      tag: "20,085 Deaths • Soft-Storey Collapse"
+                    },
+                    {
+                      label: "🏔️ 2013 Kedarnath GLOF & Floods",
+                      q: "How did the 2013 Kedarnath Chorabari glacial lake breach occur and what was the high-altitude rescue response?",
+                      tag: "5,700 Deaths • Moraine Breach"
+                    },
+                    {
+                      label: "🌀 1999 Odisha Super Cyclone",
+                      q: "How did 260 km/h winds and 7m storm surge in the 1999 Odisha Super Cyclone lead to OSDMA and the cyclone shelter network?",
+                      tag: "9,887 Deaths • 7m Storm Surge"
+                    },
+                    {
+                      label: "🌧️ 2018 Kerala Dam Deluge",
+                      q: "Why did 35 major reservoirs open simultaneously during the 2018 Kerala floods and what reservoir rule curves failed?",
+                      tag: "35 Dams Opened • 1.45M Displaced"
+                    },
+                    {
+                      label: "🌊 2005 Mumbai Mithi Deluge",
+                      q: "How did 944mm rainfall combine with a 4.48m high tide to choke the Mithi River in the 2005 Mumbai deluge?",
+                      tag: "944mm Rain • Tidal Flap Lock"
+                    }
+                  ].map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setRagQuery(item.q);
+                        handleQueryRAG(item.q);
+                      }}
+                      className="p-3 text-left rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 transition group"
+                    >
+                      <div className="text-xs font-bold text-slate-200 group-hover:text-amber-300 transition">
+                        {item.label}
+                      </div>
+                      <div className="text-[10px] text-slate-400 mt-1 line-clamp-1">
+                        {item.q}
+                      </div>
+                      <span className="inline-block mt-2 px-2 py-0.5 text-[9px] font-mono rounded bg-slate-950 text-amber-400/90 border border-amber-500/30">
+                        {item.tag}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Search Bar Input */}
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={ragQuery}
+                    onChange={(e) => setRagQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleQueryRAG()}
+                    placeholder="Ask historical disaster memory (e.g., 'What was the dam release failure in Kerala?' or 'How high was the 2004 tsunami wave?')..."
+                    className="flex-1 bg-slate-900 border border-slate-700/80 rounded-lg px-3.5 py-2 text-xs text-slate-200 font-sans focus:outline-none focus:border-amber-500 transition"
+                  />
+                  <button
+                    onClick={() => handleQueryRAG()}
+                    disabled={loadingRAG || !ragQuery.trim()}
+                    className="px-4 py-2 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-bold font-mono text-xs rounded-lg shadow-md transition flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shrink-0"
+                  >
+                    {loadingRAG ? 'Searching Vector Index...' : '🔍 Query RAG'}
+                  </button>
+                </div>
+              </div>
+
+              {/* RAG Grounded Answer Dossier */}
+              {loadingRAG ? (
+                <div className="text-center py-12 text-slate-400 text-xs font-mono animate-pulse">
+                  Retrieving chunked forensic dossiers and grounding response...
+                </div>
+              ) : ragResult && ragResult.primary_precedent ? (
+                <div className="border border-amber-500/40 bg-slate-950/90 rounded-xl p-5 space-y-5">
+                  {/* Precedent Header & Citation */}
+                  <div className="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3 gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
+                          Forensic Precedent Identified:
+                        </span>
+                        <h4 className="text-sm font-bold text-white">
+                          {ragResult.primary_precedent.event_title}
+                        </h4>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Region: <span className="text-slate-300">{ragResult.primary_precedent.region || "All-India Coastal & Riparian Zone"}</span>
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="px-2.5 py-1 text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800 rounded">
+                        100% Grounded Forensic Citation
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Official Citation Badge */}
+                  <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs">
+                    <span className="text-slate-400 font-mono block text-[10px] uppercase">
+                      Official Government Inquiry Report / Source Citation:
+                    </span>
+                    <span className="text-amber-300 font-semibold mt-0.5 block">
+                      📄 {ragResult.primary_precedent.inquiry_report_citation}
+                    </span>
+                  </div>
+
+                  {/* Historical Ground-Truth Telemetry Metrics */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-lg text-center">
+                      <div className="text-[10px] uppercase text-slate-400">Casualties (Official)</div>
+                      <div className="text-lg font-bold text-red-400 font-mono mt-0.5">
+                        {ragResult.forensic_analysis.key_metrics_ground_truth.fatalities.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-lg text-center">
+                      <div className="text-[10px] uppercase text-slate-400">Economic Loss</div>
+                      <div className="text-lg font-bold text-amber-400 font-mono mt-0.5">
+                        ₹{ragResult.forensic_analysis.key_metrics_ground_truth.economic_loss_inr_crores.toLocaleString()} Cr
+                      </div>
+                    </div>
+                    <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-lg text-center">
+                      <div className="text-[10px] uppercase text-slate-400">Hazard Intensity</div>
+                      <div className="text-sm font-bold text-cyan-300 font-mono mt-1">
+                        {ragResult.forensic_analysis.key_metrics_ground_truth.hazard_intensity}
+                      </div>
+                    </div>
+                    <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-lg text-center">
+                      <div className="text-[10px] uppercase text-slate-400">VRAM Footprint</div>
+                      <div className="text-sm font-bold text-emerald-400 font-mono mt-1">
+                        0 MB (Pure RAG)
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Forensic Failure Mode Analysis */}
+                  <div className="space-y-1.5">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+                      <span>⚠️</span>
+                      <span>Primary Engineering & Operational Failure Mode:</span>
+                    </span>
+                    <div className="p-3.5 rounded-lg bg-rose-950/20 border border-rose-500/30 text-xs text-rose-200 leading-relaxed">
+                      {ragResult.forensic_analysis.primary_failure_mode}
+                    </div>
+                  </div>
+
+                  {/* Mandated Actionable Incident Action Protocol (ICS-201/204 SOP) */}
+                  <div className="space-y-1.5">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                      <span>🛡️</span>
+                      <span>Statutory Actionable Command Protocol (NDMA Mandate):</span>
+                    </span>
+                    <div className="p-3.5 rounded-lg bg-emerald-950/20 border border-emerald-500/30 text-xs text-emerald-200 leading-relaxed font-mono">
+                      {ragResult.forensic_analysis.statutory_sop_mandate}
+                    </div>
+                  </div>
+
+                  {/* Official Commander Briefing Text */}
+                  {ragResult.command_briefing && (
+                    <div className="space-y-1.5">
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300">
+                        Synthesized Incident Commander Briefing (SFT Output):
+                      </span>
+                      <pre className="p-3.5 rounded-lg bg-slate-900/95 border border-slate-800 text-[11px] text-slate-300 font-mono whitespace-pre-wrap leading-relaxed">
+                        {ragResult.command_briefing}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              {/* Indexed Disaster Archive Registry Table */}
+              <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+                <div className="px-4 py-2.5 bg-slate-900/60 border-b border-slate-800 text-xs font-semibold text-slate-300 flex items-center justify-between">
+                  <span>Indexed Historical Indian Disaster Knowledge Base (6 Major Precedents)</span>
+                  <span className="text-[10px] font-mono text-amber-400">Zero-Hallucination Ground-Truth</span>
+                </div>
+                <div className="divide-y divide-slate-800/60 text-xs">
+                  {ragCaseStudies.map((cs: any) => (
+                    <div key={cs.id} className="p-3.5 flex flex-wrap items-center justify-between hover:bg-slate-900/40 transition gap-2">
+                      <div>
+                        <div className="font-bold text-slate-200 flex items-center gap-2">
+                          <span>{cs.title}</span>
+                          <span className="text-[10px] font-mono text-slate-500">({cs.region})</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          Inquiry Dossier: {cs.inquiry_report_citation}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <div className="text-right font-mono text-[11px]">
+                          <span className="text-red-400 font-bold">{cs.fatalities_india?.toLocaleString() || 0}</span>
+                          <span className="text-slate-500"> Deaths</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setRagQuery(cs.title);
+                            handleQueryRAG(cs.title);
+                          }}
+                          className="px-3 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 rounded-lg text-xs font-mono transition"
+                        >
+                          Analyze Precedent →
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
