@@ -41,6 +41,18 @@ from app.services.demo_state import demo_state
 from app.services.google_flood_hub_service import google_flood_hub_service
 from app.services.future_predictions_service import future_predictions_service
 from app.services.accuracy_audit_service import accuracy_audit_service
+from app.services.countermeasure_service import countermeasure_service
+from app.services.physical_iot_service import physical_iot_service
+from app.services.citizen_depth_fusion_service import citizen_depth_fusion_service
+from app.services.autonomous_war_room_service import autonomous_war_room_service
+from app.services.dam_rule_curve_service import dam_rule_curve_service
+from app.services.amphibious_boat_routing_service import amphibious_boat_routing_service
+from app.services.telecom_blackout_service import telecom_blackout_service
+from app.services.uav_airspace_service import uav_airspace_service
+from app.services.hospital_triage_supply_service import hospital_triage_supply_service
+from app.services.insar_landslide_service import insar_landslide_service
+from app.services.lorawan_mesh_service import lorawan_mesh_service
+from app.services.economic_pdna_service import economic_pdna_service
 
 app = FastAPI(
     title="CivicTwin AI - India Urban Resilience & Disaster Response Digital Twin",
@@ -1059,6 +1071,207 @@ async def get_future_cascade_predictions(
 async def get_forensic_accuracy_audit():
     """Scientific Validation and Forensic Accuracy Audit API (42 Surveyed HWM Benchmarks + Sentinel-1 SAR)"""
     return accuracy_audit_service.get_audit_summary()
+
+# =====================================================================
+# 12 ADVANCED IMPROVISATION MODULES (PHYSICAL IoT, SANDBOX, AIRSPACE & DEFENSE)
+# =====================================================================
+
+class IoTIngestPayload(BaseModel):
+    device_id: str
+    distance_cm: Optional[float] = None
+    water_depth_cm: Optional[float] = None
+    sensor_height_cm: Optional[float] = None
+    battery_pct: Optional[float] = None
+    rssi_dbm: Optional[int] = None
+    hardware: Optional[str] = None
+
+@app.post("/api/sensors/ingest")
+async def ingest_physical_iot_reading(payload: IoTIngestPayload):
+    """Live Hardware REST Webhook for ESP32, Arduino, Raspberry Pi + Ultrasonic Sensors"""
+    return physical_iot_service.ingest_reading(
+        device_id=payload.device_id,
+        distance_cm=payload.distance_cm,
+        water_depth_cm=payload.water_depth_cm,
+        sensor_height_cm=payload.sensor_height_cm,
+        battery_pct=payload.battery_pct,
+        rssi_dbm=payload.rssi_dbm,
+        hardware=payload.hardware
+    )
+
+@app.get("/api/sensors/devices")
+async def get_physical_iot_devices():
+    """Retrieve registered physical IoT hardware devices and live telemetry logs"""
+    return physical_iot_service.get_devices()
+
+class DeployCountermeasurePayload(BaseModel):
+    type: str  # "dewatering_pump", "sandbag_barrier", "mobile_generator"
+    name: Optional[str] = None
+    location_name: str
+    lat: float
+    lng: float
+    specs: Optional[Dict[str, Any]] = None
+
+@app.get("/api/improvisations/countermeasures")
+async def get_active_countermeasures():
+    """Retrieve active tactical countermeasures (pumps, sandbags, mobile gensets)"""
+    return countermeasure_service.get_active_countermeasures()
+
+@app.post("/api/improvisations/countermeasures/deploy")
+async def deploy_countermeasure(payload: DeployCountermeasurePayload):
+    """Deploy tactical countermeasure in sandbox to mitigate flood depth or power loss"""
+    return countermeasure_service.deploy_countermeasure(
+        countermeasure_type=payload.type,
+        name=payload.name or "",
+        location_name=payload.location_name,
+        lat=payload.lat,
+        lng=payload.lng,
+        specs=payload.specs
+    )
+
+@app.delete("/api/improvisations/countermeasures/{deployment_id}")
+async def remove_countermeasure(deployment_id: str):
+    """Remove deployed countermeasure from simulation"""
+    return countermeasure_service.remove_countermeasure(deployment_id)
+
+class CitizenDepthPayload(BaseModel):
+    location_name: str
+    lat: float
+    lng: float
+    qualitative_level: str  # "ankle", "knee", "waist", "chest"
+    reporter_alias: Optional[str] = None
+    has_photo: bool = False
+    photo_url: Optional[str] = None
+
+@app.get("/api/improvisations/citizen-depth/reports")
+async def get_citizen_depth_reports():
+    """Retrieve Bayesian crowdsourced water depth ground-truth reports"""
+    return citizen_depth_fusion_service.get_recent_reports()
+
+@app.post("/api/improvisations/citizen-depth/submit")
+async def submit_citizen_depth_report(payload: CitizenDepthPayload):
+    """Submit qualitative citizen depth observation for Bayesian sensor fusion"""
+    return citizen_depth_fusion_service.submit_depth_report(
+        location_name=payload.location_name,
+        lat=payload.lat,
+        lng=payload.lng,
+        qualitative_level=payload.qualitative_level,
+        reporter_alias=payload.reporter_alias,
+        has_photo=payload.has_photo,
+        photo_url=payload.photo_url
+    )
+
+class WarRoomSynthesisPayload(BaseModel):
+    city_name: str = "Mumbai"
+    hazard_type: str = "Flood Deluge"
+    threat_level: str = "CRITICAL"
+    evacuees_count: int = 14500
+    compromised_subways: Optional[List[str]] = None
+
+@app.post("/api/improvisations/war-room/synthesize")
+async def synthesize_war_room_action_plan(payload: WarRoomSynthesisPayload):
+    """Run Autonomous AI War Room (Logistics Agent, 6-Language CAP Alerts, ICS-201 Doc)"""
+    return autonomous_war_room_service.run_war_room_synthesis(
+        city_name=payload.city_name,
+        hazard_type=payload.hazard_type,
+        threat_level=payload.threat_level,
+        evacuees_count=payload.evacuees_count,
+        compromised_subways=payload.compromised_subways
+    )
+
+@app.get("/api/improvisations/dam-rule-curve")
+async def simulate_dam_rule_curve(
+    reservoir_key: str = "mumbai_vihar",
+    gates_opened: int = 2,
+    gate_opening_height_m: float = 1.5,
+    inflow_cumecs: float = 300.0
+):
+    """Simulate Dam Spillway Gate Discharge, Transit Time, and 5m Micro-Topography"""
+    return dam_rule_curve_service.simulate_dam_release(
+        reservoir_key=reservoir_key,
+        gates_opened=gates_opened,
+        gate_opening_height_m=gate_opening_height_m,
+        inflow_cumecs=inflow_cumecs
+    )
+
+@app.get("/api/improvisations/amphibious-routing")
+async def get_amphibious_boat_routing():
+    """Retrieve NDRF Inflatable Rescue Boat Navigable Canals & Submerged Hazards"""
+    return amphibious_boat_routing_service.get_amphibious_navigation_plan()
+
+@app.get("/api/improvisations/telecom-blackout")
+async def get_telecom_blackout_status():
+    """Retrieve BTS Cell Tower Battery Depletion and Predicted Civic Silence Hour"""
+    return telecom_blackout_service.get_telecom_blackout_status()
+
+@app.get("/api/improvisations/uav-airspace")
+async def get_uav_airspace():
+    """Retrieve Search & Rescue UAV Airspace Corridors and Dynamic No-Fly Zones"""
+    return uav_airspace_service.get_airspace_corridors()
+
+@app.get("/api/improvisations/uav-airspace/qgc-plan")
+async def get_uav_qgc_plan(mission_id: str = "UAV-SAR-MUM-01"):
+    """Export QGroundControl / MAVLink v2 3D Flight Plan"""
+    return uav_airspace_service.generate_qgroundcontrol_plan(mission_id)
+
+@app.get("/api/improvisations/hospital-triage")
+async def get_hospital_triage_dashboard():
+    """Retrieve Multi-Hospital Critical Stockpiles and Ambulance Redistribution Vectors"""
+    return hospital_triage_supply_service.get_triage_dashboard()
+
+@app.get("/api/improvisations/insar-landslide")
+async def get_insar_landslide_predictions():
+    """Retrieve Copernicus Sentinel-1 InSAR Slope Subsidence & Landslide Early Warnings"""
+    return insar_landslide_service.get_landslide_predictions()
+
+@app.get("/api/improvisations/lorawan-mesh/status")
+async def get_lorawan_mesh_status():
+    """Retrieve Offline LoRaWAN & Ham Radio Packet Mesh Gateways and Telemetry Frames"""
+    return lorawan_mesh_service.get_mesh_status()
+
+class LoRaEncodePayload(BaseModel):
+    node_id: int
+    lat: float
+    lng: float
+    water_depth_cm: float
+    battery_pct: int
+    sos_alert: bool = False
+
+@app.post("/api/improvisations/lorawan-mesh/encode")
+async def encode_lorawan_packet(payload: LoRaEncodePayload):
+    """Pack telemetry into ultralight binary/hex packet (< 18 bytes) for LoRaWAN 865MHz / APRS"""
+    return lorawan_mesh_service.encode_telemetry_packet(
+        node_id_int=payload.node_id,
+        lat=payload.lat,
+        lng=payload.lng,
+        water_depth_cm=payload.water_depth_cm,
+        battery_pct=payload.battery_pct,
+        sos_alert=payload.sos_alert
+    )
+
+class LoRaDecodePayload(BaseModel):
+    hex_payload: str
+
+@app.post("/api/improvisations/lorawan-mesh/decode")
+async def decode_lorawan_packet(payload: LoRaDecodePayload):
+    """Decode raw hex radio packet into metric telemetry fields"""
+    return lorawan_mesh_service.decode_raw_hex(payload.hex_payload)
+
+@app.get("/api/improvisations/economic-pdna")
+async def get_economic_pdna(
+    city_name: str = "Mumbai Metropolitan",
+    flooded_nodes: int = 14,
+    substations: int = 1,
+    damaged_roads_km: float = 18.5,
+    evacuees: int = 14500
+):
+    """Instantaneous Post-Disaster Needs Assessment (PDNA) & Damage Calculation (₹ Crores)"""
+    return economic_pdna_service.calculate_instantaneous_pdna(
+        city_name=city_name,
+        flooded_nodes_count=flooded_nodes,
+        submerged_substations_count=substations,
+        damaged_road_km=damaged_roads_km,
+        evacuees_count=evacuees
+    )
 
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(

@@ -8,7 +8,7 @@ import {
   FileText, LogOut, UserCheck, Globe, Video, Mic, Skull, AlertOctagon, Settings, Database,
   TrendingUp, Waves, HeartPulse, WifiOff, Smartphone, QrCode, Bot, Sparkles, Building2, Lock, User,
   ChevronDown, Grid, Shield, Flame, Sun, Moon, Satellite, Mountain,
-  FlaskConical, Clock, Award
+  FlaskConical, Clock, Award, Zap
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -51,6 +51,7 @@ interface HeaderProps {
   onOpenGoogleFloodHub?: () => void;
   onOpenFuturePredictions?: () => void;
   onOpenAccuracyAudit?: () => void;
+  onOpenCommandSuite?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -91,6 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGoogleFloodHub,
   onOpenFuturePredictions,
   onOpenAccuracyAudit,
+  onOpenCommandSuite,
 }) => {
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
@@ -272,6 +274,18 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <span>🔬</span>
                 <span className="font-hud hidden md:inline">Audit</span>
+              </button>
+            )}
+
+            {/* Direct 12-Improvisation Command Suite Button */}
+            {onOpenCommandSuite && (
+              <button
+                onClick={onOpenCommandSuite}
+                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-cyan-950 via-blue-950 to-indigo-950 border border-cyan-400/80 text-cyan-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] ring-1 ring-cyan-400/50 cursor-pointer shrink-0 animate-pulse"
+                title="Launch Advanced Command Suite (12 Improvisation Modules: Sandbox, IoT, UAV, NDRF, InSAR)"
+              >
+                <span>⚡</span>
+                <span className="font-hud hidden md:inline">Command Suite</span>
               </button>
             )}
 
@@ -647,6 +661,20 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="min-w-0 flex-1">
                       <div className="font-bold text-emerald-200 group-hover:text-emerald-100 transition-colors truncate">Forensic Accuracy Audit</div>
                       <div className="text-[10px] text-emerald-400/80 truncate">42 Benchmarks & Sentinel-1 SAR</div>
+                    </div>
+                  </button>
+
+                  {/* Advanced Command Suite (12 Improvisations) */}
+                  <button
+                    onClick={() => { setIsToolsMenuOpen(false); if (onOpenCommandSuite) onOpenCommandSuite(); }}
+                    className="group p-2.5 rounded-2xl bg-gradient-to-r from-[#071b2b] to-[#121238] hover:from-[#0d2a42] hover:to-[#1a1a4d] border border-cyan-500/50 hover:border-cyan-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_20px_rgba(6,182,212,0.35)]"
+                  >
+                    <div className="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Zap className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-cyan-200 group-hover:text-cyan-100 transition-colors truncate">Advanced Command Suite ⚡</div>
+                      <div className="text-[10px] text-cyan-400/80 truncate">12 Modules: Sandbox, IoT, UAV, Boat, Mesh</div>
                     </div>
                   </button>
 

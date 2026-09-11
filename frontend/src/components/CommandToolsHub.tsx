@@ -58,6 +58,7 @@ interface CommandToolsHubProps {
   onOpenGoogleFloodHub?: () => void;
   onOpenFuturePredictions?: () => void;
   onOpenAccuracyAudit?: () => void;
+  onOpenCommandSuite?: () => void;
 }
 
 export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
@@ -87,6 +88,7 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
   onOpenGoogleFloodHub,
   onOpenFuturePredictions,
   onOpenAccuracyAudit,
+  onOpenCommandSuite,
 }) => {
   return (
     <div className="space-y-6">
@@ -717,6 +719,34 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
               className="w-full py-2 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-black font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
             >
               <span>🔬 Launch Accuracy Audit</span>
+            </button>
+          </div>
+
+          {/* Tool 21: Advanced Command Suite (12 Improvisations) */}
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#0c1833] via-[#07132b] to-[#12102e] border-2 border-cyan-400/80 hover:border-cyan-300 transition-all flex flex-col justify-between space-y-3 shadow-xl hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl group-hover:bg-cyan-500/20 transition-all pointer-events-none" />
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-cyan-500/20 rounded-xl text-cyan-300 border border-cyan-500/40 animate-pulse">
+                  <Zap className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                  12 IMPROVISATIONS
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white font-hud mt-2.5">
+                Advanced Command Suite ⚡
+              </h3>
+              <p className="text-xs text-slate-400 font-sans mt-1">
+                Countermeasure Sandbox (pumps/berms), physical IoT webhook, NDRF boat routing, telecom blackout, UAV corridors, InSAR creep & PDNA loss.
+              </p>
+            </div>
+            <button
+              onClick={onOpenCommandSuite}
+              className="w-full py-2 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black font-mono text-xs rounded-xl shadow-lg transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+            >
+              <span>⚡ Open 12-Module Suite</span>
             </button>
           </div>
 

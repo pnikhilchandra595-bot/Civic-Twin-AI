@@ -26,6 +26,7 @@ import { DisasterIntelligenceModal } from './components/DisasterIntelligenceModa
 import { GoogleFloodHubModal } from './components/GoogleFloodHubModal';
 import { FuturePredictionsModal } from './components/FuturePredictionsModal';
 import { AccuracyAuditModal } from './components/AccuracyAuditModal';
+import { AdvancedCommandSuiteModal } from './components/AdvancedCommandSuiteModal';
 import { ICS201ActionPlanModal } from './components/ICS201ActionPlanModal';
 import { MobileCompanionModal } from './components/MobileCompanionModal';
 import { ElevationProfileModal } from './components/ElevationProfileModal';
@@ -129,6 +130,7 @@ export const App: React.FC = () => {
   const [isGoogleFloodHubOpen, setIsGoogleFloodHubOpen] = useState<boolean>(false);
   const [isFuturePredictionsOpen, setIsFuturePredictionsOpen] = useState<boolean>(false);
   const [isAccuracyAuditOpen, setIsAccuracyAuditOpen] = useState<boolean>(false);
+  const [isCommandSuiteOpen, setIsCommandSuiteOpen] = useState<boolean>(false);
 
   // Active continuous simulation loop state (STOPPED BY DEFAULT - only starts when operator turns it on)
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -779,6 +781,7 @@ export const App: React.FC = () => {
         onOpenGoogleFloodHub={() => setIsGoogleFloodHubOpen(true)}
         onOpenFuturePredictions={() => setIsFuturePredictionsOpen(true)}
         onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
+        onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
       />
 
       {/* Floating Emergency Toast Notification */}
@@ -1138,6 +1141,15 @@ export const App: React.FC = () => {
               <span>ACCURACY AUDIT</span>
             </button>
 
+            <button
+              onClick={() => setIsCommandSuiteOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-950 via-blue-950 to-indigo-950 hover:from-cyan-900 hover:to-blue-900 border border-cyan-400/80 text-cyan-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] cursor-pointer ring-1 ring-cyan-400/40 animate-pulse"
+              title="Launch Advanced Command Suite (12 Improvisations: Sandbox, IoT, UAV, NDRF, InSAR)"
+            >
+              <span>⚡</span>
+              <span>COMMAND SUITE</span>
+            </button>
+
             <div className="flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-slate-300 shadow-md shadow-cyan-500/10">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               <span className="text-slate-400">Region:</span>
@@ -1175,6 +1187,7 @@ export const App: React.FC = () => {
             onOpenGoogleFloodHub={() => setIsGoogleFloodHubOpen(true)}
             onOpenFuturePredictions={() => setIsFuturePredictionsOpen(true)}
             onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
+            onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
           />
         )}
 
@@ -1633,6 +1646,12 @@ export const App: React.FC = () => {
       <AccuracyAuditModal
         isOpen={isAccuracyAuditOpen}
         onClose={() => setIsAccuracyAuditOpen(false)}
+      />
+
+      {/* Advanced Command Suite (12 Improvisations) */}
+      <AdvancedCommandSuiteModal
+        isOpen={isCommandSuiteOpen}
+        onClose={() => setIsCommandSuiteOpen(false)}
       />
 
       {/* NDMA ICS-201 Official Action Plan */}
