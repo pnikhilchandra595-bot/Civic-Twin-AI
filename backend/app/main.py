@@ -988,6 +988,52 @@ def get_disaster_rag_case_studies():
         "case_studies": disaster_rag_service.get_all_case_studies()
     }
 
+# Option B: Colab GPU Live Tunnel Bridge
+colab_llm_state = {"endpoint_url": None}
+
+class ColabLLMConfigRequest(BaseModel):
+    endpoint_url: str
+
+class ColabLLMQueryRequest(BaseModel):
+    prompt: str
+
+@app.post("/api/intelligence/colab-llm/config")
+def set_colab_llm_config(payload: ColabLLMConfigRequest):
+    """Configures the live public URL of the fine-tuned Colab GPU model."""
+    colab_llm_state["endpoint_url"] = payload.endpoint_url.strip().rstrip("/")
+    return {"status": "success", "endpoint_url": colab_llm_state["endpoint_url"]}
+
+@app.get("/api/intelligence/colab-llm/status")
+def get_colab_llm_status():
+    """Checks if the fine-tuned Colab GPU endpoint is configured."""
+    return {"status": "success", "endpoint_url": colab_llm_state["endpoint_url"]}
+
+@app.post("/api/intelligence/colab-llm/query")
+async def query_colab_llm(payload: ColabLLMQueryRequest):
+    """Queries the fine-tuned model running on the free Google Colab GPU."""
+    import httpx
+    url = colab_llm_state.get("endpoint_url")
+    if not url:
+        rag_res = disaster_rag_service.query_institutional_memory(payload.prompt)
+        return {
+            "status": "fallback",
+            "model": "CivicTwin-Local-RAG-Engine",
+            "response": rag_res.get("command_briefing", "")
+        }
+    try:
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            resp = await client.post(f"{url}/generate", json={"prompt": payload.prompt})
+            if resp.status_code == 200:
+                return resp.json()
+    except Exception as e:
+        rag_res = disaster_rag_service.query_institutional_memory(payload.prompt)
+        return {
+            "status": "fallback_error",
+            "error": str(e),
+            "model": "CivicTwin-Local-RAG-Engine",
+            "response": rag_res.get("command_briefing", "")
+        }
+
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(
     west: float = 72.82,
