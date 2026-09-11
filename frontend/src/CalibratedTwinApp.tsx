@@ -55,6 +55,7 @@ import { CitizenPortalModal } from './components/CitizenPortalModal';
 import { CWCGaugesModal } from './components/CWCGaugesModal';
 import { MOSDACModal } from './components/MOSDACModal';
 import { GLOFModal } from './components/GLOFModal';
+import { DisasterIntelligenceModal } from './components/DisasterIntelligenceModal';
 
 import { tacticalAudio } from './services/tacticalAudioEngine';
 import { apiService, RadioMessage, SatelliteSARReport } from './services/api';
@@ -209,6 +210,7 @@ export const CalibratedTwinApp: React.FC = () => {
   const [isCWCGaugesOpen, setIsCWCGaugesOpen] = useState<boolean>(false);
   const [isMOSDACOpen, setIsMOSDACOpen] = useState<boolean>(false);
   const [isGLOFOpen, setIsGLOFOpen] = useState<boolean>(false);
+  const [isDisasterIntelligenceOpen, setIsDisasterIntelligenceOpen] = useState<boolean>(false);
 
   // 90-Second Guided Jury Tour state
   const [isJuryTourActive, setIsJuryTourActive] = useState<boolean>(false);
@@ -730,6 +732,17 @@ export const CalibratedTwinApp: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                 <span className="hidden md:inline">18 Live Feeds</span>
                 <span className="md:hidden">18 Feeds</span>
+              </button>
+
+              {/* Disaster Intelligence Suite (NLP SITREP, Cyclone Cones, Recession, Anomalies, Carbon) */}
+              <button
+                onClick={() => setIsDisasterIntelligenceOpen(true)}
+                className="px-2.5 py-1.5 rounded-xl bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-400/60 text-cyan-300 font-bold text-xs flex items-center space-x-1.5 cursor-pointer shadow-sm transition-all shadow-[0_0_12px_rgba(6,182,212,0.25)]"
+                title="Open Disaster Intelligence Suite (NLP SITREP, Cyclone Cones, 72h Recession Scrubber, Anomaly Engine, Carbon Accounting)"
+              >
+                <span className="text-sm">🧠</span>
+                <span className="hidden md:inline">INTELLIGENCE SUITE</span>
+                <span className="md:hidden">AI SUITE</span>
               </button>
             </div>
 
@@ -1958,6 +1971,7 @@ export const CalibratedTwinApp: React.FC = () => {
                 onOpenProvenance={() => setIsProvenanceOpen(true)}
                 onOpenIntegrations={() => setIsIntegrationsOpen(true)}
                 onOpenDataExport={() => setIsDataExportOpen(true)}
+                onOpenDisasterIntelligence={() => setIsDisasterIntelligenceOpen(true)}
               />
             </div>
           )}
@@ -2351,6 +2365,17 @@ export const CalibratedTwinApp: React.FC = () => {
           onClose={() => setIsProvenanceOpen(false)}
         />
       )}
+
+      {/* National Disaster Intelligence Suite (NLP SITREP, Cyclone Cones, 72h Recession, Anomalies, Carbon) */}
+      <DisasterIntelligenceModal
+        isOpen={isDisasterIntelligenceOpen}
+        onClose={() => setIsDisasterIntelligenceOpen(false)}
+        onApplyExtractedSITREP={(data) => {
+          if (data && data.extracted_entities) {
+            showToast(`🧠 Applied NLP SITREP: ${data.extracted_entities.fatalities} casualties, ${data.extracted_entities.displaced_population} displaced across ${data.extracted_entities.impacted_districts.join(', ')}`);
+          }
+        }}
+      />
 
       {/* 17. NDMA ICS-201 Official Action Plan Modal */}
       {isICS201Open && (

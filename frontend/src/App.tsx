@@ -22,6 +22,7 @@ import { VoiceRadioCoPilot } from './components/VoiceRadioCoPilot';
 import { MultiHazardModal } from './components/MultiHazardModal';
 import { IntegrationsModal } from './components/IntegrationsModal';
 import { DataProvenanceModal } from './components/DataProvenanceModal';
+import { DisasterIntelligenceModal } from './components/DisasterIntelligenceModal';
 import { ICS201ActionPlanModal } from './components/ICS201ActionPlanModal';
 import { MobileCompanionModal } from './components/MobileCompanionModal';
 import { ElevationProfileModal } from './components/ElevationProfileModal';
@@ -121,6 +122,7 @@ export const App: React.FC = () => {
   const [isCWCGaugesOpen, setIsCWCGaugesOpen] = useState<boolean>(false);
   const [isMOSDACOpen, setIsMOSDACOpen] = useState<boolean>(false);
   const [isGLOFOpen, setIsGLOFOpen] = useState<boolean>(false);
+  const [isDisasterIntelligenceOpen, setIsDisasterIntelligenceOpen] = useState<boolean>(false);
 
   // Active continuous simulation loop state (STOPPED BY DEFAULT - only starts when operator turns it on)
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -1105,6 +1107,7 @@ export const App: React.FC = () => {
             onOpenProvenance={() => setIsProvenanceOpen(true)}
             onOpenIntegrations={() => setIsIntegrationsOpen(true)}
             onOpenDataExport={() => setIsDataExportOpen(true)}
+            onOpenDisasterIntelligence={() => setIsDisasterIntelligenceOpen(true)}
           />
         )}
 
@@ -1531,6 +1534,18 @@ export const App: React.FC = () => {
           onClose={() => setIsProvenanceOpen(false)}
         />
       )}
+
+      {/* National Disaster Intelligence Suite (NLP SITREP, Cyclone Cones, 72h Recession, Anomalies, Carbon) */}
+      <DisasterIntelligenceModal
+        isOpen={isDisasterIntelligenceOpen}
+        onClose={() => setIsDisasterIntelligenceOpen(false)}
+        onApplyExtractedSITREP={(data) => {
+          if (data && data.extracted_entities) {
+            setToastAlert(`🧠 Applied NLP SITREP: ${data.extracted_entities.fatalities} casualties, ${data.extracted_entities.displaced_population} displaced across ${data.extracted_entities.impacted_districts.join(', ')}`);
+            setTimeout(() => setToastAlert(null), 5000);
+          }
+        }}
+      />
 
       {/* NDMA ICS-201 Official Action Plan */}
       {isICS201Open && (

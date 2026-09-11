@@ -53,6 +53,7 @@ interface CommandToolsHubProps {
   onOpenProvenance: () => void;
   onOpenIntegrations: () => void;
   onOpenDataExport: () => void;
+  onOpenDisasterIntelligence?: () => void;
 }
 
 export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
@@ -78,6 +79,7 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
   onOpenProvenance,
   onOpenIntegrations,
   onOpenDataExport,
+  onOpenDisasterIntelligence,
 }) => {
   return (
     <div className="space-y-6">
@@ -689,6 +691,33 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export Datasets</span>
+            </button>
+          </div>
+
+          {/* Tool 21: National Disaster Intelligence & Modeling Suite */}
+          <div className="p-4 rounded-2xl bg-[#091224]/90 border border-cyan-500/40 hover:border-cyan-300 transition-all flex flex-col justify-between space-y-3 shadow-lg ring-1 ring-cyan-500/20">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-cyan-500/10 rounded-xl text-cyan-300 border border-cyan-500/20">
+                  <Sparkles className="w-5 h-5 text-cyan-300 animate-pulse" />
+                </div>
+                <span className="text-[10px] font-mono text-cyan-300 font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40">
+                  AI + PHYSICS
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white font-hud mt-2.5">
+                Disaster Intelligence Suite
+              </h3>
+              <p className="text-xs text-slate-400 font-sans mt-1">
+                NLP SITREP parser, probabilistic cyclone cones, 72h flood recession scrubber, anomaly engine & carbon tracker.
+              </p>
+            </div>
+            <button
+              onClick={onOpenDisasterIntelligence}
+              className="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Launch Intelligence Suite</span>
             </button>
           </div>
 

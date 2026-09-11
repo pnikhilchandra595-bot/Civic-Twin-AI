@@ -34,6 +34,7 @@ from app.services.mosdac_service import mosdac_service
 from app.services.bhuvan_service import bhuvan_service
 from app.services.copernicus_elevation_service import copernicus_elevation_service
 from app.services.data_gov_in_service import data_gov_in_service
+from app.services.disaster_intelligence_service import disaster_intelligence_service
 from app.services.auth_service import auth_service, get_current_officer, require_clearance, require_strict_admin_clearance, Depends
 from app.services.demo_state import demo_state
 
@@ -915,6 +916,49 @@ def get_data_gov_imd_historical_extremes(district: str = "mumbai"):
     Tag: government_published_periodic
     """
     return data_gov_in_service.get_imd_extreme_weather_baselines(district)
+
+class SitrepParseRequest(BaseModel):
+    text: str
+
+@app.post("/api/intelligence/parse-sitrep")
+def parse_sitrep(payload: SitrepParseRequest):
+    """
+    NLP Entity Extractor scanning raw PIB, NDMA, or SDMA press releases.
+    Tag: nlp_extracted_intelligence
+    """
+    return disaster_intelligence_service.parse_sitrep_text(payload.text)
+
+@app.get("/api/intelligence/cyclone-cone")
+def get_cyclone_cone(cyclone_name: str = "Cyclone Biparjoy"):
+    """
+    Probabilistic Cyclone Track & Cone of Uncertainty (70% and 95% confidence bands).
+    Tag: probabilistic_geospatial_model
+    """
+    return disaster_intelligence_service.get_cyclone_prediction_cone(cyclone_name)
+
+@app.get("/api/intelligence/anomaly-scan")
+def get_anomaly_scan():
+    """
+    Real-time statistical anomaly detection engine (Z-score + delta threshold).
+    Tag: statistical_anomaly_engine
+    """
+    return disaster_intelligence_service.scan_sensor_anomalies()
+
+@app.get("/api/intelligence/benchmark-comparison")
+def get_benchmark_comparison():
+    """
+    Standardized cross-disaster impact benchmark matrix.
+    Tag: cross_disaster_benchmark
+    """
+    return disaster_intelligence_service.get_benchmark_comparisons()
+
+@app.get("/api/intelligence/carbon-tracker")
+def get_carbon_tracker():
+    """
+    Aviation & maritime emergency sortie fuel consumption and carbon emission tracker.
+    Tag: operational_energy_accounting
+    """
+    return disaster_intelligence_service.get_sortie_carbon_tracker()
 
 @app.get("/api/real-data/copernicus-ndwi")
 async def get_copernicus_ndwi(
