@@ -28,6 +28,7 @@ import { FuturePredictionsModal } from './components/FuturePredictionsModal';
 import { AccuracyAuditModal } from './components/AccuracyAuditModal';
 import { AdvancedCommandSuiteModal } from './components/AdvancedCommandSuiteModal';
 import { ThreeDimensionalTwinMap } from './components/ThreeDimensionalTwinMap';
+import { CrownJewelsModal } from './components/CrownJewelsModal';
 import { ICS201ActionPlanModal } from './components/ICS201ActionPlanModal';
 import { MobileCompanionModal } from './components/MobileCompanionModal';
 import { ElevationProfileModal } from './components/ElevationProfileModal';
@@ -133,6 +134,7 @@ export const App: React.FC = () => {
   const [isFuturePredictionsOpen, setIsFuturePredictionsOpen] = useState<boolean>(false);
   const [isAccuracyAuditOpen, setIsAccuracyAuditOpen] = useState<boolean>(false);
   const [isCommandSuiteOpen, setIsCommandSuiteOpen] = useState<boolean>(false);
+  const [isCrownJewelsOpen, setIsCrownJewelsOpen] = useState<boolean>(false);
 
   // Active continuous simulation loop state (STOPPED BY DEFAULT - only starts when operator turns it on)
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -784,6 +786,7 @@ export const App: React.FC = () => {
         onOpenFuturePredictions={() => setIsFuturePredictionsOpen(true)}
         onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
         onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
+        onOpenCrownJewels={() => setIsCrownJewelsOpen(true)}
       />
 
       {/* Floating Emergency Toast Notification */}
@@ -1153,6 +1156,15 @@ export const App: React.FC = () => {
             </button>
 
             <button
+              onClick={() => setIsCrownJewelsOpen(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-mono font-black text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_20px_rgba(245,158,11,0.5)] cursor-pointer ring-1 ring-amber-300 scale-100 hover:scale-105"
+              title="Launch The 7 Crown Jewels of CivicTwin AI (Unassailable Sovereign Scientific Pillars)"
+            >
+              <span>💎</span>
+              <span>7 CROWN JEWELS</span>
+            </button>
+
+            <button
               onClick={() => {
                 setCockpitView('map');
                 setMapMode(prev => prev === '2d' ? '3d' : '2d');
@@ -1206,6 +1218,7 @@ export const App: React.FC = () => {
             onOpenFuturePredictions={() => setIsFuturePredictionsOpen(true)}
             onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
             onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
+            onOpenCrownJewels={() => setIsCrownJewelsOpen(true)}
           />
         )}
 
@@ -1260,6 +1273,7 @@ export const App: React.FC = () => {
               onSwitchTo2D={() => setMapMode('2d')}
               onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
               onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
+              onOpenCrownJewels={() => setIsCrownJewelsOpen(true)}
             />
           ) : (
             <DigitalTwinMap
@@ -1705,6 +1719,19 @@ export const App: React.FC = () => {
       <AdvancedCommandSuiteModal
         isOpen={isCommandSuiteOpen}
         onClose={() => setIsCommandSuiteOpen(false)}
+      />
+
+      {/* The 7 Crown Jewels of CivicTwin AI (Sovereign Scientific Pillars) */}
+      <CrownJewelsModal
+        isOpen={isCrownJewelsOpen}
+        onClose={() => setIsCrownJewelsOpen(false)}
+        state={state}
+        onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
+        onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
+        onSwitchTo3D={() => {
+          setCockpitView('map');
+          setMapMode('3d');
+        }}
       />
 
       {/* NDMA ICS-201 Official Action Plan */}

@@ -59,6 +59,7 @@ interface CommandToolsHubProps {
   onOpenFuturePredictions?: () => void;
   onOpenAccuracyAudit?: () => void;
   onOpenCommandSuite?: () => void;
+  onOpenCrownJewels?: () => void;
 }
 
 export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
@@ -89,6 +90,7 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
   onOpenFuturePredictions,
   onOpenAccuracyAudit,
   onOpenCommandSuite,
+  onOpenCrownJewels,
 }) => {
   return (
     <div className="space-y-6">
@@ -747,6 +749,30 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
               className="w-full py-2 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black font-mono text-xs rounded-xl shadow-lg transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
             >
               <span>⚡ Open 12-Module Suite</span>
+            </button>
+          </div>
+
+          {/* Tool 22: The 7 Crown Jewels of CivicTwin AI */}
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#1c1404]/90 via-[#261803]/80 to-[#100a01]/90 border border-amber-400/80 hover:border-amber-300 transition-all flex flex-col justify-between space-y-3 shadow-xl hover:shadow-[0_0_25px_rgba(245,158,11,0.35)]">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-xl">💎</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-400/50 uppercase">
+                  7 Pillars
+                </span>
+              </div>
+              <h3 className="font-mono font-bold text-sm text-slate-100 mt-2">
+                The 7 Crown Jewels of CivicTwin AI
+              </h3>
+              <p className="text-xs text-slate-400 font-sans mt-1">
+                2D SWE Micro-Physics, 4th-Order Cascade Failure, Physical IoT & Radio Mesh, Amphibious Boat Routing, Multi-Agent War Room, Radar Proof & Economic PDNA.
+              </p>
+            </div>
+            <button
+              onClick={onOpenCrownJewels}
+              className="w-full py-2 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black font-mono text-xs rounded-xl shadow-lg transition-all flex items-center justify-center space-x-1.5 cursor-pointer scale-100 hover:scale-[1.02]"
+            >
+              <span>💎 Launch 7 Crown Jewels</span>
             </button>
           </div>
 

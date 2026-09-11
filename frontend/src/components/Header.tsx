@@ -52,6 +52,7 @@ interface HeaderProps {
   onOpenFuturePredictions?: () => void;
   onOpenAccuracyAudit?: () => void;
   onOpenCommandSuite?: () => void;
+  onOpenCrownJewels?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -93,6 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenFuturePredictions,
   onOpenAccuracyAudit,
   onOpenCommandSuite,
+  onOpenCrownJewels,
 }) => {
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const toolsMenuRef = useRef<HTMLDivElement>(null);
@@ -286,6 +288,18 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <span>⚡</span>
                 <span className="font-hud hidden md:inline">Command Suite</span>
+              </button>
+            )}
+
+            {/* Direct 7 Crown Jewels Button */}
+            {onOpenCrownJewels && (
+              <button
+                onClick={onOpenCrownJewels}
+                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 border border-amber-300 text-slate-950 text-[10px] sm:text-xs font-mono font-black flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(245,158,11,0.5)] ring-1 ring-amber-300 cursor-pointer shrink-0 scale-100 hover:scale-105"
+                title="Launch The 7 Crown Jewels of CivicTwin AI (Unassailable Sovereign Scientific Pillars)"
+              >
+                <span>💎</span>
+                <span className="font-hud hidden md:inline">Crown Jewels</span>
               </button>
             )}
 
@@ -675,6 +689,20 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="min-w-0 flex-1">
                       <div className="font-bold text-cyan-200 group-hover:text-cyan-100 transition-colors truncate">Advanced Command Suite ⚡</div>
                       <div className="text-[10px] text-cyan-400/80 truncate">12 Modules: Sandbox, IoT, UAV, Boat, Mesh</div>
+                    </div>
+                  </button>
+
+                  {/* The 7 Crown Jewels */}
+                  <button
+                    onClick={() => { setIsToolsMenuOpen(false); if (onOpenCrownJewels) onOpenCrownJewels(); }}
+                    className="group p-2.5 rounded-2xl bg-gradient-to-r from-[#291e05] to-[#2d1b03] hover:from-[#3d2c08] hover:to-[#422605] border border-amber-500/50 hover:border-amber-400 text-left flex items-start space-x-2.5 transition-all cursor-pointer shadow-sm hover:shadow-[0_0_20px_rgba(245,158,11,0.35)]"
+                  >
+                    <div className="p-2 rounded-xl bg-amber-950/80 border border-amber-500/40 text-amber-400 group-hover:scale-110 transition-transform shrink-0">
+                      <Award className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-amber-200 group-hover:text-amber-100 transition-colors truncate">7 Crown Jewels 💎</div>
+                      <div className="text-[10px] text-amber-400/80 truncate">Micro-Physics, Cascade, IoT, Boat, War Room, Radar, PDNA</div>
                     </div>
                   </button>
 
