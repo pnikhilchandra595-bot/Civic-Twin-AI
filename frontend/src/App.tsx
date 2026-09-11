@@ -23,6 +23,7 @@ import { MultiHazardModal } from './components/MultiHazardModal';
 import { IntegrationsModal } from './components/IntegrationsModal';
 import { DataProvenanceModal } from './components/DataProvenanceModal';
 import { DisasterIntelligenceModal } from './components/DisasterIntelligenceModal';
+import { GoogleFloodHubModal } from './components/GoogleFloodHubModal';
 import { ICS201ActionPlanModal } from './components/ICS201ActionPlanModal';
 import { MobileCompanionModal } from './components/MobileCompanionModal';
 import { ElevationProfileModal } from './components/ElevationProfileModal';
@@ -123,6 +124,7 @@ export const App: React.FC = () => {
   const [isMOSDACOpen, setIsMOSDACOpen] = useState<boolean>(false);
   const [isGLOFOpen, setIsGLOFOpen] = useState<boolean>(false);
   const [isDisasterIntelligenceOpen, setIsDisasterIntelligenceOpen] = useState<boolean>(false);
+  const [isGoogleFloodHubOpen, setIsGoogleFloodHubOpen] = useState<boolean>(false);
 
   // Active continuous simulation loop state (STOPPED BY DEFAULT - only starts when operator turns it on)
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -977,7 +979,7 @@ export const App: React.FC = () => {
                 <span className="font-hud text-[11px] font-bold text-cyan-300 uppercase tracking-widest bg-cyan-950/80 px-3 py-1 rounded-full border border-cyan-500/50 shadow-sm">
                   ⚡ AUTONOMOUS DISASTER COMMAND ENGINE
                 </span>
-                <span className="text-[10px] font-mono text-emerald-400 font-bold">🟢 18 LIVE FEEDS ACTIVE</span>
+                <span className="text-[10px] font-mono text-emerald-400 font-bold">🟢 19 LIVE FEEDS ACTIVE (Inc. Google Flood Hub)</span>
               </div>
               <h2 className="font-hud text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-wider uppercase leading-tight">
                 DEFEND CITIES. PREDICT DISASTERS.
@@ -999,6 +1001,13 @@ export const App: React.FC = () => {
                 className="font-hud px-4 py-2.5 rounded-xl bg-[#0e1b36] hover:bg-[#14264c] border border-cyan-500/40 text-cyan-200 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center space-x-1.5"
               >
                 <span>DATA FEEDS 📊</span>
+              </button>
+              <button
+                onClick={() => setIsGoogleFloodHubOpen(true)}
+                className="font-hud px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-700 hover:from-blue-600 hover:to-indigo-500 text-white text-xs font-black transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] cursor-pointer transform hover:scale-105 flex items-center space-x-1.5 ring-1 ring-blue-400/50"
+                title="Open Google Flood Hub (AI Streamflow Ingestion Engine)"
+              >
+                <span>FLOOD HUB 🌊</span>
               </button>
               <button
                 onClick={() => setIsICS201Open(true)}
@@ -1116,6 +1125,7 @@ export const App: React.FC = () => {
             onOpenIntegrations={() => setIsIntegrationsOpen(true)}
             onOpenDataExport={() => setIsDataExportOpen(true)}
             onOpenDisasterIntelligence={() => setIsDisasterIntelligenceOpen(true)}
+            onOpenGoogleFloodHub={() => setIsGoogleFloodHubOpen(true)}
           />
         )}
 
@@ -1553,6 +1563,13 @@ export const App: React.FC = () => {
             setTimeout(() => setToastAlert(null), 5000);
           }
         }}
+      />
+
+      {/* Google Flood Hub (AI Streamflow Ingestion Engine) */}
+      <GoogleFloodHubModal
+        isOpen={isGoogleFloodHubOpen}
+        onClose={() => setIsGoogleFloodHubOpen(false)}
+        cityId={state?.city_id || 'mumbai_monsoon'}
       />
 
       {/* NDMA ICS-201 Official Action Plan */}

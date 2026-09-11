@@ -54,6 +54,7 @@ interface CommandToolsHubProps {
   onOpenIntegrations: () => void;
   onOpenDataExport: () => void;
   onOpenDisasterIntelligence?: () => void;
+  onOpenGoogleFloodHub?: () => void;
 }
 
 export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
@@ -80,6 +81,7 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
   onOpenIntegrations,
   onOpenDataExport,
   onOpenDisasterIntelligence,
+  onOpenGoogleFloodHub,
 }) => {
   return (
     <div className="space-y-6">
@@ -257,6 +259,33 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
             >
               <Waves className="w-3.5 h-3.5" />
               <span>Open CWC Gauges</span>
+            </button>
+          </div>
+
+          {/* Tool 5B: Google Flood Hub (AI Ingestion) */}
+          <div className="p-4 rounded-2xl bg-[#091224]/90 border border-blue-500/30 hover:border-blue-400 transition-all flex flex-col justify-between space-y-3 shadow-lg group">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-blue-500/10 rounded-xl text-blue-400 border border-blue-500/20">
+                  <Waves className="w-5 h-5 animate-pulse" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30 font-bold">
+                  GOOGLE AI INGEST
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white font-hud mt-2.5">
+                Google Flood Hub (AI Streamflow)
+              </h3>
+              <p className="text-xs text-slate-400 font-sans mt-1">
+                7-day upstream river hydrographs using Google GRU models coupled into 2D urban street depth physics.
+              </p>
+            </div>
+            <button
+              onClick={onOpenGoogleFloodHub}
+              className="w-full py-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold font-mono text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+            >
+              <Waves className="w-3.5 h-3.5" />
+              <span>Launch Google Flood Hub 🌊</span>
             </button>
           </div>
 
