@@ -28,6 +28,7 @@ import { FuturePredictionsModal } from './components/FuturePredictionsModal';
 import { AccuracyAuditModal } from './components/AccuracyAuditModal';
 import { AdvancedCommandSuiteModal } from './components/AdvancedCommandSuiteModal';
 import { ThreeDimensionalTwinMap } from './components/ThreeDimensionalTwinMap';
+import { Real3DGeographicMap } from './components/Real3DGeographicMap';
 import { CrownJewelsModal } from './components/CrownJewelsModal';
 import { ICS201ActionPlanModal } from './components/ICS201ActionPlanModal';
 import { MobileCompanionModal } from './components/MobileCompanionModal';
@@ -94,6 +95,7 @@ export const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<'SCROLLING_PORTAL' | 'COCKPIT'>('COCKPIT');
   const [cockpitView, setCockpitView] = useState<'tools' | 'map' | 'sandbox' | 'calibrated' | 'all'>('map');
   const [mapMode, setMapMode] = useState<'2d' | '3d'>('2d');
+  const [threeDSubMode, setThreeDSubMode] = useState<'terrain_map' | 'building_twin'>('terrain_map');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   // Selected deep analysis sub-tab in Section 4
@@ -1268,14 +1270,58 @@ export const App: React.FC = () => {
           </div>
 
           {mapMode === '3d' ? (
-            <ThreeDimensionalTwinMap
-              state={state}
-              onSelectNode={(n) => { setSelectedNode(n); setSelectedSensor(null); }}
-              onSwitchTo2D={() => setMapMode('2d')}
-              onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
-              onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
-              onOpenCrownJewels={() => setIsCrownJewelsOpen(true)}
-            />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between px-2 py-1 bg-slate-900/60 rounded-xl border border-cyan-500/20 text-xs font-mono">
+                <div className="flex items-center space-x-2">
+                  <span className="text-slate-400">3D Presentation Engine:</span>
+                  <div className="flex items-center p-0.5 rounded-lg bg-slate-950 border border-cyan-500/30">
+                    <button
+                      onClick={() => setThreeDSubMode('terrain_map')}
+                      className={`px-3 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                        threeDSubMode === 'terrain_map'
+                          ? 'bg-cyan-500 text-slate-950 shadow-md font-black'
+                          : 'text-slate-400 hover:text-cyan-300'
+                      }`}
+                    >
+                      🗺️ 3D Geographic Terrain Map (Satellite / DEM)
+                    </button>
+                    <button
+                      onClick={() => setThreeDSubMode('building_twin')}
+                      className={`px-3 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                        threeDSubMode === 'building_twin'
+                          ? 'bg-cyan-500 text-slate-950 shadow-md font-black'
+                          : 'text-slate-400 hover:text-cyan-300'
+                      }`}
+                    >
+                      🏙️ 3D Cybernetic Facility Twin
+                    </button>
+                  </div>
+                </div>
+                <div className="text-[10px] text-cyan-300 font-bold hidden sm:block">
+                  {threeDSubMode === 'terrain_map' ? 'REAL GEOGRAPHIC SATELLITE DEM RELIEF' : '60FPS WEBGL BUILDING VOLUMETRIC'}
+                </div>
+              </div>
+
+              {threeDSubMode === 'terrain_map' ? (
+                <Real3DGeographicMap
+                  state={state}
+                  onSelectNode={(n) => { setSelectedNode(n); setSelectedSensor(null); }}
+                  onSwitchTo2D={() => setMapMode('2d')}
+                  onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
+                  onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
+                  onOpenCrownJewels={() => setIsCrownJewelsOpen(true)}
+                />
+              ) : (
+                <ThreeDimensionalTwinMap
+                  state={state}
+                  onSelectNode={(n) => { setSelectedNode(n); setSelectedSensor(null); }}
+                  onSwitchTo2D={() => setMapMode('2d')}
+                  onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
+                  onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
+                  onOpenCrownJewels={() => setIsCrownJewelsOpen(true)}
+                />
+              )}
+            </div>
           ) : (
             <DigitalTwinMap
               state={state}
