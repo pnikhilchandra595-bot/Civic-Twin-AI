@@ -1814,3 +1814,63 @@ async def trigger_emergency_deployment(payload: dict):
 
 
 
+
+
+# --- UNDERGROUND DRAINAGE & COMPUTER VISION WATERWAY SAFETY ENDPOINTS ---
+@app.get("/api/drainage/underground-network")
+async def get_underground_drainage_network(
+    flood_depth: float = Query(0.85, description="Surface flood depth in meters"),
+    rainfall_mmhr: float = Query(78.0, description="Rainfall intensity in mm/hr"),
+    tide_height: float = Query(3.8, description="Tidal water level in meters")
+):
+    """
+    Subterranean 1D/2D coupled Saint-Venant pipe network, manhole invert depths,
+    siltation choking, and geyser eruption telemetry for 3D twin X-ray view.
+    """
+    from app.services.underground_drainage_service import underground_drainage_service
+    return underground_drainage_service.solve_network(
+        surface_flood_depth_m=flood_depth,
+        rainfall_intensity_mmhr=rainfall_mmhr,
+        tide_height_m=tide_height
+    )
+
+
+@app.get("/api/cv-waterway/safety-telemetry")
+async def get_cv_waterway_safety_telemetry(
+    camera_id: str = Query("DRONE-GARUDA-01", description="Tactical camera or UAV stream ID"),
+    flood_depth: float = Query(1.25, description="Observed flood depth in meters"),
+    flow_speed: float = Query(1.8, description="Current flow speed in m/s")
+):
+    """
+    Real-time computer vision inference on drone/CCTV waterway feeds:
+    Dense optical flow velocity vectors, submerged concrete median radar,
+    prop strike alerts, and safe boat transit navigation corridors.
+    """
+    from app.services.cv_waterway_safety_service import cv_waterway_safety_service
+    return cv_waterway_safety_service.analyze_waterway_feed(
+        camera_id=camera_id,
+        flood_depth_m=flood_depth,
+        flow_speed_ms=flow_speed
+    )
+
+
+@app.get("/api/terrain/opentopography-dem")
+async def get_opentopography_dem(
+    south: float = Query(19.00, description="South latitude bound"),
+    north: float = Query(19.08, description="North latitude bound"),
+    west: float = Query(72.82, description="West longitude bound"),
+    east: float = Query(72.90, description="East longitude bound"),
+    dem_type: str = Query("COP30", description="DEM dataset type (COP30 or SRTMGL1)")
+):
+    """
+    Ingests live OpenTopography Copernicus 30m Global DEM raster data using authorized API key
+    to generate 3D displacement matrix for Three.js terrain meshes and subterranean drainage slopes.
+    """
+    from app.services.opentopography_service import opentopography_service
+    return await opentopography_service.fetch_dem_grid(
+        south=south,
+        north=north,
+        west=west,
+        east=east,
+        dem_type=dem_type
+    )
