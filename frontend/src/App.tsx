@@ -1219,6 +1219,7 @@ export const App: React.FC = () => {
             onOpenAccuracyAudit={() => setIsAccuracyAuditOpen(true)}
             onOpenCommandSuite={() => setIsCommandSuiteOpen(true)}
             onOpenCrownJewels={() => setIsCrownJewelsOpen(true)}
+            onOpen3DMap={() => { setCockpitView('map'); setMapMode('3d'); }}
           />
         )}
 

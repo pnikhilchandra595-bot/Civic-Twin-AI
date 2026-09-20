@@ -60,6 +60,7 @@ interface CommandToolsHubProps {
   onOpenAccuracyAudit?: () => void;
   onOpenCommandSuite?: () => void;
   onOpenCrownJewels?: () => void;
+  onOpen3DMap?: () => void;
 }
 
 export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
@@ -91,6 +92,7 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
   onOpenAccuracyAudit,
   onOpenCommandSuite,
   onOpenCrownJewels,
+  onOpen3DMap,
 }) => {
   return (
     <div className="space-y-6">
@@ -889,6 +891,48 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
               <Download className="w-3.5 h-3.5" />
               <span>Export Datasets</span>
             </button>
+          </div>
+
+
+          {/* Tool 22: 3D Volumetric Digital Twin Map */}
+          <div className="p-4 rounded-2xl bg-[#071329]/95 border border-cyan-400 hover:border-cyan-300 transition-all flex flex-col justify-between space-y-3 shadow-xl ring-1 ring-cyan-400/40 col-span-1 md:col-span-2 lg:col-span-3 bg-gradient-to-r from-[#061226] via-[#0b1f40] to-[#061226]">
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <div className="p-2.5 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl text-slate-950 font-black shadow-lg shadow-cyan-500/30">
+                    <Compass className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="text-base font-bold text-white font-hud tracking-wide">
+                        3D Volumetric Digital Twin & Subterranean Hydraulic Grid
+                      </h3>
+                      <span className="text-[10px] font-mono text-cyan-300 font-extrabold px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 animate-pulse">
+                        WEBGL 60FPS
+                      </span>
+                    </div>
+                    <p className="text-xs text-cyan-200/80 font-mono mt-0.5">
+                      OpenTopography 30m DEM + Subterranean 1D/2D Stormwater Conduits + Computer Vision Drone Waterway Radar
+                    </p>
+                  </div>
+                </div>
+                <span className="hidden md:inline text-xs font-mono text-emerald-400 font-bold px-2 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                  LIVE ENGINE ACTIVE
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 font-sans mt-3 leading-relaxed">
+                Full 3-dimensional interactive environment featuring dynamic sine-wave displaced water mesh, kinetic NDRF Hawk-Eye UAV patrol with spotlight, Inflatable Rescue Boat (IRB) wave bobbing, Subterranean X-Ray mode showing subterranean conduits and surcharging geyser plumes, and AI Drone Computer Vision safety HUD with optical flow velocity arrows.
+              </p>
+            </div>
+            <div className="flex items-center justify-end space-x-3 pt-2">
+              <button
+                onClick={onOpen3DMap || onOpenMap}
+                className="px-6 py-2.5 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black font-mono text-xs rounded-xl shadow-lg shadow-cyan-500/40 transition-all flex items-center justify-center space-x-2 cursor-pointer transform hover:scale-[1.02]"
+              >
+                <span>🌐</span>
+                <span>LAUNCH 3D VOLUMETRIC DIGITAL TWIN</span>
+              </button>
+            </div>
           </div>
 
           {/* Tool 21: National Disaster Intelligence & Modeling Suite */}
