@@ -4,7 +4,8 @@ import {
   Compass, Eye, RotateCw, ZoomIn, ZoomOut, Waves, Send, Anchor, 
   ShieldAlert, Activity, Play, Pause, RefreshCw, Layers, Award,
   Sliders, ArrowUpRight, Zap, Building2, Flame, Maximize2, X,
-  Radio, Video, Navigation, AlertTriangle, CheckCircle2, ChevronRight
+  Radio, Video, Navigation, AlertTriangle, CheckCircle2, ChevronRight,
+  Sun, Moon
 } from 'lucide-react';
 import { CityDigitalTwinState, InfrastructureNode } from '../types/digital_twin';
 
@@ -28,9 +29,11 @@ interface Building3DInfo {
   height: number;
   elevation: number;
   baseColor: number;
+  edgeColor: number;
   roofColor: number;
   status: string;
   threatDescription: string;
+  label: string;
 }
 
 const CITY_BUILDINGS_CONFIG: Building3DInfo[] = [
@@ -44,10 +47,12 @@ const CITY_BUILDINGS_CONFIG: Building3DInfo[] = [
     depth: 60,
     height: 75,
     elevation: 4.5,
-    baseColor: 0x1e293b,
+    baseColor: 0x111c2e,
+    edgeColor: 0xf43f5e,
     roofColor: 0xe11d48,
     status: 'CRITICAL_SURGE',
-    threatDescription: 'Ground floor emergency casualty ward submerged. 4.2h diesel reserves on basement generators.'
+    threatDescription: 'Ground floor casualty ward submerged. 4.2h diesel fuel on basement backup generators.',
+    label: '🏥 LTMG SION HOSPITAL'
   },
   {
     id: 'sub-dharavi',
@@ -57,12 +62,14 @@ const CITY_BUILDINGS_CONFIG: Building3DInfo[] = [
     z: -140,
     width: 65,
     depth: 55,
-    height: 35,
+    height: 38,
     elevation: 3.2,
-    baseColor: 0x334155,
-    roofColor: 0xf59e0b,
+    baseColor: 0x182232,
+    edgeColor: 0xf59e0b,
+    roofColor: 0xd97706,
     status: 'BREAKER_TRIP_RISK',
-    threatDescription: 'Water depth at busbar 0.38m (threshold 0.35m). SCADA breaker trip initiated.'
+    threatDescription: 'Water depth at 415V busbar 0.38m (trip threshold 0.35m). SCADA isolation armed.',
+    label: '⚡ 220kV SUBSTATION'
   },
   {
     id: 'subway-milan',
@@ -72,12 +79,14 @@ const CITY_BUILDINGS_CONFIG: Building3DInfo[] = [
     z: 110,
     width: 90,
     depth: 35,
-    height: 12,
+    height: 14,
     elevation: -4.5,
-    baseColor: 0x0f172a,
+    baseColor: 0x0c192c,
+    edgeColor: 0x06b6d4,
     roofColor: 0x0284c7,
     status: 'CHOKED_SUBMERGED',
-    threatDescription: 'Sunken topography depth 1.82m. 3x 500 m³/hr dewatering pumps operating.'
+    threatDescription: 'Sunken topography depth 1.82m. 3x 500 m³/hr dewatering pumps operating.',
+    label: '🌊 MILAN SUBWAY TRENCH'
   },
   {
     id: 'bkc-tower',
@@ -87,12 +96,14 @@ const CITY_BUILDINGS_CONFIG: Building3DInfo[] = [
     z: 50,
     width: 80,
     depth: 70,
-    height: 110,
+    height: 120,
     elevation: 6.8,
-    baseColor: 0x1e3a8a,
-    roofColor: 0x06b6d4,
+    baseColor: 0x0f223d,
+    edgeColor: 0x38bdf8,
+    roofColor: 0x0284c7,
     status: 'OPERATIONAL_ISLAND',
-    threatDescription: 'High-ground commercial zone functioning as emergency staging and NDRF dry heliport.'
+    threatDescription: 'High-ground commercial zone functioning as emergency staging and NDRF dry heliport.',
+    label: '🏢 BKC FINANCIAL TOWER'
   },
   {
     id: 'hosp-lilavati',
@@ -104,10 +115,12 @@ const CITY_BUILDINGS_CONFIG: Building3DInfo[] = [
     depth: 55,
     height: 85,
     elevation: 8.5,
-    baseColor: 0x0f172a,
-    roofColor: 0x10b981,
+    baseColor: 0x0d2826,
+    edgeColor: 0x10b981,
+    roofColor: 0x059669,
     status: 'SURGE_RECEIVING',
-    threatDescription: 'Designated high-ground diversion trauma center receiving critical Sion ICU transfers.'
+    threatDescription: 'Designated high-ground diversion trauma center receiving critical Sion ICU transfers.',
+    label: '🏥 LILAVATI TRAUMA CENTER'
   },
   {
     id: 'slum-kranti',
@@ -117,12 +130,14 @@ const CITY_BUILDINGS_CONFIG: Building3DInfo[] = [
     z: 40,
     width: 100,
     depth: 45,
-    height: 16,
+    height: 18,
     elevation: 2.1,
-    baseColor: 0x451a03,
+    baseColor: 0x2e190c,
+    edgeColor: 0xf97316,
     roofColor: 0xb45309,
     status: 'MANDATORY_EVACUATION',
-    threatDescription: 'Riverbank overtopping. 4,200 residents prioritized for amphibious boat extraction.'
+    threatDescription: 'Riverbank overtopping. 4,200 residents prioritized for amphibious boat extraction.',
+    label: '🏘️ KRANTI NAGAR SLUM'
   }
 ];
 
@@ -160,6 +175,79 @@ const PIPES_CONNECTIONS = [
   { from: 'MH-07', to: 'MH-08', name: 'Kranti-Mahim Outfall', color: 0xef4444 }
 ];
 
+// Helper: Generate procedural facade window texture
+function createFacadeWindowTexture(baseHex: string, windowHex: string): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = baseHex;
+    ctx.fillRect(0, 0, 128, 256);
+
+    ctx.fillStyle = windowHex;
+    for (let y = 8; y < 250; y += 16) {
+      for (let x = 6; x < 122; x += 12) {
+        if (Math.random() > 0.25) {
+          ctx.fillRect(x, y, 7, 9);
+        }
+      }
+    }
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(2, 4);
+  return texture;
+}
+
+// Helper: Generate floating 3D text sprite label
+function createFloatingLabelSprite(text: string, statusColor: string): THREE.Sprite {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    // Rounded pill background
+    ctx.fillStyle = 'rgba(6, 15, 30, 0.88)';
+    ctx.strokeStyle = statusColor;
+    ctx.lineWidth = 4;
+    
+    // Draw rounded rect
+    const r = 24;
+    ctx.beginPath();
+    ctx.moveTo(r, 0);
+    ctx.lineTo(512 - r, 0);
+    ctx.quadraticCurveTo(512, 0, 512, r);
+    ctx.lineTo(512, 128 - r);
+    ctx.quadraticCurveTo(512, 128, 512 - r, 128);
+    ctx.lineTo(r, 128);
+    ctx.quadraticCurveTo(0, 128, 0, 128 - r);
+    ctx.lineTo(0, r);
+    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Text label
+    ctx.font = 'bold 36px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 256, 64);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  const spriteMat = new THREE.SpriteMaterial({ 
+    map: texture, 
+    transparent: true,
+    depthTest: false
+  });
+  const sprite = new THREE.Sprite(spriteMat);
+  sprite.scale.set(70, 17.5, 1);
+  return sprite;
+}
+
 export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = ({
   state,
   onSelectNode,
@@ -179,13 +267,12 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
   // New Features State
   const [isSubterraneanXRay, setIsSubterraneanXRay] = useState<boolean>(false);
   const [showCVWaterwayModal, setShowCVWaterwayModal] = useState<boolean>(false);
-  const [selectedManhole, setSelectedManhole] = useState<Manhole3D | null>(null);
 
   // Camera Orbit State
   const cameraStateRef = useRef({
-    radius: 460,
-    theta: Math.PI / 4,
-    phi: Math.PI / 3.2,
+    radius: 440,
+    theta: Math.PI / 4.2,
+    phi: Math.PI / 3.4,
     target: new THREE.Vector3(0, 10, 0),
     isDragging: false,
     isRightDragging: false,
@@ -200,10 +287,11 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
   const groundMeshRef = useRef<THREE.Mesh | null>(null);
   const waterMeshRef = useRef<THREE.Mesh | null>(null);
   const droneGroupRef = useRef<THREE.Group | null>(null);
-  const droneSpotLightRef = useRef<THREE.SpotLight | null>(null);
   const boatGroupRef = useRef<THREE.Group | null>(null);
   const nfzMeshRef = useRef<THREE.Mesh | null>(null);
   const buildingMeshesRef = useRef<THREE.Mesh[]>([]);
+  const beaconLightsRef = useRef<THREE.PointLight[]>([]);
+  const vehicleMeshesRef = useRef<THREE.Mesh[]>([]);
   const undergroundGroupRef = useRef<THREE.Group | null>(null);
   const geyserMeshesRef = useRef<THREE.Mesh[]>([]);
   const animFrameIdRef = useRef<number>(0);
@@ -216,14 +304,14 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
     const width = container.clientWidth || 800;
     const height = container.clientHeight || 560;
 
-    // 1. SCENE
+    // 1. SCENE & ATMOSPHERE
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050b14);
-    scene.fog = new THREE.FogExp2(0x050b14, 0.0018);
+    scene.background = new THREE.Color(0x040914);
+    scene.fog = new THREE.FogExp2(0x040914, 0.0014);
     sceneRef.current = scene;
 
     // 2. CAMERA
-    const camera = new THREE.PerspectiveCamera(45, width / height, 1, 3000);
+    const camera = new THREE.PerspectiveCamera(45, width / height, 1, 3500);
     cameraRef.current = camera;
 
     // 3. RENDERER
@@ -233,20 +321,20 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.25;
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // 4. LIGHTING
-    const ambientLight = new THREE.AmbientLight(0x0a192f, 2.2);
+    // 4. LIGHTING SYSTEM (HIGH CONTRAST CYBER-PHYSICAL LIGHTING)
+    const ambientLight = new THREE.AmbientLight(0x0d1f3d, 3.2);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfff7ed, 3.5);
-    sunLight.position.set(180, 240, 160);
+    const sunLight = new THREE.DirectionalLight(0xe0f2fe, 4.2);
+    sunLight.position.set(200, 280, 180);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
-    const shadowDist = 280;
+    const shadowDist = 320;
     sunLight.shadow.camera.left = -shadowDist;
     sunLight.shadow.camera.right = shadowDist;
     sunLight.shadow.camera.top = shadowDist;
@@ -254,12 +342,12 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
     sunLight.shadow.bias = -0.0005;
     scene.add(sunLight);
 
-    const bounceLight = new THREE.DirectionalLight(0x0284c7, 0.5);
-    bounceLight.position.set(-200, 50, -200);
-    scene.add(bounceLight);
+    const cyanRimLight = new THREE.DirectionalLight(0x06b6d4, 1.8);
+    cyanRimLight.position.set(-220, 60, -220);
+    scene.add(cyanRimLight);
 
-    // 5. GROUND & TERRAIN TOPOGRAPHY
-    const groundGeo = new THREE.PlaneGeometry(650, 650, 64, 64);
+    // 5. TERRAIN TOPOGRAPHY & ROADS
+    const groundGeo = new THREE.PlaneGeometry(720, 720, 96, 96);
     groundGeo.rotateX(-Math.PI / 2);
     
     const posAttr = groundGeo.attributes.position;
@@ -267,16 +355,23 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
       const x = posAttr.getX(i);
       const z = posAttr.getZ(i);
       
+      // Mithi River winding channel
       const riverCenter = Math.sin(z * 0.015) * 45 - 20;
       const distToRiver = Math.abs(x - riverCenter);
       let elev = 0;
-      if (distToRiver < 32) {
-        elev = -18 * (1 - distToRiver / 32);
+      if (distToRiver < 36) {
+        elev = -16 * (1 - distToRiver / 36);
       }
 
+      // Milan Subway trench
       const distToMilan = Math.hypot(x - (-80), z - 110);
-      if (distToMilan < 40) {
-        elev = Math.min(elev, -12 * (1 - distToMilan / 40));
+      if (distToMilan < 45) {
+        elev = Math.min(elev, -11 * (1 - distToMilan / 45));
+      }
+
+      // Trombay / Ghatkopar high ridges on East
+      if (x > 160) {
+        elev += (x - 160) * 0.18;
       }
 
       posAttr.setY(i, elev);
@@ -284,9 +379,9 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
     groundGeo.computeVertexNormals();
 
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x091424,
-      roughness: 0.85,
-      metalness: 0.15,
+      color: 0x061122,
+      roughness: 0.7,
+      metalness: 0.25,
       flatShading: true,
       transparent: true,
       opacity: 1.0
@@ -296,21 +391,81 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
     scene.add(groundMesh);
     groundMeshRef.current = groundMesh;
 
-    const grid = new THREE.GridHelper(650, 32, 0x0ea5e9, 0x1e293b);
+    // Glowing Tactical Grid Floor
+    const grid = new THREE.GridHelper(720, 36, 0x0ea5e9, 0x172554);
     grid.position.y = 0.2;
     scene.add(grid);
 
-    // 6. BUILDINGS GENERATION
+    // 6. ILLUMINATED ARTERIAL ROAD NETWORK (S.V. Road & Western Express Highway)
+    const roadGroup = new THREE.Group();
+    const roadSegments = [
+      { from: [-120, -60], to: [-60, -20] }, // Sion to Kurla
+      { from: [-60, -20], to: [40, -120] },  // Kurla to Dharavi
+      { from: [-60, -20], to: [130, 50] },   // Kurla to BKC
+      { from: [-120, -60], to: [-80, 110] }, // Sion to Milan
+      { from: [130, 50], to: [140, 150] },   // BKC to Lilavati
+      { from: [-80, 110], to: [-160, 40] }   // Milan to Kranti
+    ];
+
+    roadSegments.forEach((seg) => {
+      const p1 = new THREE.Vector3(seg.from[0], 0.3, seg.from[1]);
+      const p2 = new THREE.Vector3(seg.to[0], 0.3, seg.to[1]);
+      const length = p1.distanceTo(p2);
+      const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+
+      const rGeo = new THREE.PlaneGeometry(12, length);
+      rGeo.rotateX(-Math.PI / 2);
+      const rMat = new THREE.MeshBasicMaterial({ color: 0x0f172a, side: THREE.DoubleSide });
+      const rMesh = new THREE.Mesh(rGeo, rMat);
+      rMesh.position.copy(mid);
+      rMesh.lookAt(new THREE.Vector3(p2.x, mid.y, p2.z));
+      rMesh.rotateY(Math.PI / 2);
+      roadGroup.add(rMesh);
+
+      // Glowing Cyan Road Edges
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+      const lineMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, linewidth: 2 });
+      const lineMesh = new THREE.Line(lineGeo, lineMat);
+      roadGroup.add(lineMesh);
+    });
+    scene.add(roadGroup);
+
+    // Moving Emergency Vehicle Dots (Ambulance & Police)
+    const vehicles: THREE.Mesh[] = [];
+    for (let i = 0; i < 4; i++) {
+      const vGeo = new THREE.BoxGeometry(4, 2.5, 7);
+      const vMat = new THREE.MeshStandardMaterial({
+        color: i % 2 === 0 ? 0xffffff : 0x3b82f6,
+        emissive: i % 2 === 0 ? 0xef4444 : 0x06b6d4,
+        emissiveIntensity: 0.8
+      });
+      const vMesh = new THREE.Mesh(vGeo, vMat);
+      vMesh.position.set(-100 + i * 40, 1.5, -40 + i * 30);
+      scene.add(vMesh);
+      vehicles.push(vMesh);
+    }
+    vehicleMeshesRef.current = vehicles;
+
+    // 7. REAL 3D EXTRUDED BUILDINGS WITH WINDOW MATRICES & GLOWING EDGES
     const buildingMeshes: THREE.Mesh[] = [];
+    const beacons: THREE.PointLight[] = [];
+
     CITY_BUILDINGS_CONFIG.forEach((b) => {
       const bGeo = new THREE.BoxGeometry(b.width, b.height, b.depth);
       bGeo.translate(0, b.height / 2, 0);
 
+      // Window Texture on Facade
+      const windowTex = createFacadeWindowTexture(
+        '#' + b.baseColor.toString(16).padStart(6, '0'),
+        b.type === 'hospital' ? '#f43f5e' : b.type === 'substation' ? '#f59e0b' : '#38bdf8'
+      );
+
       const bMat = new THREE.MeshStandardMaterial({
-        color: b.baseColor,
-        roughness: 0.4,
-        metalness: 0.35,
-        wireframe: false
+        map: windowTex,
+        roughness: 0.3,
+        metalness: 0.45,
+        emissive: b.edgeColor,
+        emissiveIntensity: 0.15
       });
 
       const bMesh = new THREE.Mesh(bGeo, bMat);
@@ -319,61 +474,88 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
       bMesh.receiveShadow = true;
       bMesh.userData = { info: b };
 
-      const roofGeo = new THREE.BoxGeometry(b.width + 1.5, 2.5, b.depth + 1.5);
-      roofGeo.translate(0, b.height + 1.25, 0);
+      // Glowing Neon Architectural Edges
+      const edges = new THREE.EdgesGeometry(bGeo);
+      const edgeLine = new THREE.LineSegments(
+        edges,
+        new THREE.LineBasicMaterial({ color: b.edgeColor, linewidth: 2 })
+      );
+      bMesh.add(edgeLine);
+
+      // Roof Slab with Accent Color & Helipad
+      const roofGeo = new THREE.BoxGeometry(b.width + 2, 3, b.depth + 2);
+      roofGeo.translate(0, b.height + 1.5, 0);
       const roofMat = new THREE.MeshStandardMaterial({
         color: b.roofColor,
-        roughness: 0.3,
-        metalness: 0.5,
+        roughness: 0.25,
+        metalness: 0.6,
         emissive: b.roofColor,
-        emissiveIntensity: 0.25
+        emissiveIntensity: 0.4
       });
       const roofMesh = new THREE.Mesh(roofGeo, roofMat);
-      roofMesh.position.set(b.x, b.elevation, b.z);
-      roofMesh.castShadow = true;
-      scene.add(roofMesh);
+      bMesh.add(roofMesh);
+
+      // Rooftop Flashing Warning Beacon (Red strobe for critical buildings)
+      if (b.status.includes('CRITICAL') || b.status.includes('TRIP') || b.status.includes('EVACUATION')) {
+        const beaconLight = new THREE.PointLight(0xff0000, 2.5, 80);
+        beaconLight.position.set(0, b.height + 4, 0);
+        bMesh.add(beaconLight);
+        beacons.push(beaconLight);
+
+        // Visual Beacon Bulb
+        const bulbGeo = new THREE.SphereGeometry(1.5, 12, 12);
+        const bulbMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const bulb = new THREE.Mesh(bulbGeo, bulbMat);
+        bulb.position.copy(beaconLight.position);
+        bMesh.add(bulb);
+      }
+
+      // 3D Floating Holographic Sprite Label Badge (Always faces camera)
+      const labelSprite = createFloatingLabelSprite(
+        b.label,
+        b.type === 'hospital' ? '#f43f5e' : b.type === 'substation' ? '#f59e0b' : '#38bdf8'
+      );
+      labelSprite.position.set(0, b.height + 18, 0);
+      bMesh.add(labelSprite);
 
       scene.add(bMesh);
       buildingMeshes.push(bMesh);
     });
     buildingMeshesRef.current = buildingMeshes;
+    beaconLightsRef.current = beacons;
 
-    // 7. SUBTERRANEAN DRAINAGE CONDUITS & MANHOLES (X-RAY LAYER)
+    // 8. SUBTERRANEAN DRAINAGE CONDUITS & MANHOLES (X-RAY LAYER)
     const undergroundGroup = new THREE.Group();
     undergroundGroup.visible = false;
 
-    // Manhole Chambers (Vertical translucent cylinders)
     const mhMap: { [id: string]: Manhole3D } = {};
     MANHOLES_CONFIG.forEach((mh) => {
       mhMap[mh.id] = mh;
       const mhGeo = new THREE.CylinderGeometry(5, 5, Math.abs(mh.invertY) + 2, 16);
-      mhGeo.translate(0, (mh.invertY) / 2, 0);
+      mhGeo.translate(0, mh.invertY / 2, 0);
       const mhMat = new THREE.MeshStandardMaterial({
         color: mh.status === 'GEYSER_ERUPTING' ? 0xef4444 : mh.status === 'SURCHARGING' ? 0xf59e0b : 0x06b6d4,
         emissive: mh.status === 'GEYSER_ERUPTING' ? 0xef4444 : 0x0284c7,
-        emissiveIntensity: 0.4,
+        emissiveIntensity: 0.5,
         transparent: true,
-        opacity: 0.75,
+        opacity: 0.8,
         wireframe: true
       });
       const mhMesh = new THREE.Mesh(mhGeo, mhMat);
       mhMesh.position.set(mh.x, 0, mh.z);
-      mhMesh.userData = { manhole: mh };
       undergroundGroup.add(mhMesh);
 
-      // Manhole Cover Disc
       const coverGeo = new THREE.CylinderGeometry(5.5, 5.5, 1, 16);
       const coverMat = new THREE.MeshStandardMaterial({
         color: mh.status === 'GEYSER_ERUPTING' ? 0xff0000 : 0x38bdf8,
         emissive: mh.status === 'GEYSER_ERUPTING' ? 0xff0000 : 0x0ea5e9,
-        emissiveIntensity: 0.5
+        emissiveIntensity: 0.6
       });
       const coverMesh = new THREE.Mesh(coverGeo, coverMat);
       coverMesh.position.set(mh.x, 0.5, mh.z);
       undergroundGroup.add(coverMesh);
     });
 
-    // Subterranean Connecting Conduits (Pipes)
     PIPES_CONNECTIONS.forEach((conn) => {
       const fMh = mhMap[conn.from];
       const tMh = mhMap[conn.to];
@@ -384,14 +566,14 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
       const distance = p1.distanceTo(p2);
       const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
 
-      const pipeGeo = new THREE.CylinderGeometry(3.2, 3.2, distance, 16);
+      const pipeGeo = new THREE.CylinderGeometry(3.5, 3.5, distance, 16);
       pipeGeo.rotateX(Math.PI / 2);
       const pipeMat = new THREE.MeshStandardMaterial({
         color: conn.color,
         emissive: conn.color,
-        emissiveIntensity: 0.45,
+        emissiveIntensity: 0.55,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.9,
         roughness: 0.2
       });
       const pipeMesh = new THREE.Mesh(pipeGeo, pipeMat);
@@ -400,16 +582,16 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
       undergroundGroup.add(pipeMesh);
     });
 
-    // Surcharging Geyser Cones on Milan Subway & Kranti Nagar
+    // Surcharging Geyser Cones
     const geyserCones: THREE.Mesh[] = [];
     [mhMap['MH-04'], mhMap['MH-07']].forEach((mh) => {
       if (!mh) return;
-      const coneGeo = new THREE.ConeGeometry(8, 28, 16, 2, true);
-      coneGeo.translate(0, 14, 0);
+      const coneGeo = new THREE.ConeGeometry(9, 32, 16, 2, true);
+      coneGeo.translate(0, 16, 0);
       const coneMat = new THREE.MeshBasicMaterial({
         color: 0x38bdf8,
         transparent: true,
-        opacity: 0.65,
+        opacity: 0.7,
         wireframe: true,
         side: THREE.DoubleSide
       });
@@ -423,30 +605,32 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
     scene.add(undergroundGroup);
     undergroundGroupRef.current = undergroundGroup;
 
-    // 8. DYNAMIC PHYSICAL 3D WATER MESH
-    const waterGeo = new THREE.PlaneGeometry(620, 620, 96, 96);
+    // 9. DYNAMIC PHYSICAL 3D WATER MESH (TRANSLUCENT OCEAN BLUE)
+    const waterGeo = new THREE.PlaneGeometry(680, 680, 96, 96);
     waterGeo.rotateX(-Math.PI / 2);
     const waterMat = new THREE.MeshStandardMaterial({
       color: 0x0284c7,
+      emissive: 0x0369a1,
+      emissiveIntensity: 0.35,
       transparent: true,
-      opacity: 0.72,
-      roughness: 0.12,
-      metalness: 0.65,
+      opacity: 0.75,
+      roughness: 0.1,
+      metalness: 0.8,
       flatShading: true,
       side: THREE.DoubleSide
     });
     const waterMesh = new THREE.Mesh(waterGeo, waterMat);
-    waterMesh.position.y = -10;
+    waterMesh.position.y = 1.85 * 6 - 8;
     waterMesh.receiveShadow = true;
     scene.add(waterMesh);
     waterMeshRef.current = waterMesh;
 
-    // 9. 3D NO-FLY ZONE (NFZ) CYLINDER
+    // 10. 3D NO-FLY ZONE (NFZ) CYLINDER
     const nfzGeo = new THREE.CylinderGeometry(55, 55, 120, 32, 2, true);
     const nfzMat = new THREE.MeshBasicMaterial({
       color: 0xef4444,
       transparent: true,
-      opacity: 0.28,
+      opacity: 0.3,
       wireframe: true,
       side: THREE.DoubleSide
     });
@@ -455,40 +639,57 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
     scene.add(nfzMesh);
     nfzMeshRef.current = nfzMesh;
 
-    // 10. 3D KINETIC NDRF HAWK-EYE DRONE
+    // 11. HIGH-DETAIL KINETIC NDRF HAWK-EYE DRONE
     const droneGroup = new THREE.Group();
-    const droneBodyGeo = new THREE.BoxGeometry(10, 3, 10);
-    const droneBodyMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8, roughness: 0.2 });
+    const droneBodyGeo = new THREE.BoxGeometry(14, 4, 14);
+    const droneBodyMat = new THREE.MeshStandardMaterial({ color: 0x020617, metalness: 0.9, roughness: 0.1 });
     const droneBody = new THREE.Mesh(droneBodyGeo, droneBodyMat);
     droneBody.castShadow = true;
     droneGroup.add(droneBody);
 
-    const armGeo = new THREE.CylinderGeometry(0.8, 0.8, 16);
-    armGeo.rotateZ(Math.PI / 2);
-    const armMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
-    const arm1 = new THREE.Mesh(armGeo, armMat);
-    arm1.rotation.y = Math.PI / 4;
-    const arm2 = new THREE.Mesh(armGeo, armMat);
-    arm2.rotation.y = -Math.PI / 4;
-    droneGroup.add(arm1);
-    droneGroup.add(arm2);
+    // 4 Arms & Spinning Rotor Discs
+    const rotorDiscs: THREE.Mesh[] = [];
+    const armOffsets = [
+      [10, 0, 10], [-10, 0, 10], [10, 0, -10], [-10, 0, -10]
+    ];
+    armOffsets.forEach((offset, idx) => {
+      const armGeo = new THREE.CylinderGeometry(0.8, 0.8, 14);
+      armGeo.rotateZ(Math.PI / 2);
+      const armMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+      const armMesh = new THREE.Mesh(armGeo, armMat);
+      armMesh.position.set(offset[0] * 0.5, 0, offset[2] * 0.5);
+      armMesh.lookAt(new THREE.Vector3(offset[0], 0, offset[2]));
+      droneGroup.add(armMesh);
 
-    const droneSpot = new THREE.SpotLight(0x38bdf8, 4.5, 200, Math.PI / 5, 0.4);
+      // Spinning blurred rotor disc
+      const rotorGeo = new THREE.CylinderGeometry(6, 6, 0.4, 16);
+      const rotorMat = new THREE.MeshBasicMaterial({
+        color: idx < 2 ? 0x22c55e : 0xef4444,
+        transparent: true,
+        opacity: 0.65
+      });
+      const rotor = new THREE.Mesh(rotorGeo, rotorMat);
+      rotor.position.set(offset[0], 1.5, offset[2]);
+      droneGroup.add(rotor);
+      rotorDiscs.push(rotor);
+    });
+
+    // High-Intensity Volumetric Downward Drone Spotlight
+    const droneSpot = new THREE.SpotLight(0x38bdf8, 6.0, 240, Math.PI / 4.5, 0.3);
     droneSpot.position.set(0, -1, 0);
-    droneSpot.target.position.set(0, -90, 0);
+    droneSpot.target.position.set(0, -120, 0);
     droneSpot.castShadow = true;
     droneGroup.add(droneSpot);
     droneGroup.add(droneSpot.target);
-    droneSpotLightRef.current = droneSpot;
 
-    droneGroup.position.set(-60, 85, 0);
+    droneGroup.position.set(-60, 95, 0);
     scene.add(droneGroup);
     droneGroupRef.current = droneGroup;
 
-    // 11. 3D AMPHIBIOUS RESCUE BOAT (IRB)
+    // 12. 3D AMPHIBIOUS RESCUE BOAT (IRB)
     const boatGroup = new THREE.Group();
-    const hullGeo = new THREE.BoxGeometry(14, 4, 28);
-    const hullMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.3, metalness: 0.3 });
+    const hullGeo = new THREE.BoxGeometry(16, 5, 32);
+    const hullMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.2, metalness: 0.4 });
     const hull = new THREE.Mesh(hullGeo, hullMat);
     hull.castShadow = true;
     boatGroup.add(hull);
@@ -496,7 +697,7 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
     scene.add(boatGroup);
     boatGroupRef.current = boatGroup;
 
-    // 12. ANIMATION LOOP (60 FPS)
+    // 13. ANIMATION LOOP (60 FPS)
     let clock = new THREE.Clock();
 
     const animate = () => {
@@ -512,36 +713,51 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
           const v = pos.getY(i);
           pos.setZ(
             i, 
-            Math.sin(u * 0.04 + elapsedTime * 2.2) * 1.4 + 
-            Math.cos(v * 0.035 + elapsedTime * 1.8) * 1.1
+            Math.sin(u * 0.045 + elapsedTime * 2.5) * 1.6 + 
+            Math.cos(v * 0.038 + elapsedTime * 2.0) * 1.3
           );
         }
         pos.needsUpdate = true;
         geo.computeVertexNormals();
       }
 
-      // Drone Flight Orbit
+      // Drone Flight Orbit & Rotor Spin
       if (droneGroupRef.current && isPlaying) {
         const droneAngle = elapsedTime * 0.45;
-        const droneRadius = 140;
+        const droneRadius = 150;
         droneGroupRef.current.position.x = Math.cos(droneAngle) * droneRadius;
         droneGroupRef.current.position.z = Math.sin(droneAngle) * (droneRadius * 0.7);
-        droneGroupRef.current.position.y = 85 + Math.sin(elapsedTime * 1.5) * 3;
+        droneGroupRef.current.position.y = 95 + Math.sin(elapsedTime * 1.5) * 3;
         droneGroupRef.current.rotation.y = -droneAngle + Math.PI / 2;
         droneGroupRef.current.rotation.z = Math.sin(elapsedTime * 2) * 0.08;
+
+        rotorDiscs.forEach(r => {
+          r.rotation.y += 0.45;
+        });
       }
 
-      // Boat Bobbing
+      // Flashing Rooftop Warning Beacons
+      beacons.forEach((beacon, idx) => {
+        const flash = Math.sin(elapsedTime * 8.0 + idx) > 0 ? 3.0 : 0.2;
+        beacon.intensity = flash;
+      });
+
+      // Moving Vehicle Dots Along Roads
+      vehicles.forEach((v, idx) => {
+        v.position.x += Math.sin(elapsedTime * 1.2 + idx) * 0.4;
+        v.position.z += Math.cos(elapsedTime * 1.2 + idx) * 0.4;
+      });
+
+      // Boat Wave Bobbing
       if (boatGroupRef.current && waterMeshRef.current) {
         const boatWaterY = waterMeshRef.current.position.y;
-        boatGroupRef.current.position.y = boatWaterY + 1.8 + Math.sin(elapsedTime * 2) * 0.6;
+        boatGroupRef.current.position.y = boatWaterY + 2.0 + Math.sin(elapsedTime * 2) * 0.7;
         boatGroupRef.current.position.z = -40 + Math.sin(elapsedTime * 0.35) * 45;
         boatGroupRef.current.position.x = Math.sin(boatGroupRef.current.position.z * 0.015) * 45 - 20;
-        boatGroupRef.current.rotation.z = Math.sin(elapsedTime * 2.5) * 0.05;
-        boatGroupRef.current.rotation.x = Math.cos(elapsedTime * 1.8) * 0.04;
+        boatGroupRef.current.rotation.z = Math.sin(elapsedTime * 2.5) * 0.06;
       }
 
-      // Surcharging Geyser Animations
+      // Surcharging Geyser Cones Pulsing
       if (geyserMeshesRef.current.length > 0) {
         geyserMeshesRef.current.forEach((mesh, idx) => {
           const geyserPulse = 1.0 + Math.sin(elapsedTime * 6.0 + idx) * 0.35;
@@ -553,7 +769,7 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
       // NFZ Pulsing Glow
       if (nfzMeshRef.current) {
         const pulse = (Math.sin(elapsedTime * 3) + 1) * 0.5;
-        (nfzMeshRef.current.material as THREE.MeshBasicMaterial).opacity = 0.18 + pulse * 0.22;
+        (nfzMeshRef.current.material as THREE.MeshBasicMaterial).opacity = 0.2 + pulse * 0.25;
       }
 
       renderer.render(scene, camera);
@@ -584,7 +800,8 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
   // Update physical water depth in Three.js scene
   useEffect(() => {
     if (waterMeshRef.current) {
-      waterMeshRef.current.position.y = waterDepthMeters * 8 - 14;
+      // Map 0m - 3.5m to real 3D scene Y units so water rises up facades
+      waterMeshRef.current.position.y = waterDepthMeters * 6 - 8;
     }
   }, [waterDepthMeters]);
 
@@ -594,7 +811,7 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
       undergroundGroupRef.current.visible = isSubterraneanXRay;
       const mat = groundMeshRef.current.material as THREE.MeshStandardMaterial;
       if (isSubterraneanXRay) {
-        mat.opacity = 0.22;
+        mat.opacity = 0.18;
         mat.wireframe = true;
       } else {
         mat.opacity = 1.0;
@@ -689,9 +906,9 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
   const handleSetPreset = (preset: 'iso' | 'canyon' | 'top') => {
     setCameraPreset(preset);
     if (preset === 'iso') {
-      cameraStateRef.current.radius = 460;
-      cameraStateRef.current.theta = Math.PI / 4;
-      cameraStateRef.current.phi = Math.PI / 3.2;
+      cameraStateRef.current.radius = 440;
+      cameraStateRef.current.theta = Math.PI / 4.2;
+      cameraStateRef.current.phi = Math.PI / 3.4;
       cameraStateRef.current.target.set(0, 10, 0);
     } else if (preset === 'canyon') {
       cameraStateRef.current.radius = 280;
@@ -715,12 +932,12 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
     <div className="relative w-full rounded-2xl bg-[#030712] border border-cyan-500/40 shadow-2xl overflow-hidden flex flex-col">
       
       {/* TOP HUD BAR */}
-      <div className="px-4 py-3 bg-[#0a1222]/90 border-b border-cyan-500/30 flex flex-wrap items-center justify-between gap-3 z-10 backdrop-blur-md">
+      <div className="px-4 py-3 bg-[#081224]/95 border-b border-cyan-500/35 flex flex-wrap items-center justify-between gap-3 z-10 backdrop-blur-md">
         
         {/* Title & Live Status */}
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2">
-            <span className="text-xl">🌐</span>
+            <span className="text-xl animate-spin-slow">🌐</span>
             <h3 className="font-mono font-bold text-sm tracking-wider text-cyan-300">
               CIVICTWIN REAL 3D LIVE DIGITAL TWIN
             </h3>
@@ -741,7 +958,7 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
             onClick={() => setIsSubterraneanXRay(!isSubterraneanXRay)}
             className={`px-3 py-1.5 rounded-xl font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
               isSubterraneanXRay 
-                ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/40 border border-cyan-300 scale-105' 
+                ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-400/50 border border-cyan-200 scale-105 font-black' 
                 : 'bg-slate-900/90 text-cyan-400 hover:bg-cyan-950/80 border border-cyan-500/40'
             }`}
             title="Toggle Subterranean 1D Drainage Pipe Network & Surcharging Geyser Cones"
@@ -863,7 +1080,7 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
               <span className="text-emerald-400 text-[10px]">PATROL LIVE</span>
             </div>
             <div className="text-[11px] text-slate-300">
-              Alt: <strong>65m AGL</strong> | SpotLight: <strong>Active</strong> | Camera: <strong>4K FLIR</strong>
+              Alt: <strong>95m AGL</strong> | SpotLight: <strong>Active</strong> | Camera: <strong>4K FLIR</strong>
             </div>
 
             <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between text-[11px]">
@@ -883,7 +1100,7 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
             </div>
 
             {isSubterraneanXRay && (
-              <div className="pt-1.5 border-t border-cyan-500/40 text-[10px] text-cyan-300 animate-pulse">
+              <div className="pt-1.5 border-t border-cyan-500/40 text-[10px] text-cyan-300 animate-pulse font-bold">
                 ⚡ SUBTERRANEAN HYDRAULICS: 8 Inverts | 2 Erupting Geysers
               </div>
             )}
@@ -967,7 +1184,7 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
           <div className="flex items-center justify-between pt-1 border-t border-slate-800">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 hover:border-cyan-400 text-slate-200 text-xs font-bold transition-all"
+              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 hover:border-cyan-400 text-slate-200 text-xs font-bold transition-all cursor-pointer"
             >
               {isPlaying ? <Pause className="w-3 h-3 text-amber-400" /> : <Play className="w-3 h-3 text-emerald-400" />}
               <span>{isPlaying ? 'Pause Dynamic Wave' : 'Resume Wave'}</span>
@@ -1016,9 +1233,7 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
             <div className="p-5 space-y-4">
               <div className="relative w-full h-80 rounded-xl bg-slate-950 border border-cyan-500/30 overflow-hidden flex items-center justify-center">
                 
-                {/* Synthetic Flood Scene Simulation Frame */}
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-sky-950 to-blue-950 opacity-90">
-                  {/* Grid Lines simulating optical flow matrix */}
                   <div className="absolute inset-0 grid grid-cols-8 grid-rows-6 opacity-20 pointer-events-none">
                     {Array.from({ length: 48 }).map((_, i) => (
                       <div key={i} className="border border-cyan-400/40 flex items-center justify-center text-[8px] text-cyan-300">
