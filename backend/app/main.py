@@ -1874,3 +1874,25 @@ async def get_opentopography_dem(
         east=east,
         dem_type=dem_type
     )
+
+
+@app.post("/api/ai/groq-query")
+async def execute_groq_disaster_query(payload: dict = Body(...)):
+    """
+    Ultra-low latency serverless disaster intelligence inference powered by Groq LPU.
+    Runs 24/7 in the cloud without requiring local GPU infrastructure.
+    """
+    from app.services.groq_service import groq_service
+    prompt = payload.get("prompt", "Provide tactical disaster situation report.")
+    system_context = payload.get("context", "")
+    city_name = payload.get("city_name", "Mumbai Metropolitan Region")
+    threat = payload.get("threat_level", "CRITICAL")
+    max_tokens = int(payload.get("max_tokens", 500))
+
+    return await groq_service.generate_response(
+        prompt=prompt,
+        system_context=system_context,
+        city_name=city_name,
+        current_threat=threat,
+        max_tokens=max_tokens
+    )
