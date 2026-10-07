@@ -2405,7 +2405,7 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
       )}
 
       {/* Top-Left Geographic Toolbar (Clean Unified Frosted HUD) */}
-      <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2 max-w-[calc(100%-380px)]">
+      <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-1.5 sm:gap-2 max-w-[calc(100%-480px)] lg:max-w-[calc(100%-440px)]">
         {/* Role-Specific Geographic Grid Switcher & Base Map Group */}
         <div className="hud-panel p-1 rounded-xl flex items-center space-x-1 text-xs font-mono border border-cyan-500/30 shadow-2xl bg-slate-950/90 backdrop-blur-md">
           {/* Scope buttons */}
@@ -2539,13 +2539,13 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               if (onResolveLocation) onResolveLocation(searchQuery);
             }
           }}
-          className="hud-panel p-1 rounded-xl border border-cyan-500/40 bg-slate-950/90 backdrop-blur-md flex items-center space-x-1.5 shadow-2xl w-48 sm:w-56"
+          className="hud-panel p-1 rounded-xl border border-cyan-500/40 bg-slate-950/90 backdrop-blur-md flex items-center space-x-1.5 shadow-2xl w-36 sm:w-44 md:w-48 lg:w-56"
         >
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search town, district, coords..."
+            placeholder="Search town, district..."
             className="bg-transparent border-none text-[10px] font-mono text-white placeholder-slate-500 focus:outline-none flex-1 px-1.5 py-0.5"
           />
           <button
@@ -2574,16 +2574,16 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
               setActiveSatelliteModal(activeSatelliteModal === 'MOSDAC' ? null : 'MOSDAC');
             }}
             title="Inspect Live ISRO MOSDAC INSAT-3DR Telemetry & Archived Granules"
-            className="hud-panel px-3 py-1.5 rounded-xl flex items-center space-x-2 text-xs font-mono border border-blue-500/60 bg-slate-950/95 text-blue-200 shadow-xl hover:border-blue-400 transition-all cursor-pointer group"
+            className="hud-panel px-2.5 sm:px-3 py-1.5 rounded-xl flex items-center space-x-1.5 sm:space-x-2 text-xs font-mono border border-blue-500/60 bg-slate-950/95 text-blue-200 shadow-xl hover:border-blue-400 transition-all cursor-pointer group"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             <span className="font-bold text-white">🛰️ {mosdacFreshness?.satellite || 'INSAT-3DR'}</span>
             <span className="text-slate-400 hidden sm:inline">Passed</span>
             <span className="text-cyan-300 font-bold">{mosdacFreshness?.latest_pass_utc || '17:00 UTC'}</span>
-            <span className="text-slate-600 hidden md:inline">•</span>
-            <span className="text-emerald-400 font-bold hidden md:inline">{mosdacFreshness?.active_granules_count || 334} Granules</span>
-            <span className="text-slate-600 hidden lg:inline">•</span>
-            <span className="text-amber-300 text-[11px] hidden lg:inline">Rain (HEM), SST, LST Live</span>
+            <span className="text-slate-600 hidden xl:inline">•</span>
+            <span className="text-emerald-400 font-bold hidden xl:inline">{mosdacFreshness?.active_granules_count || 334} Granules</span>
+            <span className="text-slate-600 hidden 2xl:inline">•</span>
+            <span className="text-amber-300 text-[11px] hidden 2xl:inline">Rain, SST, LST Live</span>
           </button>
 
           {/* Always Visible Quick ISRO Bhuvan Satellite Orb Status Pill */}
@@ -2600,14 +2600,15 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
             }`}
           >
             <span className="w-2 h-2 rounded-full bg-orange-400 animate-ping"></span>
-            <span>🛰️ Bhuvan EOS</span>
+            <span className="hidden sm:inline">🛰️ Bhuvan EOS</span>
+            <span className="sm:hidden">🛰️ Bhuvan</span>
           </button>
 
           {/* CRISIS SANDBOX QUICK TOGGLE BUTTON (Direct inside Twin Map) */}
           <button
             onClick={() => setShowCrisisSandbox(!showCrisisSandbox)}
             title="Toggle Live Crisis Simulation Sandbox & Physics Timeline Over Map"
-            className={`hud-panel px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-mono border shadow-xl transition-all cursor-pointer ${
+            className={`hud-panel px-2.5 sm:px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-mono border shadow-xl transition-all cursor-pointer ${
               showCrisisSandbox
                 ? 'border-amber-400 bg-amber-950/95 text-amber-200 shadow-[0_0_20px_rgba(251,191,36,0.5)] font-bold'
                 : 'border-slate-800 bg-slate-950/85 text-amber-300 hover:border-amber-500/70'
@@ -2615,7 +2616,8 @@ export const DigitalTwinMap: React.FC<DigitalTwinMapProps> = ({
           >
             <Activity className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
             <span className="text-amber-400 text-sm">⚡</span>
-            <span className="font-bold tracking-wider uppercase">CRISIS SANDBOX</span>
+            <span className="font-bold tracking-wider uppercase hidden md:inline">CRISIS SANDBOX</span>
+            <span className="font-bold tracking-wider uppercase md:hidden">SANDBOX</span>
           </button>
 
           <button

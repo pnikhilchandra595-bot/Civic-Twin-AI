@@ -181,7 +181,7 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="w-full h-14 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 border-b border-cyan-500/35 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-50 backdrop-blur-2xl font-sans relative shadow-[0_4px_30px_rgba(0,0,0,0.95)] ring-1 ring-cyan-500/20 shrink-0 flex-nowrap overflow-visible cyber-scanner-border">
+    <header className="w-full max-w-full h-14 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 border-b border-cyan-500/35 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-50 backdrop-blur-2xl font-sans relative shadow-[0_4px_30px_rgba(0,0,0,0.95)] ring-1 ring-cyan-500/20 shrink-0 flex-nowrap overflow-x-auto overflow-y-visible no-scrollbar cyber-scanner-border">
       
       {/* LEFT SECTION: Logo + Region Switcher + 18 Feeds Badge + Theme Toggle */}
       <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0 flex-nowrap">
@@ -239,7 +239,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Launch Google Flood Hub (AI Streamflow Inflow Ingestion)"
               >
                 <span>🌊</span>
-                <span className="font-hud hidden md:inline">Flood Hub</span>
+                <span className="font-hud hidden 2xl:inline">Flood Hub</span>
               </button>
             )}
 
@@ -251,7 +251,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Launch National Disaster Intelligence Suite (RAG & Colab LLM)"
               >
                 <span>🧠</span>
-                <span className="font-hud hidden md:inline">AI Suite</span>
+                <span className="font-hud hidden 2xl:inline">AI Suite</span>
               </button>
             )}
 
@@ -263,7 +263,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Launch What Happens Next: 72-Hour Cascade Impact Predictor"
               >
                 <span>🔮</span>
-                <span className="font-hud hidden md:inline">What Next</span>
+                <span className="font-hud hidden 2xl:inline">What Next</span>
               </button>
             )}
 
@@ -275,7 +275,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Launch Scientific Validation & Forensic Accuracy Audit (42 Surveyed Benchmarks)"
               >
                 <span>🔬</span>
-                <span className="font-hud hidden md:inline">Audit</span>
+                <span className="font-hud hidden 2xl:inline">Audit</span>
               </button>
             )}
 
@@ -287,7 +287,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Launch Advanced Command Suite (12 Improvisation Modules: Sandbox, IoT, UAV, NDRF, InSAR)"
               >
                 <span>⚡</span>
-                <span className="font-hud hidden md:inline">Command Suite</span>
+                <span className="font-hud hidden xl:inline">Command Suite</span>
               </button>
             )}
 
@@ -299,7 +299,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Launch The 7 Crown Jewels of CivicTwin AI (Unassailable Sovereign Scientific Pillars)"
               >
                 <span>💎</span>
-                <span className="font-hud hidden md:inline">Crown Jewels</span>
+                <span className="font-hud hidden xl:inline">Crown Jewels</span>
               </button>
             )}
 

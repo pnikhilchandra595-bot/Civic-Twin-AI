@@ -743,7 +743,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-transparent text-slate-100 flex flex-col select-none overflow-y-auto">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-transparent text-slate-100 flex flex-col select-none overflow-y-auto">
       {renderSimulationModeBar()}
 
       {/* Sticky Header */}
@@ -811,7 +811,7 @@ export const App: React.FC = () => {
         />
       ) : (
         /* Main Executive Dashboard Content (For National & State Officers) */
-        <div className={`flex-1 w-full ${cockpitView === 'map' ? 'max-w-[99vw] px-2 sm:px-3 py-2 space-y-3' : 'max-w-7xl mx-auto px-4 py-5 space-y-6'}`}>
+        <div className={`flex-1 w-full max-w-full overflow-x-hidden ${cockpitView === 'map' ? 'px-2 sm:px-3 py-2 space-y-3' : 'max-w-7xl mx-auto px-4 py-5 space-y-6'}`}>
         
         {/* 0. MASTER SIMULATION CONTROLLER & TIMELINE HUD (STOPPED BY DEFAULT) */}
         <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#050c1b]/98 via-[#0b1b38]/95 to-[#050c1b]/98 border border-cyan-500/40 shadow-[0_12px_40px_rgba(0,0,0,0.85)] ring-1 ring-cyan-500/20 backdrop-blur-xl p-3.5 sm:p-4 text-xs space-y-3">
@@ -1047,123 +1047,122 @@ export const App: React.FC = () => {
         )}
 
         {/* MASTER COCKPIT VIEW SWITCHER */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 bg-gradient-to-r from-[#060e1d]/95 via-[#0a1832]/95 to-[#060e1d]/95 border border-cyan-500/30 rounded-2xl shadow-xl backdrop-blur-xl ring-1 ring-cyan-500/15">
+        <div className="w-full max-w-full overflow-hidden flex flex-wrap items-center justify-between gap-2 p-2 sm:p-2.5 bg-gradient-to-r from-[#060e1d]/95 via-[#0a1832]/95 to-[#060e1d]/95 border border-cyan-500/30 rounded-2xl shadow-xl backdrop-blur-xl ring-1 ring-cyan-500/15">
           <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
             <button
               onClick={() => setCockpitView('map')}
-              className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
                 cockpitView === 'map'
                   ? 'bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 text-white font-black shadow-lg shadow-cyan-500/30 border border-cyan-400 ring-1 ring-cyan-400/40 text-glow-cyan'
                   : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800/90 border border-slate-800'
               }`}
             >
-              <Compass className="w-4 h-4 text-cyan-300" />
+              <Compass className="w-3.5 h-3.5 text-cyan-300" />
               <span>🗺️ GIS TWIN MAP</span>
             </button>
 
             <button
               onClick={() => setCockpitView('tools')}
-              className={`px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
                 cockpitView === 'tools'
                   ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white font-black shadow-lg shadow-blue-500/30 border border-blue-400 ring-1 ring-blue-400/40'
                   : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800/90 border border-slate-800'
               }`}
             >
-              <Settings className="w-4 h-4 text-cyan-300" />
-              <span>🎛️ COMMAND TOOLKIT HUB</span>
+              <Settings className="w-3.5 h-3.5 text-cyan-300" />
+              <span>🎛️ COMMAND HUB</span>
             </button>
 
             <button
               onClick={() => setCockpitView('sandbox')}
-              className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
                 cockpitView === 'sandbox'
                   ? 'bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 text-white font-black shadow-lg shadow-amber-500/30 border border-amber-400 ring-1 ring-amber-400/40 text-glow-amber'
                   : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800/90 border border-slate-800'
               }`}
             >
-              <Activity className="w-4 h-4 text-amber-300" />
+              <Activity className="w-3.5 h-3.5 text-amber-300" />
               <span>⚡ CRISIS SANDBOX</span>
             </button>
 
             <button
               onClick={() => setCockpitView('calibrated')}
-              className={`px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-2 ${
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
                 cockpitView === 'calibrated'
                   ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white font-black shadow-lg shadow-teal-500/30 border border-teal-400 ring-1 ring-teal-400/40 text-glow-emerald'
                   : 'bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800/90 border border-slate-800'
               }`}
             >
-              <FlaskConical className="w-4 h-4 text-emerald-300" />
+              <FlaskConical className="w-3.5 h-3.5 text-emerald-300" />
               <span>🔬 CALIBRATED SIM</span>
             </button>
 
             <button
               onClick={() => setCockpitView('all')}
-              className={`px-3 py-2 rounded-xl transition-all cursor-pointer flex items-center space-x-1.5 ${
-                cockpitView === 'all'
-                  ? 'bg-slate-800 text-white font-bold border border-cyan-500/50 shadow-md'
-                  : 'bg-slate-900/90 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800'
+              className={`px-2.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center space-x-1 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800 ${
+                cockpitView === 'all' ? 'bg-slate-800 text-white font-bold border-cyan-500/50' : 'bg-slate-900/90'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Scrollable View</span>
+              <span>Scrollable</span>
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Direct Instant Action Buttons (Always Visible on Screen in All Cockpit Views) */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            {/* Direct Instant Action Buttons (Responsive Compact Badges) */}
             <button
               onClick={() => setIsGoogleFloodHubOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-950 hover:from-blue-800 hover:to-indigo-800 border border-blue-400/80 text-blue-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(59,130,246,0.35)] cursor-pointer ring-1 ring-blue-400/30"
+              className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-950 hover:from-blue-800 hover:to-indigo-800 border border-blue-400/80 text-blue-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(59,130,246,0.35)] cursor-pointer ring-1 ring-blue-400/30"
               title="Launch Google Flood Hub (AI Streamflow Ingestion)"
             >
               <span>🌊</span>
-              <span>FLOOD HUB</span>
+              <span className="hidden sm:inline">FLOOD HUB</span>
             </button>
 
             <button
               onClick={() => setIsDisasterIntelligenceOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-900 via-teal-900 to-blue-950 hover:from-cyan-800 hover:to-teal-800 border border-cyan-400/80 text-cyan-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(6,182,212,0.35)] cursor-pointer ring-1 ring-cyan-400/30"
+              className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-900 via-teal-900 to-blue-950 hover:from-cyan-800 hover:to-teal-800 border border-cyan-400/80 text-cyan-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(6,182,212,0.35)] cursor-pointer ring-1 ring-cyan-400/30"
               title="Launch National Disaster Intelligence Suite (RAG & Colab LLM)"
             >
               <span>🧠</span>
-              <span>AI SUITE</span>
+              <span className="hidden sm:inline">AI SUITE</span>
             </button>
 
             <button
               onClick={() => setIsFuturePredictionsOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-900 via-orange-900 to-amber-950 hover:from-amber-800 hover:to-orange-800 border border-amber-400/80 text-amber-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(245,158,11,0.35)] cursor-pointer ring-1 ring-amber-400/30"
+              className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-900 via-orange-900 to-amber-950 hover:from-amber-800 hover:to-orange-800 border border-amber-400/80 text-amber-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(245,158,11,0.35)] cursor-pointer ring-1 ring-amber-400/30"
               title="Launch What Happens Next: 72-Hour Cascade Impact Predictor"
             >
               <span>🔮</span>
-              <span>WHAT NEXT</span>
+              <span className="hidden sm:inline">WHAT NEXT</span>
             </button>
 
             <button
               onClick={() => setIsAccuracyAuditOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-950 via-teal-950 to-cyan-950 hover:from-emerald-900 hover:to-teal-900 border border-emerald-400/80 text-emerald-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_15px_rgba(16,185,129,0.35)] cursor-pointer ring-1 ring-emerald-400/30"
+              className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-950 via-teal-950 to-cyan-950 hover:from-emerald-900 hover:to-teal-900 border border-emerald-400/80 text-emerald-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(16,185,129,0.35)] cursor-pointer ring-1 ring-emerald-400/30"
               title="Launch Scientific Validation & Forensic Accuracy Audit (42 Surveyed Benchmarks)"
             >
               <span>🔬</span>
-              <span>ACCURACY AUDIT</span>
+              <span className="hidden sm:inline">AUDIT</span>
             </button>
 
             <button
               onClick={() => setIsCommandSuiteOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-950 via-blue-950 to-indigo-950 hover:from-cyan-900 hover:to-blue-900 border border-cyan-400/80 text-cyan-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] cursor-pointer ring-1 ring-cyan-400/40 animate-pulse"
+              className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-950 via-blue-950 to-indigo-950 hover:from-cyan-900 hover:to-blue-900 border border-cyan-400/80 text-cyan-200 hover:text-white font-mono font-bold text-xs flex items-center space-x-1 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] cursor-pointer ring-1 ring-cyan-400/40 animate-pulse"
               title="Launch Advanced Command Suite (12 Improvisations: Sandbox, IoT, UAV, NDRF, InSAR)"
             >
               <span>⚡</span>
-              <span>COMMAND SUITE</span>
+              <span className="hidden md:inline">COMMAND SUITE</span>
+              <span className="md:hidden">SUITE</span>
             </button>
 
             <button
               onClick={() => setIsCrownJewelsOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-mono font-black text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_20px_rgba(245,158,11,0.5)] cursor-pointer ring-1 ring-amber-300 scale-100 hover:scale-105"
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-mono font-black text-xs flex items-center space-x-1 transition-all shadow-[0_0_20px_rgba(245,158,11,0.5)] cursor-pointer ring-1 ring-amber-300 scale-100 hover:scale-105"
               title="Launch The 7 Crown Jewels of CivicTwin AI (Unassailable Sovereign Scientific Pillars)"
             >
               <span>💎</span>
-              <span>7 CROWN JEWELS</span>
+              <span className="hidden sm:inline">CROWN JEWELS</span>
             </button>
 
             <button
@@ -1171,7 +1170,7 @@ export const App: React.FC = () => {
                 setCockpitView('map');
                 setMapMode(prev => prev === '2d' ? '3d' : '2d');
               }}
-              className={`px-3 py-1.5 rounded-xl border font-mono font-bold text-xs flex items-center space-x-1.5 transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] cursor-pointer ring-1 ${
+              className={`px-3 py-1.5 rounded-xl border font-mono font-bold text-xs flex items-center space-x-1 transition-all shadow-[0_0_20px_rgba(59,130,246,0.4)] cursor-pointer ring-1 ${
                 mapMode === '3d'
                   ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 text-slate-950 border-cyan-200 ring-cyan-300 shadow-[0_0_25px_rgba(6,182,212,0.6)] font-extrabold'
                   : 'bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950 hover:from-blue-900 hover:to-indigo-900 border-blue-400/80 text-blue-200 hover:text-white ring-blue-400/30'
@@ -1179,10 +1178,10 @@ export const App: React.FC = () => {
               title="Toggle 3D Volumetric Digital Twin Map (Extruded Buildings, Rising Water Plane, Drone Trajectories)"
             >
               <span>{mapMode === '3d' ? '🗺️' : '🌐'}</span>
-              <span>{mapMode === '3d' ? '2D TACTICAL' : '3D DIGITAL TWIN'}</span>
+              <span>{mapMode === '3d' ? '2D MAP' : '3D TWIN'}</span>
             </button>
 
-            <div className="flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-slate-300 shadow-md shadow-cyan-500/10">
+            <div className="hidden 2xl:flex items-center space-x-1.5 text-xs font-mono px-3 py-1.5 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-slate-300 shadow-md shadow-cyan-500/10">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               <span className="text-slate-400">Region:</span>
               <strong className="text-cyan-300 font-bold text-glow-cyan">{state?.city_name || 'Active Region'}</strong>
