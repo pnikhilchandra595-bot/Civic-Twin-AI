@@ -152,6 +152,30 @@ INSTRUCTIONS:
                 except Exception as ex:
                     print(f"Gemini API error on {model_name}: {ex}")
 
+        # 2b. If Groq LPU is configured, route query with full real-time telemetry to Groq 24/7!
+        try:
+            from app.services.groq_service import groq_service
+            if groq_service.is_configured():
+                groq_prompt = f"""[CIVICTWIN INCIDENT COMMAND CONTEXT]
+City: {city_name} (Timeline: T+{timeline_hour:.1f}h)
+Threat Level: {threat} | Live Rain: {rain:.1f} mm/h | Peak Flood Depth: {max_water_level:.2f}m
+Critical Assets: {', '.join(critical_nodes[:5]) if critical_nodes else 'Substations, Rail Culverts'}
+Blocked Roads: {', '.join(impassable_roads[:5]) if impassable_roads else 'Low-lying Underpasses'}
+Preferred Language: {language}
+
+User / Commander Query: {clean_prompt}"""
+                groq_res = await groq_service.query(groq_prompt)
+                if groq_res.get("status") == "success":
+                    return {
+                        "status": "success",
+                        "timestamp": datetime.datetime.now().isoformat(),
+                        "ai_response": groq_res.get("response", ""),
+                        "executed_actions": executed_actions,
+                        "model": f"Groq LPU ({groq_res.get('model', 'qwen/qwen3.8-27b')} - 24/7 Cloud)"
+                    }
+        except Exception as ge:
+            print(f"Groq routing fallback error: {ge}")
+
         # 3. Fresh Dynamic Generative Intelligence Engine (Adapts uniquely to every single query)
         sections = []
         sections.append(f"🤖 **CIVICTWIN AI INCIDENT COMMANDER • {city_name.upper()}**")

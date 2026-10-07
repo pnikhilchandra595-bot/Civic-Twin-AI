@@ -28,6 +28,27 @@ class GroqService:
         self.base_url = "https://api.groq.com/openai/v1/chat/completions"
         self.default_model = "qwen/qwen3.8-27b"
 
+    def is_configured(self) -> bool:
+        key = os.getenv("GROQ_API_KEY", self.api_key)
+        return bool(key and len(key) > 10)
+
+    async def query(
+        self,
+        prompt: str,
+        system_context: Optional[str] = None,
+        city_name: str = "Mumbai"
+    ) -> Dict[str, Any]:
+        res = await self.generate_response(prompt, system_context=system_context, city_name=city_name)
+        return {
+            "status": "success" if res.status == "SUCCESS" else "fallback",
+            "model": res.model,
+            "response": res.content,
+            "latency_sec": round(res.latency_ms / 1000.0, 2),
+            "tokens_generated": res.tokens_generated,
+            "tactical_recommendations": res.tactical_recommendations,
+            "source": res.source
+        }
+
     async def generate_response(
         self,
         prompt: str,

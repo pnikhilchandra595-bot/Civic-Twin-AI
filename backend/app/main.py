@@ -43,6 +43,7 @@ from app.services.future_predictions_service import future_predictions_service
 from app.services.accuracy_audit_service import accuracy_audit_service
 from app.services.countermeasure_service import countermeasure_service
 from app.services.physical_iot_service import physical_iot_service
+from app.services.groq_service import groq_service
 from app.services.citizen_depth_fusion_service import citizen_depth_fusion_service
 from app.services.autonomous_war_room_service import autonomous_war_room_service
 from app.services.dam_rule_curve_service import dam_rule_curve_service
@@ -1025,29 +1026,35 @@ def get_colab_llm_status():
 
 @app.post("/api/intelligence/colab-llm/query")
 async def query_colab_llm(payload: ColabLLMQueryRequest):
-    """Queries the fine-tuned model running on the free Google Colab GPU."""
+    """Queries the fine-tuned model running on the free Google Colab GPU, or routes 24/7 to Groq LPU."""
     import httpx
     url = colab_llm_state.get("endpoint_url")
-    if not url:
-        rag_res = disaster_rag_service.query_institutional_memory(payload.prompt)
-        return {
-            "status": "fallback",
-            "model": "CivicTwin-Local-RAG-Engine",
-            "response": rag_res.get("command_briefing", "")
-        }
-    try:
-        async with httpx.AsyncClient(timeout=45.0) as client:
-            resp = await client.post(f"{url}/generate", json={"prompt": payload.prompt})
-            if resp.status_code == 200:
-                return resp.json()
-    except Exception as e:
-        rag_res = disaster_rag_service.query_institutional_memory(payload.prompt)
-        return {
-            "status": "fallback_error",
-            "error": str(e),
-            "model": "CivicTwin-Local-RAG-Engine",
-            "response": rag_res.get("command_briefing", "")
-        }
+    if url:
+        try:
+            async with httpx.AsyncClient(timeout=45.0) as client:
+                resp = await client.post(f"{url}/generate", json={"prompt": payload.prompt})
+                if resp.status_code == 200:
+                    return resp.json()
+        except Exception as e:
+            logger.warning(f"Colab endpoint unreachable ({e}), routing to 24/7 Groq LPU...")
+
+    # Failover directly to Groq LPU if Colab is offline or not configured
+    if groq_service.is_configured():
+        groq_res = await groq_service.query(payload.prompt)
+        if groq_res.get("status") == "success":
+            return {
+                "status": "success",
+                "model": f"Groq LPU ({groq_res.get('model', 'qwen/qwen3.8-27b')} - 24/7 Cloud)",
+                "response": groq_res.get("response", ""),
+                "latency_sec": groq_res.get("latency_sec")
+            }
+
+    rag_res = disaster_rag_service.query_institutional_memory(payload.prompt)
+    return {
+        "status": "fallback",
+        "model": "CivicTwin-Local-RAG-Engine",
+        "response": rag_res.get("command_briefing", "")
+    }
 
 @app.get("/api/real-data/google-flood-hub")
 async def get_google_flood_hub_forecast(

@@ -20,12 +20,17 @@ class CivicTwinDatabase:
         self.is_postgres = bool(self.database_url and ("postgres" in self.database_url))
         self._init_db()
 
+    def _format_query(self, sql: str) -> str:
+        if self.is_postgres:
+            return sql.replace("?", "%s")
+        return sql
+
     def get_connection(self):
         if self.is_postgres:
             try:
                 import psycopg2
                 import psycopg2.extras
-                conn = psycopg2.connect(self.database_url)
+                conn = psycopg2.connect(self.database_url, cursor_factory=psycopg2.extras.RealDictCursor)
                 return conn
             except Exception as e:
                 print(f"Neon PostgreSQL connection error, falling back to SQLite: {e}")
@@ -285,10 +290,11 @@ class CivicTwinDatabase:
     def record_incident(self, incident: Dict[str, Any]) -> str:
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("""
+            query = self._format_query("""
             INSERT INTO incidents (incident_id, zone_id, incident_type, severity, lat, lng, reported_by, victim_count, status, message, media_url)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-            """, (
+            """)
+            cursor.execute(query, (
                 incident["incident_id"],
                 incident.get("zone_id", "ZONE-MUM-01"),
                 incident.get("incident_type", "flood"),
@@ -314,28 +320,31 @@ class CivicTwinDatabase:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             if status:
-                cursor.execute("""
+                query = self._format_query("""
                 UPDATE resources SET lat = ?, lng = ?, status = ?, last_updated = CURRENT_TIMESTAMP WHERE resource_id = ?;
-                """, (lat, lng, status, resource_id))
+                """)
+                cursor.execute(query, (lat, lng, status, resource_id))
             else:
-                cursor.execute("""
+                query = self._format_query("""
                 UPDATE resources SET lat = ?, lng = ?, last_updated = CURRENT_TIMESTAMP WHERE resource_id = ?;
-                """, (lat, lng, resource_id))
+                """)
+                cursor.execute(query, (lat, lng, resource_id))
             conn.commit()
 
     def save_state_snapshot(self, city_id: str, city_name: str, state_dict: Dict[str, Any]):
-        """Persists digital twin state snapshot to SQLite so it survives restarts."""
+        """Persists digital twin state snapshot to SQLite/Postgres so it survives restarts."""
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
-                cursor.execute("""
+                query = self._format_query("""
                 INSERT INTO state_snapshots (city_id, city_name, state_json, saved_at)
                 VALUES (?, ?, ?, CURRENT_TIMESTAMP)
                 ON CONFLICT(city_id) DO UPDATE SET
                     city_name = excluded.city_name,
                     state_json = excluded.state_json,
                     saved_at = CURRENT_TIMESTAMP;
-                """, (city_id, city_name, json.dumps(state_dict)))
+                """)
+                cursor.execute(query, (city_id, city_name, json.dumps(state_dict)))
                 conn.commit()
         except Exception as e:
             print(f"Error saving state snapshot: {e}")
@@ -345,7 +354,8 @@ class CivicTwinDatabase:
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT state_json FROM state_snapshots WHERE city_id = ?;", (city_id,))
+                query = self._format_query("SELECT state_json FROM state_snapshots WHERE city_id = ?;")
+                cursor.execute(query, (city_id,))
                 row = cursor.fetchone()
                 if row:
                     return json.loads(row["state_json"])
