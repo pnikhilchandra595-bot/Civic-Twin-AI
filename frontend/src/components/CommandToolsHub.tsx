@@ -95,7 +95,7 @@ export const CommandToolsHub: React.FC<CommandToolsHubProps> = ({
   onOpen3DMap,
 }) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full overflow-hidden">
       
       {/* Category 1: GIS, Satellite & Crisis Physics */}
       <div className="space-y-3">

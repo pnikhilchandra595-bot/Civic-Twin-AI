@@ -181,7 +181,7 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="w-full max-w-full h-14 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 border-b border-cyan-500/35 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-50 backdrop-blur-2xl font-sans relative shadow-[0_4px_30px_rgba(0,0,0,0.95)] ring-1 ring-cyan-500/20 shrink-0 flex-nowrap overflow-x-auto overflow-y-visible no-scrollbar cyber-scanner-border">
+    <header className="w-full max-w-full h-14 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 border-b border-cyan-500/35 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-[200] backdrop-blur-2xl font-sans relative shadow-[0_4px_30px_rgba(0,0,0,0.95)] ring-1 ring-cyan-500/20 shrink-0 flex-nowrap overflow-visible no-scrollbar cyber-scanner-border">
       
       {/* LEFT SECTION: Logo + Region Switcher + 18 Feeds Badge + Theme Toggle */}
       <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0 flex-nowrap">
@@ -413,7 +413,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div 
               onClick={(e) => e.stopPropagation()} 
               style={{ backgroundColor: '#070e1d' }}
-              className="absolute right-0 top-full mt-2.5 w-80 sm:w-[480px] md:w-[540px] max-h-[82vh] overflow-y-auto rounded-3xl bg-[#070e1d] border border-cyan-500/50 p-4 sm:p-5 shadow-[0_25px_80px_rgba(0,0,0,0.99)] z-[200] space-y-4 ring-1 ring-cyan-500/30"
+              className="fixed sm:absolute right-2 sm:right-0 top-14 sm:top-full mt-2 sm:mt-2.5 w-[calc(100vw-1rem)] sm:w-[480px] md:w-[540px] max-w-[calc(100vw-1rem)] max-h-[82vh] overflow-y-auto rounded-3xl bg-[#070e1d] border border-cyan-500/50 p-4 sm:p-5 shadow-[0_25px_80px_rgba(0,0,0,0.99)] z-[300] space-y-4 ring-1 ring-cyan-500/30"
             >
               {/* Deck Header */}
               <div className="flex items-center justify-between pb-3 border-b border-cyan-500/20">
