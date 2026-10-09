@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   X, Sliders, Cpu, Users, ShieldAlert, Waves, Anchor, Radio,
   Send, Activity, AlertTriangle, CheckCircle, Download, RefreshCw,
@@ -207,7 +207,7 @@ export const AdvancedCommandSuiteModal: React.FC<AdvancedCommandSuiteModalProps>
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-5 overflow-hidden">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-5 overflow-hidden">
       <div className="relative w-full max-w-7xl h-[92vh] bg-slate-900 border border-cyan-500/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-200">
         
         {/* Modal Top Header */}

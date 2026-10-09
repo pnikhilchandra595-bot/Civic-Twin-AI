@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+﻿import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import * as THREE from 'three';
 import { 
   Compass, Eye, RotateCw, ZoomIn, ZoomOut, Waves, Send, Anchor, 
@@ -1197,7 +1197,7 @@ export const ThreeDimensionalTwinMap: React.FC<ThreeDimensionalTwinMapProps> = (
 
       {/* COMPUTER VISION WATERWAY SAFETY HUD MODAL */}
       {showCVWaterwayModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg">
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg">
           <div className="relative w-full max-w-4xl rounded-2xl bg-[#060c18] border border-cyan-500/50 shadow-2xl overflow-hidden flex flex-col font-mono text-slate-200">
             
             {/* Modal Header */}

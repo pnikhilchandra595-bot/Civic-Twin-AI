@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   Waves, Zap, Radio, Anchor, Bot, Satellite, Scale,
   CheckCircle2, AlertTriangle, ArrowRight, Download, Activity,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   Smartphone, QrCode, X, Copy, Check, ExternalLink, 
   MapPin, ShieldCheck, Compass, PhoneCall, AlertTriangle 
@@ -26,7 +26,7 @@ export const MobileCompanionModal: React.FC<MobileCompanionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none">
       <div className="hud-panel w-full max-w-lg rounded-2xl border border-cyan-500/40 p-6 flex flex-col items-center space-y-4 shadow-[0_0_60px_rgba(0,210,255,0.25)] bg-[#090e1a] text-center">
         
         {/* Header */}

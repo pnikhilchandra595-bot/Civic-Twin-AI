@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { CityDigitalTwinState } from '../types/digital_twin';
 import { AuthUser } from './LoginPage';
 import { 
@@ -181,7 +181,7 @@ export const Header: React.FC<HeaderProps> = ({
     : allCities;
 
   return (
-    <header className="w-full max-w-full h-14 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 border-b border-cyan-500/35 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-[200] backdrop-blur-2xl font-sans relative shadow-[0_4px_30px_rgba(0,0,0,0.95)] ring-1 ring-cyan-500/20 shrink-0 flex-nowrap overflow-visible no-scrollbar cyber-scanner-border">
+    <header className="w-full max-w-full h-14 bg-gradient-to-r from-[#040916]/98 via-[#081530]/98 to-[#040916]/98 border-b border-cyan-500/35 px-2 sm:px-3 lg:px-4 flex items-center justify-between gap-1.5 sm:gap-2 text-slate-100 z-40 backdrop-blur-2xl font-sans relative shadow-[0_4px_30px_rgba(0,0,0,0.95)] ring-1 ring-cyan-500/20 shrink-0 flex-nowrap overflow-visible no-scrollbar cyber-scanner-border">
       
       {/* LEFT SECTION: Logo + Region Switcher + 18 Feeds Badge + Theme Toggle */}
       <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0 flex-nowrap">
@@ -235,11 +235,11 @@ export const Header: React.FC<HeaderProps> = ({
             {onOpenGoogleFloodHub && (
               <button
                 onClick={onOpenGoogleFloodHub}
-                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-900 to-indigo-900 border border-blue-400/80 text-blue-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(59,130,246,0.35)] ring-1 ring-blue-400/40 cursor-pointer shrink-0"
+                className="px-2 py-1 rounded-lg bg-gradient-to-r from-blue-900 to-indigo-900 border border-blue-400/80 text-blue-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(59,130,246,0.35)] ring-1 ring-blue-400/40 cursor-pointer shrink-0"
                 title="Launch Google Flood Hub (AI Streamflow Inflow Ingestion)"
               >
                 <span>🌊</span>
-                <span className="font-hud hidden 2xl:inline">Flood Hub</span>
+                <span className="font-hud hidden 3xl:inline">Flood Hub</span>
               </button>
             )}
 
@@ -247,11 +247,11 @@ export const Header: React.FC<HeaderProps> = ({
             {onOpenDisasterIntelligence && (
               <button
                 onClick={onOpenDisasterIntelligence}
-                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-cyan-900 via-teal-900 to-blue-950 border border-cyan-400/80 text-cyan-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(6,182,212,0.35)] ring-1 ring-cyan-400/40 cursor-pointer shrink-0"
+                className="px-2 py-1 rounded-lg bg-gradient-to-r from-cyan-900 via-teal-900 to-blue-950 border border-cyan-400/80 text-cyan-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(6,182,212,0.35)] ring-1 ring-cyan-400/40 cursor-pointer shrink-0"
                 title="Launch National Disaster Intelligence Suite (RAG & Colab LLM)"
               >
                 <span>🧠</span>
-                <span className="font-hud hidden 2xl:inline">AI Suite</span>
+                <span className="font-hud hidden 3xl:inline">AI Suite</span>
               </button>
             )}
 
@@ -259,11 +259,11 @@ export const Header: React.FC<HeaderProps> = ({
             {onOpenFuturePredictions && (
               <button
                 onClick={onOpenFuturePredictions}
-                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-900 via-orange-900 to-amber-950 border border-amber-400/80 text-amber-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(245,158,11,0.35)] ring-1 ring-amber-400/40 cursor-pointer shrink-0"
+                className="px-2 py-1 rounded-lg bg-gradient-to-r from-amber-900 via-orange-900 to-amber-950 border border-amber-400/80 text-amber-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(245,158,11,0.35)] ring-1 ring-amber-400/40 cursor-pointer shrink-0"
                 title="Launch What Happens Next: 72-Hour Cascade Impact Predictor"
               >
                 <span>🔮</span>
-                <span className="font-hud hidden 2xl:inline">What Next</span>
+                <span className="font-hud hidden 3xl:inline">What Next</span>
               </button>
             )}
 
@@ -271,11 +271,11 @@ export const Header: React.FC<HeaderProps> = ({
             {onOpenAccuracyAudit && (
               <button
                 onClick={onOpenAccuracyAudit}
-                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-emerald-950 via-teal-950 to-cyan-950 border border-emerald-400/80 text-emerald-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(16,185,129,0.35)] ring-1 ring-emerald-400/40 cursor-pointer shrink-0"
+                className="px-2 py-1 rounded-lg bg-gradient-to-r from-emerald-950 via-teal-950 to-cyan-950 border border-emerald-400/80 text-emerald-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(16,185,129,0.35)] ring-1 ring-emerald-400/40 cursor-pointer shrink-0"
                 title="Launch Scientific Validation & Forensic Accuracy Audit (42 Surveyed Benchmarks)"
               >
                 <span>🔬</span>
-                <span className="font-hud hidden 2xl:inline">Audit</span>
+                <span className="font-hud hidden 3xl:inline">Audit</span>
               </button>
             )}
 
@@ -283,11 +283,11 @@ export const Header: React.FC<HeaderProps> = ({
             {onOpenCommandSuite && (
               <button
                 onClick={onOpenCommandSuite}
-                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-cyan-950 via-blue-950 to-indigo-950 border border-cyan-400/80 text-cyan-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] ring-1 ring-cyan-400/50 cursor-pointer shrink-0 animate-pulse"
+                className="px-2 py-1 rounded-lg bg-gradient-to-r from-cyan-950 via-blue-950 to-indigo-950 border border-cyan-400/80 text-cyan-200 hover:text-white text-[10px] sm:text-xs font-mono font-bold flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] ring-1 ring-cyan-400/50 cursor-pointer shrink-0 animate-pulse"
                 title="Launch Advanced Command Suite (12 Improvisation Modules: Sandbox, IoT, UAV, NDRF, InSAR)"
               >
                 <span>⚡</span>
-                <span className="font-hud hidden xl:inline">Command Suite</span>
+                <span className="font-hud hidden 3xl:inline">Command Suite</span>
               </button>
             )}
 
@@ -295,11 +295,11 @@ export const Header: React.FC<HeaderProps> = ({
             {onOpenCrownJewels && (
               <button
                 onClick={onOpenCrownJewels}
-                className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 border border-amber-300 text-slate-950 text-[10px] sm:text-xs font-mono font-black flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(245,158,11,0.5)] ring-1 ring-amber-300 cursor-pointer shrink-0 scale-100 hover:scale-105"
+                className="px-2 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 border border-amber-300 text-slate-950 text-[10px] sm:text-xs font-mono font-black flex items-center space-x-1 transition-all shadow-[0_0_15px_rgba(245,158,11,0.5)] ring-1 ring-amber-300 cursor-pointer shrink-0 scale-100 hover:scale-105"
                 title="Launch The 7 Crown Jewels of CivicTwin AI (Unassailable Sovereign Scientific Pillars)"
               >
                 <span>💎</span>
-                <span className="font-hud hidden xl:inline">Crown Jewels</span>
+                <span className="font-hud hidden 3xl:inline">Crown Jewels</span>
               </button>
             )}
 

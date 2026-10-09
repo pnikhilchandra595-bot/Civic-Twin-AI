@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   Camera, Upload, Sparkles, AlertTriangle, ShieldCheck, 
   CheckCircle2, X, Eye, Video, Radio, Cpu, RefreshCw
@@ -135,7 +135,7 @@ export const GeminiPhotoInspectorModal: React.FC<GeminiPhotoInspectorModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in">
       <div className="w-full max-w-5xl max-h-[92vh] bg-[#071120] border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col font-mono text-slate-100">
         
         {/* Header */}

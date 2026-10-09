@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { 
   Mic, MicOff, Radio, Volume2, Sparkles, 
   Check, X, Activity, MessageSquare, Send, CornerDownLeft 
@@ -120,7 +120,7 @@ export const VoiceRadioCoPilot: React.FC<VoiceRadioCoPilotProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[2000]">
       <div className="hud-panel w-full max-w-2xl rounded-2xl border border-cyan-500/40 p-6 flex flex-col space-y-4 shadow-[0_0_60px_rgba(0,210,255,0.25)] max-h-[90vh] overflow-y-auto bg-[#090e1a]">
         
         {/* Header */}

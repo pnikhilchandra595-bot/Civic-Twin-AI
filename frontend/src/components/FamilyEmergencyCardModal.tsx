@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { 
   FileText, Printer, CheckCircle2, X, ShieldAlert, 
   Phone, Droplets, HeartPulse, MapPin, Compass
@@ -19,7 +19,7 @@ export const FamilyEmergencyCardModal: React.FC<FamilyEmergencyCardModalProps> =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in">
       <div className="w-full max-w-3xl max-h-[92vh] bg-[#071120] border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col font-mono text-slate-100">
         
         {/* Header */}

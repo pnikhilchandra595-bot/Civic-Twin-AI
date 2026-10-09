@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { 
   ShieldCheck, Award, CheckCircle2, X, Download, Printer, 
   ExternalLink, Key, Database, FileText
@@ -15,7 +15,7 @@ export const SovereignCertificateModal: React.FC<SovereignCertificateModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in">
       <div className="w-full max-w-4xl max-h-[92vh] bg-[#071120] border-2 border-emerald-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col font-mono text-slate-100">
         
         {/* Certificate Top Header */}

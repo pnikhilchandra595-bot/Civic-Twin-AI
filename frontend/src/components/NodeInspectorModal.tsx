@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { InfrastructureNode, SensorReading, NodeStatus, NodeType } from '../types/digital_twin';
 import { 
   X, Shield, Zap, Droplets, Activity, 

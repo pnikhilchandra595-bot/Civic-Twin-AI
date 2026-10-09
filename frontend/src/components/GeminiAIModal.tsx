@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { 
   Sparkles, Send, X, Volume2, VolumeX,
   CheckCircle2, AlertTriangle, Zap, ShieldCheck, RefreshCw, MessageSquare, Key, ExternalLink, ShieldAlert, Copy, Check, ChevronRight, Play 
@@ -166,7 +166,7 @@ export const GeminiAIModal: React.FC<GeminiAIModalProps> = ({
   const activeKey = tempKey.trim() || geminiApiKey.trim();
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none">
       <div className="hud-panel w-full max-w-4xl rounded-2xl border border-blue-500/50 flex flex-col h-[90vh] shadow-[0_0_80px_rgba(59,130,246,0.35)] bg-[#070c18] text-slate-100 overflow-hidden">
         
         {/* Top Header */}

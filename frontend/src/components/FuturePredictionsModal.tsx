@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Clock, 
@@ -88,7 +88,7 @@ export const FuturePredictionsModal: React.FC<FuturePredictionsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto font-sans">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto font-sans">
       <div className="relative w-full max-w-6xl bg-gradient-to-b from-[#070e1e] via-[#09152b] to-[#040914] border border-cyan-500/40 rounded-3xl shadow-[0_0_80px_rgba(6,182,212,0.25)] overflow-hidden flex flex-col max-h-[92vh] text-slate-200">
         
         {/* Top Header Bar */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/api';
 
 interface GoogleFloodHubModalProps {
@@ -42,7 +42,7 @@ export const GoogleFloodHubModal: React.FC<GoogleFloodHubModalProps> = ({
   const hydrograph = data?.hydrograph_7d || [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
       <div className="relative w-full max-w-5xl bg-slate-900 border border-blue-500/50 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         
         {/* Header */}

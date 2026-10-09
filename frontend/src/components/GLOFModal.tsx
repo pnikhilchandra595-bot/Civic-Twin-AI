@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   Mountain,
   X,
@@ -223,7 +223,7 @@ export const GLOFModal: React.FC<GLOFModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md">
       <div className="relative w-full max-w-7xl max-h-[94vh] flex flex-col bg-slate-900 border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden font-mono text-slate-200">
         
         {/* Modal Header */}

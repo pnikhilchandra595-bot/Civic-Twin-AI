@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { 
   FileText, Printer, Download, CheckCircle2, ShieldCheck, 
   X, AlertTriangle, Building, Radio, Activity, Clock, QrCode 
@@ -24,7 +24,7 @@ export const ICS201ActionPlanModal: React.FC<ICS201ActionPlanModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none print:p-0 print:bg-white print:static">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none print:p-0 print:bg-white print:static">
       <div className="w-full max-w-4xl rounded-2xl border border-cyan-500/40 p-6 flex flex-col space-y-4 shadow-[0_0_60px_rgba(0,210,255,0.25)] max-h-[92vh] overflow-y-auto bg-[#090e1a] text-slate-100 print:bg-white print:text-black print:border-none print:shadow-none print:max-h-none print:overflow-visible">
         
         {/* Modal Controls (Hidden in Print) */}

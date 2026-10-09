@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   AlertOctagon, MapPin, Phone, Users, ShieldAlert, 
   CheckCircle2, Compass, Waves, Navigation, ArrowRight, X, AlertTriangle, Send 
@@ -95,7 +95,7 @@ export const PublicGPSLocationSOSModal: React.FC<PublicGPSLocationSOSModalProps>
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none font-sans overflow-y-auto">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none font-sans overflow-y-auto">
       <div className="hud-panel w-full max-w-2xl rounded-3xl border border-rose-500/50 bg-[#070b16] text-slate-100 shadow-[0_0_90px_rgba(244,63,94,0.35)] overflow-hidden my-8">
         
         {/* Top Emergency Red Banner */}

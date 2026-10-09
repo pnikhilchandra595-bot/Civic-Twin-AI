@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { IncidentActionPlan } from '../types/digital_twin';
 import { 
   Radio, X, Copy, Check, Volume2, Globe, 
@@ -191,7 +191,7 @@ export const BroadcastModal: React.FC<BroadcastModalProps> = ({ iap, cityName = 
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(ntfyPushUrl)}`;
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[2000]">
       <div className="hud-panel w-full max-w-2xl rounded-2xl border border-red-500/40 p-6 flex flex-col space-y-4 shadow-[0_0_50px_rgba(239,68,68,0.25)] max-h-[92vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">

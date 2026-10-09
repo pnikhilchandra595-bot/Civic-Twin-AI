@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Database, CloudRain, Waves, MapPin, ShieldCheck, 
   CheckCircle2, X, RefreshCw, Layers, ExternalLink, Activity, Info, Sparkles, BarChart3, Satellite, Hospital, Compass,
@@ -142,7 +142,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
   }, [cityId]);
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none">
       <div className="hud-panel w-full max-w-5xl rounded-2xl border border-cyan-500/40 p-5 flex flex-col space-y-4 shadow-[0_0_60px_rgba(0,210,255,0.25)] max-h-[92vh] overflow-y-auto bg-[#090e1a]">
         
         {/* Header */}

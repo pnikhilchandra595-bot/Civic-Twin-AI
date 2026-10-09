@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { SatelliteSARReport } from '../services/api';
 import { AuthUser } from './LoginPage';
 import { 
@@ -41,7 +41,7 @@ export const SatelliteSARModal: React.FC<SatelliteSARModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none font-sans">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none font-sans">
       <div className="hud-panel w-full max-w-3xl rounded-3xl border border-cyan-500/40 bg-[#060a14] p-6 flex flex-col space-y-5 shadow-[0_0_70px_rgba(0,210,255,0.25)] text-slate-100 max-h-[92vh] overflow-y-auto">
         
         {/* Header Bar */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/api';
 
 interface DisasterIntelligenceModalProps {
@@ -230,7 +230,7 @@ export const DisasterIntelligenceModal: React.FC<DisasterIntelligenceModalProps>
   const peakDepthM = Math.max(0.08, +(1.65 * Math.exp(-0.042 * recessionHour)).toFixed(2));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
       <div className="relative w-full max-w-6xl bg-slate-900 border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-cyan-900/50 bg-slate-950/80">

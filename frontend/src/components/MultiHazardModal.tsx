@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   Flame, Skull, Activity, Wind, AlertTriangle, 
   ShieldAlert, CheckCircle2, X, Play, Zap, Compass 
@@ -54,7 +54,7 @@ export const MultiHazardModal: React.FC<MultiHazardModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[2000]">
       <div className="hud-panel w-full max-w-3xl rounded-2xl border border-amber-500/40 p-6 flex flex-col space-y-4 shadow-[0_0_60px_rgba(245,158,11,0.25)] max-h-[90vh] overflow-y-auto bg-[#090e1a]">
         
         {/* Header */}

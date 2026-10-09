@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   FlaskConical, BookOpen, Activity, Waves, Gauge, ArrowRight, 
   CheckCircle2, X, Sparkles, ExternalLink, HelpCircle
@@ -25,7 +25,7 @@ export const ExplainablePhysicsModal: React.FC<ExplainablePhysicsModalProps> = (
   const celerity = Number((scenario.celerityKmh * (0.9 + 0.1 * multiplier)).toFixed(1));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in">
       <div className="w-full max-w-4xl max-h-[92vh] bg-[#071120] border border-cyan-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col font-mono text-slate-100">
         
         {/* Header */}

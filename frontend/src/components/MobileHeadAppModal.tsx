@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Smartphone, Bell, Navigation, ShieldCheck, Radio, 
   MapPin, AlertOctagon, CheckCircle2, Waves, Send, X, 
@@ -70,7 +70,7 @@ export const MobileHeadAppModal: React.FC<MobileHeadAppModalProps> = ({
   const cityName = state?.city_name || 'Mumbai';
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none font-sans overflow-y-auto">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none font-sans overflow-y-auto">
       <div className="hud-panel w-full max-w-4xl rounded-3xl border border-cyan-500/40 bg-[#070b16] text-slate-100 shadow-[0_0_90px_rgba(0,210,255,0.3)] overflow-hidden my-6 flex flex-col md:flex-row gap-6 p-6">
         
         {/* Left Side: Mobile Info & QR Code */}

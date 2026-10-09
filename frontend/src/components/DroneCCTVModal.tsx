@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { 
   Video, Eye, EyeOff, AlertTriangle, ShieldCheck, 
   Maximize2, X, RefreshCw, Layers, Crosshair, Navigation, 
@@ -173,7 +173,7 @@ export const DroneCCTVModal: React.FC<DroneCCTVModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none font-sans">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none font-sans">
       <div className="hud-panel w-full max-w-6xl rounded-3xl border border-cyan-500/40 flex flex-col h-[92vh] bg-[#070b16] text-slate-100 shadow-[0_0_90px_rgba(0,210,255,0.25)] overflow-hidden">
         
         {/* Top Header Bar */}

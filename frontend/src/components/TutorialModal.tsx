@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   BookOpen, X, ChevronRight, ChevronLeft, CheckCircle2, 
   Compass, Waves, Activity, ShieldAlert, Radio, Sliders, Zap, Sparkles 
@@ -167,7 +167,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({
   const step = tutorialSteps[currentStep];
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[2000]">
       <div className="hud-panel w-full max-w-2xl rounded-2xl border border-cyan-500/40 p-6 flex flex-col space-y-5 shadow-[0_0_50px_rgba(0,210,255,0.2)]">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-800">

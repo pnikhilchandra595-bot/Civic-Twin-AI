@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Waves, AlertTriangle, ArrowUpRight, TrendingUp, TrendingDown, 
   Minus, RefreshCw, X, Search, ShieldAlert, Activity, ExternalLink
@@ -89,7 +89,7 @@ export const CWCGaugesModal: React.FC<CWCGaugesModalProps> = ({ isOpen, onClose 
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl bg-[#080d1a] border border-cyan-500/40 shadow-[0_0_50px_rgba(6,182,212,0.25)] overflow-hidden">
         {/* Modal Header */}
         <div className="p-4 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">

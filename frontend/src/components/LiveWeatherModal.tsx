@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   CloudRain, Wind, Droplets, Gauge, Compass, 
   Activity, CheckCircle2, RefreshCw, X, AlertTriangle, 
@@ -81,7 +81,7 @@ export const LiveWeatherModal: React.FC<LiveWeatherModalProps> = ({
   const isLive = weatherData?.is_live_satellite ?? true;
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none font-sans">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none font-sans">
       <div className="hud-panel w-full max-w-3xl rounded-3xl border border-cyan-500/40 flex flex-col bg-[#070b16] text-slate-100 shadow-[0_0_80px_rgba(0,210,255,0.25)] overflow-hidden">
         
         {/* Header */}

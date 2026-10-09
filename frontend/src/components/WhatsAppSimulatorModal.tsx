@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { 
   MessageSquare, Send, Check, CheckCheck, Phone, Video, 
   MapPin, ShieldAlert, Sparkles, X, User, Bot, AlertTriangle, Droplets, Compass
@@ -88,7 +88,7 @@ export const WhatsAppSimulatorModal: React.FC<WhatsAppSimulatorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none font-sans">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none font-sans">
       <div className="w-full max-w-md rounded-3xl border border-emerald-500/50 flex flex-col h-[750px] bg-[#0b141a] text-slate-100 shadow-[0_0_80px_rgba(16,185,129,0.3)] overflow-hidden">
         
         {/* WhatsApp Top Header Bar */}

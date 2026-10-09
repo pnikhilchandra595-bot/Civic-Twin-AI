@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   QrCode, Smartphone, MapPin, Share2, Copy, Check, 
   ExternalLink, PhoneCall, ShieldAlert, Waves, X, AlertOctagon 
@@ -33,7 +33,7 @@ export const CitizenQRCodeModal: React.FC<CitizenQRCodeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none">
       <div className="hud-panel w-full max-w-lg rounded-3xl border border-rose-500/50 bg-[#090e1a] p-6 flex flex-col space-y-4 shadow-[0_0_80px_rgba(244,63,94,0.3)] max-h-[92vh] overflow-y-auto text-slate-100">
         
         {/* Header */}

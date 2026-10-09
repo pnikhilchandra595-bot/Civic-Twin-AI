@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { 
   Bot, Send, Sparkles, X, Volume2, 
   CheckCircle2, AlertTriangle, Zap, ShieldCheck, RefreshCw, MessageSquare, Key, ExternalLink, Settings 
@@ -121,7 +121,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none">
       <div className="hud-panel w-full max-w-3xl rounded-2xl border border-cyan-500/50 flex flex-col h-[85vh] shadow-[0_0_70px_rgba(0,210,255,0.3)] bg-[#090e1a] text-slate-100 overflow-hidden">
         
         {/* Top Header */}

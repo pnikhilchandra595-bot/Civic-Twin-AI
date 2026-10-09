@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { 
   MapPin, Search, Filter, Globe, Activity, 
   ShieldAlert, Waves, Compass, X, Check, ArrowRight, Layers 
@@ -89,7 +89,7 @@ export const DistrictSelectionModal: React.FC<DistrictSelectionModalProps> = ({
   }, [districts, searchQuery, selectedState, threatFilter, isStateOfficer, isDistrictOfficer, assignedState, assignedDistrict]);
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 select-none font-sans overflow-y-auto">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[2000] select-none font-sans overflow-y-auto">
       <div className="hud-panel w-full max-w-5xl rounded-3xl border border-cyan-500/40 bg-[#060a14] text-slate-100 shadow-[0_0_90px_rgba(0,210,255,0.25)] overflow-hidden my-6 flex flex-col max-h-[90vh]">
         
         {/* Modal Header */}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+﻿import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Map, Marker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { 
@@ -624,7 +624,7 @@ export const Real3DGeographicMap: React.FC<Real3DGeographicMapProps> = ({
 
       {/* COMPUTER VISION WATERWAY SAFETY HUD MODAL */}
       {showCVWaterwayModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg">
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg">
           <div className="relative w-full max-w-4xl rounded-2xl bg-[#060c18] border border-cyan-500/50 shadow-2xl overflow-hidden flex flex-col text-slate-200">
             
             <div className="px-5 py-3.5 bg-[#09152b] border-b border-cyan-500/40 flex items-center justify-between">

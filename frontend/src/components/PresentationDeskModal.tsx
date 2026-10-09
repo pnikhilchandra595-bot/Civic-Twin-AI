@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Play, Pause, RotateCcw, Clock, Award, Shield, CheckCircle2, 
   Layers, Activity, Mountain, Waves, Zap, Compass, Radio, 
@@ -204,7 +204,7 @@ export const PresentationDeskModal: React.FC<PresentationDeskModalProps> = ({
   const currentSlide = slides[currentSlideIndex];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <div className="w-full max-w-6xl bg-[#070e1c] border border-cyan-500/40 rounded-3xl shadow-2xl flex flex-col max-h-[94vh] overflow-hidden">
         
         {/* TOP HEADER: PRESENTER BAR & STOPWATCH */}
