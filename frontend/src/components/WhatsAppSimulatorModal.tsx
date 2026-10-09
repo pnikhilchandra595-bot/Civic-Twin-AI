@@ -68,8 +68,8 @@ export const WhatsAppSimulatorModal: React.FC<WhatsAppSimulatorModalProps> = ({
         replyText = `📍 *GPS LOCATION RECEIVED:*\n\n• Coordinates: *19.0760° N, 72.8777° E*\n• Nearest Relief Node: *BKC Sector 3 High-Ground (850m North)*\n• Flood Risk: *MODERATE RUNOFF*\n\nProceed north along the elevated skywalk.`;
       } else {
         try {
-          const res = await apiService.chatWithAICopilot(query, 'EN');
-          replyText = res?.ai_response || `🤖 *NDMA Advisory for ${cityName}:*\nActive rainfall evaluated. Response teams deployed. Stay tuned for emergency bulletins.`;
+          const res = await apiService.chatWithAICopilot(query, 'EN', undefined, cityName);
+          replyText = res?.ai_response || res?.response || `🤖 *NDMA Advisory for ${cityName}:*\nActive rainfall evaluated for "${query}". Response teams deployed. Stay tuned for emergency bulletins.`;
         } catch {
           replyText = `🤖 *NDMA Automated Alert:*\nStay indoors. Avoid low-lying underpasses and open electrical manholes. Emergency helpline: *112* / *1070*.`;
         }

@@ -74,8 +74,8 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
     setIsLoading(true);
 
     try {
-      const data = await apiService.chatWithAICopilot(query, selectedLang, geminiApiKey);
-      const responseText = data?.ai_response || `🤖 **CivicTwin Tactical Assessment for ${cityName}**:\n- Inundation telemetry evaluated across critical infrastructure.\n- Response teams (NDRF, Police, EMS) on high standby.\n- Primary high-ground evacuation shelters open at BKC MMRDA Grounds.`;
+      const data = await apiService.chatWithAICopilot(query, selectedLang, geminiApiKey, cityName);
+      const responseText = data?.ai_response || data?.response || `🤖 **CivicTwin Tactical Assessment for ${cityName}**:\n- Inundation telemetry evaluated for "${query}".\n- Response teams (NDRF, Police, EMS) on high standby.\n- Primary high-ground evacuation shelters open at BKC MMRDA Grounds.`;
       const aiMsg: ChatMessage = {
         id: `ai-${Date.now()}`,
         sender: 'ai',

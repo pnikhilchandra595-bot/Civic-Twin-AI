@@ -124,8 +124,8 @@ export const GeminiAIModal: React.FC<GeminiAIModalProps> = ({
     setIsLoading(true);
 
     try {
-      const data = await apiService.chatWithAICopilot(query, selectedLang, activeKey);
-      const responseText = data?.ai_response || `🤖 **Google Gemini Tactical Assessment for ${cityName}**:\n- Live inundation telemetry evaluated across infrastructure.\n- Response teams (NDRF, Police, EMS) on high standby.\n- Primary high-ground evacuation shelters open at BKC MMRDA Grounds.`;
+      const data = await apiService.chatWithAICopilot(query, selectedLang, activeKey, cityName);
+      const responseText = data?.ai_response || data?.response || `🤖 **CivicTwin Tactical Assessment for ${cityName}**:\n- Tactical analysis for "${query}" completed across critical telemetry.\n- Response teams (NDRF, Police, EMS) on active standby.\n- Primary high-ground evacuation shelters open at BKC MMRDA Grounds.`;
       
       const aiMsg: ChatMessage = {
         id: `ai-${Date.now()}`,

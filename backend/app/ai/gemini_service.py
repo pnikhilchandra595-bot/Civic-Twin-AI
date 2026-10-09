@@ -135,6 +135,7 @@ INSTRUCTIONS:
                                         "status": "success",
                                         "timestamp": datetime.datetime.now().isoformat(),
                                         "ai_response": text_content.strip(),
+                                        "response": text_content.strip(),
                                         "executed_actions": executed_actions,
                                         "model": f"Google {model_name} (Live Cloud LLM)"
                                     }
@@ -146,6 +147,7 @@ INSTRUCTIONS:
                                     "status": "error",
                                     "timestamp": datetime.datetime.now().isoformat(),
                                     "ai_response": f"⚠️ **Google Gemini API Key Verification Notice**:\nGoogle returned error code **{resp.status_code}** for this key.\n\nPlease check your key at https://aistudio.google.com/app/apikey and paste it into the manager bar.",
+                                    "response": f"⚠️ **Google Gemini API Key Verification Notice**:\nGoogle returned error code **{resp.status_code}** for this key.\n\nPlease check your key at https://aistudio.google.com/app/apikey and paste it into the manager bar.",
                                     "executed_actions": executed_actions,
                                     "model": "Google Gemini (Auth Failed)"
                                 }
@@ -170,6 +172,7 @@ User / Commander Query: {clean_prompt}"""
                         "status": "success",
                         "timestamp": datetime.datetime.now().isoformat(),
                         "ai_response": groq_res.get("response", ""),
+                        "response": groq_res.get("response", ""),
                         "executed_actions": executed_actions,
                         "model": f"Groq LPU ({groq_res.get('model', 'qwen/qwen3.8-27b')} - 24/7 Cloud)"
                     }
@@ -243,6 +246,7 @@ User / Commander Query: {clean_prompt}"""
             "status": "success",
             "timestamp": datetime.datetime.now().isoformat(),
             "ai_response": "\n\n".join(sections),
+            "response": "\n\n".join(sections),
             "executed_actions": executed_actions,
             "model": "CivicTwin Dynamic Generative Engine (Gemini-Ready)"
         }
